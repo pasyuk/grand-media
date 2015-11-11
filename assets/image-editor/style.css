@@ -1,0 +1,216 @@
+#gmedit h2 {
+    margin: 0;
+    border-bottom: 1px solid #d3d3d3;
+    font-size: 14px;
+	font-weight: bold;
+    padding: 0 0 10px 0;
+}
+
+#gmedit .gmedit-filter {
+    position: relative;
+    border-bottom: 1px dotted lightgray;
+	padding: 4px 36px 4px 0;
+	overflow: hidden;
+}
+
+#gmedit .gmedit-slider-noui {
+    display: none;
+    position: relative;
+    background-color: #FFF;
+	margin: 7px -20px 5px 16px;
+}
+
+#gmedit .gmedit-filter:hover {
+    background: honeydew;
+}
+
+#gmedit-instruments {
+    list-style-type: none;
+    margin: 0;
+}
+
+#gmedit-instruments li {
+    margin: 0;
+	position:relative;
+}
+
+#gmedit-instruments label {
+    font-size: 13px;
+}
+
+#gmedit-preview {
+	position:relative;
+	width: 100%;
+	height: 100%;
+}
+#gmedit-canvas-cont {
+    width: 100%;
+    height: 100%;
+    font-size: 0;
+    line-height: 0;
+}
+
+#gmedit-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    opacity: 0.9;
+    background: #d3d3d3 url('img/loader.gif') center center no-repeat;
+    text-align: center;
+    display: none;
+}
+
+#gmedit-overlay span {
+	display:inline-block;
+	vertical-align:middle;
+}
+
+/* Main hidden canvas */
+#gmedit-canvas {
+    display: none;
+}
+
+/* ********************** */
+/* * Gmedit Filters styles  */
+/* ********************** */
+
+.gmedit-filter h3 {
+    padding: 0;
+    margin: 0 10px 0 0;
+    display: inline-block;
+    font-weight: normal;
+    font-size: 14px;
+	vertical-align:middle;
+}
+
+.gmedit-filter-value {
+	display:inline-block;
+    width: 3em;
+    text-align: right;
+    background: #ffffff;
+    padding-right: 2px;
+	vertical-align:middle;
+}
+
+.gmedit-filter-edit {
+    background-image: url(img/ui-slider.png);
+    width: 16px;
+    height: 16px;
+    position: absolute;
+    right: 0;
+    top: 8px;
+    cursor: pointer;
+    opacity: 0.4;
+}
+
+.gmedit-filter-edit:hover {
+    opacity: 1;
+}
+
+.gmedit-filter-pm {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    overflow: hidden;
+    opacity: 0.3;
+    margin: 0 5px 0 0;
+	vertical-align:middle;
+}
+
+.gmedit-filter-pm:hover {
+    opacity: 0.5;
+}
+
+.gmedit-filter-pm[data-direction="plus"] {
+    background: url('img/minus_plus.png') -16px 0;
+}
+
+.gmedit-filter-pm[data-direction="minus"] {
+    background: url('img/minus_plus.png');
+}
+
+
+/* ********************** */
+/* * Gmedit Tools styles  * */
+/* ********************** */
+
+.gmedit-tool-button {
+    width: 32px;
+    height: 32px;
+	display: inline-block;
+	text-align: center;
+	float: left;
+    cursor: pointer;
+    margin: 0 8px 0 0;
+    border: 1px solid #777777;
+    box-shadow: 1px 1px 5px #CCC;
+	color: #777777;
+	background: #ffffff;
+	line-height: 28px;
+}
+.gmedit-tool-button:before {
+	font: 400 24px/1 dashicons;
+	vertical-align: middle;
+}
+
+.gmedit-tool-button:active{
+    margin: 1px 8px 0 0;
+    box-shadow: 0 0 0 #CCC;
+	color: #000000
+}
+
+.gmedit-tool-button.flip_hor:before {
+	content: "\f169";
+}
+
+.gmedit-tool-button.flip_ver:before {
+	content: "\f168";
+}
+
+.gmedit-tool-button.invert:before {
+	content: "\f128";
+}
+.gmedit-tool-button.invert.switched,
+.gmedit-tool-button.invert.switched:before {
+    color: #ffffff;
+	background-color: #777777;
+}
+.gmedit-tool-button.invert.switched:active:before {
+    color: #ffffff;
+	background-color: #000000;
+}
+
+.gmedit-tool-button.greyscale:before {
+	content: "\f309";
+}
+
+.gmedit-tool-button.greyscale.switched:before {
+    color: steelblue;
+}
+
+.gmedit-rotate.left:before {
+	content: "\f166";
+}
+
+.gmedit-rotate.right:before {
+	content: "\f167";
+}
+
+/*****************************/
+
+#gmedit-busy {
+    width: 208px;
+    height: 15px;
+    background: url('img/loader.gif') -6px -3px;
+    display: none;
+	position:absolute;
+	left:50%;
+	top:50%;
+	margin:-7px 0 0 -104px;
+}
+
+.gmedit-hidden {
+    display: none;
+}

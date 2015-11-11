@@ -1,0 +1,59 @@
+/* gmAfflux CSS */
+.afflux_module { overflow:hidden; }
+.afflux_module object { display:block; }
+.flashmodule_alternative { position:relative; margin: 0; border: 1px solid #292929; box-sizing:border-box; }
+.gmcategories_holder { overflow:auto; }
+.flashmodule_alternative .gmcatlinks { padding: 3px; margin:0 0 3px; background-color: #292929; text-align: left; }
+.flashmodule_alternative .gmcatlinks a.gmcat { display: inline-block; padding: 4px 10px; margin: 2px; border: none; font: 14px/16px Tahoma; text-decoration: none; color: #ffffff; background:#292929 none; }
+.flashmodule_alternative .gmcatlinks a.gmcat:hover { text-decoration: none; background: none; }
+.flashmodule_alternative .gmcatlinks a.active,
+.flashmodule_alternative .gmcatlinks a.gmcat:hover { color: #ffffff; background-color: #737373; outline: none; }
+.flashmodule_alternative .gmcategory { width: 100%; height: auto; position: relative; text-align: center; padding-bottom: 4px; }
+.flashmodule_alternative .gmcatmeta { text-align: left; }
+.flashmodule_alternative .gmcatmeta > * { border:none; margin:4px 12px; padding:0; }
+.flashmodule_alternative .gmcategory .gmcatimage { display: inline-block; margin: 1px 0 0 1px; padding: 0; position:relative; overflow: hidden; text-align: center; cursor:pointer; background-color: #ffffff; border: 2px solid #ffffff; }
+.flashmodule_alternative .gmcategory .gmcatimage .gmcatimage_caption { display: none; line-height: 140%; font-size: 12px; }
+.flashmodule_alternative .gmcategory .gmcatimage .gmcatimage_caption .gmcatimage_title { font-weight:bold; }
+.flashmodule_alternative .gmcategory .gmcatimage > a { position:relative; display: block; height: 120px; width: 120px; overflow: hidden; cursor:pointer; text-decoration: none; background:url(../img/loader.gif) no-repeat 50% 50%; font-size: 8px; color: #ffffff; }
+.flashmodule_alternative .gmcategory .gmcatimage > a:hover { background-color: #ffffff; color: #4a4a4a; text-decoration: none; }
+.flashmodule_alternative .gmcategory .gmcatimage.current,
+.flashmodule_alternative .gmcategory .gmcatimage.last { border-color: #4a4a4a; }
+.flashmodule_alternative .gmcategory .gmcatimage > a img { display:block; margin: 0 auto; padding: 0; border: none; vertical-align:middle; max-width:none; max-height:none; }
+.flashmodule_alternative .gmcategory .gmcatimage > a img.landscape { height:100%; width:auto; }
+.flashmodule_alternative .gmcategory .gmcatimage > a img.portrait { height:auto; width:100%; }
+
+/*
+.flashmodule_alternative .gmcategory .gmcatimage_counters { position: absolute; left: 0; bottom: 0; right: 0; height: 20px; display: block; line-height: 20px; margin: 0; padding: 0 10px; text-align: left; opacity: 0.85; filter: "alpha(opacity=85)"; }
+.flashmodule_alternative .gmcategory .gmcatimage_counters i { display: inline-block; line-height: 20px; margin: 0; padding: 0 0 0 16px; background: url(../img/view.png) 0 50% no-repeat; font-style: normal; font-size: 12px; float: left; }
+.flashmodule_alternative .gmcategory .gmcatimage_counters b { display: inline-block; line-height: 20px; margin: 0; padding: 0 0 0 16px; background: url(../img/like.png) 0 50% no-repeat; font-weight: normal; font-size: 12px; float: right; width: 25%; }
+.gmcatlinks a.backlink { display: inline-block; padding: 4px 10px; margin: 2px; text-decoration: none; outline: none; font-size: 12px; font-family: Verdana; font-weight: bold; line-height: 16px; }
+.gmcatlinks a.backlink:hover { text-decoration: underline; }
+*/
+
+.flashmodule_alternative .gmcatlinks { background-color: #292929; }
+.flashmodule_alternative .gmcatlinks a.gmcat,
+span.gmcatimage_counters { color: #ffffff; background-color: #292929; }
+.flashmodule_alternative .gmcatlinks a.active,
+.flashmodule_alternative .gmcatlinks a.gmcat:hover { color: #ffffff; background-color: #4a4a4a; }
+.flashmodule_alternative .gmcatmeta { color: #292929; }
+
+.flashmodule_alternative .gmcategory .gmcatimage { background-color: #ffffff; border: 2px solid #ffffff; }
+.flashmodule_alternative .gmcategory .gmcatimage:hover { border: 2px solid #292929; }
+.flashmodule_alternative .gmcategory .gmcatimage.current,
+.flashmodule_alternative .gmcategory .gmcatimage.last { border-color: #292929; }
+.gmcatlinks a.backlink { color: #ffffff; background-color: #292929; }
+
+.flashmodule_alternative.delay {
+	opacity: 0;
+	-moz-animation: slide 1s ease 1s forwards;
+	-webkit-animation: slide 1s ease 1s forwards;
+	-o-animation: slide 1s ease 1s forwards;
+	-ms-animation: slide 1s ease 1s forwards;
+	animation: slide 1s ease 1s forwards;
+}
+@-moz-keyframes slide { from{opacity: 0;} to{opacity: 1;} }
+@-webkit-keyframes slide { from{opacity: 0;} to{opacity: 1;} }
+@-o-keyframes slide { from{opacity: 0;} to{opacity: 1;} }
+@-ms-keyframes slide { from{opacity: 0;} to{opacity: 1;} }
+@keyframes slide { from{opacity: 0;} to{opacity: 1;} }
+

@@ -1,0 +1,3355 @@
+# Copyright (C) 2015 Gmedia Gallery
+# This file is distributed under the same license as the Gmedia Gallery package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Gmedia Gallery 1.7.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/grand-media\n"
+"POT-Creation-Date: 2015-07-06 20:59:03+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: access.php:216 admin/addmedia.php:124 admin/addmedia.php:386
+#: admin/ajax.php:647 admin/ajax.php:665 admin/ajax.php:1292 admin/app.php:74
+#: admin/gmedia.php:451 admin/gmedia.php:609 admin/gmedia.php:785
+#: inc/media-upload.php:1201
+msgid "Uncategorized"
+msgstr ""
+
+#: access.php:267 access.php:708
+msgid "Deleted User"
+msgstr ""
+
+#: access.php:272 admin/terms.php:285 admin/terms.php:1001
+msgid "Shared"
+msgstr ""
+
+#: access.php:370 access.php:841 access.php:907
+msgid "You can't do this"
+msgstr ""
+
+#: access.php:370 access.php:804 access.php:841 access.php:907
+msgid "You have no permission to do this operation"
+msgstr ""
+
+#: access.php:381 admin/ajax.php:1683
+msgid "Failed to move uploaded file."
+msgstr ""
+
+#: access.php:476 admin/processor.php:474 admin/processor.php:489
+msgid "You are not allowed to edit media"
+msgstr ""
+
+#: access.php:480 access.php:813 access.php:818 access.php:868 access.php:913
+#: admin/ajax.php:1128 admin/ajax.php:2012 admin/ajax.php:2057
+#: admin/ajax.php:2102 admin/ajax.php:2148 admin/galleries.php:454
+#: admin/gmedia.php:347 admin/processor.php:181 admin/processor.php:221
+#: admin/processor.php:282 admin/processor.php:318 admin/processor.php:346
+#: admin/processor.php:608 admin/processor.php:734 admin/processor.php:765
+#: admin/processor.php:826 admin/processor.php:927
+msgid "You are not allowed to edit others media"
+msgstr ""
+
+#: access.php:500
+msgid "You are not allowed to manage categories"
+msgstr ""
+
+#: access.php:512
+msgid "%d items updated with \"Uncategorized\""
+msgstr ""
+
+#: access.php:525
+msgid "Category `%s` assigned to %d images."
+msgstr ""
+
+#: access.php:527 admin/processor.php:207
+msgid "Category `%s` can't be assigned."
+msgstr ""
+
+#: access.php:534 admin/processor.php:704 admin/processor.php:754
+msgid "You are not allowed to manage albums"
+msgstr ""
+
+#: access.php:542
+msgid "%d items updated with \"No Album\""
+msgstr ""
+
+#: access.php:558
+msgid "Album `%s` assigned to %d items"
+msgstr ""
+
+#: access.php:564
+msgid "You are not allowed manage tags"
+msgstr ""
+
+#: access.php:568 access.php:591
+msgid "No tags provided"
+msgstr ""
+
+#: access.php:582
+msgid "%d tags added to %d items"
+msgstr ""
+
+#: access.php:587 admin/processor.php:505 admin/processor.php:565
+#: admin/processor.php:1026
+msgid "You are not allowed to delete others media"
+msgstr ""
+
+#: access.php:605
+msgid "%d tags deleted from %d items"
+msgstr ""
+
+#: access.php:610
+msgid "You are not allowed to delete this post."
+msgstr ""
+
+#: access.php:617
+msgid "You are not allowed to delete media others media"
+msgstr ""
+
+#: access.php:621 admin/processor.php:513
+msgid "Error in deleting..."
+msgstr ""
+
+#: access.php:626 access.php:830
+msgid "%d items deleted successfuly"
+msgstr ""
+
+#: access.php:848 admin/processor.php:713
+msgid "Term Name is not specified"
+msgstr ""
+
+#: access.php:852 admin/processor.php:717 admin/processor.php:790
+msgid "Term Name can't be only digits"
+msgstr ""
+
+#: access.php:856 access.php:931 admin/ajax.php:1150 admin/processor.php:622
+#: admin/processor.php:722 admin/processor.php:760 admin/processor.php:849
+#: admin/processor.php:921
+msgid "A term with the id provided do not exists"
+msgstr ""
+
+#: access.php:861 access.php:928 admin/ajax.php:1147 admin/processor.php:118
+#: admin/processor.php:627 admin/processor.php:727 admin/processor.php:854
+msgid "A term with the name provided already exists"
+msgstr ""
+
+#: access.php:901 admin/processor.php:746 admin/processor.php:776
+msgid "Album `%s` successfuly saved"
+msgstr ""
+
+#: access.php:925
+msgid "Tag %d successfuly updated"
+msgstr ""
+
+#: access.php:934 admin/ajax.php:1153
+msgid "Term name can't be only digits or empty"
+msgstr ""
+
+#: access.php:950 admin/processor.php:799
+msgid "%d of %d tags successfuly added"
+msgstr ""
+
+#: access.php:953 admin/processor.php:802
+msgid "Some of provided tags are already exists"
+msgstr ""
+
+#: admin/addmedia.php:21
+msgid "Upload Files"
+msgstr ""
+
+#: admin/addmedia.php:23 admin/addmedia.php:529 admin/addmedia.php:561
+#: admin/addmedia.php:578 admin/ajax.php:1383
+msgid "Import"
+msgstr ""
+
+#: admin/addmedia.php:30
+msgid "Add files to the upload queue and click the start button"
+msgstr ""
+
+#: admin/addmedia.php:33
+msgid "Grab files from other sources"
+msgstr ""
+
+#: admin/addmedia.php:63 inc/media-upload.php:1037
+msgid "You do not have permissions to upload media"
+msgstr ""
+
+#: admin/addmedia.php:79 inc/media-upload.php:1156
+msgid "Maximum file size"
+msgstr ""
+
+#: admin/addmedia.php:82 inc/media-upload.php:1159
+msgid "Maximum $_POST size"
+msgstr ""
+
+#: admin/addmedia.php:83 inc/media-upload.php:1160
+msgid "Chunk size"
+msgstr ""
+
+#: admin/addmedia.php:88 admin/admin.php:443 admin/admin.php:569
+#: admin/ajax.php:1023 admin/gmedia.php:732 admin/gmedia.php:733
+#: admin/terms.php:1801 admin/wpmedia.php:195 inc/core.php:2183
+#: inc/media-upload.php:895 inc/media-upload.php:896 inc/media-upload.php:1165
+msgid "Title"
+msgstr ""
+
+#: admin/addmedia.php:90 inc/media-upload.php:1167
+msgid "EXIF or File Name"
+msgstr ""
+
+#: admin/addmedia.php:91 inc/media-upload.php:1168
+msgid "File Name"
+msgstr ""
+
+#: admin/addmedia.php:92 inc/media-upload.php:1169
+msgid "Empty"
+msgstr ""
+
+#: admin/addmedia.php:96 admin/ajax.php:1061 admin/galleries.php:256
+#: admin/galleries.php:682 admin/gmedia.php:479 admin/gmedia.php:630
+#: admin/gmedia.php:868 admin/terms.php:263 admin/terms.php:1027
+#: inc/media-upload.php:336 inc/media-upload.php:715 inc/media-upload.php:1173
+msgid "Status"
+msgstr ""
+
+#: admin/addmedia.php:98 inc/media-upload.php:1175
+msgid "Same as Album or Public"
+msgstr ""
+
+#: admin/addmedia.php:99 admin/ajax.php:1064 admin/galleries.php:684
+#: admin/gmedia.php:870 admin/terms.php:265 admin/terms.php:1030
+#: inc/media-upload.php:1176
+msgid "Public"
+msgstr ""
+
+#: admin/addmedia.php:100 admin/ajax.php:1065 admin/galleries.php:685
+#: admin/gmedia.php:871 admin/terms.php:266 admin/terms.php:1032
+#: inc/media-upload.php:1177
+msgid "Private"
+msgstr ""
+
+#: admin/addmedia.php:101 admin/ajax.php:1066 admin/galleries.php:686
+#: admin/gmedia.php:872 admin/terms.php:267 admin/terms.php:1034
+#: inc/media-upload.php:1178
+msgid "Draft"
+msgstr ""
+
+#: admin/addmedia.php:120 admin/addmedia.php:382 admin/ajax.php:499
+#: admin/ajax.php:1288 inc/media-upload.php:1197
+msgid "Assign Category"
+msgstr ""
+
+#: admin/addmedia.php:121 admin/addmedia.php:383 admin/ajax.php:1289
+#: inc/media-upload.php:1198
+msgid "(for images only)"
+msgstr ""
+
+#: admin/addmedia.php:140 admin/ajax.php:690 admin/ajax.php:729
+#: admin/ajax.php:933 admin/gmedia.php:807 admin/terms.php:334
+#: admin/terms.php:473 inc/media-upload.php:599
+msgid "by %s"
+msgstr ""
+
+#: admin/addmedia.php:143 admin/ajax.php:693 admin/ajax.php:732
+#: admin/ajax.php:936 admin/gmedia.php:810 inc/media-upload.php:609
+msgid "shared"
+msgstr ""
+
+#: admin/addmedia.php:152 admin/addmedia.php:402 admin/ajax.php:1309
+#: inc/media-upload.php:1217
+msgid "Add to Album"
+msgstr ""
+
+#: admin/addmedia.php:153 admin/addmedia.php:403 admin/ajax.php:743
+#: admin/ajax.php:1310 admin/gmedia.php:827 inc/media-upload.php:1218
+msgid "Album Name..."
+msgstr ""
+
+#: admin/addmedia.php:163 admin/addmedia.php:413 admin/ajax.php:521
+#: admin/ajax.php:1321 inc/media-upload.php:1228
+msgid "Add Tags"
+msgstr ""
+
+#: admin/addmedia.php:164 admin/addmedia.php:414 admin/ajax.php:842
+#: admin/ajax.php:1322 admin/gmedia.php:276 inc/media-upload.php:1229
+msgid "Add Tags..."
+msgstr ""
+
+#: admin/addmedia.php:167 admin/addmedia.php:417 admin/ajax.php:1325
+#: admin/processor.php:212 admin/processor.php:268 admin/processor.php:274
+#: admin/processor.php:337 inc/media-upload.php:1233
+msgid "You are not allowed to assign terms"
+msgstr ""
+
+#: admin/addmedia.php:248 inc/media-upload.php:1053
+msgid ""
+"You browser doesn't have Flash or HTML5 support. Check also if page have no "
+"JavaScript errors."
+msgstr ""
+
+#: admin/addmedia.php:355
+msgid "You do not have permissions to import media"
+msgstr ""
+
+#: admin/addmedia.php:398 admin/ajax.php:1305 inc/media-upload.php:1213
+msgid " (shared)"
+msgstr ""
+
+#: admin/addmedia.php:464 admin/ajax.php:1759
+msgid "Import Server Folder"
+msgstr ""
+
+#: admin/addmedia.php:466
+msgid "FlAGallery plugin"
+msgstr ""
+
+#: admin/addmedia.php:471
+msgid "NextGen plugin"
+msgstr ""
+
+#: admin/addmedia.php:481
+msgid "Sever folders"
+msgstr ""
+
+#: admin/addmedia.php:486
+msgid "delete source files after importing"
+msgstr ""
+
+#: admin/addmedia.php:488
+msgid "Import folder"
+msgstr ""
+
+#: admin/addmedia.php:496
+msgid "loading..."
+msgstr ""
+
+#: admin/addmedia.php:512 admin/addmedia.php:544
+msgid "If Album is not specified, then gallery name will be used as Album"
+msgstr ""
+
+#: admin/addmedia.php:513
+msgid "Flagallery Galleries"
+msgstr ""
+
+#: admin/addmedia.php:514 admin/addmedia.php:546
+msgid "Toggle checkboxes"
+msgstr ""
+
+#: admin/addmedia.php:532 admin/addmedia.php:564
+msgid "There are no created galleries in this plugin."
+msgstr ""
+
+#: admin/addmedia.php:545
+msgid "NextGen Galleries"
+msgstr ""
+
+#: admin/addmedia.php:592 admin/ajax.php:1383 admin/galleries.php:392
+#: admin/gmedia.php:346 admin/gmedia.php:1047 admin/gmedia.php:1070
+#: admin/terms.php:310 admin/terms.php:596 admin/terms.php:878
+#: admin/terms.php:1249 module/photomania/init.php:213
+#: module/photomania/init.php:243
+msgid "Close"
+msgstr ""
+
+#: admin/addmedia.php:592 admin/ajax.php:1383
+msgid "Working..."
+msgstr ""
+
+#: admin/admin.php:75 admin/admin.php:76 admin/settings.php:268
+#: inc/media-upload.php:41 inc/post-metabox.php:55
+msgid "Gmedia Library"
+msgstr ""
+
+#: admin/admin.php:78
+msgid "Add Media Files"
+msgstr ""
+
+#: admin/admin.php:78
+msgid "Add/Import Files"
+msgstr ""
+
+#: admin/admin.php:79
+msgid "Albums, Tags, Filters..."
+msgstr ""
+
+#: admin/admin.php:80 inc/media-upload.php:43 inc/post-metabox.php:51
+#: inc/post-metabox.php:53 inc/post-metabox.php:97
+msgid "Gmedia Galleries"
+msgstr ""
+
+#: admin/admin.php:80
+msgid "Create/Manage Galleries..."
+msgstr ""
+
+#: admin/admin.php:81 admin/settings.php:366
+msgid "Modules"
+msgstr ""
+
+#: admin/admin.php:82
+msgid "Gmedia Settings"
+msgstr ""
+
+#: admin/admin.php:82 admin/admin.php:425 admin/settings.php:373
+msgid "Settings"
+msgstr ""
+
+#: admin/admin.php:83
+msgid "Mobile Application"
+msgstr ""
+
+#: admin/admin.php:84
+msgid "Wordpress Media Library"
+msgstr ""
+
+#: admin/admin.php:84
+msgid "WP Media Library"
+msgstr ""
+
+#: admin/admin.php:112
+msgid "Updating GmediaGallery Plugin"
+msgstr ""
+
+#: admin/admin.php:130
+msgid "I need your support"
+msgstr ""
+
+#: admin/admin.php:376
+msgid "Support"
+msgstr ""
+
+#: admin/admin.php:384
+msgid "Support Forum"
+msgstr ""
+
+#: admin/admin.php:385 inc/core.php:2201
+msgid "Contact"
+msgstr ""
+
+#: admin/admin.php:386
+msgid "Demo"
+msgstr ""
+
+#: admin/admin.php:387
+msgid "Premium"
+msgstr ""
+
+#: admin/admin.php:398 admin/settings.php:48
+msgid "License Key"
+msgstr ""
+
+#: admin/admin.php:403
+msgid "Gmedia Support Forum"
+msgstr ""
+
+#: admin/admin.php:427
+msgid "Apply"
+msgstr ""
+
+#: admin/admin.php:438 admin/admin.php:508 admin/admin.php:516
+#: admin/admin.php:541 admin/admin.php:564
+msgid "items per page"
+msgstr ""
+
+#: admin/admin.php:442 admin/admin.php:520 admin/admin.php:545
+#: admin/admin.php:568 admin/gmedia.php:898 admin/terms.php:973
+#: admin/terms.php:1462 admin/terms.php:1800 admin/wpmedia.php:183
+#: inc/media-upload.php:703
+msgid "ID"
+msgstr ""
+
+#: admin/admin.php:444 admin/admin.php:570 admin/ajax.php:1012
+#: admin/gmedia.php:490 admin/gmedia.php:642 admin/gmedia.php:853
+#: admin/terms.php:1802
+msgid "Filename"
+msgstr ""
+
+#: admin/admin.php:445 admin/admin.php:571 admin/gmedia.php:495
+#: admin/gmedia.php:648 admin/gmedia.php:859
+msgid "Date"
+msgstr ""
+
+#: admin/admin.php:446 admin/admin.php:572
+msgid "Last Modified"
+msgstr ""
+
+#: admin/admin.php:447 admin/admin.php:573
+msgid "MIME Type"
+msgstr ""
+
+#: admin/admin.php:448 admin/admin.php:574 admin/ajax.php:1076
+#: admin/galleries.php:202 admin/gmedia.php:493 admin/gmedia.php:645
+#: admin/gmedia.php:878 admin/terms.php:272 admin/terms.php:987
+#: admin/terms.php:1805 inc/core.php:2184 inc/media-upload.php:321
+#: inc/media-upload.php:716
+msgid "Author"
+msgstr ""
+
+#: admin/admin.php:449 admin/admin.php:524 admin/admin.php:548
+#: admin/admin.php:575
+msgid "order items"
+msgstr ""
+
+#: admin/admin.php:453 admin/admin.php:528 admin/admin.php:552
+#: admin/admin.php:579 admin/settings.php:94 admin/settings.php:114
+#: admin/terms.php:256 admin/terms.php:1098
+msgid "DESC"
+msgstr ""
+
+#: admin/admin.php:454 admin/admin.php:529 admin/admin.php:553
+#: admin/admin.php:580 admin/settings.php:95 admin/settings.php:115
+#: admin/terms.php:257 admin/terms.php:1099 admin/terms.php:1789
+msgid "ASC"
+msgstr ""
+
+#: admin/admin.php:455 admin/admin.php:530 admin/admin.php:554
+#: admin/admin.php:581
+msgid "sort order"
+msgstr ""
+
+#: admin/admin.php:462 admin/admin.php:489 admin/admin.php:495
+msgid "FALSE"
+msgstr ""
+
+#: admin/admin.php:463 admin/admin.php:488 admin/admin.php:494
+msgid "TRUE"
+msgstr ""
+
+#: admin/admin.php:464
+msgid "Quick Tags panel for Description field"
+msgstr ""
+
+#: admin/admin.php:478
+msgid "Uploader runtime:"
+msgstr ""
+
+#: admin/admin.php:480
+msgid "Auto"
+msgstr ""
+
+#: admin/admin.php:481
+msgid "HTML5 Uploader"
+msgstr ""
+
+#: admin/admin.php:482
+msgid "Flash Uploader"
+msgstr ""
+
+#: admin/admin.php:483
+msgid "HTML4 Uploader"
+msgstr ""
+
+#: admin/admin.php:486
+msgid "Chunking:"
+msgstr ""
+
+#: admin/admin.php:492
+msgid "URL streem upload:"
+msgstr ""
+
+#: admin/admin.php:521 admin/admin.php:546 admin/terms.php:229
+#: admin/terms.php:981
+msgid "Name"
+msgstr ""
+
+#: admin/admin.php:522
+msgid "Gmedia Count"
+msgstr ""
+
+#: admin/admin.php:523
+msgid "Author ID (for albums only)"
+msgstr ""
+
+#: admin/admin.php:547
+msgid "Author ID"
+msgstr ""
+
+#: admin/admin.php:561
+msgid "Set query options for this page to be loaded by default."
+msgstr ""
+
+#: admin/ajax.php:63
+msgid "No record in DataBase."
+msgstr ""
+
+#: admin/ajax.php:72
+msgid "Please provide a custom field value."
+msgstr ""
+
+#: admin/ajax.php:84
+msgid "Something goes wrong."
+msgstr ""
+
+#: admin/ajax.php:312
+msgid "Image \"%d\" updated"
+msgstr ""
+
+#: admin/ajax.php:458
+msgid "Image \"%d\" restored from backup and saved"
+msgstr ""
+
+#: admin/ajax.php:487
+msgid "Quick Gallery from selected items"
+msgstr ""
+
+#: admin/ajax.php:488
+msgid "Create Quick Gallery"
+msgstr ""
+
+#: admin/ajax.php:491
+msgid "Show Images from Categories"
+msgstr ""
+
+#: admin/ajax.php:492 admin/ajax.php:503 admin/ajax.php:514 admin/ajax.php:533
+#: admin/ajax.php:538
+msgid "Show Selected"
+msgstr ""
+
+#: admin/ajax.php:498
+msgid "Assign Category for Selected Images"
+msgstr ""
+
+#: admin/ajax.php:502
+msgid "Filter Albums"
+msgstr ""
+
+#: admin/ajax.php:509
+msgid "Assign Album for Selected Items"
+msgstr ""
+
+#: admin/ajax.php:510
+msgid "Assign Album"
+msgstr ""
+
+#: admin/ajax.php:513
+msgid "Filter by Tags"
+msgstr ""
+
+#: admin/ajax.php:520
+msgid "Add Tags to Selected Items"
+msgstr ""
+
+#: admin/ajax.php:528
+msgid "Delete Tags from Selected Items"
+msgstr ""
+
+#: admin/ajax.php:529
+msgid "Delete Tags"
+msgstr ""
+
+#: admin/ajax.php:532 admin/gmedia.php:215 admin/terms.php:162
+#: admin/terms.php:949 admin/terms.php:1435
+msgid "Custom Filters"
+msgstr ""
+
+#: admin/ajax.php:536
+msgid "Filter by Author"
+msgstr ""
+
+#: admin/ajax.php:544
+msgid "Select Author"
+msgstr ""
+
+#: admin/ajax.php:546
+msgid "Select"
+msgstr ""
+
+#: admin/ajax.php:555 admin/gmedia.php:251
+msgid "Batch Edit"
+msgstr ""
+
+#: admin/ajax.php:556
+msgid "Batch Save"
+msgstr ""
+
+#: admin/ajax.php:579
+msgid "No selected Gmedia. Select at least one item in library."
+msgstr ""
+
+#: admin/ajax.php:607 admin/ajax.php:608 admin/galleries.php:678
+#: admin/galleries.php:679
+msgid "Gallery Name"
+msgstr ""
+
+#: admin/ajax.php:611
+msgid "Modue"
+msgstr ""
+
+#: admin/ajax.php:639
+msgid "Selected IDs"
+msgstr ""
+
+#: admin/ajax.php:683 admin/ajax.php:745
+msgid "No Album"
+msgstr ""
+
+#: admin/ajax.php:742
+msgid "Move to Album"
+msgstr ""
+
+#: admin/ajax.php:750
+msgid "Make status of selected items be the same as Album status"
+msgstr ""
+
+#: admin/ajax.php:801
+msgid "Filter Tags..."
+msgstr ""
+
+#: admin/ajax.php:832 admin/ajax.php:887 admin/ajax.php:909
+msgid "No tags"
+msgstr ""
+
+#: admin/ajax.php:845
+msgid "Import IPTC Keywords from selected images to Tags"
+msgstr ""
+
+#: admin/ajax.php:926
+msgid "Choose Filter"
+msgstr ""
+
+#: admin/ajax.php:927
+msgid "Filter Name..."
+msgstr ""
+
+#: admin/ajax.php:974
+msgid "There is no Filters created yet."
+msgstr ""
+
+#: admin/ajax.php:974 admin/galleries.php:811 admin/terms.php:167
+#: admin/terms.php:1465
+msgid "Create Filter"
+msgstr ""
+
+#: admin/ajax.php:982
+msgid "Choose Author"
+msgstr ""
+
+#: admin/ajax.php:1004 admin/gmedia.php:70
+msgid "You are not allowed to see others media"
+msgstr ""
+
+#: admin/ajax.php:1010
+msgid "Note, data will be saved to all selected items in Gmedia Library."
+msgstr ""
+
+#: admin/ajax.php:1014 admin/ajax.php:1025 admin/ajax.php:1035
+#: admin/ajax.php:1053 admin/ajax.php:1063 admin/ajax.php:1078
+msgid "Skip. Do not change"
+msgstr ""
+
+#: admin/ajax.php:1015 admin/ajax.php:1028 admin/ajax.php:1038
+#: admin/ajax.php:1056
+msgid "Custom"
+msgstr ""
+
+#: admin/ajax.php:1019
+msgid ""
+"Variables: <b>{filename}</b> - original file name; <b>{id}</b> - Gmedia #ID "
+"in database; <b>{index:1}</b> - index of selected file in order you select "
+"(set start number after colon)."
+msgstr ""
+
+#: admin/ajax.php:1026
+msgid "Empty Title"
+msgstr ""
+
+#: admin/ajax.php:1027
+msgid "From Filename"
+msgstr ""
+
+#: admin/ajax.php:1030
+msgid "Enter custom title here"
+msgstr ""
+
+#: admin/ajax.php:1033 admin/galleries.php:822 admin/gmedia.php:742
+#: admin/terms.php:234 admin/terms.php:1011 admin/terms.php:1500
+#: admin/wpmedia.php:197 inc/media-upload.php:910
+msgid "Description"
+msgstr ""
+
+#: admin/ajax.php:1036
+msgid "Add MetaInfo to Description"
+msgstr ""
+
+#: admin/ajax.php:1037
+msgid "Empty Description"
+msgstr ""
+
+#: admin/ajax.php:1043
+msgid "Replace"
+msgstr ""
+
+#: admin/ajax.php:1044
+msgid "Append"
+msgstr ""
+
+#: admin/ajax.php:1045
+msgid "Prepend"
+msgstr ""
+
+#: admin/ajax.php:1047
+msgid "Enter description here"
+msgstr ""
+
+#: admin/ajax.php:1051 admin/gmedia.php:498 admin/gmedia.php:651
+msgid "Link"
+msgstr ""
+
+#: admin/ajax.php:1054
+msgid "Empty Link"
+msgstr ""
+
+#: admin/ajax.php:1055
+msgid "Link to original file"
+msgstr ""
+
+#: admin/ajax.php:1058
+msgid "Enter url here"
+msgstr ""
+
+#: admin/ajax.php:1102
+msgid "Ops! Something wrong."
+msgstr ""
+
+#: admin/ajax.php:1108 admin/ajax.php:1382 admin/galleries.php:364
+#: admin/galleries.php:1107 admin/modules.php:198 inc/core.php:2340
+msgid "Cancel"
+msgstr ""
+
+#: admin/ajax.php:1144
+msgid "Tag #%d successfuly updated"
+msgstr ""
+
+#: admin/ajax.php:1170 admin/processor.php:99
+msgid "You are not allowed to manage galleries"
+msgstr ""
+
+#: admin/ajax.php:1193
+msgid "You are not allowed to install modules"
+msgstr ""
+
+#: admin/ajax.php:1208 admin/processor.php:1066 inc/core.php:188
+#: inc/core.php:1435 inc/core.php:1555 inc/core.php:1581
+msgid ""
+"Unable to create directory %s. Is its parent directory writable by the "
+"server?"
+msgstr ""
+
+#: admin/ajax.php:1214 admin/processor.php:1073 inc/core.php:1569
+#: inc/core.php:1595
+msgid "Directory %s is not writable by the server."
+msgstr ""
+
+#: admin/ajax.php:1226 admin/processor.php:1090
+msgid "Could not access filesystem."
+msgstr ""
+
+#: admin/ajax.php:1228 admin/processor.php:1092
+msgid "Filesystem error"
+msgstr ""
+
+#: admin/ajax.php:1240
+msgid "The `%s` module successfuly installed"
+msgstr ""
+
+#: admin/ajax.php:1243 admin/processor.php:1105
+msgid "No file specified"
+msgstr ""
+
+#: admin/ajax.php:1264 admin/ajax.php:1874
+msgid "Import from WP Media Library"
+msgstr ""
+
+#: admin/ajax.php:1327
+msgid "Skip if file with the same name already exists in Gmedia Library"
+msgstr ""
+
+#: admin/ajax.php:1443
+msgid "No items related by tags."
+msgstr ""
+
+#: admin/ajax.php:1477
+msgid "No items matching the search query."
+msgstr ""
+
+#: admin/ajax.php:1479
+msgid "No items to show"
+msgstr ""
+
+#: admin/ajax.php:1639
+msgid "You do not have permission to upload files in Gmedia Library."
+msgstr ""
+
+#: admin/ajax.php:1652
+msgid "No file name."
+msgstr ""
+
+#: admin/ajax.php:1658
+msgid "File type not allowed."
+msgstr ""
+
+#: admin/ajax.php:1711
+msgid "You do not have permission to upload files."
+msgstr ""
+
+#: admin/ajax.php:1797
+msgid "Folder `%s` is empty"
+msgstr ""
+
+#: admin/ajax.php:1800
+msgid "No folder chosen"
+msgstr ""
+
+#: admin/ajax.php:1805
+msgid "Import from Flagallery plugin"
+msgstr ""
+
+#: admin/ajax.php:1825 admin/ajax.php:1860
+msgid "Import `%s` gallery"
+msgstr ""
+
+#: admin/ajax.php:1829 admin/ajax.php:1864
+msgid "gallery contains 0 images"
+msgstr ""
+
+#: admin/ajax.php:1836 admin/ajax.php:1870
+msgid "No gallery chosen"
+msgstr ""
+
+#: admin/ajax.php:1840
+msgid "Import from NextGen plugin"
+msgstr ""
+
+#: admin/ajax.php:1893
+msgid "No items chosen"
+msgstr ""
+
+#: admin/ajax.php:1940
+msgid "Invalid email"
+msgstr ""
+
+#: admin/ajax.php:1945
+msgid "%s shared GmediaCloud Page with you"
+msgstr ""
+
+#: admin/ajax.php:1946
+msgid "%s used Gmedia to share something interesting with you!"
+msgstr ""
+
+#: admin/ajax.php:1947
+msgid "Click here to view page"
+msgstr ""
+
+#: admin/ajax.php:1993
+msgid "Message sent to %s"
+msgstr ""
+
+#: admin/ajax.php:2016 admin/ajax.php:2106
+msgid "Choose or provide a custom field name"
+msgstr ""
+
+#: admin/ajax.php:2021 admin/ajax.php:2111
+msgid "Please provide a custom field value"
+msgstr ""
+
+#: admin/app.php:17
+msgid "Your server is not accessable by iOS application"
+msgstr ""
+
+#: admin/app.php:31
+msgid "Disable access to your Gmedia Library via iOS application?"
+msgstr ""
+
+#: admin/app.php:31
+msgid "Disable Service"
+msgstr ""
+
+#: admin/app.php:32
+msgid "Update Info"
+msgstr ""
+
+#: admin/app.php:34
+msgid "Enable Service"
+msgstr ""
+
+#: admin/app.php:49
+msgid ""
+"On the right side you can see information about your website that will be "
+"used by iOS application, so you'll be able to manage your Gmedia Library "
+"with your smartphone."
+msgstr ""
+
+#: admin/app.php:50
+msgid ""
+"Download Gmedia iOS application from the App Store to manage your Gmedia "
+"Library from iPhone."
+msgstr ""
+
+#: admin/app.php:56 admin/galleries.php:384 admin/gmedia.php:1039
+#: admin/terms.php:870
+msgid "Email"
+msgstr ""
+
+#: admin/app.php:72
+msgid "Which category fit your site most?"
+msgstr ""
+
+#: admin/app.php:79
+msgid "Site URL"
+msgstr ""
+
+#: admin/app.php:83
+msgid "Site Title"
+msgstr ""
+
+#: admin/app.php:87
+msgid "Site Description"
+msgstr ""
+
+#: admin/galleries.php:85 admin/gmedia.php:119 admin/terms.php:97
+#: admin/wpmedia.php:50 inc/media-upload.php:263 inc/media-upload.php:563
+#: inc/media-upload.php:854
+msgid "Search..."
+msgstr ""
+
+#: admin/galleries.php:96 admin/galleries.php:114 admin/galleries.php:132
+#: admin/gmedia.php:130 admin/gmedia.php:153 admin/gmedia.php:236
+#: admin/gmedia.php:316 admin/terms.php:113 admin/terms.php:175
+#: admin/terms.php:205 admin/terms.php:957 admin/terms.php:1444
+#: admin/wpmedia.php:63 admin/wpmedia.php:88 admin/wpmedia.php:136
+#: admin/wpmedia.php:158
+msgid "Toggle Dropdown"
+msgstr ""
+
+#: admin/galleries.php:99 admin/gmedia.php:132 admin/gmedia.php:172
+#: admin/terms.php:116 admin/wpmedia.php:65 admin/wpmedia.php:95
+msgid "All"
+msgstr ""
+
+#: admin/galleries.php:100 admin/gmedia.php:133 admin/terms.php:117
+#: admin/terms.php:1798 admin/wpmedia.php:66 inc/media-upload.php:931
+msgid "None"
+msgstr ""
+
+#: admin/galleries.php:102 admin/gmedia.php:139 admin/terms.php:120
+#: admin/wpmedia.php:73
+msgid "Reverse only visible items"
+msgstr ""
+
+#: admin/galleries.php:102 admin/gmedia.php:139 admin/terms.php:120
+#: admin/wpmedia.php:73
+msgid "Reverse"
+msgstr ""
+
+#: admin/galleries.php:107 admin/modules.php:125 inc/post-metabox.php:97
+msgid "Create Gallery"
+msgstr ""
+
+#: admin/galleries.php:111 admin/gmedia.php:231 admin/gmedia.php:233
+#: admin/terms.php:172 admin/terms.php:954 admin/terms.php:1441
+#: admin/wpmedia.php:133
+msgid "Action"
+msgstr ""
+
+#: admin/galleries.php:121 admin/gmedia.php:299 admin/terms.php:183
+#: admin/wpmedia.php:149
+msgid "Select items to see more actions"
+msgstr ""
+
+#: admin/galleries.php:123 admin/galleries.php:246 admin/gmedia.php:288
+#: admin/terms.php:190 admin/terms.php:411 admin/terms.php:533
+msgid ""
+"You are about to permanently delete the selected items.\n"
+"\r'Cancel' to stop, 'OK' to delete."
+msgstr ""
+
+#: admin/galleries.php:123 admin/gmedia.php:288 admin/terms.php:190
+msgid "Delete Selected Items"
+msgstr ""
+
+#: admin/galleries.php:130 admin/gmedia.php:314 admin/terms.php:202
+#: admin/wpmedia.php:155
+msgid "%s selected"
+msgstr ""
+
+#: admin/galleries.php:135 admin/gmedia.php:321 admin/terms.php:210
+#: admin/wpmedia.php:161
+msgid "Show only selected items"
+msgstr ""
+
+#: admin/galleries.php:136 admin/gmedia.php:326 admin/terms.php:212
+#: admin/wpmedia.php:162
+msgid "Clear selected items"
+msgstr ""
+
+#: admin/galleries.php:188 inc/media-upload.php:311
+msgid "Module broken <br>Reinstall module"
+msgstr ""
+
+#: admin/galleries.php:208 admin/galleries.php:209 inc/media-upload.php:328
+msgid "Shortcode"
+msgstr ""
+
+#: admin/galleries.php:229 admin/gmedia.php:510 admin/terms.php:393
+#: admin/terms.php:518 admin/terms.php:658 admin/terms.php:821
+msgid "Share"
+msgstr ""
+
+#: admin/galleries.php:236 admin/terms.php:400 admin/terms.php:522
+msgid "Edit"
+msgstr ""
+
+#: admin/galleries.php:243 admin/gmedia.php:528 admin/gmedia.php:719
+#: admin/terms.php:408 admin/terms.php:530 admin/terms.php:669
+msgid "Delete"
+msgstr ""
+
+#: admin/galleries.php:253 inc/media-upload.php:333
+msgid "Module"
+msgstr ""
+
+#: admin/galleries.php:254 admin/gmedia.php:482 admin/gmedia.php:633
+#: admin/gmedia.php:899 admin/wpmedia.php:192 inc/media-upload.php:334
+msgid "Type"
+msgstr ""
+
+#: admin/galleries.php:255 admin/gmedia.php:911 inc/media-upload.php:335
+msgid "Last Edited"
+msgstr ""
+
+#: admin/galleries.php:257 inc/core.php:2200 inc/media-upload.php:337
+msgid "Source"
+msgstr ""
+
+#: admin/galleries.php:262 admin/galleries.php:700 inc/media-upload.php:342
+msgid "Selected Gmedia"
+msgstr ""
+
+#: admin/galleries.php:264 inc/media-upload.php:345
+msgid "Show %d items in Gmedia Library"
+msgstr ""
+
+#: admin/galleries.php:270 admin/galleries.php:697 admin/gmedia.php:206
+#: admin/terms.php:158 admin/terms.php:947 admin/terms.php:1433
+#: inc/media-upload.php:352 inc/media-upload.php:576
+msgid "Categories"
+msgstr ""
+
+#: admin/galleries.php:275 admin/galleries.php:695 admin/gmedia.php:210
+#: admin/terms.php:152 admin/terms.php:945 admin/terms.php:1431
+#: inc/media-upload.php:357 inc/media-upload.php:572
+msgid "Albums"
+msgstr ""
+
+#: admin/galleries.php:280 admin/galleries.php:696 admin/gmedia.php:213
+#: admin/gmedia.php:455 admin/gmedia.php:613 admin/terms.php:155
+#: admin/terms.php:575 admin/terms.php:946 admin/terms.php:1432
+#: inc/core.php:2086 inc/core.php:2185 inc/media-upload.php:362
+#: inc/media-upload.php:574
+msgid "Tags"
+msgstr ""
+
+#: admin/galleries.php:285 inc/image-editor.php:50 inc/media-upload.php:367
+msgid "Filters"
+msgstr ""
+
+#: admin/galleries.php:304 admin/gmedia.php:981 admin/terms.php:449
+#: admin/terms.php:558 admin/terms.php:761 admin/wpmedia.php:234
+#: inc/media-upload.php:400 inc/media-upload.php:739 inc/media-upload.php:945
+msgid "No items to show."
+msgstr ""
+
+#: admin/galleries.php:321 admin/galleries.php:1053
+msgid "Choose Module for Gallery"
+msgstr ""
+
+#: admin/galleries.php:351 admin/galleries.php:1094 admin/modules.php:114
+#: admin/modules.php:164
+msgid "Version"
+msgstr ""
+
+#: admin/galleries.php:359 admin/galleries.php:1102
+msgid "No installed modules"
+msgstr ""
+
+#: admin/galleries.php:375 admin/gmedia.php:510 admin/gmedia.php:1030
+#: admin/settings.php:37 admin/terms.php:861
+msgid "GmediaCloud Page"
+msgstr ""
+
+#: admin/galleries.php:379 admin/gmedia.php:1034 admin/terms.php:865
+msgid "Link to page"
+msgstr ""
+
+#: admin/galleries.php:383 admin/gmedia.php:1038 admin/terms.php:869
+msgid "Send this link to"
+msgstr ""
+
+#: admin/galleries.php:385 admin/gmedia.php:1040 admin/terms.php:871
+msgid "Message (optional)"
+msgstr ""
+
+#: admin/galleries.php:391 admin/gmedia.php:1046 admin/terms.php:877
+msgid "Send"
+msgstr ""
+
+#: admin/galleries.php:438 inc/shortcodes.php:114
+msgid "No gallery with ID #%s in database"
+msgstr ""
+
+#: admin/galleries.php:542
+msgid ""
+"Module `%s` is broken. Choose another module from the list and save settings"
+msgstr ""
+
+#: admin/galleries.php:545
+msgid ""
+"Can't get module with name `%s`. Choose module from the list and save "
+"settings"
+msgstr ""
+
+#: admin/galleries.php:548
+msgid ""
+"Module is not selected for this gallery. Choose module from the list and "
+"save settings"
+msgstr ""
+
+#: admin/galleries.php:557
+msgid "Preset `%s` loaded. To apply it for current gallery click Save button"
+msgstr ""
+
+#: admin/galleries.php:573
+msgid "Manage Galleries"
+msgstr ""
+
+#: admin/galleries.php:578
+msgid "Cancel preview module"
+msgstr ""
+
+#: admin/galleries.php:579
+msgid "Save with new module"
+msgstr ""
+
+#: admin/galleries.php:584
+msgid "Confirm reset gallery options"
+msgstr ""
+
+#: admin/galleries.php:584
+msgid "Reset to default"
+msgstr ""
+
+#: admin/galleries.php:586 admin/galleries.php:608 admin/terms.php:1484
+#: admin/terms.php:1814
+msgid "Save"
+msgstr ""
+
+#: admin/galleries.php:592
+msgid "Module Presets"
+msgstr ""
+
+#: admin/galleries.php:597
+msgid "Save as Default"
+msgstr ""
+
+#: admin/galleries.php:598
+msgid "or"
+msgstr ""
+
+#: admin/galleries.php:600 inc/image-editor.php:19
+msgid "Restore Original"
+msgstr ""
+
+#: admin/galleries.php:605
+msgid "Save Preset as:"
+msgstr ""
+
+#: admin/galleries.php:607
+msgid "Preset Name"
+msgstr ""
+
+#: admin/galleries.php:641
+msgid ""
+"This module is broken or outdated. Please, go to Modules page and update/"
+"install module."
+msgstr ""
+
+#: admin/galleries.php:645
+msgid "General Settings"
+msgstr ""
+
+#: admin/galleries.php:656
+msgid "Gallery module:"
+msgstr ""
+
+#: admin/galleries.php:658
+msgid "Preview module:"
+msgstr ""
+
+#: admin/galleries.php:659
+msgid "Note: Module changed to %s, but not saved yet"
+msgstr ""
+
+#: admin/galleries.php:662
+msgid "Gallery author:"
+msgstr ""
+
+#: admin/galleries.php:664 admin/terms.php:1488
+msgid "Click to choose author for gallery"
+msgstr ""
+
+#: admin/galleries.php:664 admin/terms.php:1488
+msgid "(no author / shared albums)"
+msgstr ""
+
+#: admin/galleries.php:666 admin/terms.php:1490
+msgid ""
+"Note: Author changed but not saved yet. You can see Albums list only of "
+"chosen author"
+msgstr ""
+
+#: admin/galleries.php:673
+msgid "Shortcode:"
+msgstr ""
+
+#: admin/galleries.php:690
+msgid "Show supported files from"
+msgstr ""
+
+#: admin/galleries.php:698 admin/gmedia.php:147 admin/gmedia.php:149
+#: admin/wpmedia.php:82 admin/wpmedia.php:84
+msgid "Filter"
+msgstr ""
+
+#: admin/galleries.php:720 admin/terms.php:1566
+msgid "Choose Categories"
+msgstr ""
+
+#: admin/galleries.php:721 admin/galleries.php:722
+msgid "Choose Categories..."
+msgstr ""
+
+#: admin/galleries.php:741 admin/terms.php:1597
+msgid "Choose Tags"
+msgstr ""
+
+#: admin/galleries.php:742 admin/galleries.php:743
+msgid "Choose Tags..."
+msgstr ""
+
+#: admin/galleries.php:777 admin/terms.php:1533
+msgid "Choose Albums"
+msgstr ""
+
+#: admin/galleries.php:778 admin/galleries.php:779
+msgid "Choose Albums..."
+msgstr ""
+
+#: admin/galleries.php:783 admin/terms.php:1548
+msgid ""
+"You can choose Albums from the same author as Gallery author or Albums "
+"without author"
+msgstr ""
+
+#: admin/galleries.php:805
+msgid "Choose Custom Filters"
+msgstr ""
+
+#: admin/galleries.php:806 admin/galleries.php:807
+msgid "Choose Filters..."
+msgstr ""
+
+#: admin/galleries.php:811
+msgid "Filter - is custom query with multiple parameters."
+msgstr ""
+
+#: admin/galleries.php:816
+msgid ""
+"Selected Gmedia IDs <small class=\"text-muted\">separated by comma</small>"
+msgstr ""
+
+#: admin/galleries.php:818 admin/terms.php:1648
+msgid "Gmedia IDs..."
+msgstr ""
+
+#: admin/galleries.php:837
+msgid "Last edited:"
+msgstr ""
+
+#: admin/galleries.php:843
+msgid "Gallery ID:"
+msgstr ""
+
+#: admin/galleries.php:844
+msgid "GmediaCloud page URL for current gallery:"
+msgstr ""
+
+#: admin/galleries.php:856
+msgid ""
+"update <a href=\"options-permalink.php\">Permalink Settings</a> if above "
+"link not working"
+msgstr ""
+
+#: admin/galleries.php:858
+msgid ""
+"More info about GmediaCloud Pages and GmediaCloud Settings can be found <a "
+"href=\"admin.php?page=GrandMedia_Settings#gmedia_settings_cloud\">here</a>"
+msgstr ""
+
+#: admin/galleries.php:861
+msgid "Gallery Preview:"
+msgstr ""
+
+#: admin/gmedia.php:94
+msgid "Selected Authors:"
+msgstr ""
+
+#: admin/gmedia.php:104
+msgid "Selected Filter:"
+msgstr ""
+
+#: admin/gmedia.php:135 admin/gmedia.php:179 admin/wpmedia.php:68
+#: admin/wpmedia.php:103
+msgid "Images"
+msgstr ""
+
+#: admin/gmedia.php:136 admin/gmedia.php:186 admin/terms.php:1667
+#: admin/wpmedia.php:69 admin/wpmedia.php:111
+msgid "Audio"
+msgstr ""
+
+#: admin/gmedia.php:137 admin/gmedia.php:193 admin/terms.php:1668
+#: admin/wpmedia.php:70 admin/wpmedia.php:119
+msgid "Video"
+msgstr ""
+
+#: admin/gmedia.php:147 admin/wpmedia.php:82
+msgid "Reset Filter"
+msgstr ""
+
+#: admin/gmedia.php:156
+msgid "FILTER BY AUTHOR"
+msgstr ""
+
+#: admin/gmedia.php:166
+msgid "Show all authors"
+msgstr ""
+
+#: admin/gmedia.php:168 admin/wpmedia.php:91
+msgid "TYPE"
+msgstr ""
+
+#: admin/gmedia.php:201 admin/wpmedia.php:127
+msgid "Other"
+msgstr ""
+
+#: admin/gmedia.php:202
+msgid "COLLECTIONS"
+msgstr ""
+
+#: admin/gmedia.php:231
+msgid "Toggle Edit Mode"
+msgstr ""
+
+#: admin/gmedia.php:245
+msgid "Enter Edit Mode"
+msgstr ""
+
+#: admin/gmedia.php:259 admin/gmedia.php:330
+msgid "Quick Gallery from Selected"
+msgstr ""
+
+#: admin/gmedia.php:265
+msgid "Assign Category..."
+msgstr ""
+
+#: admin/gmedia.php:271
+msgid "Move to Album..."
+msgstr ""
+
+#: admin/gmedia.php:282
+msgid "Delete Tags..."
+msgstr ""
+
+#: admin/gmedia.php:296
+msgid "Update Metadata in Database"
+msgstr ""
+
+#: admin/gmedia.php:301
+msgid "Exit Edit Mode"
+msgstr ""
+
+#: admin/gmedia.php:323
+msgid "Show all gmedia items"
+msgstr ""
+
+#: admin/gmedia.php:347 admin/terms.php:312 admin/terms.php:598
+msgid "Info:"
+msgstr ""
+
+#: admin/gmedia.php:427 admin/gmedia.php:585 inc/core.php:2085
+#: inc/media-upload.php:690
+msgid "Album"
+msgstr ""
+
+#: admin/gmedia.php:442 admin/gmedia.php:600 admin/gmedia.php:783
+#: inc/core.php:2084 inc/core.php:2189 inc/media-upload.php:692
+msgid "Category"
+msgstr ""
+
+#: admin/gmedia.php:469
+msgid "Views / Likes"
+msgstr ""
+
+#: admin/gmedia.php:473
+msgid "Rating"
+msgstr ""
+
+#: admin/gmedia.php:487 admin/gmedia.php:638 inc/media-upload.php:919
+msgid "Size"
+msgstr ""
+
+#: admin/gmedia.php:496 admin/gmedia.php:649
+msgid "Last Modified Date"
+msgstr ""
+
+#: admin/gmedia.php:512
+msgid "Edit Data"
+msgstr ""
+
+#: admin/gmedia.php:516 admin/gmedia.php:687
+msgid "Edit Image"
+msgstr ""
+
+#: admin/gmedia.php:518 admin/gmedia.php:661 admin/gmedia.php:688
+msgid "View Original"
+msgstr ""
+
+#: admin/gmedia.php:521 admin/gmedia.php:667 admin/gmedia.php:710
+msgid "Play"
+msgstr ""
+
+#: admin/gmedia.php:525 admin/gmedia.php:716
+msgid "Meta Info"
+msgstr ""
+
+#: admin/gmedia.php:528 admin/gmedia.php:719
+msgid ""
+"You are about to permanently delete %s file.\n"
+"\r'Cancel' to stop, 'OK' to delete."
+msgstr ""
+
+#: admin/gmedia.php:533
+msgid ""
+"You are about to delete record from DB for %s file.\n"
+"\r'Cancel' to stop, 'OK' to delete."
+msgstr ""
+
+#: admin/gmedia.php:533
+msgid "Delete DB record (leave file on the server)"
+msgstr ""
+
+#: admin/gmedia.php:736
+msgid "Link URL"
+msgstr ""
+
+#: admin/gmedia.php:761
+msgid "Custom Cover"
+msgstr ""
+
+#: admin/gmedia.php:764
+msgid "Gmedia ID or Image URL"
+msgstr ""
+
+#: admin/gmedia.php:826
+msgid "Album "
+msgstr ""
+
+#: admin/gmedia.php:844
+msgid "Tags "
+msgstr ""
+
+#: admin/gmedia.php:901
+msgid "File Size"
+msgstr ""
+
+#: admin/gmedia.php:905
+msgid "Dimensions"
+msgstr ""
+
+#: admin/gmedia.php:910
+msgid "Uploaded"
+msgstr ""
+
+#: admin/gmedia.php:984 inc/media-upload.php:948
+msgid "Add Media"
+msgstr ""
+
+#: admin/gmedia.php:995
+msgid "Back to top"
+msgstr ""
+
+#: admin/gmedia.php:1058 admin/terms.php:1237 inc/core.php:2248
+msgid "Add New Custom Field"
+msgstr ""
+
+#: admin/gmedia.php:1069 admin/terms.php:1248
+msgid "Add"
+msgstr ""
+
+#: admin/modules.php:45
+msgid "Error loading remote xml..."
+msgstr ""
+
+#: admin/modules.php:65
+msgid "Install Module ZIP"
+msgstr ""
+
+#: admin/modules.php:67
+msgid "Installed Modules"
+msgstr ""
+
+#: admin/modules.php:100 admin/modules.php:172
+msgid "Loading..."
+msgstr ""
+
+#: admin/modules.php:100
+msgid "Update Module"
+msgstr ""
+
+#: admin/modules.php:120 admin/modules.php:170
+msgid "View Demo"
+msgstr ""
+
+#: admin/modules.php:130
+msgid "Delete Module"
+msgstr ""
+
+#: admin/modules.php:145
+msgid "Not Installed Modules"
+msgstr ""
+
+#: admin/modules.php:172
+msgid "Install Module"
+msgstr ""
+
+#: admin/modules.php:189
+msgid "Install a plugin in .zip format"
+msgstr ""
+
+#: admin/modules.php:192
+msgid ""
+"If you have a module in a .zip format, you may install it by uploading it "
+"here."
+msgstr ""
+
+#: admin/modules.php:194
+msgid "Module zip file"
+msgstr ""
+
+#: admin/modules.php:199
+msgid "Install"
+msgstr ""
+
+#: admin/processor.php:93 admin/processor.php:542 admin/processor.php:547
+msgid "You are not allowed to be here"
+msgstr ""
+
+#: admin/processor.php:105 admin/processor.php:831
+msgid "Gallery Name is not specified"
+msgstr ""
+
+#: admin/processor.php:109 admin/processor.php:835
+msgid "Gallery name can't be only digits"
+msgstr ""
+
+#: admin/processor.php:113
+msgid "Choose gmedia from library for quick gallery"
+msgstr ""
+
+#: admin/processor.php:136
+msgid "Gallery \"%s\" successfuly saved. Shortcode: [gmedia id=%d]"
+msgstr ""
+
+#: admin/processor.php:192
+msgid "%d item(s) was uncategorized"
+msgstr ""
+
+#: admin/processor.php:205
+msgid "Category `%s` assigned to %d image(s)."
+msgstr ""
+
+#: admin/processor.php:232
+msgid "%d item(s) updated with \"No Album\""
+msgstr ""
+
+#: admin/processor.php:258 inc/db.connect.php:2965
+msgid "Could not update statuses for gmedia items in the database"
+msgstr ""
+
+#: admin/processor.php:262
+msgid "Album `%s` assigned to %d item(s)"
+msgstr ""
+
+#: admin/processor.php:305
+msgid "Tags added to %d item(s)"
+msgstr ""
+
+#: admin/processor.php:308
+msgid "No tags specified"
+msgstr ""
+
+#: admin/processor.php:334
+msgid "%d tag(s) deleted from %d item(s)"
+msgstr ""
+
+#: admin/processor.php:471 admin/processor.php:486
+msgid "%d item(s) updated successfuly"
+msgstr ""
+
+#: admin/processor.php:519 admin/processor.php:580 admin/processor.php:1042
+msgid "%d item(s) deleted successfuly"
+msgstr ""
+
+#: admin/processor.php:521
+msgid "%d record(s) deleted from database successfuly. Original file(s) safe"
+msgstr ""
+
+#: admin/processor.php:535
+msgid "You are not allowed to delete files"
+msgstr ""
+
+#: admin/processor.php:587
+msgid "You are not allowed to delete terms"
+msgstr ""
+
+#: admin/processor.php:603
+msgid "You are not allowed to manage filters"
+msgstr ""
+
+#: admin/processor.php:613
+msgid "Filter Name is not specified"
+msgstr ""
+
+#: admin/processor.php:617
+msgid "Filter name can't be only digits"
+msgstr ""
+
+#: admin/processor.php:680 admin/processor.php:695
+msgid "Filter #%d successfuly saved"
+msgstr ""
+
+#: admin/processor.php:806
+msgid "You are not allowed to manage tags"
+msgstr ""
+
+#: admin/processor.php:812 admin/processor.php:1053
+msgid "You are not allowed to manage gmedia galleries"
+msgstr ""
+
+#: admin/processor.php:839 admin/processor.php:968
+msgid "Something goes wrong... Choose module, please"
+msgstr ""
+
+#: admin/processor.php:844
+msgid "Choose gallery source, please (tags, albums, categories...)"
+msgstr ""
+
+#: admin/processor.php:874 admin/processor.php:946 admin/processor.php:977
+msgid "Can't load data from `%s` module"
+msgstr ""
+
+#: admin/processor.php:892 admin/processor.php:905
+msgid "Gallery #%d successfuly saved"
+msgstr ""
+
+#: admin/processor.php:912
+msgid ""
+"Original module settings restored. Click \"Reset to default\" button to save "
+"original module settings for gallery"
+msgstr ""
+
+#: admin/processor.php:957
+msgid "Gallery settings are reset"
+msgstr ""
+
+#: admin/processor.php:988
+msgid "Preset name is not specified"
+msgstr ""
+
+#: admin/processor.php:1009
+msgid "Preset `%s` successfuly saved"
+msgstr ""
+
+#: admin/processor.php:1034
+msgid "Error while delete gallery #%d"
+msgstr ""
+
+#: admin/processor.php:1056
+msgid "You are not allowed to manage gmedia modules"
+msgstr ""
+
+#: admin/processor.php:1062
+msgid "You are not allowed to install module ZIP"
+msgstr ""
+
+#: admin/processor.php:1081
+msgid "The uploaded file could not be moved to %s"
+msgstr ""
+
+#: admin/processor.php:1101
+msgid "The `%s` file unzipped to module's directory"
+msgstr ""
+
+#: admin/processor.php:1115
+msgid "The `%s` module folder was deleted"
+msgstr ""
+
+#: admin/processor.php:1121
+msgid "You are not allowed to change gmedia settings"
+msgstr ""
+
+#: admin/processor.php:1136
+msgid "License Key deactivated"
+msgstr ""
+
+#: admin/processor.php:1213
+msgid "Settings saved"
+msgstr ""
+
+#: admin/processor.php:1237
+msgid "Use Help Screen (top right button) for more info"
+msgstr ""
+
+#: admin/processor.php:1244
+msgid "License Key activated successfully"
+msgstr ""
+
+#: admin/processor.php:1249
+msgid "Error"
+msgstr ""
+
+#: admin/processor.php:1254
+msgid "Empty License Key"
+msgstr ""
+
+#: admin/processor.php:1277
+msgid "All settings set to default"
+msgstr ""
+
+#: admin/processor.php:1282
+msgid "You are not allowed to import media in Gmedia Library"
+msgstr ""
+
+#: admin/settings.php:22
+msgid "Reset all Gmedia settings?"
+msgstr ""
+
+#: admin/settings.php:22
+msgid "Reset Settings"
+msgstr ""
+
+#: admin/settings.php:23 admin/terms.php:1020 admin/terms.php:1112
+msgid "Update"
+msgstr ""
+
+#: admin/settings.php:34
+msgid "Premium Settings"
+msgstr ""
+
+#: admin/settings.php:35
+msgid "Other Settings"
+msgstr ""
+
+#: admin/settings.php:38
+msgid "Roles/Capabilities Manager"
+msgstr ""
+
+#: admin/settings.php:40
+msgid "System Info"
+msgstr ""
+
+#: admin/settings.php:44
+msgid ""
+"Enter License Key to remove backlink label from premium gallery modules."
+msgstr ""
+
+#: admin/settings.php:55
+msgid "License Name"
+msgstr ""
+
+#: admin/settings.php:57
+msgid "Additional Key"
+msgstr ""
+
+#: admin/settings.php:64
+msgid "Activate Key"
+msgstr ""
+
+#: admin/settings.php:72
+msgid "When delete (uninstall) plugin"
+msgstr ""
+
+#: admin/settings.php:74
+msgid "Delete database and all uploaded files"
+msgstr ""
+
+#: admin/settings.php:75
+msgid "Delete database only and leave uploaded files"
+msgstr ""
+
+#: admin/settings.php:76
+msgid "Do not delete database and uploaded files"
+msgstr ""
+
+#: admin/settings.php:81
+msgid "In Tags order gmedia"
+msgstr ""
+
+#: admin/settings.php:83 admin/settings.php:103 admin/terms.php:245
+#: admin/terms.php:1085 inc/media-upload.php:707
+msgid "by ID"
+msgstr ""
+
+#: admin/settings.php:84 admin/settings.php:104 admin/terms.php:246
+#: admin/terms.php:1086 inc/media-upload.php:708
+msgid "by title"
+msgstr ""
+
+#: admin/settings.php:85 admin/settings.php:105 admin/terms.php:247
+#: admin/terms.php:1087
+msgid "by filename"
+msgstr ""
+
+#: admin/settings.php:86 admin/settings.php:106 admin/terms.php:248
+#: admin/terms.php:1088 inc/media-upload.php:709
+msgid "by date"
+msgstr ""
+
+#: admin/settings.php:87 admin/settings.php:107 admin/terms.php:249
+#: admin/terms.php:1089 inc/media-upload.php:710
+msgid "by last modified date"
+msgstr ""
+
+#: admin/settings.php:88 admin/settings.php:108 admin/terms.php:250
+#: admin/terms.php:1090 admin/terms.php:1799 inc/media-upload.php:711
+msgid "Random"
+msgstr ""
+
+#: admin/settings.php:92 admin/settings.php:112 admin/terms.php:254
+#: admin/terms.php:1096 inc/media-upload.php:714
+msgid "Sort order"
+msgstr ""
+
+#: admin/settings.php:101
+msgid "In Category order gmedia"
+msgstr ""
+
+#: admin/settings.php:120
+msgid "Forbid other plugins to load their JS and CSS on Gmedia admin pages"
+msgstr ""
+
+#: admin/settings.php:124
+msgid "Enable Gmedia admin panel Isolation Mode"
+msgstr ""
+
+#: admin/settings.php:126
+msgid ""
+"This option could help to avoid JS and CSS conflicts with other plugins in "
+"admin panel."
+msgstr ""
+
+#: admin/settings.php:130
+msgid "Forbid theme to format Gmedia shortcode's content"
+msgstr ""
+
+#: admin/settings.php:134
+msgid "Raw output for Gmedia Shortcode"
+msgstr ""
+
+#: admin/settings.php:136
+msgid ""
+"Some themes reformat shortcodes and break it functionality (mostly when you "
+"add description to images). Turning this on should solve this problem."
+msgstr ""
+
+#: admin/settings.php:150
+msgid "Enable Gmedia Library button on custom post types"
+msgstr ""
+
+#: admin/settings.php:166
+msgid ""
+"GmediaCloud is full window template to show your galleries, albums and other "
+"gmedia content"
+msgstr ""
+
+#: admin/settings.php:167
+msgid ""
+"Each module can have it's own design for GmediaCloud. Here you can set "
+"default module wich will be used for sharing Albums, Tags, Categories and "
+"single Gmedia Items."
+msgstr ""
+
+#: admin/settings.php:170
+msgid "HashID salt for unique template URL"
+msgstr ""
+
+#: admin/settings.php:173
+msgid "Changing this string you'll change Gmedia template URLs."
+msgstr ""
+
+#: admin/settings.php:176
+msgid "Permalink Endpoint (GmediaCloud base)"
+msgstr ""
+
+#: admin/settings.php:179
+msgid "Changing endpoint you'll change Gmedia template URLs."
+msgstr ""
+
+#: admin/settings.php:223
+msgid "Choose module/preset for GmediaCloud Page"
+msgstr ""
+
+#: admin/settings.php:225 inc/media-upload.php:749 inc/media-upload.php:751
+msgid "Choose module/preset"
+msgstr ""
+
+#: admin/settings.php:231 admin/settings.php:235 inc/media-upload.php:756
+#: inc/media-upload.php:759
+msgid "Default Settings"
+msgstr ""
+
+#: admin/settings.php:245
+msgid "by default will be used Phantom module"
+msgstr ""
+
+#: admin/settings.php:248
+msgid "Top Bar Social Buttons"
+msgstr ""
+
+#: admin/settings.php:250
+msgid "Show Social Buttons"
+msgstr ""
+
+#: admin/settings.php:251
+msgid "Hide Social Buttons"
+msgstr ""
+
+#: admin/settings.php:255
+msgid "Additional JS code for GmediaCloud Page"
+msgstr ""
+
+#: admin/settings.php:259
+msgid "Additional CSS code for GmediaCloud Page"
+msgstr ""
+
+#: admin/settings.php:265
+msgid ""
+"Select the lowest role which should be able to access the follow "
+"capabilities. Gmedia Gallery supports the standard roles from WordPress."
+msgstr ""
+
+#: admin/settings.php:271
+msgid "Who can view Gmedia Gallery admin pages"
+msgstr ""
+
+#: admin/settings.php:276
+msgid "Upload Media Files"
+msgstr ""
+
+#: admin/settings.php:279
+msgid "Who can upload files to Gmedia Library"
+msgstr ""
+
+#: admin/settings.php:283
+msgid "Import Media Files"
+msgstr ""
+
+#: admin/settings.php:286
+msgid "Who can import files to Gmedia Library"
+msgstr ""
+
+#: admin/settings.php:291
+msgid "Show Others Media in Library"
+msgstr ""
+
+#: admin/settings.php:294
+msgid "Who can see files uploaded by other users"
+msgstr ""
+
+#: admin/settings.php:297
+msgid "Edit Media"
+msgstr ""
+
+#: admin/settings.php:300
+msgid ""
+"Who can edit media title, description and other properties of uploaded files"
+msgstr ""
+
+#: admin/settings.php:304
+msgid "Edit Others Media"
+msgstr ""
+
+#: admin/settings.php:307
+msgid "Who can edit files, albums/tags and galleries of other users"
+msgstr ""
+
+#: admin/settings.php:311
+msgid "Delete Media"
+msgstr ""
+
+#: admin/settings.php:314
+msgid "Who can delete uploaded files from Gmedia Library"
+msgstr ""
+
+#: admin/settings.php:318
+msgid "Delete Others Media"
+msgstr ""
+
+#: admin/settings.php:321
+msgid "Who can delete files, albums/tags and galleries of other users"
+msgstr ""
+
+#: admin/settings.php:326
+msgid "Albums, Tags..."
+msgstr ""
+
+#: admin/settings.php:329
+msgid "Who can assign available terms to media files"
+msgstr ""
+
+#: admin/settings.php:333
+msgid "Manage Albums"
+msgstr ""
+
+#: admin/settings.php:336
+msgid ""
+"Who can create and edit own albums. It is required \"Edit Others Media\" "
+"capability to edit others and shared albums"
+msgstr ""
+
+#: admin/settings.php:339
+msgid "Manage Filters"
+msgstr ""
+
+#: admin/settings.php:342
+msgid ""
+"Who can create and edit own custom filters. It is required \"Edit Others "
+"Media\" capability to edit filters you do not own"
+msgstr ""
+
+#: admin/settings.php:345
+msgid "Manage Tags"
+msgstr ""
+
+#: admin/settings.php:348
+msgid ""
+"Who can create new tags. It is required \"Edit Others Media\" capability to "
+"edit tags"
+msgstr ""
+
+#: admin/settings.php:351
+msgid "Delete Terms"
+msgstr ""
+
+#: admin/settings.php:354
+msgid ""
+"Who can delete own albums. It is required \"Delete Others Media\" capability "
+"to delete others terms"
+msgstr ""
+
+#: admin/settings.php:359
+msgid "Galleries"
+msgstr ""
+
+#: admin/settings.php:362
+msgid "Who can create, edit and delete own galleries"
+msgstr ""
+
+#: admin/settings.php:369
+msgid "Who can manage modules"
+msgstr ""
+
+#: admin/settings.php:376
+msgid ""
+"Who can change settings. Note: Capabilites can be changed only by "
+"administrator"
+msgstr ""
+
+#: admin/settings.php:387
+msgid "Memory Limit: "
+msgstr ""
+
+#: admin/settings.php:388
+msgid "Memory Used: "
+msgstr ""
+
+#: admin/settings.php:391
+msgid "Under constraction..."
+msgstr ""
+
+#: admin/terms.php:129 admin/terms.php:141
+msgid "Show: Albums"
+msgstr ""
+
+#: admin/terms.php:132
+msgid "Show: Filters"
+msgstr ""
+
+#: admin/terms.php:135
+msgid "Show: Tags"
+msgstr ""
+
+#: admin/terms.php:138
+msgid "Show: Categories"
+msgstr ""
+
+#: admin/terms.php:231 admin/terms.php:984
+msgid "Album Name"
+msgstr ""
+
+#: admin/terms.php:242 admin/terms.php:1082
+msgid "Order gmedia"
+msgstr ""
+
+#: admin/terms.php:244 inc/media-upload.php:706
+msgid "user defined"
+msgstr ""
+
+#: admin/terms.php:300
+msgid "Add New Album"
+msgstr ""
+
+#: admin/terms.php:312 admin/terms.php:598
+msgid "You are not allowed to add new terms"
+msgstr ""
+
+#: admin/terms.php:336 admin/terms.php:475
+msgid "deleted author"
+msgstr ""
+
+#: admin/terms.php:348 admin/terms.php:487
+msgid "no author"
+msgstr ""
+
+#: admin/terms.php:382 admin/terms.php:511 admin/terms.php:648
+#: admin/terms.php:813
+msgid "Filter in Gmedia Library"
+msgstr ""
+
+#: admin/terms.php:544
+msgid "Query:"
+msgstr ""
+
+#: admin/terms.php:576
+msgid "you can type multiple tags separated by comma"
+msgstr ""
+
+#: admin/terms.php:580
+msgid "Tag Names"
+msgstr ""
+
+#: admin/terms.php:589
+msgid "Add New Tags"
+msgstr ""
+
+#: admin/terms.php:942 admin/terms.php:1428
+msgid "Return to"
+msgstr ""
+
+#: admin/terms.php:963
+msgid "Show Album in Gmedia Library"
+msgstr ""
+
+#: admin/terms.php:974 inc/media-upload.php:725
+msgid "Edit Album"
+msgstr ""
+
+#: admin/terms.php:1038
+msgid "Apply Status for all items in album"
+msgstr ""
+
+#: admin/terms.php:1043
+msgid "Album Cover"
+msgstr ""
+
+#: admin/terms.php:1046
+msgid "Gmedia Image ID"
+msgstr ""
+
+#: admin/terms.php:1056
+msgid "No image with such ID"
+msgstr ""
+
+#: admin/terms.php:1072
+msgid "Sort Album"
+msgstr ""
+
+#: admin/terms.php:1084
+msgid "Custom Order"
+msgstr ""
+
+#: admin/terms.php:1107
+msgid "Reset custom order"
+msgstr ""
+
+#: admin/terms.php:1119
+msgid ""
+"Use your mouse (drag&drop) for custom sorting of images or manually enter "
+"index number in top right field of each image."
+msgstr ""
+
+#: admin/terms.php:1140 admin/terms.php:1888
+msgid "Total items: %d"
+msgstr ""
+
+#: admin/terms.php:1450
+msgid "Show Filter in Gmedia Library"
+msgstr ""
+
+#: admin/terms.php:1463
+msgid "Edit Filter"
+msgstr ""
+
+#: admin/terms.php:1472 admin/terms.php:1475
+msgid "Filter Name"
+msgstr ""
+
+#: admin/terms.php:1486
+msgid "Filter Author:"
+msgstr ""
+
+#: admin/terms.php:1506
+msgid "Query Parameters"
+msgstr ""
+
+#: admin/terms.php:1536 admin/terms.php:1537
+msgid "Any Album..."
+msgstr ""
+
+#: admin/terms.php:1543
+msgid "get albums"
+msgstr ""
+
+#: admin/terms.php:1544
+msgid "exclude albums"
+msgstr ""
+
+#: admin/terms.php:1569 admin/terms.php:1570
+msgid "Any Category..."
+msgstr ""
+
+#: admin/terms.php:1576
+msgid "get categories"
+msgstr ""
+
+#: admin/terms.php:1577
+msgid "exclude categories"
+msgstr ""
+
+#: admin/terms.php:1600 admin/terms.php:1601
+msgid "Any Tag..."
+msgstr ""
+
+#: admin/terms.php:1607
+msgid "get items with either tags"
+msgstr ""
+
+#: admin/terms.php:1608
+msgid "get items that have all listed tags"
+msgstr ""
+
+#: admin/terms.php:1609
+msgid "exclude items that have any of the listed tags"
+msgstr ""
+
+#: admin/terms.php:1617
+msgid "Terms Relation"
+msgstr ""
+
+#: admin/terms.php:1621
+msgid "AND"
+msgstr ""
+
+#: admin/terms.php:1622
+msgid "OR"
+msgstr ""
+
+#: admin/terms.php:1626
+msgid "allows you to describe the relationship between the taxonomy queries"
+msgstr ""
+
+#: admin/terms.php:1631
+msgid "Search"
+msgstr ""
+
+#: admin/terms.php:1634
+msgid "Search string or terms separated by comma"
+msgstr ""
+
+#: admin/terms.php:1637
+msgid "Search exactly string"
+msgstr ""
+
+#: admin/terms.php:1644
+msgid "Use selected in Library"
+msgstr ""
+
+#: admin/terms.php:1645
+msgid "Gmedia IDs <small class=\"text-muted\">separated by comma</small>"
+msgstr ""
+
+#: admin/terms.php:1653
+msgid "get gmedia IDs"
+msgstr ""
+
+#: admin/terms.php:1654
+msgid "exclude gmedia IDs"
+msgstr ""
+
+#: admin/terms.php:1658
+msgid ""
+"You can select items you want to add here right in Gmedia Library and then "
+"return here and click button \"Use selected in Library\""
+msgstr ""
+
+#: admin/terms.php:1663
+msgid "Mime Type"
+msgstr ""
+
+#: admin/terms.php:1664 admin/terms.php:1665
+msgid "All types..."
+msgstr ""
+
+#: admin/terms.php:1666
+msgid "Image"
+msgstr ""
+
+#: admin/terms.php:1669
+msgid "Text"
+msgstr ""
+
+#: admin/terms.php:1670
+msgid "Application"
+msgstr ""
+
+#: admin/terms.php:1674
+msgid "Authors"
+msgstr ""
+
+#: admin/terms.php:1691 admin/terms.php:1692
+msgid "All authors..."
+msgstr ""
+
+#: admin/terms.php:1704
+msgid "get authors"
+msgstr ""
+
+#: admin/terms.php:1705
+msgid "exclude authors"
+msgstr ""
+
+#: admin/terms.php:1714
+msgid "Year"
+msgstr ""
+
+#: admin/terms.php:1715
+msgid "4 digit year e.g. 2011"
+msgstr ""
+
+#: admin/terms.php:1718
+msgid "Month"
+msgstr ""
+
+#: admin/terms.php:1719
+msgid "from 1 to 12"
+msgstr ""
+
+#: admin/terms.php:1722
+msgid "Day"
+msgstr ""
+
+#: admin/terms.php:1723
+msgid "from 1 to 31"
+msgstr ""
+
+#: admin/terms.php:1733
+msgid "Custom Field Key"
+msgstr ""
+
+#: admin/terms.php:1735
+msgid "Display items with this field key"
+msgstr ""
+
+#: admin/terms.php:1738 admin/terms.php:1807
+msgid "Custom Field Value"
+msgstr ""
+
+#: admin/terms.php:1740
+msgid "Display items with this field value"
+msgstr ""
+
+#: admin/terms.php:1743
+msgid "Compare Operator"
+msgstr ""
+
+#: admin/terms.php:1745 admin/terms.php:1767 admin/terms.php:1788
+#: admin/terms.php:1797
+msgid "Choose.."
+msgstr ""
+
+#: admin/terms.php:1746 admin/terms.php:1771
+msgid "Default"
+msgstr ""
+
+#: admin/terms.php:1762
+msgid "Operator to test the field value"
+msgstr ""
+
+#: admin/terms.php:1765
+msgid "Meta Type"
+msgstr ""
+
+#: admin/terms.php:1778
+msgid "Custom field type"
+msgstr ""
+
+#: admin/terms.php:1786 inc/media-upload.php:713
+msgid "Order"
+msgstr ""
+
+#: admin/terms.php:1790
+msgid "DESC - Default"
+msgstr ""
+
+#: admin/terms.php:1792
+msgid "Ascending or Descending order"
+msgstr ""
+
+#: admin/terms.php:1795
+msgid "Order by"
+msgstr ""
+
+#: admin/terms.php:1803
+msgid "Date - Default"
+msgstr ""
+
+#: admin/terms.php:1804
+msgid "Modified Date"
+msgstr ""
+
+#: admin/terms.php:1806
+msgid "Selected Order"
+msgstr ""
+
+#: admin/terms.php:1808
+msgid "Custom Field Value (Numeric)"
+msgstr ""
+
+#: admin/terms.php:1810
+msgid "Sort retrieved posts by"
+msgstr ""
+
+#: admin/terms.php:1861
+msgid "Query Filter"
+msgstr ""
+
+#: admin/terms.php:1879
+msgid "No items with selected parameters."
+msgstr ""
+
+#: admin/terms.php:1881
+msgid "Set Filter parameters and click Save button to test query."
+msgstr ""
+
+#: admin/wpmedia.php:146
+msgid "Import to Gmedia Library..."
+msgstr ""
+
+#: admin/wpmedia.php:185
+msgid "Sort by filename"
+msgstr ""
+
+#: admin/wpmedia.php:190
+msgid "File"
+msgstr ""
+
+#: constants.php:6
+msgid "No Supported Files in Gallery"
+msgstr ""
+
+#: grand-media.php:155
+msgid "Sorry, Gmedia Gallery works only under WordPress %s or higher"
+msgstr ""
+
+#: grand-media.php:162
+msgid ""
+"Attention! Your server php version is: %s. Gmedia Gallery requires php "
+"version 5.2+ in order to run properly. Please upgrade your server!"
+msgstr ""
+
+#: grand-media.php:168
+msgid ""
+"Attention! Your server safe mode is: ON. Gmedia Gallery requires safe mode "
+"to be OFF in order to run properly. Please set your server safe mode option!"
+msgstr ""
+
+#: grand-media.php:278
+msgid "Disable your Popup Blocker and try again."
+msgstr ""
+
+#: grand-media.php:279
+msgid "downloading..."
+msgstr ""
+
+#: grand-media.php:280
+msgid "Working. Wait please."
+msgstr ""
+
+#: inc/core.php:1449
+msgid "Directory %s or its subfolders are not writable by the server."
+msgstr ""
+
+#: inc/core.php:1471
+msgid "Failed to open directory: %s"
+msgstr ""
+
+#: inc/core.php:1489
+msgid "Failed to open input stream."
+msgstr ""
+
+#: inc/core.php:1693 inc/core.php:2025
+msgid "Could not read image size. Invalid image was deleted."
+msgstr ""
+
+#: inc/core.php:1788
+msgid "File uploaded successful. Assigned ID: %s"
+msgstr ""
+
+#: inc/core.php:1799
+msgid "Failed to open output stream."
+msgstr ""
+
+#: inc/core.php:1842 update.php:259
+msgid "Something went wrong..."
+msgstr ""
+
+#: inc/core.php:1855 update.php:275
+msgid "File not exists: %s"
+msgstr ""
+
+#: inc/core.php:1867
+msgid "file already exists"
+msgstr ""
+
+#: inc/core.php:1874 inc/core.php:1939 inc/core.php:1951 update.php:330
+#: update.php:341
+msgid ""
+"Unable to create directory `%s`. Is its parent directory writable by the "
+"server?"
+msgstr ""
+
+#: inc/core.php:1881
+msgid "Directory `%s` or its subfolders are not writable by the server."
+msgstr ""
+
+#: inc/core.php:1887
+msgid "Can't copy file from `%s` to `%s`"
+msgstr ""
+
+#: inc/core.php:1946 inc/core.php:1958 update.php:336 update.php:347
+msgid "Directory `%s` is not writable by the server."
+msgstr ""
+
+#: inc/core.php:2076 update.php:418
+msgid "success (ID #%s)"
+msgstr ""
+
+#: inc/core.php:2122
+msgid "Enter valid email, please"
+msgstr ""
+
+#: inc/core.php:2174
+msgid "Aperture"
+msgstr ""
+
+#: inc/core.php:2175
+msgid "Credit"
+msgstr ""
+
+#: inc/core.php:2176
+msgid "Camera"
+msgstr ""
+
+#: inc/core.php:2177
+msgid "Caption"
+msgstr ""
+
+#: inc/core.php:2178
+msgid "Date/Time"
+msgstr ""
+
+#: inc/core.php:2179
+msgid "Copyright"
+msgstr ""
+
+#: inc/core.php:2180
+msgid "Focal length"
+msgstr ""
+
+#: inc/core.php:2181
+msgid "ISO"
+msgstr ""
+
+#: inc/core.php:2182
+msgid "Shutter speed"
+msgstr ""
+
+#: inc/core.php:2186
+msgid "Subject"
+msgstr ""
+
+#: inc/core.php:2187
+msgid "Make"
+msgstr ""
+
+#: inc/core.php:2188
+msgid "Edit Status"
+msgstr ""
+
+#: inc/core.php:2190
+msgid "Keywords"
+msgstr ""
+
+#: inc/core.php:2191
+msgid "Date Created"
+msgstr ""
+
+#: inc/core.php:2192
+msgid "Time Created"
+msgstr ""
+
+#: inc/core.php:2193
+msgid "Author Position"
+msgstr ""
+
+#: inc/core.php:2194
+msgid "City"
+msgstr ""
+
+#: inc/core.php:2195
+msgid "Location"
+msgstr ""
+
+#: inc/core.php:2196
+msgid "Province/State"
+msgstr ""
+
+#: inc/core.php:2197
+msgid "Country code"
+msgstr ""
+
+#: inc/core.php:2198
+msgid "Country"
+msgstr ""
+
+#: inc/core.php:2199
+msgid "Headline"
+msgstr ""
+
+#: inc/core.php:2202
+msgid "Last modified"
+msgstr ""
+
+#: inc/core.php:2203
+msgid "Program tool"
+msgstr ""
+
+#: inc/core.php:2204
+msgid "Format"
+msgstr ""
+
+#: inc/core.php:2205
+msgid "Width"
+msgstr ""
+
+#: inc/core.php:2206
+msgid "Height"
+msgstr ""
+
+#: inc/core.php:2207
+msgid "Flash"
+msgstr ""
+
+#: inc/core.php:2233
+msgid "Custom Fields"
+msgstr ""
+
+#: inc/core.php:2250
+msgid ""
+"Custom fields can be used to add extra metadata to a gmedia item that "
+"developer can use in their templates."
+msgstr ""
+
+#: inc/core.php:2281 inc/core.php:2348
+msgid "Value"
+msgstr ""
+
+#: inc/core.php:2323
+msgctxt "meta name"
+msgid "Name"
+msgstr ""
+
+#: inc/core.php:2328
+msgid "&mdash; Select &mdash;"
+msgstr ""
+
+#: inc/core.php:2339
+msgid "Enter new"
+msgstr ""
+
+#: inc/db.connect.php:326
+msgid "Page"
+msgstr ""
+
+#: inc/db.connect.php:330
+msgid "of"
+msgstr ""
+
+#: inc/db.connect.php:2320
+msgid "Empty Term"
+msgstr ""
+
+#: inc/db.connect.php:2327 inc/db.connect.php:2475 inc/db.connect.php:3184
+#: inc/db.connect.php:3381
+msgid "Invalid Taxonomy"
+msgstr ""
+
+#: inc/db.connect.php:2806 inc/db.connect.php:2902 inc/db.connect.php:3024
+msgid "Invalid taxonomy"
+msgstr ""
+
+#: inc/db.connect.php:2815 inc/db.connect.php:3029
+msgid "Invalid term ID"
+msgstr ""
+
+#: inc/db.connect.php:2819
+msgid "A name is required for this term"
+msgstr ""
+
+#: inc/db.connect.php:2844
+msgid "A term with the name provided already exists."
+msgstr ""
+
+#: inc/db.connect.php:2848
+msgid "Could not insert term into the database"
+msgstr ""
+
+#: inc/db.connect.php:2942
+msgid "A name is required for term"
+msgstr ""
+
+#: inc/db.connect.php:3086 inc/db.connect.php:3295
+msgid "Could not insert gmedia term relationship into the database"
+msgstr ""
+
+#: inc/image-editor.php:19
+msgid "Do you really want restore original image?"
+msgstr ""
+
+#: inc/image-editor.php:22
+msgid "Do you really want reset all changes?"
+msgstr ""
+
+#: inc/image-editor.php:22
+msgid "Reset"
+msgstr ""
+
+#: inc/image-editor.php:23
+msgid "Working"
+msgstr ""
+
+#: inc/image-editor.php:23
+msgid "Save image"
+msgstr ""
+
+#: inc/image-editor.php:28
+msgid "Rotate Counterclockwise"
+msgstr ""
+
+#: inc/image-editor.php:29
+msgid "Rotate Clockwise"
+msgstr ""
+
+#: inc/image-editor.php:30
+msgid "Flip Horizontal"
+msgstr ""
+
+#: inc/image-editor.php:31
+msgid "Flip Vertical"
+msgstr ""
+
+#: inc/image-editor.php:32
+msgid "Greyscale"
+msgstr ""
+
+#: inc/image-editor.php:33
+msgid "Invert"
+msgstr ""
+
+#: inc/image-editor.php:45
+msgid "Processing image"
+msgstr ""
+
+#: inc/image-editor.php:53
+msgid "Brightness"
+msgstr ""
+
+#: inc/image-editor.php:64
+msgid "Contrast"
+msgstr ""
+
+#: inc/image-editor.php:75
+msgid "Saturation"
+msgstr ""
+
+#: inc/image-editor.php:86
+msgid "Vibrance"
+msgstr ""
+
+#: inc/image-editor.php:97
+msgid "Exposure"
+msgstr ""
+
+#: inc/image-editor.php:108
+msgid "Hue"
+msgstr ""
+
+#: inc/image-editor.php:119
+msgid "Sepia"
+msgstr ""
+
+#: inc/image-editor.php:130
+msgid "Noise"
+msgstr ""
+
+#: inc/image-editor.php:141
+msgid "Clip"
+msgstr ""
+
+#: inc/image-editor.php:155
+msgid "Apply to"
+msgstr ""
+
+#: inc/image-editor.php:157
+msgid "Original, Web-image, Thumbnail"
+msgstr ""
+
+#: inc/image-editor.php:158
+msgid "Web-image, Thumbnail"
+msgstr ""
+
+#: inc/image-editor.php:159
+msgid "Thumbnail"
+msgstr ""
+
+#: inc/media-upload.php:27
+msgid "Gmedia"
+msgstr ""
+
+#: inc/media-upload.php:42 inc/post-metabox.php:54
+msgid "Gmedia Collections"
+msgstr ""
+
+#: inc/media-upload.php:270
+msgid "Create New Gallery"
+msgstr ""
+
+#: inc/media-upload.php:274
+msgid "Refresh"
+msgstr ""
+
+#: inc/media-upload.php:388
+msgid "Edit gallery"
+msgstr ""
+
+#: inc/media-upload.php:412 inc/media-upload.php:774 inc/media-upload.php:961
+msgid "Insert into post"
+msgstr ""
+
+#: inc/media-upload.php:691
+msgid "Tag"
+msgstr ""
+
+#: inc/media-upload.php:720
+msgid "Open in Gmedia Library"
+msgstr ""
+
+#: inc/media-upload.php:899
+msgid "Link To"
+msgstr ""
+
+#: inc/media-upload.php:901
+msgid "Custom URL"
+msgstr ""
+
+#: inc/media-upload.php:902
+msgid "Web size image"
+msgstr ""
+
+#: inc/media-upload.php:903
+msgid "Original image"
+msgstr ""
+
+#: inc/media-upload.php:929
+msgid "Alignment"
+msgstr ""
+
+#: inc/media-upload.php:932
+msgid "Left"
+msgstr ""
+
+#: inc/media-upload.php:933
+msgid "Center"
+msgstr ""
+
+#: inc/media-upload.php:934
+msgid "Right"
+msgstr ""
+
+#: inc/media-upload.php:963
+msgid "Use as featured image"
+msgstr ""
+
+#: inc/media-upload.php:1145
+msgid "Upload finished"
+msgstr ""
+
+#: inc/post-metabox.php:57
+msgid "Gmedia Upload"
+msgstr ""
+
+#: inc/post-metabox.php:91
+msgid "Initializing..."
+msgstr ""
+
+#: inc/post-metabox.php:92
+msgid "Choose text area first"
+msgstr ""
+
+#: inc/post-metabox.php:130
+msgid "module"
+msgstr ""
+
+#: inc/post-metabox.php:135
+msgid "click to remove shortcode"
+msgstr ""
+
+#: inc/post-metabox.php:140
+msgid "click to insert shortcode"
+msgstr ""
+
+#: inc/post-metabox.php:147
+msgid "edit"
+msgstr ""
+
+#: inc/post-metabox.php:152
+msgid "No Galleries."
+msgstr ""
+
+#: inc/post-metabox.php:152
+msgid "Create"
+msgstr ""
+
+#: inc/post-metabox.php:159
+msgid "Rate Gmedia at Wordpress.org"
+msgstr ""
+
+#: inc/post-metabox.php:184
+msgid "Set GmediaGallery featured image"
+msgstr ""
+
+#: inc/post-metabox.php:192
+msgid "Replace from Gmedia Library"
+msgstr ""
+
+#: inc/post-metabox.php:194
+msgid "Set Gmedia featured image"
+msgstr ""
+
+#: inc/shortcodes.php:149
+msgid "Gmedia Module folder missed."
+msgstr ""
+
+#: inc/shortcodes.php:161
+msgid "Module `%s` is outdated. Update module to latest version"
+msgstr ""
+
+#: inc/shortcodes.php:164
+msgid "Module `%s` is broken. Choose another module for this gallery"
+msgstr ""
+
+#: inc/shortcodes.php:229 inc/shortcodes.php:233
+msgid "Choose gallery source, please."
+msgstr ""
+
+#: module/photomania/init.php:205
+msgid "Like"
+msgstr ""
+
+#: module/photomania/init.php:209 module/photomania/init.php:241
+msgid "Previous"
+msgstr ""
+
+#: module/photomania/init.php:210 module/photomania/init.php:242
+msgid "Next"
+msgstr ""
+
+#: module/photomania/init.php:214
+msgid "Full"
+msgstr ""
+
+#: module/photomania/init.php:237
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#: module/photomania/init.php:237
+msgid "Dismiss"
+msgstr ""
+
+#: module/photomania/init.php:239
+msgid "Slideshow"
+msgstr ""
+
+#: module/photomania/init.php:240
+msgid "Maximize"
+msgstr ""
+
+#: setup.php:56
+msgid "Abstract"
+msgstr ""
+
+#: setup.php:57
+msgid "Animals"
+msgstr ""
+
+#: setup.php:58
+msgid "Black and White"
+msgstr ""
+
+#: setup.php:59
+msgid "Celebrities"
+msgstr ""
+
+#: setup.php:60
+msgid "City & Architecture"
+msgstr ""
+
+#: setup.php:61
+msgid "Commercial"
+msgstr ""
+
+#: setup.php:62
+msgid "Concert"
+msgstr ""
+
+#: setup.php:63
+msgid "Family"
+msgstr ""
+
+#: setup.php:64
+msgid "Fashion"
+msgstr ""
+
+#: setup.php:65
+msgid "Film"
+msgstr ""
+
+#: setup.php:66
+msgid "Fine Art"
+msgstr ""
+
+#: setup.php:67
+msgid "Food"
+msgstr ""
+
+#: setup.php:68
+msgid "Journalism"
+msgstr ""
+
+#: setup.php:69
+msgid "Landscapes"
+msgstr ""
+
+#: setup.php:70
+msgid "Macro"
+msgstr ""
+
+#: setup.php:71
+msgid "Nature"
+msgstr ""
+
+#: setup.php:72
+msgid "Nude"
+msgstr ""
+
+#: setup.php:73
+msgid "People"
+msgstr ""
+
+#: setup.php:74
+msgid "Performing Arts"
+msgstr ""
+
+#: setup.php:75
+msgid "Sport"
+msgstr ""
+
+#: setup.php:76
+msgid "Still Life"
+msgstr ""
+
+#: setup.php:77
+msgid "Street"
+msgstr ""
+
+#: setup.php:78
+msgid "Transportation"
+msgstr ""
+
+#: setup.php:79
+msgid "Travel"
+msgstr ""
+
+#: setup.php:80
+msgid "Underwater"
+msgstr ""
+
+#: setup.php:81
+msgid "Urban Exploration"
+msgstr ""
+
+#: setup.php:82
+msgid "Wedding"
+msgstr ""
+
+#: setup.php:128
+msgid "Sorry, Gmedia Gallery works only with a role called administrator"
+msgstr ""
+
+#: setup.php:254
+msgid ""
+"GmediaGallery: Tables could not created, please check your database settings"
+msgstr ""
+
+#: template/album.php:14 template/category.php:17 template/gallery.php:14
+#: template/single.php:14 template/tag.php:16
+msgid "Home"
+msgstr ""
+
+#: template/album.php:16 template/category.php:19 template/gallery.php:16
+#: template/single.php:16 template/tag.php:18
+msgid "Go Back"
+msgstr ""
+
+#: template/functions.php:34 template/functions.php:275
+msgid "Shared with GmediaGallery"
+msgstr ""
+
+#: template/functions.php:110 template/functions.php:154
+msgid "GmediaGallery"
+msgstr ""
+
+#: template/single.php:43
+msgid "Download"
+msgstr ""
+
+#: update.php:12
+msgid ""
+"<strong>GmediaGallery Data Update Required</strong> &#8211; We need to "
+"update your install to the latest version."
+msgstr ""
+
+#: update.php:14
+msgid ""
+"<strong>Important:</strong> &#8211; GmediaGallery plugin was fully "
+"rewritten, so after update you need to check all your created galleries and "
+"update modules."
+msgstr ""
+
+#: update.php:16 update.php:35
+msgid "The update process may take a little while, so please be patient."
+msgstr ""
+
+#: update.php:19
+msgid "Run the updater"
+msgstr ""
+
+#: update.php:24
+msgid ""
+"It is strongly recommended that you backup your database before proceeding. "
+"Are you sure you wish to run the updater now?"
+msgstr ""
+
+#: update.php:33
+msgid ""
+"<strong>GmediaGallery Updating:</strong> &#8211; GmediaGallery plugin was "
+"fully rewritten, so after update you need to check all your created "
+"galleries and update modules."
+msgstr ""
+
+#: update.php:109
+msgid "Gmedia database tables updated..."
+msgstr ""
+
+#: update.php:125
+msgid "Start update images..."
+msgstr ""
+
+#: update.php:180
+msgid "Gmedia database data updated..."
+msgstr ""
+
+#: update.php:227
+msgid "Gmedia Galleries updated..."
+msgstr ""
+
+#: update.php:232
+msgid "GmediaGallery plugin update complete."
+msgstr ""
+
+#: update.php:406
+msgid "Ignored"
+msgstr ""
+
+#: update.php:410
+msgid "Invalid image."
+msgstr ""
+
+#: update.php:423
+msgid "Image update process complete..."
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Gmedia Gallery"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/extend/plugins/grand-media/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Gmedia Gallery - powerfull media library plugin for creating beautiful "
+"galleries and managing files."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Rattus"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://codeasily.com/"
+msgstr ""

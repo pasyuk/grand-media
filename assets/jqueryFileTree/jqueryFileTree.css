@@ -1,0 +1,42 @@
+.browsefiles {margin-left:5px;}
+
+ul.jqueryDirTree {
+	font-family: Verdana, sans-serif;
+	font-size: 12px;
+	line-height: 18px;
+	padding: 0px;
+	margin: 0px;
+}
+
+ul.jqueryDirTree li {
+	list-style: none;
+	padding: 1px 0px 1px 18px;
+	margin: 0px;
+	white-space: nowrap;
+}
+
+ul.jqueryDirTree a {
+	color: #333;
+	text-decoration: none;
+	display: block;
+	padding: 0px 4px 2px;
+}
+
+ul.jqueryDirTree a:hover {
+	background: #bdf;
+}
+ul.jqueryDirTree li.active > a {
+	background: #21759b;
+	color: #ffffff;
+}
+ul.jqueryDirTree li.active li a {
+	background: none;
+}
+ul.jqueryDirTree li.active li a:hover {
+	background: #bdf;
+}
+
+/* Core Styles */
+.jqueryDirTree li.directory { background: url(images/directory.png) 0 2px no-repeat; }
+.jqueryDirTree li.expanded { background: url(images/folder_open.png) 0 2px no-repeat; }
+.jqueryDirTree li.wait { background: url(images/spinner.gif) 0 2px no-repeat; }

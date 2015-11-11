@@ -1,0 +1,3399 @@
+# Copyright (C) 2015 Gmedia Gallery
+# This file is distributed under the same license as the Gmedia Gallery package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Gmedia Gallery 1.6.6\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/plugin/grand-media\n"
+"POT-Creation-Date: 2015-06-16 16:53+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2015-06-19 18:19+0200\n"
+"Language-Team: \n"
+"X-Generator: Poedit 1.8.1\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: uk_UA\n"
+"Last-Translator: \n"
+
+#: access.php:216 admin/addmedia.php:124 admin/addmedia.php:347
+#: admin/ajax.php:647 admin/ajax.php:665 admin/ajax.php:1292 admin/app.php:74
+#: admin/gmedia.php:449 admin/gmedia.php:612 admin/gmedia.php:788
+#: inc/media-upload.php:1199
+msgid "Uncategorized"
+msgstr "Без категорії"
+
+#: access.php:267 access.php:687
+msgid "Deleted User"
+msgstr "Видалений користувач"
+
+#: access.php:272 admin/terms.php:286 admin/terms.php:1046
+msgid "Shared"
+msgstr "Спільний"
+
+#: access.php:349 access.php:819 access.php:885
+msgid "You can't do this"
+msgstr "Ви не можете зробити це"
+
+#: access.php:349 access.php:782 access.php:819 access.php:885
+msgid "You have no permission to do this operation"
+msgstr "Ви не маєте дозволу робити цю операцію"
+
+#: access.php:360 admin/ajax.php:1683
+msgid "Failed to move uploaded file."
+msgstr "Не вдалося перемістити завантаженого файлу."
+
+#: access.php:455 admin/processor.php:474 admin/processor.php:489
+msgid "You are not allowed to edit media"
+msgstr "Вам не дозволено редагувати медіа"
+
+#: access.php:459 access.php:791 access.php:796 access.php:846 access.php:891
+#: admin/ajax.php:1128 admin/ajax.php:2012 admin/ajax.php:2057
+#: admin/ajax.php:2102 admin/ajax.php:2148 admin/galleries.php:454
+#: admin/gmedia.php:345 admin/processor.php:181 admin/processor.php:221
+#: admin/processor.php:282 admin/processor.php:318 admin/processor.php:346
+#: admin/processor.php:608 admin/processor.php:731 admin/processor.php:771
+#: admin/processor.php:831 admin/processor.php:932
+msgid "You are not allowed to edit others media"
+msgstr "Вам не дозволено редагувати інші медіа"
+
+#: access.php:479
+msgid "You are not allowed to manage categories"
+msgstr "Вам не дозволено керувати категоріями"
+
+#: access.php:491
+msgid "%d items updated with \"Uncategorized\""
+msgstr "%d об'єктів поповнено \"Без категорії\""
+
+#: access.php:504
+msgid "Category `%s` assigned to %d images."
+msgstr "Категорія `% s` призначена до %d зображень."
+
+#: access.php:506 admin/processor.php:207
+msgid "Category `%s` can't be assigned."
+msgstr "Категорію `% s` не можливо призначити."
+
+#: access.php:513 admin/processor.php:704 admin/processor.php:760
+msgid "You are not allowed to manage albums"
+msgstr "Вам не дозволено керувати альбомами"
+
+#: access.php:521
+msgid "%d items updated with \"No Album\""
+msgstr "%d об'єктів поповнено \"Без альбому\""
+
+#: access.php:537
+msgid "Album `%s` assigned to %d items"
+msgstr "Альбом `% s` призначено до %d об'єктів"
+
+#: access.php:543
+msgid "You are not allowed manage tags"
+msgstr "Вам не дозволено керувати тегами"
+
+#: access.php:547 access.php:570
+msgid "No tags provided"
+msgstr "Немає тегів"
+
+#: access.php:561
+msgid "%d tags added to %d items"
+msgstr "%d тегів додано до %d об'єктів"
+
+#: access.php:566 admin/processor.php:505 admin/processor.php:565
+#: admin/processor.php:1031
+msgid "You are not allowed to delete others media"
+msgstr "Вам не дозволено видаляти інші медіа"
+
+#: access.php:584
+msgid "%d tags deleted from %d items"
+msgstr "%d тегів видалено з %d об'єктів"
+
+#: access.php:589
+msgid "You are not allowed to delete this post."
+msgstr "Вам не дозволено видаляти цю публікацію"
+
+#: access.php:596
+msgid "You are not allowed to delete media others media"
+msgstr "Вам не дозволено видаляти медіа інших медіа"
+
+#: access.php:600 admin/processor.php:513
+msgid "Error in deleting..."
+msgstr "Помилка у видаленні ..."
+
+#: access.php:605 access.php:808
+msgid "%d items deleted successfuly"
+msgstr "%d об'єктів успішно видалені"
+
+#: access.php:826 admin/processor.php:710
+msgid "Term Name is not specified"
+msgstr "Ім'я терміну не визначено"
+
+#: access.php:830 admin/processor.php:714 admin/processor.php:795
+msgid "Term Name can't be only digits"
+msgstr "Термін імені може бути тільки числами"
+
+#: access.php:834 access.php:909 admin/ajax.php:1150 admin/processor.php:622
+#: admin/processor.php:719 admin/processor.php:766 admin/processor.php:854
+#: admin/processor.php:926
+msgid "A term with the id provided do not exists"
+msgstr "Термін з наданим id не існує"
+
+#: access.php:839 access.php:906 admin/ajax.php:1147 admin/processor.php:118
+#: admin/processor.php:627 admin/processor.php:724 admin/processor.php:859
+msgid "A term with the name provided already exists"
+msgstr "Термін з наданим ім'ям вже існує"
+
+#: access.php:879 admin/processor.php:752 admin/processor.php:781
+msgid "Album `%s` successfuly saved"
+msgstr "Альбом `%s` успішно збережений"
+
+#: access.php:903
+msgid "Tag %d successfuly updated"
+msgstr "Тег %d успішно оновлений"
+
+#: access.php:912 admin/ajax.php:1153
+msgid "Term name can't be only digits or empty"
+msgstr "Термін імені може бути тільки числами або пустим"
+
+#: access.php:928 admin/processor.php:804
+msgid "%d of %d tags successfuly added"
+msgstr "%d з %d тегів успішно додано"
+
+#: access.php:931 admin/processor.php:807
+msgid "Some of provided tags are already exists"
+msgstr "Деякі з наданих тегів вже існують"
+
+#: admin/addmedia.php:21
+msgid "Upload Files"
+msgstr "Завантажити файли"
+
+#: admin/addmedia.php:23 admin/addmedia.php:490 admin/addmedia.php:522
+#: admin/addmedia.php:539 admin/ajax.php:1383
+msgid "Import"
+msgstr "Імпорт"
+
+#: admin/addmedia.php:30
+msgid "Add files to the upload queue and click the start button"
+msgstr "Додайте файли в чергу на завантаження і натисніть кнопку запуску"
+
+#: admin/addmedia.php:33
+msgid "Grab files from other sources"
+msgstr "Перетягніть файли з інших джерел"
+
+#: admin/addmedia.php:63 inc/media-upload.php:1035
+msgid "You do not have permissions to upload media"
+msgstr "Ви не маєте дозволу на завантаження медіа"
+
+#: admin/addmedia.php:79 inc/media-upload.php:1154
+msgid "Maximum file size"
+msgstr "Максимальний розмір файлу"
+
+#: admin/addmedia.php:82 inc/media-upload.php:1157
+msgid "Maximum $_POST size"
+msgstr "Максимальний розмір $_POST"
+
+#: admin/addmedia.php:83 inc/media-upload.php:1158
+msgid "Chunk size"
+msgstr "Розмір частини"
+
+#: admin/addmedia.php:88 admin/admin.php:410 admin/admin.php:536
+#: admin/ajax.php:1023 admin/gmedia.php:735 admin/gmedia.php:736
+#: admin/terms.php:1803 admin/wpmedia.php:195 inc/core.php:2128
+#: inc/media-upload.php:895 inc/media-upload.php:896 inc/media-upload.php:1163
+msgid "Title"
+msgstr "Назва"
+
+#: admin/addmedia.php:90 inc/media-upload.php:1165
+msgid "EXIF or File Name"
+msgstr "EXIF або ім'я файлу"
+
+#: admin/addmedia.php:91 inc/media-upload.php:1166
+msgid "File Name"
+msgstr "Ім'я файлу"
+
+#: admin/addmedia.php:92 inc/media-upload.php:1167
+msgid "Empty"
+msgstr "Пустий"
+
+#: admin/addmedia.php:96 admin/ajax.php:1061 admin/galleries.php:256
+#: admin/galleries.php:682 admin/gmedia.php:477 admin/gmedia.php:633
+#: admin/gmedia.php:871 admin/terms.php:264 admin/terms.php:1016
+#: inc/media-upload.php:336 inc/media-upload.php:715 inc/media-upload.php:1171
+msgid "Status"
+msgstr "Статус"
+
+#: admin/addmedia.php:98 inc/media-upload.php:1173
+msgid "Same as Album or Public"
+msgstr "Теж саме що і альбомний або публічний"
+
+#: admin/addmedia.php:99 admin/ajax.php:1064 admin/galleries.php:684
+#: admin/gmedia.php:873 admin/terms.php:266 admin/terms.php:1019
+#: inc/media-upload.php:1174
+msgid "Public"
+msgstr "Публічний"
+
+#: admin/addmedia.php:100 admin/ajax.php:1065 admin/galleries.php:685
+#: admin/gmedia.php:874 admin/terms.php:267 admin/terms.php:1021
+#: inc/media-upload.php:1175
+msgid "Private"
+msgstr "Приватний"
+
+#: admin/addmedia.php:101 admin/ajax.php:1066 admin/galleries.php:686
+#: admin/gmedia.php:875 admin/terms.php:268 admin/terms.php:1023
+#: inc/media-upload.php:1176
+msgid "Draft"
+msgstr "Проект"
+
+#: admin/addmedia.php:120 admin/addmedia.php:343 admin/ajax.php:499
+#: admin/ajax.php:1288 inc/media-upload.php:1195
+msgid "Assign Category"
+msgstr "Призначити категорію"
+
+#: admin/addmedia.php:121 admin/addmedia.php:344 admin/ajax.php:1289
+#: inc/media-upload.php:1196
+msgid "(for images only)"
+msgstr "(тільки для зображень)"
+
+#: admin/addmedia.php:136 admin/addmedia.php:359 admin/ajax.php:1305
+#: inc/media-upload.php:1211
+msgid " (shared)"
+msgstr "(спільний)"
+
+#: admin/addmedia.php:140 admin/addmedia.php:363 admin/ajax.php:1309
+#: inc/media-upload.php:1215
+msgid "Add to Album"
+msgstr "Додати до альбому"
+
+#: admin/addmedia.php:141 admin/addmedia.php:364 admin/ajax.php:743
+#: admin/ajax.php:1310 admin/gmedia.php:830 inc/media-upload.php:1216
+msgid "Album Name..."
+msgstr "Назва альбому..."
+
+#: admin/addmedia.php:151 admin/addmedia.php:374 admin/ajax.php:521
+#: admin/ajax.php:1321 inc/media-upload.php:1226
+msgid "Add Tags"
+msgstr "Додати теги"
+
+#: admin/addmedia.php:152 admin/addmedia.php:375 admin/ajax.php:842
+#: admin/ajax.php:1322 admin/gmedia.php:274 inc/media-upload.php:1227
+msgid "Add Tags..."
+msgstr "Додати теги..."
+
+#: admin/addmedia.php:155 admin/addmedia.php:378 admin/ajax.php:1325
+#: admin/processor.php:212 admin/processor.php:268 admin/processor.php:274
+#: admin/processor.php:337 inc/media-upload.php:1231
+msgid "You are not allowed to assign terms"
+msgstr "Вам не дозволено призначати терміни"
+
+#: admin/addmedia.php:209 inc/media-upload.php:1051
+msgid ""
+"You browser doesn't have Flash or HTML5 support. Check also if page have no "
+"JavaScript errors."
+msgstr ""
+"Ваш браузер не підтримує Flash або HTML5 . Також перевірте сторінку на "
+"наявність JavaScript помилок."
+
+#: admin/addmedia.php:316
+msgid "You do not have permissions to import media"
+msgstr "У вас немає дозволу на імпорт медіа"
+
+#: admin/addmedia.php:425 admin/ajax.php:1759
+msgid "Import Server Folder"
+msgstr "Службова папка імпорта"
+
+#: admin/addmedia.php:427
+msgid "FlAGallery plugin"
+msgstr "Плагін FlAGallery"
+
+#: admin/addmedia.php:432
+msgid "NextGen plugin"
+msgstr "NextGen плагін"
+
+#: admin/addmedia.php:442
+msgid "Sever folders"
+msgstr "Службові папки"
+
+#: admin/addmedia.php:447
+msgid "delete source files after importing"
+msgstr "Видалити вихідні файли після імпорту"
+
+#: admin/addmedia.php:449
+msgid "Import folder"
+msgstr "Імпорт папки"
+
+#: admin/addmedia.php:457
+msgid "loading..."
+msgstr "завантаження..."
+
+#: admin/addmedia.php:473 admin/addmedia.php:505
+msgid "If Album is not specified, then gallery name will be used as Album"
+msgstr ""
+"Якщо альбом не вказано, то галерея буде використовуватися в якості альбому"
+
+#: admin/addmedia.php:474
+msgid "Flagallery Galleries"
+msgstr "Галереї Flagallery"
+
+#: admin/addmedia.php:475 admin/addmedia.php:507
+msgid "Toggle checkboxes"
+msgstr "Перемикнути прапорці"
+
+#: admin/addmedia.php:493 admin/addmedia.php:525
+msgid "There are no created galleries in this plugin."
+msgstr "Немає створених галерей в цьому плагіні."
+
+#: admin/addmedia.php:506
+msgid "NextGen Galleries"
+msgstr "Галереї NextGen "
+
+#: admin/addmedia.php:553 admin/ajax.php:1383 admin/galleries.php:392
+#: admin/gmedia.php:344 admin/gmedia.php:1050 admin/gmedia.php:1073
+#: admin/terms.php:311 admin/terms.php:607 admin/terms.php:899
+#: admin/terms.php:1251
+msgid "Close"
+msgstr "Закрити"
+
+#: admin/addmedia.php:553 admin/ajax.php:1383
+msgid "Working..."
+msgstr "В процесі..."
+
+#: admin/admin.php:75 admin/admin.php:76 admin/settings.php:262
+#: inc/media-upload.php:41 inc/post-metabox.php:55
+msgid "Gmedia Library"
+msgstr "Бібліотка Gmedia "
+
+#: admin/admin.php:78
+msgid "Add Media Files"
+msgstr "Додати медіа файли"
+
+#: admin/admin.php:78
+msgid "Add/Import Files"
+msgstr "Додати/імпортувати файли"
+
+#: admin/admin.php:79
+msgid "Albums, Tags, Filters..."
+msgstr "Альбоми, Теги, Фільтри ..."
+
+#: admin/admin.php:80 inc/media-upload.php:43 inc/post-metabox.php:51
+#: inc/post-metabox.php:53 inc/post-metabox.php:97
+msgid "Gmedia Galleries"
+msgstr "Галереї Gmedia "
+
+#: admin/admin.php:80
+msgid "Create/Manage Galleries..."
+msgstr "Створити/керувати галереями"
+
+#: admin/admin.php:81 admin/settings.php:360
+msgid "Modules"
+msgstr "Модулі"
+
+#: admin/admin.php:82
+msgid "Gmedia Settings"
+msgstr "Налаштування Gmedia "
+
+#: admin/admin.php:82 admin/admin.php:392 admin/settings.php:367
+msgid "Settings"
+msgstr "Налаштування"
+
+#: admin/admin.php:83
+msgid "Mobile Application"
+msgstr "Мобільна программа"
+
+#: admin/admin.php:84
+msgid "Wordpress Media Library"
+msgstr "Wordpress медіа бібліотка"
+
+#: admin/admin.php:84
+msgid "WP Media Library"
+msgstr "WP медіа бібліотка"
+
+#: admin/admin.php:112
+msgid "Updating GmediaGallery Plugin"
+msgstr "Оновлення плагіну GmediaGallery "
+
+#: admin/admin.php:363
+msgid "Support"
+msgstr "Підтримка"
+
+#: admin/admin.php:371
+msgid "Support Forum"
+msgstr "Форум підтримки"
+
+#: admin/admin.php:372 inc/core.php:2146
+msgid "Contact"
+msgstr "Контакти"
+
+#: admin/admin.php:373
+msgid "Demo"
+msgstr "Демо"
+
+#: admin/admin.php:374
+msgid "Premium"
+msgstr "Преміум"
+
+#: admin/admin.php:394
+msgid "Apply"
+msgstr "Застосувати"
+
+#: admin/admin.php:405 admin/admin.php:475 admin/admin.php:483
+#: admin/admin.php:508 admin/admin.php:531
+msgid "items per page"
+msgstr "елементів на сторінку"
+
+#: admin/admin.php:409 admin/admin.php:487 admin/admin.php:512
+#: admin/admin.php:535 admin/gmedia.php:901 admin/terms.php:994
+#: admin/terms.php:1464 admin/terms.php:1802 admin/wpmedia.php:183
+#: inc/media-upload.php:703
+msgid "ID"
+msgstr "ідентифікатор"
+
+#: admin/admin.php:411 admin/admin.php:537 admin/ajax.php:1012
+#: admin/gmedia.php:488 admin/gmedia.php:645 admin/gmedia.php:856
+#: admin/terms.php:1804
+msgid "Filename"
+msgstr "Ім'я Файлу"
+
+#: admin/admin.php:412 admin/admin.php:538 admin/gmedia.php:493
+#: admin/gmedia.php:651 admin/gmedia.php:862
+msgid "Date"
+msgstr "Дата"
+
+#: admin/admin.php:413 admin/admin.php:539
+msgid "Last Modified"
+msgstr "Остання зміна"
+
+#: admin/admin.php:414 admin/admin.php:540
+msgid "MIME Type"
+msgstr "Тип MIME "
+
+#: admin/admin.php:415 admin/admin.php:541 admin/ajax.php:1076
+#: admin/galleries.php:202 admin/gmedia.php:491 admin/gmedia.php:648
+#: admin/gmedia.php:881 admin/terms.php:273 admin/terms.php:1032
+#: admin/terms.php:1807 inc/core.php:2129 inc/media-upload.php:321
+#: inc/media-upload.php:716
+msgid "Author"
+msgstr "Автор"
+
+#: admin/admin.php:416 admin/admin.php:491 admin/admin.php:515
+#: admin/admin.php:542
+msgid "order items"
+msgstr "впорядкувати об'єкти"
+
+#: admin/admin.php:420 admin/admin.php:495 admin/admin.php:519
+#: admin/admin.php:546 admin/settings.php:88 admin/settings.php:108
+#: admin/terms.php:257 admin/terms.php:1100
+msgid "DESC"
+msgstr "DESC"
+
+#: admin/admin.php:421 admin/admin.php:496 admin/admin.php:520
+#: admin/admin.php:547 admin/settings.php:89 admin/settings.php:109
+#: admin/terms.php:258 admin/terms.php:1101 admin/terms.php:1791
+msgid "ASC"
+msgstr "ASC"
+
+#: admin/admin.php:422 admin/admin.php:497 admin/admin.php:521
+#: admin/admin.php:548
+msgid "sort order"
+msgstr "порядок сортування"
+
+#: admin/admin.php:429 admin/admin.php:456 admin/admin.php:462
+msgid "FALSE"
+msgstr "ХИБНО"
+
+#: admin/admin.php:430 admin/admin.php:455 admin/admin.php:461
+msgid "TRUE"
+msgstr "ІСТИНА"
+
+#: admin/admin.php:431
+msgid "Quick Tags panel for Description field"
+msgstr "Панель швидких тегів для поля опису"
+
+#: admin/admin.php:445
+msgid "Uploader runtime:"
+msgstr "час завантаження:"
+
+#: admin/admin.php:447
+msgid "Auto"
+msgstr "Авто"
+
+#: admin/admin.php:448
+msgid "HTML5 Uploader"
+msgstr "HTML5 завантажувач"
+
+#: admin/admin.php:449
+msgid "Flash Uploader"
+msgstr "Flash завантажувач"
+
+#: admin/admin.php:450
+msgid "HTML4 Uploader"
+msgstr "HTML4 завантажувач"
+
+#: admin/admin.php:453
+msgid "Chunking:"
+msgstr "Чанкінг:"
+
+#: admin/admin.php:459
+msgid "URL streem upload:"
+msgstr "URL потокове завантаження:"
+
+#: admin/admin.php:488 admin/admin.php:513 admin/terms.php:230
+#: admin/terms.php:1001
+msgid "Name"
+msgstr "Ім'я"
+
+#: admin/admin.php:489
+msgid "Gmedia Count"
+msgstr "Gmedia облік"
+
+#: admin/admin.php:490
+msgid "Author ID (for albums only)"
+msgstr "ID автора (тільки для альбомів)"
+
+#: admin/admin.php:514
+msgid "Author ID"
+msgstr "ID автора"
+
+#: admin/admin.php:528
+msgid "Set query options for this page to be loaded by default."
+msgstr ""
+"Налаштуйте параметри запиту для цієї сторінки, щоб завантажувати їх за "
+"замовчуванням."
+
+#: admin/ajax.php:63
+msgid "No record in DataBase."
+msgstr "Немає запису в базі даних."
+
+#: admin/ajax.php:72
+msgid "Please provide a custom field value."
+msgstr "Будь ласка, вкажіть значення настроюваного поля."
+
+#: admin/ajax.php:84
+msgid "Something goes wrong."
+msgstr "Щось іде не так."
+
+#: admin/ajax.php:312
+msgid "Image \"%d\" updated"
+msgstr "Зображення \"%d\" оновлено"
+
+#: admin/ajax.php:458
+msgid "Image \"%d\" restored from backup and saved"
+msgstr "Зображення \"%d\" відновлено з резервної копії і збережено"
+
+#: admin/ajax.php:487
+msgid "Quick Gallery from selected items"
+msgstr "Швидка галерея з вибраних об'єктів"
+
+#: admin/ajax.php:488
+msgid "Create Quick Gallery"
+msgstr "Створити Швидку галерею"
+
+#: admin/ajax.php:491
+msgid "Show Images from Categories"
+msgstr "Показати Зображення з Категорій"
+
+#: admin/ajax.php:492 admin/ajax.php:503 admin/ajax.php:514 admin/ajax.php:533
+#: admin/ajax.php:538
+msgid "Show Selected"
+msgstr "Показати вибрані"
+
+#: admin/ajax.php:498
+msgid "Assign Category for Selected Images"
+msgstr "Призначити категорію для вибраних об'єктів"
+
+#: admin/ajax.php:502
+msgid "Filter Albums"
+msgstr "Фільтрувати альбоми"
+
+#: admin/ajax.php:509
+msgid "Assign Album for Selected Items"
+msgstr "Призначити альбом для вибраних об'єктів"
+
+#: admin/ajax.php:510
+msgid "Assign Album"
+msgstr "Призначити альбом"
+
+#: admin/ajax.php:513
+msgid "Filter by Tags"
+msgstr "Фільтрувати за тегами"
+
+#: admin/ajax.php:520
+msgid "Add Tags to Selected Items"
+msgstr "Додати тегів до вибраних об'єктів"
+
+#: admin/ajax.php:528
+msgid "Delete Tags from Selected Items"
+msgstr "Видалити теги у вибраних об'єктів"
+
+#: admin/ajax.php:529
+msgid "Delete Tags"
+msgstr "Видалити теги"
+
+#: admin/ajax.php:532 admin/gmedia.php:213 admin/terms.php:163
+#: admin/terms.php:970 admin/terms.php:1437
+msgid "Custom Filters"
+msgstr "Настроювані фільтри"
+
+#: admin/ajax.php:536
+msgid "Filter by Author"
+msgstr "Фільтрувати за автором"
+
+#: admin/ajax.php:544
+msgid "Select Author"
+msgstr "Вибрати автора"
+
+#: admin/ajax.php:546
+msgid "Select"
+msgstr "Вибрати"
+
+#: admin/ajax.php:555 admin/gmedia.php:249
+msgid "Batch Edit"
+msgstr "Пакетне редагування"
+
+#: admin/ajax.php:556
+msgid "Batch Save"
+msgstr "Пакетне збереження"
+
+#: admin/ajax.php:579
+msgid "No selected Gmedia. Select at least one item in library."
+msgstr "Не вибрано Gmedia. Виберіть щонаймеше один об'єкт з бібліотеки."
+
+#: admin/ajax.php:607 admin/ajax.php:608 admin/galleries.php:678
+#: admin/galleries.php:679
+msgid "Gallery Name"
+msgstr "Назва галереї"
+
+#: admin/ajax.php:611
+msgid "Modue"
+msgstr "Модуль"
+
+#: admin/ajax.php:639
+msgid "Selected IDs"
+msgstr "Вибрані ID"
+
+#: admin/ajax.php:683 admin/ajax.php:745
+msgid "No Album"
+msgstr "Без альбома"
+
+#: admin/ajax.php:690 admin/ajax.php:729 admin/ajax.php:933
+#: admin/gmedia.php:810 admin/terms.php:335 admin/terms.php:479
+#: inc/media-upload.php:599
+msgid "by %s"
+msgstr "по %s"
+
+#: admin/ajax.php:693 admin/ajax.php:732 admin/ajax.php:936
+#: admin/gmedia.php:813 inc/media-upload.php:609
+msgid "shared"
+msgstr "спільний"
+
+#: admin/ajax.php:742
+msgid "Move to Album"
+msgstr "Перемістити до альбому"
+
+#: admin/ajax.php:750
+msgid "Make status of selected items be the same as Album status"
+msgstr "Змінити статус у деяких об'єктів на такий самий, що й у альбома"
+
+#: admin/ajax.php:801
+msgid "Filter Tags..."
+msgstr "Фільтрувати теги..."
+
+#: admin/ajax.php:832 admin/ajax.php:887 admin/ajax.php:909
+msgid "No tags"
+msgstr "Без тегів"
+
+#: admin/ajax.php:845
+msgid "Import IPTC Keywords from selected images to Tags"
+msgstr "Імпортувати ключі IPTC  з вибраних зображень до тегів"
+
+#: admin/ajax.php:926
+msgid "Choose Filter"
+msgstr "Вибрати фільтр"
+
+#: admin/ajax.php:927
+msgid "Filter Name..."
+msgstr "Назва фільтру..."
+
+#: admin/ajax.php:974
+msgid "There is no Filters created yet."
+msgstr "Ще не створено жодного фільтру..."
+
+#: admin/ajax.php:974 admin/galleries.php:811 admin/terms.php:168
+#: admin/terms.php:1467
+msgid "Create Filter"
+msgstr "Створити фільтр"
+
+#: admin/ajax.php:982
+msgid "Choose Author"
+msgstr "Вибрати автора"
+
+#: admin/ajax.php:1004 admin/gmedia.php:68
+msgid "You are not allowed to see others media"
+msgstr "Вам не дозволено переглядати інших медіа"
+
+#: admin/ajax.php:1010
+msgid "Note, data will be saved to all selected items in Gmedia Library."
+msgstr ""
+"Зверніть увагу, що дані будуть збережені для всіх обраних об'єктів в Gmedia "
+"бібліотеці."
+
+#: admin/ajax.php:1014 admin/ajax.php:1025 admin/ajax.php:1035
+#: admin/ajax.php:1053 admin/ajax.php:1063 admin/ajax.php:1078
+msgid "Skip. Do not change"
+msgstr "Пропустити. Не змінювати"
+
+#: admin/ajax.php:1015 admin/ajax.php:1028 admin/ajax.php:1038
+#: admin/ajax.php:1056
+msgid "Custom"
+msgstr "Настроюваний"
+
+#: admin/ajax.php:1019
+msgid ""
+"Variables: <b>{filename}</b> - original file name; <b>{id}</b> - Gmedia #ID "
+"in database; <b>{index:1}</b> - index of selected file in order you select "
+"(set start number after colon)."
+msgstr ""
+"Змінні: <b>{filename}</b> - оригінальне ім'я файлу; <b>{id}</b> - Gmedia #ID "
+"в базі даних; <b>{index:1}</b> - індекс вибраних файлів в обраном вами "
+"порядку (встановлюється стартове число після двокрапки)."
+
+#: admin/ajax.php:1026
+msgid "Empty Title"
+msgstr "Пуста назва"
+
+#: admin/ajax.php:1027
+msgid "From Filename"
+msgstr "з імені файлу"
+
+#: admin/ajax.php:1030
+msgid "Enter custom title here"
+msgstr "Введіть настроювану назву тут"
+
+#: admin/ajax.php:1033 admin/galleries.php:822 admin/gmedia.php:745
+#: admin/terms.php:235 admin/terms.php:1007 admin/terms.php:1502
+#: admin/wpmedia.php:197 inc/media-upload.php:910
+msgid "Description"
+msgstr "Опис"
+
+#: admin/ajax.php:1036
+msgid "Add MetaInfo to Description"
+msgstr "Додату метаінформацію до запису"
+
+#: admin/ajax.php:1037
+msgid "Empty Description"
+msgstr "Пустий опис"
+
+#: admin/ajax.php:1043
+msgid "Replace"
+msgstr "Замінити"
+
+#: admin/ajax.php:1044
+msgid "Append"
+msgstr "Додавати"
+
+#: admin/ajax.php:1045
+msgid "Prepend"
+msgstr "Додати до початку"
+
+#: admin/ajax.php:1047
+msgid "Enter description here"
+msgstr "Введіть опис тут"
+
+#: admin/ajax.php:1051 admin/gmedia.php:496 admin/gmedia.php:654
+msgid "Link"
+msgstr "Посилання"
+
+#: admin/ajax.php:1054
+msgid "Empty Link"
+msgstr "пусте посилання"
+
+#: admin/ajax.php:1055
+msgid "Link to original file"
+msgstr "Посилання на оригінал"
+
+#: admin/ajax.php:1058
+msgid "Enter url here"
+msgstr "Ввести url тут"
+
+#: admin/ajax.php:1102
+msgid "Ops! Something wrong."
+msgstr "Упс! Щось пішло не так"
+
+#: admin/ajax.php:1108 admin/ajax.php:1382 admin/galleries.php:364
+#: admin/galleries.php:1107 admin/modules.php:198 inc/core.php:2285
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: admin/ajax.php:1144
+msgid "Tag #%d successfuly updated"
+msgstr "Тег #%d успішно додано"
+
+#: admin/ajax.php:1170 admin/processor.php:99
+msgid "You are not allowed to manage galleries"
+msgstr "Вам не дозволено керувати галереями"
+
+#: admin/ajax.php:1193
+msgid "You are not allowed to install modules"
+msgstr "Вам не дозволено встановлювати модулі"
+
+#: admin/ajax.php:1208 admin/processor.php:1071 inc/core.php:188
+#: inc/core.php:1385 inc/core.php:1505 inc/core.php:1531
+msgid ""
+"Unable to create directory %s. Is its parent directory writable by the server?"
+msgstr ""
+"Неможливо створити каталог  %s. Його батьківський каталог не для запису на "
+"сервері?"
+
+#: admin/ajax.php:1214 admin/processor.php:1078 inc/core.php:1519
+#: inc/core.php:1545
+msgid "Directory %s is not writable by the server."
+msgstr "Каталог %s не для запису на сервері."
+
+#: admin/ajax.php:1226 admin/processor.php:1095
+msgid "Could not access filesystem."
+msgstr "Не вдалося отримати доступ до файлової системи."
+
+#: admin/ajax.php:1228 admin/processor.php:1097
+msgid "Filesystem error"
+msgstr "Помилка файлової системи"
+
+#: admin/ajax.php:1240
+msgid "The `%s` module successfuly installed"
+msgstr "`%s` модуль успішно встановлено"
+
+#: admin/ajax.php:1243 admin/processor.php:1110
+msgid "No file specified"
+msgstr "Жодного файлу не визначено"
+
+#: admin/ajax.php:1264 admin/ajax.php:1874
+msgid "Import from WP Media Library"
+msgstr "Імпортувати з WP медіа бібліотки"
+
+#: admin/ajax.php:1327
+msgid "Skip if file with the same name already exists in Gmedia Library"
+msgstr "Пропустити, якщо файл з таким же ім'ям вже існує в бібліотеці Gmedia"
+
+#: admin/ajax.php:1443
+msgid "No items related by tags."
+msgstr "Жодний об'єкт не відноситься до тегів."
+
+#: admin/ajax.php:1477
+msgid "No items matching the search query."
+msgstr "Немає об'єктів , відповідних пошуковому запиту."
+
+#: admin/ajax.php:1479
+msgid "No items to show"
+msgstr "Немає об'єктів для показу"
+
+#: admin/ajax.php:1639
+msgid "You do not have permission to upload files in Gmedia Library."
+msgstr "У вас немає дозволу завантажувати файли у бібліотеку Gmedia "
+
+#: admin/ajax.php:1652
+msgid "No file name."
+msgstr "Немає імені файлу"
+
+#: admin/ajax.php:1658
+msgid "File type not allowed."
+msgstr "Тип файлу не дозволено"
+
+#: admin/ajax.php:1711
+msgid "You do not have permission to upload files."
+msgstr "У вас немає дозволу завантажувати файли"
+
+#: admin/ajax.php:1797
+msgid "Folder `%s` is empty"
+msgstr "Папка`%s` пуста"
+
+#: admin/ajax.php:1800
+msgid "No folder chosen"
+msgstr "Папку не вибрано"
+
+#: admin/ajax.php:1805
+msgid "Import from Flagallery plugin"
+msgstr "Імпортувати з плагіну Flagallery "
+
+#: admin/ajax.php:1825 admin/ajax.php:1860
+msgid "Import `%s` gallery"
+msgstr "Імпортувати `%s` галерею"
+
+#: admin/ajax.php:1829 admin/ajax.php:1864
+msgid "gallery contains 0 images"
+msgstr "В галереї 0 файлів"
+
+#: admin/ajax.php:1836 admin/ajax.php:1870
+msgid "No gallery chosen"
+msgstr "Жодної галереї не вибрано"
+
+#: admin/ajax.php:1840
+msgid "Import from NextGen plugin"
+msgstr "Імпортувати з плагіну NextGen "
+
+#: admin/ajax.php:1893
+msgid "No items chosen"
+msgstr "Жодної об'єкту не вибрано"
+
+#: admin/ajax.php:1940
+msgid "Invalid email"
+msgstr "Недійсний email"
+
+#: admin/ajax.php:1945
+msgid "%s shared GmediaCloud Page with you"
+msgstr "%s поділився GmediaCloud сторінкою з вами"
+
+#: admin/ajax.php:1946
+msgid "%s used Gmedia to share something interesting with you!"
+msgstr "%s використав Gmedia, щоб поділитися чимось цікавим з вами!"
+
+#: admin/ajax.php:1947
+msgid "Click here to view page"
+msgstr "Натисніть тут для перегляду сторінки"
+
+#: admin/ajax.php:1993
+msgid "Message sent to %s"
+msgstr "Повідомленні відправлено до %s"
+
+#: admin/ajax.php:2016 admin/ajax.php:2106
+msgid "Choose or provide a custom field name"
+msgstr "Виберіть або надайте настроюване ім'я поля"
+
+#: admin/ajax.php:2021 admin/ajax.php:2111
+msgid "Please provide a custom field value"
+msgstr "Будь ласка, вкажіть значення настроюваного поля."
+
+#: admin/app.php:17
+msgid "Your server is not accessable by iOS application"
+msgstr "До вашого серверу немає доступу з програми iOS "
+
+#: admin/app.php:31
+msgid "Disable access to your Gmedia Library via iOS application?"
+msgstr "Відключити доступ до бібліотеки Gmedia через програму IOS?"
+
+#: admin/app.php:31
+msgid "Disable Service"
+msgstr "Відключити службу"
+
+#: admin/app.php:32
+msgid "Update Info"
+msgstr "Відновити інфо"
+
+#: admin/app.php:34
+msgid "Enable Service"
+msgstr "Відключити службу"
+
+#: admin/app.php:49
+msgid ""
+"On the right side you can see information about your website that will be "
+"used by iOS application, so you'll be able to manage your Gmedia Library with "
+"your smartphone."
+msgstr ""
+"Справа ви побачите інформацію про ваш сайт, яка буде використовуватися "
+"програмою IOS, так що ви зможете управляти бібліотекою Gmedia з вашого "
+"смартфона."
+
+#: admin/app.php:50
+msgid ""
+"Download Gmedia iOS application from the App Store to manage your Gmedia "
+"Library from iPhone."
+msgstr ""
+"Завантажити програму Gmedia IOS з App Store, щоб управляти Gmedia бібліотекою "
+"з iPhone."
+
+#: admin/app.php:56 admin/galleries.php:384 admin/gmedia.php:1042
+#: admin/terms.php:891
+msgid "Email"
+msgstr "Email"
+
+#: admin/app.php:72
+msgid "Which category fit your site most?"
+msgstr "Яка категорія відповідає найбільше вашому сайту ?"
+
+#: admin/app.php:79
+msgid "Site URL"
+msgstr "URL сайта"
+
+#: admin/app.php:83
+msgid "Site Title"
+msgstr "Назва сайту"
+
+#: admin/app.php:87
+msgid "Site Description"
+msgstr "Опис сайту"
+
+#: admin/galleries.php:85 admin/gmedia.php:117 admin/terms.php:98
+#: admin/wpmedia.php:50 inc/media-upload.php:263 inc/media-upload.php:563
+#: inc/media-upload.php:854
+msgid "Search..."
+msgstr "Пошук..."
+
+#: admin/galleries.php:96 admin/galleries.php:114 admin/galleries.php:132
+#: admin/gmedia.php:128 admin/gmedia.php:151 admin/gmedia.php:234
+#: admin/gmedia.php:314 admin/terms.php:114 admin/terms.php:176
+#: admin/terms.php:206 admin/terms.php:978 admin/terms.php:1446
+#: admin/wpmedia.php:63 admin/wpmedia.php:88 admin/wpmedia.php:136
+#: admin/wpmedia.php:158
+msgid "Toggle Dropdown"
+msgstr "Перемикнути переміщення"
+
+#: admin/galleries.php:99 admin/gmedia.php:130 admin/gmedia.php:170
+#: admin/terms.php:117 admin/wpmedia.php:65 admin/wpmedia.php:95
+msgid "All"
+msgstr "Все"
+
+#: admin/galleries.php:100 admin/gmedia.php:131 admin/terms.php:118
+#: admin/terms.php:1800 admin/wpmedia.php:66 inc/media-upload.php:929
+msgid "None"
+msgstr "Нічого"
+
+#: admin/galleries.php:102 admin/gmedia.php:137 admin/terms.php:121
+#: admin/wpmedia.php:73
+msgid "Reverse only visible items"
+msgstr "Обернути тільки видимі об'єкти"
+
+#: admin/galleries.php:102 admin/gmedia.php:137 admin/terms.php:121
+#: admin/wpmedia.php:73
+msgid "Reverse"
+msgstr "Обернути"
+
+#: admin/galleries.php:107 admin/modules.php:125 inc/post-metabox.php:97
+msgid "Create Gallery"
+msgstr "Створити галерею"
+
+#: admin/galleries.php:111 admin/gmedia.php:229 admin/gmedia.php:231
+#: admin/terms.php:173 admin/terms.php:975 admin/terms.php:1443
+#: admin/wpmedia.php:133
+msgid "Action"
+msgstr "Дія"
+
+#: admin/galleries.php:121 admin/gmedia.php:297 admin/terms.php:184
+#: admin/wpmedia.php:149
+msgid "Select items to see more actions"
+msgstr "Виберіть пункти, щоб побачити більше дій"
+
+#: admin/galleries.php:123 admin/galleries.php:246 admin/gmedia.php:286
+#: admin/terms.php:191 admin/terms.php:417 admin/terms.php:544
+msgid ""
+"You are about to permanently delete the selected items.\n"
+"\r'Cancel' to stop, 'OK' to delete."
+msgstr ""
+"Ви збираєтеся назавжди видалити вибрані елементи.\n"
+"\n"
+"\"Скасувати\", щоб зупинити, «OK» для видалення."
+
+#: admin/galleries.php:123 admin/gmedia.php:286 admin/terms.php:191
+msgid "Delete Selected Items"
+msgstr "Видалити вибрані об'єкти"
+
+#: admin/galleries.php:130 admin/gmedia.php:312 admin/terms.php:203
+#: admin/wpmedia.php:155
+msgid "%s selected"
+msgstr "%s обрано"
+
+#: admin/galleries.php:135 admin/gmedia.php:319 admin/terms.php:211
+#: admin/wpmedia.php:161
+msgid "Show only selected items"
+msgstr "Показати тільки обрані об'єкти"
+
+#: admin/galleries.php:136 admin/gmedia.php:324 admin/terms.php:213
+#: admin/wpmedia.php:162
+msgid "Clear selected items"
+msgstr "Очистити вибрані об'єкти"
+
+#: admin/galleries.php:188 inc/media-upload.php:311
+msgid "Module broken <br>Reinstall module"
+msgstr "Модуль зламано<br>Встановіть заново модуль"
+
+#: admin/galleries.php:208 admin/galleries.php:209 inc/media-upload.php:328
+msgid "Shortcode"
+msgstr "Шорткод"
+
+#: admin/galleries.php:229 admin/gmedia.php:513 admin/terms.php:399
+#: admin/terms.php:529 admin/terms.php:674 admin/terms.php:842
+msgid "Share"
+msgstr "Поділитися"
+
+#: admin/galleries.php:236 admin/terms.php:406 admin/terms.php:533
+msgid "Edit"
+msgstr "Редагувати"
+
+#: admin/galleries.php:243 admin/gmedia.php:531 admin/gmedia.php:722
+#: admin/terms.php:414 admin/terms.php:541 admin/terms.php:685
+msgid "Delete"
+msgstr "Видалити"
+
+#: admin/galleries.php:253 inc/media-upload.php:333
+msgid "Module"
+msgstr "Модуль"
+
+#: admin/galleries.php:254 admin/gmedia.php:480 admin/gmedia.php:636
+#: admin/gmedia.php:902 admin/wpmedia.php:192 inc/media-upload.php:334
+msgid "Type"
+msgstr "Тип"
+
+#: admin/galleries.php:255 admin/gmedia.php:914 inc/media-upload.php:335
+msgid "Last Edited"
+msgstr "Останнє редагування"
+
+#: admin/galleries.php:257 inc/core.php:2145 inc/media-upload.php:337
+msgid "Source"
+msgstr "Джерело"
+
+#: admin/galleries.php:262 admin/galleries.php:700 inc/media-upload.php:342
+msgid "Selected Gmedia"
+msgstr "Вибрана Gmedia"
+
+#: admin/galleries.php:264 inc/media-upload.php:345
+msgid "Show %d items in Gmedia Library"
+msgstr "Показати %d об'єкти в бібліотеці Gmedia "
+
+#: admin/galleries.php:270 admin/galleries.php:697 admin/gmedia.php:204
+#: admin/terms.php:159 admin/terms.php:968 admin/terms.php:1435
+#: inc/media-upload.php:352 inc/media-upload.php:576
+msgid "Categories"
+msgstr "Категорії"
+
+#: admin/galleries.php:275 admin/galleries.php:695 admin/gmedia.php:208
+#: admin/terms.php:153 admin/terms.php:966 admin/terms.php:1433
+#: inc/media-upload.php:357 inc/media-upload.php:572
+msgid "Albums"
+msgstr "Альбоми"
+
+#: admin/galleries.php:280 admin/galleries.php:696 admin/gmedia.php:211
+#: admin/gmedia.php:453 admin/gmedia.php:616 admin/terms.php:156
+#: admin/terms.php:586 admin/terms.php:967 admin/terms.php:1434
+#: inc/core.php:2031 inc/core.php:2130 inc/media-upload.php:362
+#: inc/media-upload.php:574
+msgid "Tags"
+msgstr "Теги"
+
+#: admin/galleries.php:285 inc/image-editor.php:50 inc/media-upload.php:367
+msgid "Filters"
+msgstr "Фільтри"
+
+#: admin/galleries.php:304 admin/gmedia.php:984 admin/terms.php:455
+#: admin/terms.php:569 admin/terms.php:777 admin/wpmedia.php:234
+#: inc/media-upload.php:400 inc/media-upload.php:739 inc/media-upload.php:943
+msgid "No items to show."
+msgstr "Немає об'єктів для показу"
+
+#: admin/galleries.php:321 admin/galleries.php:1053
+msgid "Choose Module for Gallery"
+msgstr "Виберіть модуль для галереї"
+
+#: admin/galleries.php:351 admin/galleries.php:1094 admin/modules.php:114
+#: admin/modules.php:164
+msgid "Version"
+msgstr "Версія"
+
+#: admin/galleries.php:359 admin/galleries.php:1102
+msgid "No installed modules"
+msgstr "Модулів не встановлено"
+
+#: admin/galleries.php:375 admin/gmedia.php:513 admin/gmedia.php:1033
+#: admin/settings.php:37 admin/terms.php:882
+msgid "GmediaCloud Page"
+msgstr "Сторінка GmediaCloud "
+
+#: admin/galleries.php:379 admin/gmedia.php:1037 admin/terms.php:886
+msgid "Link to page"
+msgstr "Посилання на сторінку"
+
+#: admin/galleries.php:383 admin/gmedia.php:1041 admin/terms.php:890
+msgid "Send this link to"
+msgstr "Надішліть це посилання до"
+
+#: admin/galleries.php:385 admin/gmedia.php:1043 admin/terms.php:892
+msgid "Message (optional)"
+msgstr "Повідомлення (необов'язково)"
+
+#: admin/galleries.php:391 admin/gmedia.php:1049 admin/terms.php:898
+msgid "Send"
+msgstr "Вислати"
+
+#: admin/galleries.php:438 inc/shortcodes.php:114
+msgid "No gallery with ID #%s in database"
+msgstr "Немає галереї з  ID #%s в базі даних"
+
+#: admin/galleries.php:542
+msgid ""
+"Module `%s` is broken. Choose another module from the list and save settings"
+msgstr ""
+"Модуль `%s` зламано. Виберіть інший модуль зі списку і збережіть налаштування"
+
+#: admin/galleries.php:545
+msgid ""
+"Can't get module with name `%s`. Choose module from the list and save settings"
+msgstr ""
+"Не вдається отримати модуль з ім'ям `%s`. Виберіть модуль зі списку і "
+"збережіть налаштування"
+
+#: admin/galleries.php:548
+msgid ""
+"Module is not selected for this gallery. Choose module from the list and save "
+"settings"
+msgstr ""
+"Модуль не вибрано для цій галереї. Виберіть інший модуль зі списку і "
+"збережіть налаштування"
+
+#: admin/galleries.php:557
+msgid "Preset `%s` loaded. To apply it for current gallery click Save button"
+msgstr ""
+"Пресет \"%s\" завантажено. Щоб застосувати його до поточної галереї, "
+"натисніть Зберегти"
+
+#: admin/galleries.php:573
+msgid "Manage Galleries"
+msgstr "Керувати галереями"
+
+#: admin/galleries.php:578
+msgid "Cancel preview module"
+msgstr "Скасувати модуль перегляду"
+
+#: admin/galleries.php:579
+msgid "Save with new module"
+msgstr "Зберегти з новим модулем"
+
+#: admin/galleries.php:584
+msgid "Confirm reset gallery options"
+msgstr "Підтвердити скидання параметрів галереї"
+
+#: admin/galleries.php:584
+msgid "Reset to default"
+msgstr "Повернути всі початкові налаштування"
+
+#: admin/galleries.php:586 admin/galleries.php:608 admin/terms.php:1486
+#: admin/terms.php:1816
+msgid "Save"
+msgstr "Зберегти"
+
+#: admin/galleries.php:592
+msgid "Module Presets"
+msgstr "Модульні пресети"
+
+#: admin/galleries.php:597
+msgid "Save as Default"
+msgstr "Зберегти за замовчуванням"
+
+#: admin/galleries.php:598
+msgid "or"
+msgstr "або"
+
+#: admin/galleries.php:600 inc/image-editor.php:19
+msgid "Restore Original"
+msgstr "Відновити оригінал"
+
+#: admin/galleries.php:605
+msgid "Save Preset as:"
+msgstr "Зберегти персет як:"
+
+#: admin/galleries.php:607
+msgid "Preset Name"
+msgstr "Ім'я пресету"
+
+#: admin/galleries.php:641
+msgid ""
+"This module is broken or outdated. Please, go to Modules page and update/"
+"install module."
+msgstr ""
+"Це модуль зламаний або застарілий. Будь ласка, перейдіть на сторінку Модулі "
+"та відновіть/установіть модуль."
+
+#: admin/galleries.php:645
+msgid "General Settings"
+msgstr "Загальні налаштування"
+
+#: admin/galleries.php:656
+msgid "Gallery module:"
+msgstr "Модуль галереї:"
+
+#: admin/galleries.php:658
+msgid "Preview module:"
+msgstr "Модуль перегляду:"
+
+#: admin/galleries.php:659
+msgid "Note: Module changed to %s, but not saved yet"
+msgstr "Примітка: Модуль змінено на %s, але ще не збережено"
+
+#: admin/galleries.php:662
+msgid "Gallery author:"
+msgstr "Автор гелереї:"
+
+#: admin/galleries.php:664 admin/terms.php:1490
+msgid "Click to choose author for gallery"
+msgstr "Виберіть автора галереї"
+
+#: admin/galleries.php:664 admin/terms.php:1490
+msgid "(no author / shared albums)"
+msgstr "(без автора/спільні альбоми)"
+
+#: admin/galleries.php:666 admin/terms.php:1492
+msgid ""
+"Note: Author changed but not saved yet. You can see Albums list only of "
+"chosen author"
+msgstr ""
+"Примітка: Автора змінено, але ще не збережено. Ви можете продивитись список "
+"альбомів тільки вибраного автора"
+
+#: admin/galleries.php:673
+msgid "Shortcode:"
+msgstr "Шорткод:"
+
+#: admin/galleries.php:690
+msgid "Show supported files from"
+msgstr "Показати підтримувані файли з"
+
+#: admin/galleries.php:698 admin/gmedia.php:145 admin/gmedia.php:147
+#: admin/wpmedia.php:82 admin/wpmedia.php:84
+msgid "Filter"
+msgstr "Фільтр"
+
+#: admin/galleries.php:720 admin/terms.php:1568
+msgid "Choose Categories"
+msgstr "Вибрати категорії"
+
+#: admin/galleries.php:721 admin/galleries.php:722
+msgid "Choose Categories..."
+msgstr "Вибрати категорії..."
+
+#: admin/galleries.php:741 admin/terms.php:1599
+msgid "Choose Tags"
+msgstr "Вибрати теги"
+
+#: admin/galleries.php:742 admin/galleries.php:743
+msgid "Choose Tags..."
+msgstr "Вибрати теги..."
+
+#: admin/galleries.php:777 admin/terms.php:1535
+msgid "Choose Albums"
+msgstr "Вибрати альбоми"
+
+#: admin/galleries.php:778 admin/galleries.php:779
+msgid "Choose Albums..."
+msgstr "Вибрати альбоми..."
+
+#: admin/galleries.php:783 admin/terms.php:1550
+msgid ""
+"You can choose Albums from the same author as Gallery author or Albums "
+"without author"
+msgstr ""
+"Ви можете вибрати Альбоми того ж автора , що й Галереї або Альбоми без автора"
+
+#: admin/galleries.php:805
+msgid "Choose Custom Filters"
+msgstr "Виберіть настроювані фільтри"
+
+#: admin/galleries.php:806 admin/galleries.php:807
+msgid "Choose Filters..."
+msgstr "Виберіть фільтри..."
+
+#: admin/galleries.php:811
+msgid "Filter - is custom query with multiple parameters."
+msgstr "Фільтр - це настроюваний запит з декількома параметрами."
+
+#: admin/galleries.php:816
+msgid ""
+"Selected Gmedia IDs <small class=\"text-muted\">separated by comma</small>"
+msgstr ""
+"Виберіть ID Gmedia <small class=\"text-muted\">відокремлені комою</small>"
+
+#: admin/galleries.php:818 admin/terms.php:1650
+msgid "Gmedia IDs..."
+msgstr "Gmedia ID..."
+
+#: admin/galleries.php:837
+msgid "Last edited:"
+msgstr "Останнє редагування:"
+
+#: admin/galleries.php:843
+msgid "Gallery ID:"
+msgstr "ID галереї:"
+
+#: admin/galleries.php:844
+msgid "GmediaCloud page URL for current gallery:"
+msgstr "URL сторінки GmediaCloud  для поточної галереї:"
+
+#: admin/galleries.php:856
+msgid ""
+"update <a href=\"options-permalink.php\">Permalink Settings</a> if above link "
+"not working"
+msgstr ""
+"оновити <a href=\"options-permalink.php\">Налаштування постійних посилань</a> "
+"якщо попереднє посилання не працює"
+
+#: admin/galleries.php:858
+msgid ""
+"More info about GmediaCloud Pages and GmediaCloud Settings can be found <a "
+"href=\"admin.php?page=GrandMedia_Settings#gmedia_settings_cloud\">here</a>"
+msgstr ""
+"Більше інформації про сторінки GmediaCloud та налаштування GmediaCloud можна "
+"знайти<a href=\"admin.php?page=GrandMedia_Settings#gmedia_settings_cloud"
+"\">тут</a>"
+
+#: admin/galleries.php:861
+msgid "Gallery Preview:"
+msgstr "Переглід галереї:"
+
+#: admin/gmedia.php:92
+msgid "Selected Authors:"
+msgstr "Вибрані автори:"
+
+#: admin/gmedia.php:102
+msgid "Selected Filter:"
+msgstr "Вибраний фільтр:"
+
+#: admin/gmedia.php:133 admin/gmedia.php:177 admin/wpmedia.php:68
+#: admin/wpmedia.php:103
+msgid "Images"
+msgstr "Зображення"
+
+#: admin/gmedia.php:134 admin/gmedia.php:184 admin/terms.php:1669
+#: admin/wpmedia.php:69 admin/wpmedia.php:111
+msgid "Audio"
+msgstr "Аудіо"
+
+#: admin/gmedia.php:135 admin/gmedia.php:191 admin/terms.php:1670
+#: admin/wpmedia.php:70 admin/wpmedia.php:119
+msgid "Video"
+msgstr "Відео"
+
+#: admin/gmedia.php:145 admin/wpmedia.php:82
+msgid "Reset Filter"
+msgstr "Скинути фільтр"
+
+#: admin/gmedia.php:154
+msgid "FILTER BY AUTHOR"
+msgstr "ФІЛЬТР ЗА АВТОРОМ"
+
+#: admin/gmedia.php:164
+msgid "Show all authors"
+msgstr "Показати всіх авторів"
+
+#: admin/gmedia.php:166 admin/wpmedia.php:91
+msgid "TYPE"
+msgstr "ТИП"
+
+#: admin/gmedia.php:199 admin/wpmedia.php:127
+msgid "Other"
+msgstr "Інший"
+
+#: admin/gmedia.php:200
+msgid "COLLECTIONS"
+msgstr "КОЛЕКЦІЇ"
+
+#: admin/gmedia.php:229
+msgid "Toggle Edit Mode"
+msgstr "Перемикнути Модуль редагування"
+
+#: admin/gmedia.php:243
+msgid "Enter Edit Mode"
+msgstr "Ввести Модуль редагування"
+
+#: admin/gmedia.php:257 admin/gmedia.php:328
+msgid "Quick Gallery from Selected"
+msgstr "Швидка галерея з вибраних об'єктів"
+
+#: admin/gmedia.php:263
+msgid "Assign Category..."
+msgstr "Призначити категорію..."
+
+#: admin/gmedia.php:269
+msgid "Move to Album..."
+msgstr "Перемістити до альбому..."
+
+#: admin/gmedia.php:280
+msgid "Delete Tags..."
+msgstr "Видалити теги..."
+
+#: admin/gmedia.php:294
+msgid "Update Metadata in Database"
+msgstr "Оновити метадані в базі даних"
+
+#: admin/gmedia.php:299
+msgid "Exit Edit Mode"
+msgstr "Вийти з Модуля редагування"
+
+#: admin/gmedia.php:321
+msgid "Show all gmedia items"
+msgstr "Показати всі об'єкти в бібліотеці Gmedia "
+
+#: admin/gmedia.php:345 admin/terms.php:313 admin/terms.php:609
+msgid "Info:"
+msgstr "Інфо:"
+
+#: admin/gmedia.php:425 admin/gmedia.php:588 inc/core.php:2030
+#: inc/media-upload.php:690
+msgid "Album"
+msgstr "Альбом"
+
+#: admin/gmedia.php:440 admin/gmedia.php:603 admin/gmedia.php:786
+#: inc/core.php:2029 inc/core.php:2134 inc/media-upload.php:692
+msgid "Category"
+msgstr "Категорія"
+
+#: admin/gmedia.php:467
+msgid "Views / Likes"
+msgstr "Перегляди / лайкі"
+
+#: admin/gmedia.php:471
+msgid "Rating"
+msgstr "Рейтінг"
+
+#: admin/gmedia.php:485 admin/gmedia.php:641 inc/media-upload.php:917
+msgid "Size"
+msgstr "Розмір"
+
+#: admin/gmedia.php:494 admin/gmedia.php:652
+msgid "Last Modified Date"
+msgstr "Остання змінена дата"
+
+#: admin/gmedia.php:515
+msgid "Edit Data"
+msgstr "Редагувати дані"
+
+#: admin/gmedia.php:519 admin/gmedia.php:690
+msgid "Edit Image"
+msgstr "Редагувати зображення"
+
+#: admin/gmedia.php:521 admin/gmedia.php:664 admin/gmedia.php:691
+msgid "View Original"
+msgstr "Переглянути оригінал"
+
+#: admin/gmedia.php:524 admin/gmedia.php:670 admin/gmedia.php:713
+msgid "Play"
+msgstr "Відтворити"
+
+#: admin/gmedia.php:528 admin/gmedia.php:719
+msgid "Meta Info"
+msgstr "Мета Інфо"
+
+#: admin/gmedia.php:531 admin/gmedia.php:722
+msgid ""
+"You are about to permanently delete %s file.\n"
+"\r'Cancel' to stop, 'OK' to delete."
+msgstr ""
+"Ви збираєтеся назавжди видалити %s файл.\n"
+"\n"
+"'Скасувати', щоб зупинити, «OK» для видалення."
+
+#: admin/gmedia.php:536
+msgid ""
+"You are about to delete record from DB for %s file.\n"
+"\r'Cancel' to stop, 'OK' to delete."
+msgstr ""
+"Ви збираєтеся видалити запис з БД для %s файла.\n"
+"\n"
+"'Скасувати', щоб зупинити, «OK» для видалення."
+
+#: admin/gmedia.php:536
+msgid "Delete DB record (leave file on the server)"
+msgstr "Видалити запис БД (залишити файл на сервері)"
+
+#: admin/gmedia.php:739
+msgid "Link URL"
+msgstr "Посилання URL"
+
+#: admin/gmedia.php:764
+msgid "Custom Cover"
+msgstr "користувальницькі обкладинки"
+
+#: admin/gmedia.php:767
+msgid "Gmedia ID or Image URL"
+msgstr "ID Gmedia або URL зображення"
+
+#: admin/gmedia.php:829
+msgid "Album "
+msgstr "Альбом"
+
+#: admin/gmedia.php:847
+msgid "Tags "
+msgstr "Теги"
+
+#: admin/gmedia.php:904
+msgid "File Size"
+msgstr "Розмір файлу"
+
+#: admin/gmedia.php:908
+msgid "Dimensions"
+msgstr "Розміри"
+
+#: admin/gmedia.php:913
+msgid "Uploaded"
+msgstr "Завантажено"
+
+#: admin/gmedia.php:987 inc/media-upload.php:946
+msgid "Add Media"
+msgstr "Додати медіа "
+
+#: admin/gmedia.php:998
+msgid "Back to top"
+msgstr "Догори"
+
+#: admin/gmedia.php:1061 admin/terms.php:1239 inc/core.php:2193
+msgid "Add New Custom Field"
+msgstr "Додати нове настроюване поле."
+
+#: admin/gmedia.php:1072 admin/terms.php:1250
+msgid "Add"
+msgstr "Додати"
+
+#: admin/modules.php:45
+msgid "Error loading remote xml..."
+msgstr "Помилка завантаження дистанційного xml..."
+
+#: admin/modules.php:65
+msgid "Install Module ZIP"
+msgstr "Встановити ZIP модуля"
+
+#: admin/modules.php:67
+msgid "Installed Modules"
+msgstr "Встановлені модулі"
+
+#: admin/modules.php:100 admin/modules.php:172
+msgid "Loading..."
+msgstr "Завантаження..."
+
+#: admin/modules.php:100
+msgid "Update Module"
+msgstr "Оновити модуль"
+
+#: admin/modules.php:120 admin/modules.php:170
+msgid "View Demo"
+msgstr "Перегляд демо"
+
+#: admin/modules.php:130
+msgid "Delete Module"
+msgstr "Видалити модуль"
+
+#: admin/modules.php:145
+msgid "Not Installed Modules"
+msgstr "Не встановлені модулі"
+
+#: admin/modules.php:172
+msgid "Install Module"
+msgstr "Встановити модуль"
+
+#: admin/modules.php:189
+msgid "Install a plugin in .zip format"
+msgstr "Встановити плагін в форматі  .zip"
+
+#: admin/modules.php:192
+msgid ""
+"If you have a module in a .zip format, you may install it by uploading it "
+"here."
+msgstr ""
+"Якщо ваш модуль в форматі  .zip, ви можете встановити його, завантаживши тут"
+
+#: admin/modules.php:194
+msgid "Module zip file"
+msgstr "zip файл модуля"
+
+#: admin/modules.php:199
+msgid "Install"
+msgstr "Встановити"
+
+#: admin/processor.php:93 admin/processor.php:542 admin/processor.php:547
+msgid "You are not allowed to be here"
+msgstr "Вам не дозволено знаходитись тут"
+
+#: admin/processor.php:105 admin/processor.php:836
+msgid "Gallery Name is not specified"
+msgstr "Назву галереї не визначено"
+
+#: admin/processor.php:109 admin/processor.php:840
+msgid "Gallery name can't be only digits"
+msgstr "Назва галереї не може бути тільки числами"
+
+#: admin/processor.php:113
+msgid "Choose gmedia from library for quick gallery"
+msgstr "Виберіть gmedia з бібліотеки для швидкої галереї"
+
+#: admin/processor.php:136
+msgid "Gallery \"%s\" successfuly saved. Shortcode: [gmedia id=%d]"
+msgstr "Галерея \"%s\" успішно збережена. Шорткод: [gmedia id=%d]"
+
+#: admin/processor.php:192
+msgid "%d item(s) was uncategorized"
+msgstr "%d об'єкт (ів) без категорії"
+
+#: admin/processor.php:205
+msgid "Category `%s` assigned to %d image(s)."
+msgstr "Категорія `%s` призначена до %d зображень."
+
+#: admin/processor.php:232
+msgid "%d item(s) updated with \"No Album\""
+msgstr "%d об'єкт (ів) оновлено \"Без альбому\""
+
+#: admin/processor.php:258 inc/db.connect.php:2945
+msgid "Could not update statuses for gmedia items in the database"
+msgstr "Не вдалося оновити статуси gmedia об'єктів в базі даних"
+
+#: admin/processor.php:262
+msgid "Album `%s` assigned to %d item(s)"
+msgstr "Альбом `% s` призначено до %d об'єкта(ів)"
+
+#: admin/processor.php:305
+msgid "Tags added to %d item(s)"
+msgstr "Теги додано до %d об'єкта(ів)"
+
+#: admin/processor.php:308
+msgid "No tags specified"
+msgstr "Жодного тегу не визначено"
+
+#: admin/processor.php:334
+msgid "%d tag(s) deleted from %d item(s)"
+msgstr "%d тег(ів) видалено з %d об'єкта(ів)"
+
+#: admin/processor.php:471 admin/processor.php:486
+msgid "%d item(s) updated successfuly"
+msgstr "%d об'єкт (ів) оновлено успішно"
+
+#: admin/processor.php:519 admin/processor.php:580 admin/processor.php:1047
+msgid "%d item(s) deleted successfuly"
+msgstr "%d об'єкт (ів) видалено успішно"
+
+#: admin/processor.php:521
+msgid "%d record(s) deleted from database successfuly. Original file(s) safe"
+msgstr "%d запис(ів) видалено з бази даних успішно. Оригінальні файли збережено"
+
+#: admin/processor.php:535
+msgid "You are not allowed to delete files"
+msgstr "Вам не дозволено видаляти файли"
+
+#: admin/processor.php:587
+msgid "You are not allowed to delete terms"
+msgstr "Вам не дозволено видаляти терміни"
+
+#: admin/processor.php:603
+msgid "You are not allowed to manage filters"
+msgstr "Вам не дозволено керувати фільтрами"
+
+#: admin/processor.php:613
+msgid "Filter Name is not specified"
+msgstr "Назву фільтра не визначено"
+
+#: admin/processor.php:617
+msgid "Filter name can't be only digits"
+msgstr "Назва фільтру не може бути тільки числами"
+
+#: admin/processor.php:680 admin/processor.php:695
+msgid "Filter #%d successfuly saved"
+msgstr "Фільтр  #%d успішно збережений"
+
+#: admin/processor.php:811
+msgid "You are not allowed to manage tags"
+msgstr "Вам не дозволено керувати тегами"
+
+#: admin/processor.php:817 admin/processor.php:1058
+msgid "You are not allowed to manage gmedia galleries"
+msgstr "Вам не дозволено керувати gmedia галереями"
+
+#: admin/processor.php:844 admin/processor.php:973
+msgid "Something goes wrong... Choose module, please"
+msgstr "Щось іде не так ... Виберіть модуль, будь ласка"
+
+#: admin/processor.php:849
+msgid "Choose gallery source, please (tags, albums, categories...)"
+msgstr "Виберіть джерело галереї, будь ласка (теги, альбоми, категорії ...)"
+
+#: admin/processor.php:879 admin/processor.php:951 admin/processor.php:982
+msgid "Can't load data from `%s` module"
+msgstr "Неможливо завантажити дані з модуля  `%s` "
+
+#: admin/processor.php:897 admin/processor.php:910
+msgid "Gallery #%d successfuly saved"
+msgstr "Галерея  #%d успішно збережена"
+
+#: admin/processor.php:917
+msgid ""
+"Original module settings restored. Click \"Reset to default\" button to save "
+"original module settings for gallery"
+msgstr ""
+"Початкові налаштування модуля відновлені. Натисніть \"Повернути всі початкові "
+"налаштування\" , щоб зберегти початкові налаштування модуля для галереї"
+
+#: admin/processor.php:962
+msgid "Gallery settings are reset"
+msgstr "Налаштування галереї повернуто до початкових"
+
+#: admin/processor.php:993
+msgid "Preset name is not specified"
+msgstr "Назву пресета не визначено"
+
+#: admin/processor.php:1014
+msgid "Preset `%s` successfuly saved"
+msgstr "Пресет `%s` успішно збережений"
+
+#: admin/processor.php:1039
+msgid "Error while delete gallery #%d"
+msgstr "Помилка при видалені галереї #%d"
+
+#: admin/processor.php:1061
+msgid "You are not allowed to manage gmedia modules"
+msgstr "Вам не дозволено керувати gmedia модулями"
+
+#: admin/processor.php:1067
+msgid "You are not allowed to install module ZIP"
+msgstr "Вам не дозволено встановлювати модуль ZIP"
+
+#: admin/processor.php:1086
+msgid "The uploaded file could not be moved to %s"
+msgstr "Завантажений файл неможливо перемістити до %s"
+
+#: admin/processor.php:1106
+msgid "The `%s` file unzipped to module's directory"
+msgstr "Файл  `%s` розпакований до каталога модуля"
+
+#: admin/processor.php:1120
+msgid "The `%s` module folder was deleted"
+msgstr "Папка модуля `%s` видалена"
+
+#: admin/processor.php:1126
+msgid "You are not allowed to change gmedia settings"
+msgstr "Вам не дозволено змінювати gmedia налаштування"
+
+#: admin/processor.php:1141
+msgid "License Key deactivated"
+msgstr "Ліцензійний ключ деактивовано"
+
+#: admin/processor.php:1218
+msgid "Settings saved"
+msgstr "Налаштування збережено"
+
+#: admin/processor.php:1248
+msgid "License Key activated successfully"
+msgstr "Ліцензійний ключ успішно активовано"
+
+#: admin/processor.php:1253
+msgid "Error"
+msgstr "Помилка"
+
+#: admin/processor.php:1258
+msgid "Empty License Key"
+msgstr "Пуста ліцензійний ключ"
+
+#: admin/processor.php:1281
+msgid "All settings set to default"
+msgstr "Усі налаштування встановлено за замовчуванням"
+
+#: admin/processor.php:1286
+msgid "You are not allowed to import media in Gmedia Library"
+msgstr "Вам не дозволено імпортувати медіа до галереї Gmedia "
+
+#: admin/settings.php:22
+msgid "Reset all Gmedia settings?"
+msgstr "Скинути всі налаштування Gmedia?"
+
+#: admin/settings.php:22
+msgid "Reset Settings"
+msgstr "Скинути налаштування"
+
+#: admin/settings.php:23 admin/terms.php:1059 admin/terms.php:1114
+msgid "Update"
+msgstr "Оновити"
+
+#: admin/settings.php:34
+msgid "Premium Settings"
+msgstr "Преміум налаштування"
+
+#: admin/settings.php:35
+msgid "Other Settings"
+msgstr "Інші налаштування"
+
+#: admin/settings.php:38
+msgid "Roles/Capabilities Manager"
+msgstr "Менеджер повноважень/розвитку персоналу"
+
+#: admin/settings.php:40
+msgid "System Info"
+msgstr "Інфо системи"
+
+#: admin/settings.php:44
+msgid "Enter License Key to remove backlink label from premium gallery modules."
+msgstr ""
+"Введіть ліцензійний ключ, щоб видалити зворотню етикетку з модулів преміум "
+"галерей."
+
+#: admin/settings.php:48
+msgid "License Key"
+msgstr "Ліцензійний ключ"
+
+#: admin/settings.php:59
+msgid "Activate Key"
+msgstr "Активувати ключ"
+
+#: admin/settings.php:66
+msgid "When delete (uninstall) plugin"
+msgstr "При видаленні (деінсталяції) плагіну"
+
+#: admin/settings.php:68
+msgid "Delete database and all uploaded files"
+msgstr "Видалити всі бази даних та всі завантажені файли"
+
+#: admin/settings.php:69
+msgid "Delete database only and leave uploaded files"
+msgstr "Видаліть тільки бази даних та залишити завантажені файли"
+
+#: admin/settings.php:70
+msgid "Do not delete database and uploaded files"
+msgstr "Не видаляти бази даних та завантажені файли"
+
+#: admin/settings.php:75
+msgid "In Tags order gmedia"
+msgstr "в Тегах впорядкувати gmedia"
+
+#: admin/settings.php:77 admin/settings.php:97 admin/terms.php:246
+#: admin/terms.php:1087 inc/media-upload.php:707
+msgid "by ID"
+msgstr "по ID"
+
+#: admin/settings.php:78 admin/settings.php:98 admin/terms.php:247
+#: admin/terms.php:1088 inc/media-upload.php:708
+msgid "by title"
+msgstr "за назвою"
+
+#: admin/settings.php:79 admin/settings.php:99 admin/terms.php:248
+#: admin/terms.php:1089
+msgid "by filename"
+msgstr "за іменем файлу"
+
+#: admin/settings.php:80 admin/settings.php:100 admin/terms.php:249
+#: admin/terms.php:1090 inc/media-upload.php:709
+msgid "by date"
+msgstr "по даті"
+
+#: admin/settings.php:81 admin/settings.php:101 admin/terms.php:250
+#: admin/terms.php:1091 inc/media-upload.php:710
+msgid "by last modified date"
+msgstr "за останніми змінами"
+
+#: admin/settings.php:82 admin/settings.php:102 admin/terms.php:251
+#: admin/terms.php:1092 admin/terms.php:1801 inc/media-upload.php:711
+msgid "Random"
+msgstr "у випадковому порядку"
+
+#: admin/settings.php:86 admin/settings.php:106 admin/terms.php:255
+#: admin/terms.php:1098 inc/media-upload.php:714
+msgid "Sort order"
+msgstr "порядок сортування"
+
+#: admin/settings.php:95
+msgid "In Category order gmedia"
+msgstr "в Категоріях впорядкувати gmedia"
+
+#: admin/settings.php:114
+msgid "Forbid other plugins to load their JS and CSS on Gmedia admin pages"
+msgstr ""
+"Заборонити іншим плагінам завантажувати їх JS та CSS  на адмін сторінках "
+"Gmedia "
+
+#: admin/settings.php:118
+msgid "Enable Gmedia admin panel Isolation Mode"
+msgstr "Включити режиму ізоляції адмін-панелі Gmedia "
+
+#: admin/settings.php:120
+msgid ""
+"This option could help to avoid JS and CSS conflicts with other plugins in "
+"admin panel."
+msgstr ""
+"Цей варіант може допомогти уникнути JS і CSS конфліктів з іншими плагінами в "
+"адмін-панелі."
+
+#: admin/settings.php:124
+msgid "Forbid theme to format Gmedia shortcode's content"
+msgstr "Заборонити темі форматувати зміст шорткоду Gmedia "
+
+#: admin/settings.php:128
+msgid "Raw output for Gmedia Shortcode"
+msgstr "Прозорий вивід шорткоду Gmedia "
+
+#: admin/settings.php:130
+msgid ""
+"Some themes reformat shortcodes and break it functionality (mostly when you "
+"add description to images). Turning this on should solve this problem."
+msgstr ""
+"Деякі теми переформатують шорткоди і ломають їх функціональність (в "
+"основному, коли ви додаєте опис до зображень). Включення цієї функції має "
+"вирішити цю проблему."
+
+#: admin/settings.php:144
+msgid "Enable Gmedia Library button on custom post types"
+msgstr "Включити Gmedia бібліотеку на довільний тип записів"
+
+#: admin/settings.php:160
+msgid ""
+"GmediaCloud is full window template to show your galleries, albums and other "
+"gmedia content"
+msgstr ""
+"GmediaCloud це повновіконний шаблон для показу ваших галерей, альбомів та "
+"іншого вмісту gmedia"
+
+#: admin/settings.php:161
+msgid ""
+"Each module can have it's own design for GmediaCloud. Here you can set "
+"default module wich will be used for sharing Albums, Tags, Categories and "
+"single Gmedia Items."
+msgstr ""
+"Кожен модуль може мати свій власний дизайн для GmediaCloud. Тут ви можете "
+"встановити за замовчуванням модуль, яким можна буде користовуватися для "
+"обміну альбомами, тегами, категоріями і об'єктами Gmedia."
+
+#: admin/settings.php:164
+msgid "HashID salt for unique template URL"
+msgstr "HashID salt для унікального URL шаблону"
+
+#: admin/settings.php:167
+msgid "Changing this string you'll change Gmedia template URLs."
+msgstr "Змінивши цей рядок, ви зміните Gmedia шаблони URL."
+
+#: admin/settings.php:170
+msgid "Permalink Endpoint (GmediaCloud base)"
+msgstr "Постійне посилання Кінцева точка (GmediaCloud база)"
+
+#: admin/settings.php:173
+msgid "Changing endpoint you'll change Gmedia template URLs."
+msgstr "Змінивши кінцеву точку, ви зміните шаблони URL Gmedia."
+
+#: admin/settings.php:217
+msgid "Choose module/preset for GmediaCloud Page"
+msgstr "Виберіть модуль/пресет для сторінки GmediaCloud "
+
+#: admin/settings.php:219 inc/media-upload.php:749 inc/media-upload.php:751
+msgid "Choose module/preset"
+msgstr "Виберіть модуль/пресет "
+
+#: admin/settings.php:225 admin/settings.php:229 inc/media-upload.php:756
+#: inc/media-upload.php:759
+msgid "Default Settings"
+msgstr "Налаштування  за замовчуванням"
+
+#: admin/settings.php:239
+msgid "by default will be used Phantom module"
+msgstr "За замовчуванням буде використовуватись фантомний модуль"
+
+#: admin/settings.php:242
+msgid "Top Bar Social Buttons"
+msgstr "Кнопки соціальних мереж верхньої панелі меню"
+
+#: admin/settings.php:244
+msgid "Show Social Buttons"
+msgstr "Показати кнопки соціальних мереж"
+
+#: admin/settings.php:245
+msgid "Hide Social Buttons"
+msgstr "Заховати кнопки соціальних мереж"
+
+#: admin/settings.php:249
+msgid "Additional JS code for GmediaCloud Page"
+msgstr "Додатковий JS код для сторінки GmediaCloud "
+
+#: admin/settings.php:253
+msgid "Additional CSS code for GmediaCloud Page"
+msgstr "Додатковий CSS код для сторінки GmediaCloud "
+
+#: admin/settings.php:259
+msgid ""
+"Select the lowest role which should be able to access the follow "
+"capabilities. Gmedia Gallery supports the standard roles from WordPress."
+msgstr ""
+"Виберіть найнижчу роль, з якою можна отримати доступ до наступних "
+"можливостей. Gmedia Gallery підтримує стандартні ролі від WordPress."
+
+#: admin/settings.php:265
+msgid "Who can view Gmedia Gallery admin pages"
+msgstr "Хто може переглядати адмін сторінки Gmedia Gallery"
+
+#: admin/settings.php:270
+msgid "Upload Media Files"
+msgstr "Завантажити медіа файли"
+
+#: admin/settings.php:273
+msgid "Who can upload files to Gmedia Library"
+msgstr "Хто може завантажувати файли до галереї Gmedia "
+
+#: admin/settings.php:277
+msgid "Import Media Files"
+msgstr "Імпортувати медіа файли"
+
+#: admin/settings.php:280
+msgid "Who can import files to Gmedia Library"
+msgstr "Хто може імпортувати файли до галереї Gmedia "
+
+#: admin/settings.php:285
+msgid "Show Others Media in Library"
+msgstr "Показати медіа інших в бібліотеці"
+
+#: admin/settings.php:288
+msgid "Who can see files uploaded by other users"
+msgstr "Хто може переглядати файли, завантажені іншими користувачами"
+
+#: admin/settings.php:291
+msgid "Edit Media"
+msgstr "Редагувати медіа"
+
+#: admin/settings.php:294
+msgid ""
+"Who can edit media title, description and other properties of uploaded files"
+msgstr ""
+"Хто може редагувати назву медіа, опис та інші властивості завантажених файлів"
+
+#: admin/settings.php:298
+msgid "Edit Others Media"
+msgstr "Редагувати інші медіа"
+
+#: admin/settings.php:301
+msgid "Who can edit files, albums/tags and galleries of other users"
+msgstr "Хто може редагувати файли, альбоми/теги та галереї інших користувачів"
+
+#: admin/settings.php:305
+msgid "Delete Media"
+msgstr "Видалити медіа"
+
+#: admin/settings.php:308
+msgid "Who can delete uploaded files from Gmedia Library"
+msgstr "Хто може видаляти завантажені файли з бібліотеки Gmedia "
+
+#: admin/settings.php:312
+msgid "Delete Others Media"
+msgstr "Видалити інших медіа"
+
+#: admin/settings.php:315
+msgid "Who can delete files, albums/tags and galleries of other users"
+msgstr "Хто може видаляти файли, альбоми/теги та галереї інших користувачів"
+
+#: admin/settings.php:320
+msgid "Albums, Tags..."
+msgstr "Альбоми, Теги, ..."
+
+#: admin/settings.php:323
+msgid "Who can assign available terms to media files"
+msgstr "Хто може призначати доступні терміни для медіа файлів"
+
+#: admin/settings.php:327
+msgid "Manage Albums"
+msgstr "Керувати альбомами"
+
+#: admin/settings.php:330
+msgid ""
+"Who can create and edit own albums. It is required \"Edit Others Media\" "
+"capability to edit others and shared albums"
+msgstr ""
+"Хто може створювати та редагувати власні альбоми. Вимагається можливість"
+"\"Редагувати медіа інших\" для такого редагування та створення спільних "
+"альбомів"
+
+#: admin/settings.php:333
+msgid "Manage Filters"
+msgstr "Керувати фільтрами"
+
+#: admin/settings.php:336
+msgid ""
+"Who can create and edit own custom filters. It is required \"Edit Others Media"
+"\" capability to edit filters you do not own"
+msgstr ""
+"Хто може створювати та редагувати власні настроювані фільтри. Вимагається "
+"можливість\"Редагувати медіа інших\" для редагування не власних фільтрів"
+
+#: admin/settings.php:339
+msgid "Manage Tags"
+msgstr "Керувати тегами"
+
+#: admin/settings.php:342
+msgid ""
+"Who can create new tags. It is required \"Edit Others Media\" capability to "
+"edit tags"
+msgstr ""
+"Хто може створювати нові теги. Вимагається можливість\"Редагувати медіа інших"
+"\" для редагування тегів"
+
+#: admin/settings.php:345
+msgid "Delete Terms"
+msgstr "Видалити терміни"
+
+#: admin/settings.php:348
+msgid ""
+"Who can delete own albums. It is required \"Delete Others Media\" capability "
+"to delete others terms"
+msgstr ""
+"Хто може видаляти власні альбоми. Вимагається можливість\"Редагувати медіа "
+"інших\" для редагування не власних термінів"
+
+#: admin/settings.php:353
+msgid "Galleries"
+msgstr "Галереї"
+
+#: admin/settings.php:356
+msgid "Who can create, edit and delete own galleries"
+msgstr "Хто може створювати, редагувати та видаляти власні галереї"
+
+#: admin/settings.php:363
+msgid "Who can manage modules"
+msgstr "Хто може керувати модулями"
+
+#: admin/settings.php:370
+msgid ""
+"Who can change settings. Note: Capabilites can be changed only by "
+"administrator"
+msgstr ""
+"Хто може змінювати налаштування. Примітка: Можливості можуть бути змінені "
+"адміністратором"
+
+#: admin/settings.php:381
+msgid "Memory Limit: "
+msgstr "Обмеження пам'яті:"
+
+#: admin/settings.php:382
+msgid "Memory Used: "
+msgstr "Використано пам'яті:"
+
+#: admin/settings.php:385
+msgid "Under constraction..."
+msgstr "В розробці ..."
+
+#: admin/terms.php:130 admin/terms.php:142
+msgid "Show: Albums"
+msgstr "Показати: Альбоми"
+
+#: admin/terms.php:133
+msgid "Show: Filters"
+msgstr "Показати: Фільтри"
+
+#: admin/terms.php:136
+msgid "Show: Tags"
+msgstr "Показати: Теги"
+
+#: admin/terms.php:139
+msgid "Show: Categories"
+msgstr "Показати: Категорії"
+
+#: admin/terms.php:232 admin/terms.php:1004
+msgid "Album Name"
+msgstr "Назва альбому"
+
+#: admin/terms.php:243 admin/terms.php:1084
+msgid "Order gmedia"
+msgstr "Впорядкувати gmedia"
+
+#: admin/terms.php:245 inc/media-upload.php:706
+msgid "user defined"
+msgstr "Визначено користувачем"
+
+#: admin/terms.php:301
+msgid "Add New Album"
+msgstr "Додати новий альбом"
+
+#: admin/terms.php:313 admin/terms.php:609
+msgid "You are not allowed to add new terms"
+msgstr "Вам не дозволено додавати нові терміни"
+
+#: admin/terms.php:337 admin/terms.php:481
+msgid "deleted author"
+msgstr "Видалений автор"
+
+#: admin/terms.php:349 admin/terms.php:493
+msgid "no author"
+msgstr "Без автора"
+
+#: admin/terms.php:383 admin/terms.php:517 admin/terms.php:659
+#: admin/terms.php:829
+msgid "Filter in Gmedia Library"
+msgstr "Фільтр в бібліотеці Gmedia "
+
+#: admin/terms.php:555
+msgid "Query:"
+msgstr "Запит:"
+
+#: admin/terms.php:587
+msgid "you can type multiple tags separated by comma"
+msgstr "Ви можете ввести декілька тегів, розділених комами"
+
+#: admin/terms.php:591
+msgid "Tag Names"
+msgstr "Імена тегів"
+
+#: admin/terms.php:600
+msgid "Add New Tags"
+msgstr "Додати нові теги"
+
+#: admin/terms.php:963 admin/terms.php:1430
+msgid "Return to"
+msgstr "Повернутися до"
+
+#: admin/terms.php:984
+msgid "Show Album in Gmedia Library"
+msgstr "Показати альбом в бібліотеці Gmedia "
+
+#: admin/terms.php:995 inc/media-upload.php:725
+msgid "Edit Album"
+msgstr "Редагувати альбом"
+
+#: admin/terms.php:1027
+msgid "Apply Status for all items in album"
+msgstr "Застосувати статус до всіх об'єктів в альбомі"
+
+#: admin/terms.php:1074
+msgid "Sort Album"
+msgstr "Сортувати альбом"
+
+#: admin/terms.php:1086
+msgid "Custom Order"
+msgstr "Довільне впорядкування"
+
+#: admin/terms.php:1109
+msgid "Reset custom order"
+msgstr "Скинути довільне впорядкування"
+
+#: admin/terms.php:1121
+msgid ""
+"Use your mouse (drag&drop) for custom sorting of images or manually enter "
+"index number in top right field of each image."
+msgstr ""
+"Використовуйте мишу (перетягування) для довільного сортування зображень або "
+"вручну введіть число в правому верхньому полі кожного зображення."
+
+#: admin/terms.php:1142 admin/terms.php:1890
+msgid "Total items: %d"
+msgstr "Всього об'єктів: %d"
+
+#: admin/terms.php:1452
+msgid "Show Filter in Gmedia Library"
+msgstr "Показати фільтр в бібліотеці Gmedia "
+
+#: admin/terms.php:1465
+msgid "Edit Filter"
+msgstr "Редагувати фільтр"
+
+#: admin/terms.php:1474 admin/terms.php:1477
+msgid "Filter Name"
+msgstr "Назва фільтру"
+
+#: admin/terms.php:1488
+msgid "Filter Author:"
+msgstr "Фільтрувати за автором:"
+
+#: admin/terms.php:1508
+msgid "Query Parameters"
+msgstr "Параметри запиту"
+
+#: admin/terms.php:1538 admin/terms.php:1539
+msgid "Any Album..."
+msgstr "Будь-який альбом..."
+
+#: admin/terms.php:1545
+msgid "get albums"
+msgstr "отримати альбоми"
+
+#: admin/terms.php:1546
+msgid "exclude albums"
+msgstr "вилучити альбоми"
+
+#: admin/terms.php:1571 admin/terms.php:1572
+msgid "Any Category..."
+msgstr "Будь-яка категорія..."
+
+#: admin/terms.php:1578
+msgid "get categories"
+msgstr "отримати категорії"
+
+#: admin/terms.php:1579
+msgid "exclude categories"
+msgstr "вилучити категорії"
+
+#: admin/terms.php:1602 admin/terms.php:1603
+msgid "Any Tag..."
+msgstr "Будь-який тег..."
+
+#: admin/terms.php:1609
+msgid "get items with either tags"
+msgstr "отримати об'єкти з будь-якими тегами."
+
+#: admin/terms.php:1610
+msgid "get items that have all listed tags"
+msgstr "вилучити об'єкти , в яких є всі прописані теги"
+
+#: admin/terms.php:1611
+msgid "exclude items that have any of the listed tags"
+msgstr "вилучити об'єкти , в яких є який-небудь з прописаних тегів"
+
+#: admin/terms.php:1619
+msgid "Terms Relation"
+msgstr "Зв'язок термінів"
+
+#: admin/terms.php:1623
+msgid "AND"
+msgstr "ТА"
+
+#: admin/terms.php:1624
+msgid "OR"
+msgstr "АБО"
+
+#: admin/terms.php:1628
+msgid "allows you to describe the relationship between the taxonomy queries"
+msgstr "дозволяє вам описувати зв'язок між запитами таксономії"
+
+#: admin/terms.php:1633
+msgid "Search"
+msgstr "Пошук"
+
+#: admin/terms.php:1636
+msgid "Search string or terms separated by comma"
+msgstr "Пошук рядка або терміну, відокремлених комами"
+
+#: admin/terms.php:1639
+msgid "Search exactly string"
+msgstr "Пошук визначеного рядка"
+
+#: admin/terms.php:1646
+msgid "Use selected in Library"
+msgstr "Використати обраний в Бібліотеці"
+
+#: admin/terms.php:1647
+msgid "Gmedia IDs <small class=\"text-muted\">separated by comma</small>"
+msgstr "ID Gmedia <small class=\"text-muted\">відокремлені комою</small>"
+
+#: admin/terms.php:1655
+msgid "get gmedia IDs"
+msgstr "отримати Gmedia ID"
+
+#: admin/terms.php:1656
+msgid "exclude gmedia IDs"
+msgstr "вилучити Gmedia ID"
+
+#: admin/terms.php:1660
+msgid ""
+"You can select items you want to add here right in Gmedia Library and then "
+"return here and click button \"Use selected in Library\""
+msgstr ""
+"Ви можете вибрати об'єкти, які ви хочете додати прямо в Gmedia бібліотеці, а "
+"потім поверніться сюди і натисніть \"Використати вибране в бібліотеці\""
+
+#: admin/terms.php:1665
+msgid "Mime Type"
+msgstr "Тип MIME"
+
+#: admin/terms.php:1666 admin/terms.php:1667
+msgid "All types..."
+msgstr "Всі типи..."
+
+#: admin/terms.php:1668
+msgid "Image"
+msgstr "Зображення"
+
+#: admin/terms.php:1671
+msgid "Text"
+msgstr "Текст"
+
+#: admin/terms.php:1672
+msgid "Application"
+msgstr "Програма"
+
+#: admin/terms.php:1676
+msgid "Authors"
+msgstr "Автори"
+
+#: admin/terms.php:1693 admin/terms.php:1694
+msgid "All authors..."
+msgstr "Всі автори..."
+
+#: admin/terms.php:1706
+msgid "get authors"
+msgstr "отримати авторів"
+
+#: admin/terms.php:1707
+msgid "exclude authors"
+msgstr "вилучити авторів"
+
+#: admin/terms.php:1716
+msgid "Year"
+msgstr "Рік"
+
+#: admin/terms.php:1717
+msgid "4 digit year e.g. 2011"
+msgstr "4 цифри року, тобто 2011"
+
+#: admin/terms.php:1720
+msgid "Month"
+msgstr "Місяць"
+
+#: admin/terms.php:1721
+msgid "from 1 to 12"
+msgstr "від 1 до 12"
+
+#: admin/terms.php:1724
+msgid "Day"
+msgstr "День"
+
+#: admin/terms.php:1725
+msgid "from 1 to 31"
+msgstr "від 1 до 31"
+
+#: admin/terms.php:1735
+msgid "Custom Field Key"
+msgstr "Ключ настроюваного поля"
+
+#: admin/terms.php:1737
+msgid "Display items with this field key"
+msgstr "Відображати об'єкти з цим ключом поля"
+
+#: admin/terms.php:1740 admin/terms.php:1809
+msgid "Custom Field Value"
+msgstr "Значення настроюваного поля."
+
+#: admin/terms.php:1742
+msgid "Display items with this field value"
+msgstr "Відображати об'єкти з цим значенням поля"
+
+#: admin/terms.php:1745
+msgid "Compare Operator"
+msgstr "Порівняти оператора"
+
+#: admin/terms.php:1747 admin/terms.php:1769 admin/terms.php:1790
+#: admin/terms.php:1799
+msgid "Choose.."
+msgstr "Вибрати..."
+
+#: admin/terms.php:1748 admin/terms.php:1773
+msgid "Default"
+msgstr "За замовчуванням"
+
+#: admin/terms.php:1764
+msgid "Operator to test the field value"
+msgstr "Оператор, щоб перевірити значення поля"
+
+#: admin/terms.php:1767
+msgid "Meta Type"
+msgstr "Мета Тип"
+
+#: admin/terms.php:1780
+msgid "Custom field type"
+msgstr "Тип настроюваного поля."
+
+#: admin/terms.php:1788 inc/media-upload.php:713
+msgid "Order"
+msgstr "Порядок"
+
+#: admin/terms.php:1792
+msgid "DESC - Default"
+msgstr "DESC- за замовчуванням"
+
+#: admin/terms.php:1794
+msgid "Ascending or Descending order"
+msgstr "За зростанням або спаданням"
+
+#: admin/terms.php:1797
+msgid "Order by"
+msgstr "Порядок за"
+
+#: admin/terms.php:1805
+msgid "Date - Default"
+msgstr "Дата - за замовчуванням"
+
+#: admin/terms.php:1806
+msgid "Modified Date"
+msgstr "Змінена дата"
+
+#: admin/terms.php:1808
+msgid "Selected Order"
+msgstr "Вибраний порядок"
+
+#: admin/terms.php:1810
+msgid "Custom Field Value (Numeric)"
+msgstr "Значення настроюваного поля (числове)"
+
+#: admin/terms.php:1812
+msgid "Sort retrieved posts by"
+msgstr "Сортувати знайдені публікації за"
+
+#: admin/terms.php:1863
+msgid "Query Filter"
+msgstr "Фільтр запиту"
+
+#: admin/terms.php:1881
+msgid "No items with selected parameters."
+msgstr "Жодного об'єкту з вибраними параметрами."
+
+#: admin/terms.php:1883
+msgid "Set Filter parameters and click Save button to test query."
+msgstr ""
+"Встановіть параметри фільтрів і натисніть Зберегти, щоб перевірити запит."
+
+#: admin/wpmedia.php:146
+msgid "Import to Gmedia Library..."
+msgstr "Імпортувати до Gmedia бібліотки..."
+
+#: admin/wpmedia.php:185
+msgid "Sort by filename"
+msgstr "Сортувати за іменем файлу"
+
+#: admin/wpmedia.php:190
+msgid "File"
+msgstr "Файл"
+
+#: constants.php:6
+msgid "No Supported Files in Gallery"
+msgstr "Немає підтримуваних файлів в Галереї"
+
+#: grand-media.php:155
+msgid "Sorry, Gmedia Gallery works only under WordPress %s or higher"
+msgstr ""
+"Вибачте, бібліотека Gmedia  працює тільки з версією WordPress %s або вище"
+
+#: grand-media.php:162
+msgid ""
+"Attention! Your server php version is: %s. Gmedia Gallery requires php "
+"version 5.2+ in order to run properly. Please upgrade your server!"
+msgstr ""
+"Увага! Ваша версія серверу php:%s. Бібліотека Gmedia вимагає php версію 5.2+ "
+"для належної роботи. Будь-ласка, відновіть ваш сервер!"
+
+#: grand-media.php:168
+msgid ""
+"Attention! Your server safe mode is: ON. Gmedia Gallery requires safe mode to "
+"be OFF in order to run properly. Please set your server safe mode option!"
+msgstr ""
+"Увага! Ваш безпечний режим серверу: ВКЛ. Gmedia Галерея вимагає безпечний "
+"режим у стані ВИКЛ, щоб правильно працювати. Будь ласка, налаштуйте ваш "
+"безпечний режим серверу!"
+
+#: grand-media.php:278
+msgid "Disable your Popup Blocker and try again."
+msgstr "Вимкніть блокувальник спливаючих вікон і спробуйте знову."
+
+#: grand-media.php:279
+msgid "downloading..."
+msgstr "завантажується..."
+
+#: grand-media.php:280
+msgid "Working. Wait please."
+msgstr "В процесі. Почекайте, будь-ласка."
+
+#: inc/core.php:1399
+msgid "Directory %s or its subfolders are not writable by the server."
+msgstr "Каталог %s  або його підпапки не для запису на сервері."
+
+#: inc/core.php:1421
+msgid "Failed to open directory: %s"
+msgstr "Не вдалося відкрити каталог: %s"
+
+#: inc/core.php:1439
+msgid "Failed to open input stream."
+msgstr "Не вдалося відкрити  вхідний потік."
+
+#: inc/core.php:1643 inc/core.php:1970
+msgid "Could not read image size. Invalid image was deleted."
+msgstr ""
+"Неможливо прочитати розмір зображення.  Невірне зображення було видалене."
+
+#: inc/core.php:1733
+msgid "File uploaded successful. Assigned ID: %s"
+msgstr "Файл завантажено успішно. Призначено ID: %s"
+
+#: inc/core.php:1744
+msgid "Failed to open output stream."
+msgstr "Не вдалося відкрити  вихідний потік."
+
+#: inc/core.php:1787 update.php:259
+msgid "Something went wrong..."
+msgstr "Щось пішло не так..."
+
+#: inc/core.php:1800 update.php:275
+msgid "File not exists: %s"
+msgstr "Файл не існує: %s"
+
+#: inc/core.php:1812
+msgid "file already exists"
+msgstr "Такий файл вже існує"
+
+#: inc/core.php:1819 inc/core.php:1884 inc/core.php:1896 update.php:330
+#: update.php:341
+msgid ""
+"Unable to create directory `%s`. Is its parent directory writable by the "
+"server?"
+msgstr ""
+"Неможливо створити каталог  `%s`. Його батьківський каталог для запису на "
+"сервері?"
+
+#: inc/core.php:1826
+msgid "Directory `%s` or its subfolders are not writable by the server."
+msgstr "Каталог `%s`  або його підпапки не для запису на сервері."
+
+#: inc/core.php:1832
+msgid "Can't copy file from `%s` to `%s`"
+msgstr "Неможливо зкопіювати файл  `%s` до `%s`"
+
+#: inc/core.php:1891 inc/core.php:1903 update.php:336 update.php:347
+msgid "Directory `%s` is not writable by the server."
+msgstr "Каталог `%s` не для запису на сервері."
+
+#: inc/core.php:2021 update.php:418
+msgid "success (ID #%s)"
+msgstr "успішно (ID #%s)"
+
+#: inc/core.php:2067
+msgid "Enter valid email, please"
+msgstr "Введіть дійсну пошту, будь-ласка"
+
+#: inc/core.php:2119
+msgid "Aperture"
+msgstr "Апаратура"
+
+#: inc/core.php:2120
+msgid "Credit"
+msgstr "Дозвіл"
+
+#: inc/core.php:2121
+msgid "Camera"
+msgstr "Камера"
+
+#: inc/core.php:2122
+msgid "Caption"
+msgstr "Титр"
+
+#: inc/core.php:2123
+msgid "Date/Time"
+msgstr "Дата/час"
+
+#: inc/core.php:2124
+msgid "Copyright"
+msgstr "Право власності"
+
+#: inc/core.php:2125
+msgid "Focal length"
+msgstr "Фокусна відстань"
+
+#: inc/core.php:2126
+msgid "ISO"
+msgstr "ISO"
+
+#: inc/core.php:2127
+msgid "Shutter speed"
+msgstr "Витримка"
+
+#: inc/core.php:2131
+msgid "Subject"
+msgstr "Тема"
+
+#: inc/core.php:2132
+msgid "Make"
+msgstr "Виконати"
+
+#: inc/core.php:2133
+msgid "Edit Status"
+msgstr "Редагувати статус"
+
+#: inc/core.php:2135
+msgid "Keywords"
+msgstr "Ключові слова"
+
+#: inc/core.php:2136
+msgid "Date Created"
+msgstr "Дата створена"
+
+#: inc/core.php:2137
+msgid "Time Created"
+msgstr "Час створено"
+
+#: inc/core.php:2138
+msgid "Author Position"
+msgstr "Позиція автора"
+
+#: inc/core.php:2139
+msgid "City"
+msgstr "Місто"
+
+#: inc/core.php:2140
+msgid "Location"
+msgstr "Розташування"
+
+#: inc/core.php:2141
+msgid "Province/State"
+msgstr "Область/штат"
+
+#: inc/core.php:2142
+msgid "Country code"
+msgstr "Код держави"
+
+#: inc/core.php:2143
+msgid "Country"
+msgstr "Держава"
+
+#: inc/core.php:2144
+msgid "Headline"
+msgstr "Заголовок"
+
+#: inc/core.php:2147
+msgid "Last modified"
+msgstr "Остання зміна"
+
+#: inc/core.php:2148
+msgid "Program tool"
+msgstr "Інструменти програми"
+
+#: inc/core.php:2149
+msgid "Format"
+msgstr "Формат"
+
+#: inc/core.php:2150
+msgid "Width"
+msgstr "Ширина"
+
+#: inc/core.php:2151
+msgid "Height"
+msgstr "Висота"
+
+#: inc/core.php:2152
+msgid "Flash"
+msgstr "Flash"
+
+#: inc/core.php:2178
+msgid "Custom Fields"
+msgstr "Настроювані поля"
+
+#: inc/core.php:2195
+msgid ""
+"Custom fields can be used to add extra metadata to a gmedia item that "
+"developer can use in their templates."
+msgstr ""
+"Настроювані поля можна використовувати для додавання додаткових метаданих до "
+"об'єкта gmedia, що розробник може застосовувати в своїх шаблонах."
+
+#: inc/core.php:2226 inc/core.php:2293
+msgid "Value"
+msgstr "Значення"
+
+#: inc/core.php:2268
+msgctxt "meta name"
+msgid "Name"
+msgstr "Назва ( мета назва)"
+
+#: inc/core.php:2273
+msgid "&mdash; Select &mdash;"
+msgstr "&mdash; Вибрати &mdash;"
+
+#: inc/core.php:2284
+msgid "Enter new"
+msgstr "Ввести нову"
+
+#: inc/db.connect.php:326
+msgid "Page"
+msgstr "Сторінку"
+
+#: inc/db.connect.php:330
+msgid "of"
+msgstr "з"
+
+#: inc/db.connect.php:2318
+msgid "Empty Term"
+msgstr "Пустим терміном"
+
+#: inc/db.connect.php:2325 inc/db.connect.php:2473 inc/db.connect.php:3141
+#: inc/db.connect.php:3338
+msgid "Invalid Taxonomy"
+msgstr "Невірна таксономія"
+
+#: inc/db.connect.php:2804 inc/db.connect.php:2883 inc/db.connect.php:2981
+msgid "Invalid taxonomy"
+msgstr "Невірна таксономія"
+
+#: inc/db.connect.php:2813 inc/db.connect.php:2986
+msgid "Invalid term ID"
+msgstr "Невірний термін ID"
+
+#: inc/db.connect.php:2817
+msgid "A name is required for this term"
+msgstr "Для цього терміну вимагається ім'я"
+
+#: inc/db.connect.php:2841
+msgid "A term with the name provided already exists."
+msgstr "Термін з наданим іменем вже існує."
+
+#: inc/db.connect.php:2845
+msgid "Could not insert term into the database"
+msgstr "Неможливо ввести термін в базу даних"
+
+#: inc/db.connect.php:2922
+msgid "A name is required for term"
+msgstr "Для терміну вимагається ім'я"
+
+#: inc/db.connect.php:3043 inc/db.connect.php:3252
+msgid "Could not insert gmedia term relationship into the database"
+msgstr "Неможливо ввести gmedia термін зв'язку в базу даних"
+
+#: inc/image-editor.php:19
+msgid "Do you really want restore original image?"
+msgstr "Ви дійсно бажаєте відновити оригінальне зображення?"
+
+#: inc/image-editor.php:22
+msgid "Do you really want reset all changes?"
+msgstr "Ви дійсно бажаєте скинути всі зміни?"
+
+#: inc/image-editor.php:22
+msgid "Reset"
+msgstr "Скинути"
+
+#: inc/image-editor.php:23
+msgid "Working"
+msgstr "В процесі"
+
+#: inc/image-editor.php:23
+msgid "Save image"
+msgstr "Зберегти зображення"
+
+#: inc/image-editor.php:28
+msgid "Rotate Counterclockwise"
+msgstr "Повернути проти годинникової стрілки"
+
+#: inc/image-editor.php:29
+msgid "Rotate Clockwise"
+msgstr "Повернути за годинниковою стрілкою"
+
+#: inc/image-editor.php:30
+msgid "Flip Horizontal"
+msgstr "Відобразити по горизонталі"
+
+#: inc/image-editor.php:31
+msgid "Flip Vertical"
+msgstr "Відобразити по вертикалі"
+
+#: inc/image-editor.php:32
+msgid "Greyscale"
+msgstr "Відтінки сірого"
+
+#: inc/image-editor.php:33
+msgid "Invert"
+msgstr "Інвертувати"
+
+#: inc/image-editor.php:45
+msgid "Processing image"
+msgstr "Обробка зображення"
+
+#: inc/image-editor.php:53
+msgid "Brightness"
+msgstr "Яскравість"
+
+#: inc/image-editor.php:64
+msgid "Contrast"
+msgstr "Контраст"
+
+#: inc/image-editor.php:75
+msgid "Saturation"
+msgstr "Насичення"
+
+#: inc/image-editor.php:86
+msgid "Vibrance"
+msgstr "Вібрація"
+
+#: inc/image-editor.php:97
+msgid "Exposure"
+msgstr "Експозиція"
+
+#: inc/image-editor.php:108
+msgid "Hue"
+msgstr "Відтінок"
+
+#: inc/image-editor.php:119
+msgid "Sepia"
+msgstr "Сепія"
+
+#: inc/image-editor.php:130
+msgid "Noise"
+msgstr "Шум"
+
+#: inc/image-editor.php:141
+msgid "Clip"
+msgstr "Кліп"
+
+#: inc/image-editor.php:155
+msgid "Apply to"
+msgstr "Застосувати до"
+
+#: inc/image-editor.php:157
+msgid "Original, Web-image, Thumbnail"
+msgstr "Оригінальне, веб-зображення, мініатюра"
+
+#: inc/image-editor.php:158
+msgid "Web-image, Thumbnail"
+msgstr "Веб-зображення, мініатюра"
+
+#: inc/image-editor.php:159
+msgid "Thumbnail"
+msgstr "Мініатюра"
+
+#: inc/media-upload.php:27
+msgid "Gmedia"
+msgstr "Gmedia"
+
+#: inc/media-upload.php:42 inc/post-metabox.php:54
+msgid "Gmedia Collections"
+msgstr "Колекції Gmedia"
+
+#: inc/media-upload.php:270
+msgid "Create New Gallery"
+msgstr "Створити нову галерею"
+
+#: inc/media-upload.php:274
+msgid "Refresh"
+msgstr "Відновити"
+
+#: inc/media-upload.php:388
+msgid "Edit gallery"
+msgstr "Редагувати галерею"
+
+#: inc/media-upload.php:412 inc/media-upload.php:774 inc/media-upload.php:959
+msgid "Insert into post"
+msgstr "Вставити в публікацію"
+
+#: inc/media-upload.php:691
+msgid "Tag"
+msgstr "Тег"
+
+#: inc/media-upload.php:720
+msgid "Open in Gmedia Library"
+msgstr "Вдкрити в бібліотеці Gmedia "
+
+#: inc/media-upload.php:899
+msgid "Link To"
+msgstr "Посилання на"
+
+#: inc/media-upload.php:901
+msgid "Custom URL"
+msgstr "Настроюваний URL"
+
+#: inc/media-upload.php:902
+msgid "Web size image"
+msgstr "Веб розмір зображення"
+
+#: inc/media-upload.php:903
+msgid "Original image"
+msgstr "Оригінальне зображення"
+
+#: inc/media-upload.php:927
+msgid "Alignment"
+msgstr "Вирівнювання"
+
+#: inc/media-upload.php:930
+msgid "Left"
+msgstr "Вліво"
+
+#: inc/media-upload.php:931
+msgid "Center"
+msgstr "По центру"
+
+#: inc/media-upload.php:932
+msgid "Right"
+msgstr "Вправо"
+
+#: inc/media-upload.php:961
+msgid "Use as featured image"
+msgstr "Викоритовувати як оброблене зображення"
+
+#: inc/media-upload.php:1143
+msgid "Upload finished"
+msgstr "Завантаження завершено"
+
+#: inc/post-metabox.php:57
+msgid "Gmedia Upload"
+msgstr "Gmedia завантаження"
+
+#: inc/post-metabox.php:91
+msgid "Initializing..."
+msgstr "Ініціалізація ..."
+
+#: inc/post-metabox.php:92
+msgid "Choose text area first"
+msgstr "Виберіть текстове поле спершу"
+
+#: inc/post-metabox.php:130
+msgid "module"
+msgstr "модуль"
+
+#: inc/post-metabox.php:135
+msgid "click to remove shortcode"
+msgstr "натисніть для видалення шорткоду"
+
+#: inc/post-metabox.php:140
+msgid "click to insert shortcode"
+msgstr "натисніть, щоб вставити шорткод"
+
+#: inc/post-metabox.php:147
+msgid "edit"
+msgstr "редагувати"
+
+#: inc/post-metabox.php:152
+msgid "No Galleries."
+msgstr "Немає галерей."
+
+#: inc/post-metabox.php:152
+msgid "Create"
+msgstr "Створити"
+
+#: inc/post-metabox.php:159
+msgid "Rate Gmedia at Wordpress.org"
+msgstr "Оцінити Gmedia на Wordpress.org"
+
+#: inc/post-metabox.php:184
+msgid "Set GmediaGallery featured image"
+msgstr "Встановити GmediaGallery оброблене зображення"
+
+#: inc/post-metabox.php:192
+msgid "Replace from Gmedia Library"
+msgstr "Замінити з Бібліотеки Gmedia"
+
+#: inc/post-metabox.php:194
+msgid "Set Gmedia featured image"
+msgstr "Встановити Gmedia оброблене зображення"
+
+#: inc/shortcodes.php:145
+msgid "Gmedia Module folder missed."
+msgstr "Папка модуля Gmedia відсутня."
+
+#: inc/shortcodes.php:157
+msgid "Module `%s` is outdated. Update module to latest version"
+msgstr "Модуль `%s` застарів. Оновіть модуль до останньої версії"
+
+#: inc/shortcodes.php:160
+msgid "Module `%s` is broken. Choose another module for this gallery"
+msgstr "Модуль `%s` зламано. Виберіть інший модуль для цієї галереї"
+
+#: inc/shortcodes.php:221 inc/shortcodes.php:225
+msgid "Choose gallery source, please."
+msgstr "Виберіть джерело галереї, будь-ласка"
+
+#: setup.php:56
+msgid "Abstract"
+msgstr "Абстракція"
+
+#: setup.php:57
+msgid "Animals"
+msgstr "Тварини"
+
+#: setup.php:58
+msgid "Black and White"
+msgstr "Чорне і біле"
+
+#: setup.php:59
+msgid "Celebrities"
+msgstr "Знаменитості"
+
+#: setup.php:60
+msgid "City & Architecture"
+msgstr "Місто та архітектура"
+
+#: setup.php:61
+msgid "Commercial"
+msgstr "Реклама"
+
+#: setup.php:62
+msgid "Concert"
+msgstr "Концерт"
+
+#: setup.php:63
+msgid "Family"
+msgstr "Сім'я"
+
+#: setup.php:64
+msgid "Fashion"
+msgstr "Мода"
+
+#: setup.php:65
+msgid "Film"
+msgstr "Фільм"
+
+#: setup.php:66
+msgid "Fine Art"
+msgstr "Образотворче мистецтво"
+
+#: setup.php:67
+msgid "Food"
+msgstr "Їжа"
+
+#: setup.php:68
+msgid "Journalism"
+msgstr "Журналістика"
+
+#: setup.php:69
+msgid "Landscapes"
+msgstr "Пейзажі"
+
+#: setup.php:70
+msgid "Macro"
+msgstr "Макро"
+
+#: setup.php:71
+msgid "Nature"
+msgstr "Природа"
+
+#: setup.php:72
+msgid "Nude"
+msgstr "Оголені"
+
+#: setup.php:73
+msgid "People"
+msgstr "Люди"
+
+#: setup.php:74
+msgid "Performing Arts"
+msgstr "Театри"
+
+#: setup.php:75
+msgid "Sport"
+msgstr "Спорт"
+
+#: setup.php:76
+msgid "Still Life"
+msgstr "Натюрморт"
+
+#: setup.php:77
+msgid "Street"
+msgstr "Вулиці"
+
+#: setup.php:78
+msgid "Transportation"
+msgstr "Транспорт"
+
+#: setup.php:79
+msgid "Travel"
+msgstr "Подорожі"
+
+#: setup.php:80
+msgid "Underwater"
+msgstr "Під водою"
+
+#: setup.php:81
+msgid "Urban Exploration"
+msgstr "Урбанізм"
+
+#: setup.php:82
+msgid "Wedding"
+msgstr "Весілля"
+
+#: setup.php:128
+msgid "Sorry, Gmedia Gallery works only with a role called administrator"
+msgstr ""
+"На жаль, Gmedia Галерея працює тільки для тих, в кого є повноваження "
+"адміністратора"
+
+#: setup.php:254
+msgid ""
+"GmediaGallery: Tables could not created, please check your database settings"
+msgstr ""
+"GmediaGallery: неможливо створити таблиці, будь ласка, перевірте налаштування "
+"бази даних"
+
+#: template/album.php:14 template/category.php:17 template/gallery.php:14
+#: template/single.php:14 template/tag.php:16
+msgid "Home"
+msgstr "Додому"
+
+#: template/album.php:16 template/category.php:19 template/gallery.php:16
+#: template/single.php:16 template/tag.php:18
+msgid "Go Back"
+msgstr "Назад"
+
+#: template/functions.php:34 template/functions.php:274
+msgid "Shared with GmediaGallery"
+msgstr "Спільне з GmediaGallery"
+
+#: template/functions.php:110 template/functions.php:154
+msgid "GmediaGallery"
+msgstr "GmediaGallery"
+
+#: template/single.php:43
+msgid "Download"
+msgstr "Завантажити"
+
+#: update.php:12
+msgid ""
+"<strong>GmediaGallery Data Update Required</strong> &#8211; We need to update "
+"your install to the latest version."
+msgstr ""
+"<strong>потрібне оновлення даних GmediaGallery </strong> &#8211; Ми повинні "
+"оновити установку до останньої версії."
+
+#: update.php:14
+msgid ""
+"<strong>Important:</strong> &#8211; GmediaGallery plugin was fully rewritten, "
+"so after update you need to check all your created galleries and update "
+"modules."
+msgstr ""
+"<strong>Важливо:</strong> &#8211; GmediaGallery плагін повністю переписаний, "
+"тому після оновлення, вам необхідно перевірити всі ваші створені галереї та "
+"оновити модулі. "
+
+#: update.php:16 update.php:35
+msgid "The update process may take a little while, so please be patient."
+msgstr "Процес оновлення може зайняти деякий час, тому, будь ласка, почекайте."
+
+#: update.php:19
+msgid "Run the updater"
+msgstr "Запустіть програму оновлення"
+
+#: update.php:24
+msgid ""
+"It is strongly recommended that you backup your database before proceeding. "
+"Are you sure you wish to run the updater now?"
+msgstr ""
+"Настійно рекомендується зробити резервну копію вашої бази даних, перш ніж "
+"продовжити. Ви впевнені, що хочете запустити програму оновлення зараз?"
+
+#: update.php:33
+msgid ""
+"<strong>GmediaGallery Updating:</strong> &#8211; GmediaGallery plugin was "
+"fully rewritten, so after update you need to check all your created galleries "
+"and update modules."
+msgstr ""
+"<strong>GmediaGallery Оновлення:</strong> &#8211; GmediaGallery був повністю "
+"переписаний, тому після оновлення, вам необхідно перевірити всі ваші створені "
+"галереї та оновити модулі. "
+
+#: update.php:109
+msgid "Gmedia database tables updated..."
+msgstr "Таблиці бази даних Gmedia оновлюються ..."
+
+#: update.php:125
+msgid "Start update images..."
+msgstr "Почати оновлення зображень..."
+
+#: update.php:180
+msgid "Gmedia database data updated..."
+msgstr "Дані бази даних Gmedia оновлюються ..."
+
+#: update.php:227
+msgid "Gmedia Galleries updated..."
+msgstr "Галереї Gmedia оновлюються..."
+
+#: update.php:232
+msgid "GmediaGallery plugin update complete."
+msgstr "Оновлення плагіну GmediaGallery завершено."
+
+#: update.php:406
+msgid "Ignored"
+msgstr "Пропустити"
+
+#: update.php:410
+msgid "Invalid image."
+msgstr "Невірне зображення."
+
+#: update.php:423
+msgid "Image update process complete..."
+msgstr "Оновлення зображення завершено..."
+
+#. Plugin Name of the plugin/theme
+msgid "Gmedia Gallery"
+msgstr "Gmedia Gallery"
+
+#. Plugin URI of the plugin/theme
+msgid "http://wordpress.org/extend/plugins/grand-media/"
+msgstr "http://wordpress.org/extend/plugins/grand-media/"
+
+#. Description of the plugin/theme
+msgid ""
+"Gmedia Gallery - powerfull media library plugin for creating beautiful "
+"galleries and managing files."
+msgstr ""
+"Gmedia Gallery - потужний плагін медіа-бібліотеки для створення красивих "
+"галерей та управління файлами."
+
+#. Author of the plugin/theme
+msgid "Rattus"
+msgstr "Rattus"
+
+#. Author URI of the plugin/theme
+msgid "http://codeasily.com/"
+msgstr "http://codeasily.com/"

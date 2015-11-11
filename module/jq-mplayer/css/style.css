@@ -1,0 +1,401 @@
+.gm-music-player {
+	font-family: 'Lato', arial, sans-serif;
+	background-color: #444444;
+	border: 1px solid #333333;
+	padding: 10px;
+	box-shadow: 0px 0px 4px rgba(0, 0, 0, .75);
+	-moz-box-shadow: 0px 0px 4px rgba(0, 0, 0, .75);
+	-webkit-box-shadow: 0px 0px 4px rgba(0, 0, 0, .75);
+}
+
+.gm-music-player .gmmp-player {
+	width: 100%;
+	overflow: hidden;
+	height: auto;
+	border: none;
+	background: transparent none;
+}
+
+/** Album Cover **/
+.gm-music-player .gmmp-album-cover {
+	position: relative;
+	overflow: hidden;
+	text-align:center;
+	float: left;
+	margin: 0 20px 10px 0;
+	background: #333 url(../img/album-cover-bg.jpg) no-repeat 0 0 scroll;
+	box-shadow: 0px 1px 4px rgba(0, 0, 0, .75);
+	-moz-box-shadow: 0px 1px 4px rgba(0, 0, 0, .75);
+	-webkit-box-shadow: 0px 1px 4px rgba(0, 0, 0, .75);
+}
+
+.gm-music-player .gmmp-album-cover .gmmp-img {
+	box-shadow: inset 0 0 1px rgba(255, 255, 255, .6);
+	-moz-box-shadow: inset 0 0 1px rgba(255, 255, 255, .6);
+	-webkit-box-shadow: inset 0 0 1px rgba(255, 255, 255, .6);
+	background-position:center center;
+	background-repeat:no-repeat;
+	background-color:transparent;
+	height:125px;
+	display:inline-block;
+	position:relative;
+	left:50%;
+}
+
+.gm-music-player .gmmp-album-cover .gmmp-highlight {
+	background: transparent url(../img/album-cover-highlight.png) no-repeat 0 0 scroll;
+	opacity: 1;
+
+}
+
+.gm-music-player .gmmp-album-cover:hover .gmmp-highlight {
+	opacity: 1;
+}
+
+.gm-music-player .gmmp-album-cover,
+.gm-music-player .gmmp-album-cover .gmmp-highlight {
+	display: block;
+	height: 125px;
+	width: 125px;
+}
+
+.gm-music-player .gmmp-album-cover .gmmp-highlight {
+	position: absolute;
+	top: 0;
+	left: 0;
+	height:125px;
+	width:125px;
+}
+.gm-music-player .gmmp-album-cover img {
+	display:block;
+	margin:0 0 0 -50%;
+	border:none;
+	height:125px;
+	width:auto;
+}
+
+/** Track Info **/
+.gm-music-player .gmmp-player .gmmp-track-title {
+	margin: 7px 0 8px 0;
+	overflow: hidden;
+	color: #f1f1f1;
+	font-family: 'Lato Bold', arial, sans-serif;
+	font-weight: bold;
+	font-size: 14px;
+}
+
+.gm-music-player .gmmp-artist {
+	color: #727272;
+	font-family: 'Lato Italic', arial, sans-serif;
+	font-style: italic;
+}
+
+.gmmp-player .gmmp-rating {
+	width: 75px;
+	height: 16px;
+	position: absolute;
+	left: 50%; bottom:5px;
+	margin-left:-38px;
+}
+
+.gm-music-player .gmmp-rating-star {
+	width: 15px;
+	height: 16px;
+	display: block;
+	float: left;
+	background: transparent url(../img/rating-off.png) no-repeat center center scroll;
+	cursor: pointer;
+}
+
+.gm-music-player .gmmp-rating-star:hover,
+.gm-music-player .gmmp-rating-star.gmmp-on,
+.gm-music-player .gmmp-rating-star.gmmp-hover {
+	background: transparent url(../img/rating-on.png) no-repeat center center scroll;
+}
+
+/** Player **/
+.gm-music-player .gmmp-player-controls {
+	min-width: 70px;
+	height: 30px;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	background: transparent url(../img/player-bg.png) repeat 0 0 scroll;
+	margin: 7px 0 0 0px;
+	position: relative;
+	overflow: hidden;
+}
+
+.gm-music-player .gmmp-player-controls .gmmp-main {
+	width: 52px;
+	height: 12px;
+	margin: 9px 9px;
+	float: left;
+}
+
+.gm-music-player .gmmp-player-controls div {
+	float: left;
+	cursor: pointer;
+}
+
+.gm-music-player .gmmp-previous, .gm-music-player .gmmp-next {
+	height: 10px;
+	width: 15px;
+	margin: 1px 0;
+}
+
+.gm-music-player .gmmp-play, .gm-music-player .gmmp-pause {
+	width: 8px;
+	height: 12px;
+	margin: 0 7px;
+}
+
+.gm-music-player .gmmp-previous {
+	background: transparent url(../img/player-previous.png) no-repeat center center scroll;
+}
+
+.gm-music-player .gmmp-next {
+	background: transparent url(../img/player-next.png) no-repeat center center scroll;
+}
+
+.gm-music-player .gmmp-play {
+	background: transparent url(../img/player-play.png) no-repeat center center scroll;
+}
+
+.gm-music-player .gmmp-pause {
+	background: transparent url(../img/player-pause.png) no-repeat center center scroll;
+}
+
+.gm-music-player .gmmp-progress-wrapper {
+	height: 9px;
+	float: left;
+	background: transparent url(../img/player-progress.png) repeat-x 0 0 scroll;
+	margin: 0;
+	border-radius: 4px;
+	-moz-border-radius: 4px;
+	-webkit-border-radius: 4px;
+	position: absolute;
+	left: 70px;
+	top: 11px; right: 10px;
+}
+
+.gm-music-player .gmmp-progress {
+	height: 9px;
+	width: 135px;
+	cursor: pointer;
+	background: none;
+}
+
+.gm-music-player .gmmp-elapsed {
+	height: 6px;
+	border-radius: 3px;
+	-moz-border-radius: 3px;
+	-webkit-border-radius: 3px;
+	margin: 1px;
+	width: 60%;
+	background: transparent url(../img/player-elapsed.png) repeat-x 0 0 scroll;
+}
+
+.gm-music-player .gmmp-unused-controls {
+	display: none !important;
+}
+
+/** Description **/
+div.gm-music-player .gmmp-track-description {
+	margin: 10px 0 0 0;
+	font-size: 11px;
+	color: #ddd;
+}
+div.gm-music-player .gmmp-track-description p {
+	font-size: 11px;
+	color: #ddd;
+}
+
+div.gm-music-player .gmmp-description {
+	clear: both;
+	margin: 10px 0 0 0;
+	font-size: 12px;
+	color: #bbb;
+}
+div.gm-music-player .gmmp-description p {
+	font-size: 12px;
+	color: #bbb;
+}
+
+.gm-music-player .gmmp-description.gmmp-showing{
+	margin:10px 0;
+}
+
+/** Track List **/
+.gm-music-player .gmmp-tracklist {
+	padding: 5px 10px;
+	box-shadow: inset 0 1px 1px rgba(0, 0, 0, .15), 0 1px 0 rgba(255, 255, 255, .04);
+	-moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .15), 0 1px 0 rgba(255, 255, 255, .04);
+	-webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .15), 0 1px 0 rgba(255, 255, 255, .04);
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	background: transparent url(../img/tracklist-bg.png) repeat 0 0 scroll;
+	color: #999;
+	font-size: 12px;
+	overflow: hidden;
+}
+
+.gm-music-player .gmmp-tracklist ol {
+	margin: 0;
+	padding: 0;
+	overflow:hidden;
+	counter-reset: item;
+}
+
+.gm-music-player .gmmp-tracklist li {
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+	color: #bbb;
+	background: transparent url(../img/tracklist-item-bg.png) repeat-x bottom left scroll;
+	padding: 7px 7px 7px 30px;
+	margin: 0;
+	list-style: none;
+	position: relative;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+.gm-music-player .gmmp-tracklist li:before { content: counter(item) "."; counter-increment: item; position: absolute; left: 0px; top: 7px; width: 20px; text-align: right; }
+
+.gm-music-player .gmmp-tracklist li:hover {
+	color: #eee;
+}
+
+.gm-music-player li:last-child{
+	background: none;
+}
+
+.gm-music-player .gmmp-show-more-button li:last-child{
+	background: transparent url(../img/tracklist-item-bg.png) repeat-x bottom left scroll;
+}
+
+.gm-music-player .gmmp-tracklist section { display: table; width: 100%; }
+.gm-music-player .gmmp-tracklist section > * { display: table-cell; vertical-align: middle; }
+.gm-music-player .gmmp-tracklist section .gmmp-maxwidth { width: 100%; position: relative; vertical-align: top; }
+.gm-music-player .gmmp-tracklist .gmmp-track-title-wrapper { position: relative; display: block; width: 100%; overflow: visible; }
+.gm-music-player .gmmp-tracklist .gmmp-track-title {
+	padding: 0;
+	cursor: pointer;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	display: block;
+	position: absolute;
+	left: 0; top: 0; right: 5px;
+}
+
+.gm-music-player li.gmmp-playing {
+	color:#fff !important;
+}
+
+.gm-music-player li .gmmp-duration {
+	padding: 0;
+}
+
+.gm-music-player .gmmp-tracklist .gmmp-rating {
+	overflow: hidden;
+	width: auto;
+	height: auto;
+	white-space: nowrap;
+	margin-left:10px;
+}
+
+.gm-music-player .gmmp-rating-bar {
+	height: 10px;
+	width: 3px;
+	display: inline-block;
+	cursor: pointer;
+	background: transparent url(../img/rating-bar.png) no-repeat 0 0 scroll;
+}
+
+.gm-music-player .gmmp-rating-bar.gmmp-on,
+.gm-music-player .gmmp-rating-bar:hover,
+.gm-music-player .gmmp-rating-bar.gmmp-hover {
+	background: transparent url(../img/rating-bar-on.png) no-repeat 0 0 scroll;
+}
+
+body div.gm-music-player .gmmp-button {
+	display: inline-block;
+	vertical-align:middle;
+	border-radius: 8px;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	background: transparent url(../img/button-bg.png) repeat 0 0 scroll;
+	margin: -2px 0 0 10px;
+	padding: 1px 7px;
+	font-size: 10px;
+	text-align: center;
+	line-height: 16px;
+	text-shadow: none;
+	color: #999;
+	text-decoration: none;
+	box-shadow: inset 0 0 1px rgba(0, 0, 0, .6);
+	-moz-box-shadow: inset 0 0 1px rgba(0, 0, 0, .6);
+	-webkit-box-shadow: inset 0 0 1px rgba(0, 0, 0, .6);
+}
+
+body div.gm-music-player .gmmp-button:hover {
+	color: #eee;
+	background-color: transparent;
+}
+
+body div.gm-music-player .gmmp-button.gmmp-not-active{
+	display:none;
+}
+
+.gm-music-player .gmmp-more {
+	display:none;
+	font-family: 'Lato Italic', arial, sans-serif;
+	font-style: italic;
+	font-size: 11px;
+	line-height: 30px;
+	text-shadow: 0 1px 1px rgba(0, 0, 0, .6);
+	padding: 0;
+	margin: 0;
+	cursor: pointer;
+	text-align: center;
+	border-radius: 6px;
+	-moz-border-radius: 6px;
+	-webkit-border-radius: 6px;
+	background: transparent url(../img/tracklist-more.png) repeat 0 0 scroll;
+}
+
+.gm-music-player .gmmp-more:hover {
+	color: #eee;
+	box-shadow: inset 0px 0px 20px rgba(0, 0, 0, .2);
+	-moz-box-shadow: inset 0px 0px 20px rgba(0, 0, 0, .2);
+	-webkit-box-shadow: inset 0px 0px 20px rgba(0, 0, 0, .2);
+}
+
+.gm-music-player .gmmp-show-more-button .gmmp-more{
+	display:block;
+}
+
+.gm-music-player .jPlayer-container {overflow:hidden;}
+
+/** Transitions **/
+.gm-music-player .gmmp-more.gmmp-anim,
+.gm-music-player .gmmp-album-cover .gmmp-highlight,
+.gm-music-player .gmmp-tracklist li,
+.gm-music-player .gmmp-button {
+	-webkit-transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	transition: all 0.5s ease;
+}
+
+/* http://perishablepress.com/press/2009/12/06/new-clearfix-hack */
+.gm-music-player .gmmp-player:after {
+	clear: both;
+	content: ' ';
+	display: block;
+	font-size: 0;
+	line-height: 0;
+	visibility: hidden;
+	width: 0;
+	height: 0;
+}
