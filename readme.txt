@@ -134,8 +134,12 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
-= 1.7.21 =
+= 1.7.30 =
+* Fixed: error T_PAAMAYIM_NEKUDOTAYIM
 * Fixed: Compatibility with PHP 5.2
+* Updated: Music Player
+
+= 1.7.21 =
 * Fixed: Import function
 * Fixed: Error when image have no orientation in EXIF
 

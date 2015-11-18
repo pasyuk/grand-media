@@ -233,6 +233,8 @@ function gmedia_shortcode($atts, $content = ''){
 							}
 							$args = array_merge($args, array( 'status' => $gmedia_status ) );
 							$gmedia[ $term_id ] = $gmDB->get_gmedias( $args );
+						} else {
+							unset($terms[$term_id]);
 						}
 					} else{
 						unset($terms[$term_id]);

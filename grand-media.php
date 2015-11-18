@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerfull media library plugin for creating beautiful galleries and managing files.
- * Version: 1.7.21
+ * Version: 1.7.30
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
@@ -42,7 +42,7 @@ if(!class_exists('Gmedia')){
 	 */
 	class Gmedia{
 
-		var $version = '1.7.21';
+		var $version = '1.7.30';
 		var $dbversion = '0.9.6';
 		var $minium_WP = '3.6';
 		var $options = '';
@@ -288,8 +288,8 @@ if(!class_exists('Gmedia')){
 				'pluginPath' => $gmCore->gmedia_url
 			));
 
-			wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/grand-media.css', array(), '1.7.20', 'all');
-			wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/grand-media.js', array('jquery', 'gmedia-global-backend'), '1.7.20');
+			wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/grand-media.css', array(), '1.7.30', 'all');
+			wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/grand-media.js', array('jquery', 'gmedia-global-backend'), '1.7.30');
 			wp_localize_script('grand-media', 'grandMedia', array(
 				'error3' => __('Disable your Popup Blocker and try again.', 'grand-media'),
 				'download' => __('downloading...', 'grand-media'),
@@ -377,8 +377,10 @@ if(!class_exists('Gmedia')){
 			}
 			$this->do_module = array();
 			if(!empty($this->import_styles)){
-				add_action('wp_print_styles', array(&$this, 'print_import_styles'));
-				add_action('wp_print_footer_scripts', array(&$this, 'print_import_styles'));
+				add_action('gmedia_head', array(&$this, 'print_import_styles'));
+				add_action('gmedia_footer', array(&$this, 'print_import_styles'));
+				add_action('wp_print_head_scripts', array(&$this, 'print_import_styles'), 1);
+				add_action('wp_print_footer_scripts', array(&$this, 'print_import_styles'), 1);
 			}
 		}
 

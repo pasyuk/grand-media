@@ -241,10 +241,13 @@ div.gm-music-player .gmmp-description p {
 	overflow: hidden;
 }
 
+.gm-music-player .gmmp-tracklist .gmmp-tracks-wrapper {
+	overflow:hidden;
+}
+
 .gm-music-player .gmmp-tracklist ol {
 	margin: 0;
 	padding: 0;
-	overflow:hidden;
 	counter-reset: item;
 }
 

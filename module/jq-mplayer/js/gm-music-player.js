@@ -1,6 +1,6 @@
 /*
  * Title      : Music Player Module for Gmedia Gallery plugin
- * Version    : 2.7
+ * Version    : 2.8
  * Copyright  : 2013-2015 CodEasily.com
  * Website    : http://www.codeasily.com
  */
@@ -15,6 +15,7 @@
 			playerPrevious: ".jp-interface .jp-previous",
 			playerNext: ".jp-interface .jp-next",
 			trackList:'.gmmp-tracklist',
+			tracksWrapper:'.gmmp-tracks-wrapper',
 			tracks:'.gmmp-tracks',
 			track:'.gmmp-track',
 			trackRating:'.gmmp-rating-bar',
@@ -90,7 +91,7 @@
 
 		playlistMgr = function() {
 
-			var playing = false, markup, $myJplayer = {},$tracks,$tracksWrapper, $more;
+			var playing = false, markup, $myJplayer = {}, $tracks, $tracksWrapper, $tracksList, $more;
 
 			markup = {
 				listItem:'<li class="gmmp-track"><section>' +
@@ -233,7 +234,8 @@
 			}
 
 			function buildPlaylist() {
-				$tracksWrapper = $self.find(cssSelector.tracks);
+				$tracksList = $(cssSelector.tracks, $self);
+				$tracksWrapper = $(cssSelector.tracksWrapper, $self);
 
 				if(options.rating){
 					var $ratings = $();
@@ -257,7 +259,7 @@
 
 					$track.data('index', j);
 
-					$tracksWrapper.append($track);
+					$tracksList.append($track);
 				}
 
 				$tracks = $(cssSelector.track, $self);
@@ -284,10 +286,10 @@
 			function showMore() {
 				if (isUndefined($more))
 					$more = $self.find(cssSelector.moreButton);
-
-				$tracksWrapper.css('height', $tracksWrapper.height());
+				$tracksWrapper.css('height', $tracksList.height());
 				$tracks.show();
-				var tracks_height = $tracks.eq(0).outerHeight() * myPlaylist.length + 1;
+				//var tracks_height = Math.ceil($tracks.eq(0).outerHeight()) * myPlaylist.length + 1;
+				var tracks_height = $tracksList.height() + 1;
 				$tracksWrapper.animate({height: tracks_height}, 400);
 				$more.removeClass('anim').animate({'height': 0}, 400, function() {
 					$more.parents(cssSelector.trackList).removeClass('gmmp-show-more-button');
@@ -451,7 +453,7 @@
 								' </div>' +
 								' <div class="gmmp-description"></div>' +
 								' <div class="gmmp-tracklist">' +
-								' 	<ol class="gmmp-tracks"></ol>' +
+								' 	<div class="gmmp-tracks-wrapper"><ol class="gmmp-tracks"></ol></div>' +
 								'   <div class="gmmp-more gmmp-anim">' + options.moreText + '</div>' +
 								' </div>' +
 								' <div class="jPlayer-container"></div>' +

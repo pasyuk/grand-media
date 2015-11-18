@@ -353,7 +353,7 @@ class Pel
         if (self::$hasdgetext === null) {
             self::$hasdgetext = function_exists('dgettext');
             if (self::$hasdgetext === true) {
-                bindtextdomain('pel', __DIR__ . '/locale');
+                bindtextdomain('pel', dirname(__FILE__) . '/locale');
             }
         }
         if (self::$hasdgetext) {

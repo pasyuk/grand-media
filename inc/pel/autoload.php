@@ -23,13 +23,21 @@
  */
 
 /**
- * Register autoloader for pel
+ * Autoloader for PEL
+ * @param $class
  */
-spl_autoload_register(function ($class) {
+
+function gmedia_pel_autoloader($class){
     if (substr_compare($class, 'Pel', 0, 3) === 0) {
-        $load = realpath(__DIR__ . DIRECTORY_SEPARATOR . $class . '.php');
+        $load = realpath(dirname(__FILE__) . '/' . $class . '.php');
         if ($load !== false) {
             include_once realpath($load);
         }
     }
-});
+}
+
+/**
+ * Register autoloader for PEL
+ */
+spl_autoload_register('gmedia_pel_autoloader');
+

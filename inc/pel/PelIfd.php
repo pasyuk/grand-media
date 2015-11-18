@@ -43,7 +43,7 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
-class PelIfd implements \IteratorAggregate, \ArrayAccess
+class PelIfd implements IteratorAggregate, ArrayAccess
 {
 
     /**
@@ -952,7 +952,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->entries);
+        return new ArrayIterator($this->entries);
     }
 
     /**

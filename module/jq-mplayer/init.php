@@ -16,8 +16,11 @@ foreach($terms as $term){
 
 	foreach($gmedia[$term->term_id] as $item){
 		$ext = substr( $item->gmuid, -3 );
-		if(!in_array($ext, array('mp3', 'ogg'))){
-			continue;
+
+		if(!in_array($ext, array('mp3', 'ogg', 'wav', 'mp4'))){
+			if('webm' != ($ext = substr( $item->gmuid, -4 ))) {
+				continue;
+			}
 		}
 		if($ext == 'ogg'){
 			$ext = 'oga';

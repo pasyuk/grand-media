@@ -1,5 +1,6 @@
 <?php
 
+remove_all_actions('wp_print_styles');
 //add_action('gmedia_head', 'gmediacloud_appbaner');
 add_action('gmedia_head', 'gmediacloud_meta_generator');
 add_action('gmedia_head', 'wp_print_styles', 1000);
