@@ -31,7 +31,7 @@
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL)
  * @package PEL
  */
-require_once ('PelConvert.php');
+require_once('PelConvert.php');
 
 /**
  * The window.
@@ -120,7 +120,7 @@ class PelDataWindow
         }
 
         $this->order = $endianess;
-        $this->size = strlen($this->data);
+        $this->size  = strlen($this->data);
     }
 
     /**
@@ -160,11 +160,14 @@ class PelDataWindow
         return $this->order;
     }
 
-    /*
+    /**
      * Move the start of the window forward.
-     * @param int the new start of the window. All new offsets will be
+     *
+     * @param int $start the new start of the window. All new offsets will be
      * calculated from this new start offset, and the size of the window
      * will shrink to keep the end of the window in place.
+     *
+     * @throws PelDataWindowWindowException
      */
     public function setWindowStart($start)
     {
@@ -221,6 +224,7 @@ class PelDataWindow
         if (is_int($size)) {
             $c->setWindowSize($size);
         }
+
         return $c;
     }
 
@@ -311,6 +315,7 @@ class PelDataWindow
         $o += $this->start;
 
         /* Return an unsigned byte. */
+
         return PelConvert::bytesToByte($this->data, $o);
     }
 
@@ -338,6 +343,7 @@ class PelDataWindow
         $o += $this->start;
 
         /* Return a signed byte. */
+
         return PelConvert::bytesToSByte($this->data, $o);
     }
 
@@ -366,6 +372,7 @@ class PelDataWindow
         $o += $this->start;
 
         /* Return an unsigned short. */
+
         return PelConvert::bytesToShort($this->data, $o, $this->order);
     }
 
@@ -394,6 +401,7 @@ class PelDataWindow
         $o += $this->start;
 
         /* Return a signed short. */
+
         return PelConvert::bytesToSShort($this->data, $o, $this->order);
     }
 
@@ -422,6 +430,7 @@ class PelDataWindow
         $o += $this->start;
 
         /* Return an unsigned long. */
+
         return PelConvert::bytesToLong($this->data, $o, $this->order);
     }
 
@@ -450,6 +459,7 @@ class PelDataWindow
         $o += $this->start;
 
         /* Return a signed long. */
+
         return PelConvert::bytesToSLong($this->data, $o, $this->order);
     }
 
@@ -528,13 +538,14 @@ class PelDataWindow
         $o += $this->start;
 
         /* Check each character, return as soon as the answer is known. */
-        for ($i = 0; $i < $s; $i ++) {
+        for ($i = 0; $i < $s; $i++) {
             if ($this->data{$o + $i} != $str{$i}) {
                 return false;
             }
         }
 
         /* All characters matches each other, return true. */
+
         return true;
     }
 

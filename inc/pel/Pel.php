@@ -262,7 +262,7 @@ class Pel
     {
         if (self::$debug) {
             $args = func_get_args();
-            $str = array_shift($args);
+            $str  = array_shift($args);
             vprintf($str . "\n", $args);
         }
     }
@@ -287,7 +287,7 @@ class Pel
     {
         if (self::$debug) {
             $args = func_get_args();
-            $str = array_shift($args);
+            $str  = array_shift($args);
             vprintf('Warning: ' . $str . "\n", $args);
         }
     }
@@ -336,7 +336,8 @@ class Pel
     public static function fmt()
     {
         $args = func_get_args();
-        $str = array_shift($args);
+        $str  = array_shift($args);
+
         return vsprintf(self::dgettextWrapper('pel', $str), $args);
     }
 
@@ -346,6 +347,7 @@ class Pel
      *
      * @param string $domain
      * @param string $str
+     *
      * @return string
      */
     private static function dgettextWrapper($domain, $str)

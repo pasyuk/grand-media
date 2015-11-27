@@ -116,7 +116,7 @@ class PelEntryCopyright extends PelEntryAscii
     public function setValue($photographer = '', $editor = '')
     {
         $this->photographer = $photographer;
-        $this->editor = $editor;
+        $this->editor       = $editor;
 
         if ($photographer == '' && $editor != '') {
             $photographer = ' ';

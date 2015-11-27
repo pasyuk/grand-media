@@ -115,7 +115,7 @@ class PelEntryUserComment extends PelEntryUndefined
      */
     public function setValue($comment = '', $encoding = 'ASCII')
     {
-        $this->comment = $comment;
+        $this->comment  = $comment;
         $this->encoding = $encoding;
         parent::setValue(str_pad($encoding, 8, chr(0)) . $comment);
     }

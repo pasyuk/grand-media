@@ -24,8 +24,6 @@
  */
 
 
-
-
 /**
  * Standard PEL exception.
  *

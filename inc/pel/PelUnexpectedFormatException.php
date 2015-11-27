@@ -70,7 +70,7 @@ class PelUnexpectedFormatException extends PelEntryException
     public function __construct($type, $tag, $found, $expected)
     {
         parent::__construct('Unexpected format found for %s tag: PelFormat::%s. ' . 'Expected PelFormat::%s instead.', PelTag::getName($type, $tag), strtoupper(PelFormat::getName($found)), strtoupper(PelFormat::getName($expected)));
-        $this->tag = $tag;
+        $this->tag  = $tag;
         $this->type = $type;
     }
 }

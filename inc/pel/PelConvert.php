@@ -412,7 +412,7 @@ class PelConvert
         }
         $line = 24;
 
-        for ($i = 0; $i < $s; $i ++) {
+        for ($i = 0; $i < $s; $i++) {
             printf('%02X ', ord($bytes{$i}));
 
             if (($i + 1) % $line == 0) {

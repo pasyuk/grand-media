@@ -62,7 +62,7 @@ class PelException extends Exception
     public function __construct()
     {
         $args = func_get_args();
-        $fmt = array_shift($args);
+        $fmt  = array_shift($args);
         parent::__construct(vsprintf($fmt, $args));
     }
 }

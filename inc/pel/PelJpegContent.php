@@ -24,8 +24,6 @@
  */
 
 
-
-
 /**
  * Class representing content in a JPEG file.
  *

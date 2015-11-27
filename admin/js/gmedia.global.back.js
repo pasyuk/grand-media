@@ -2,6 +2,7 @@
  * Gmedia Globals
  * @var gmediaGlobalVar
  */
-if(!ajaxurl){
-	var ajaxurl = gmediaGlobalVar.ajaxurl;
+if (!ajaxurl) {
+    //noinspection JSUnresolvedVariable
+    var ajaxurl = gmediaGlobalVar.ajaxurl;
 }

@@ -86,7 +86,7 @@ class PelEntryAscii extends PelEntry
      */
     public function __construct($tag, $str = '')
     {
-        $this->tag = $tag;
+        $this->tag    = $tag;
         $this->format = PelFormat::ASCII;
         self::setValue($str);
     }
@@ -107,8 +107,8 @@ class PelEntryAscii extends PelEntry
     public function setValue($str)
     {
         $this->components = strlen($str) + 1;
-        $this->str = $str;
-        $this->bytes = $str . chr(0x00);
+        $this->str        = $str;
+        $this->bytes      = $str . chr(0x00);
     }
 
     /**

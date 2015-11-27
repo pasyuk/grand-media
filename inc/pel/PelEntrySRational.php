@@ -60,7 +60,7 @@ class PelEntrySRational extends PelEntrySLong
      *            PelTag::SHUTTER_SPEED_VALUE}, or any other tag which can have
      *            format {@link PelFormat::SRATIONAL}.
      *
-     * @param array $value...
+     * @param array $value ...
      *            the rational(s) that this entry will
      *            represent. The arguments passed must obey the same rules as the
      *            argument to {@link setValue}, namely that each argument should be
@@ -71,11 +71,11 @@ class PelEntrySRational extends PelEntrySLong
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->format = PelFormat::SRATIONAL;
+        $this->tag       = $tag;
+        $this->format    = PelFormat::SRATIONAL;
         $this->dimension = 2;
-        $this->min = - 2147483648;
-        $this->max = 2147483647;
+        $this->min       = -2147483648;
+        $this->max       = 2147483647;
 
         $value = func_get_args();
         array_shift($value);
@@ -102,7 +102,7 @@ class PelEntrySRational extends PelEntrySLong
     {
         if ($number[1] < 0) {
             /* Turn output like 1/-2 into -1/2. */
-            return (- $number[0]) . '/' . (- $number[1]);
+            return (-$number[0]) . '/' . (-$number[1]);
         } else {
             return $number[0] . '/' . $number[1];
         }

@@ -101,7 +101,7 @@ class PelEntryWindowsString extends PelEntry
      */
     public function __construct($tag, $str = '')
     {
-        $this->tag = $tag;
+        $this->tag    = $tag;
         $this->format = PelFormat::BYTE;
         $this->setValue($str);
     }
@@ -121,9 +121,9 @@ class PelEntryWindowsString extends PelEntry
         $l = strlen($str);
 
         $this->components = 2 * ($l + 1);
-        $this->str = $str;
-        $this->bytes = '';
-        for ($i = 0; $i < $l; $i ++) {
+        $this->str        = $str;
+        $this->bytes      = '';
+        for ($i = 0; $i < $l; $i++) {
             $this->bytes .= $str{$i} . chr(0x00);
         }
 

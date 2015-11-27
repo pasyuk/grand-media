@@ -78,7 +78,7 @@ class PelEntryLong extends PelEntryNumber
      *            should be one of the constants defined in {@link PelTag},
      *            e.g., {@link PelTag::IMAGE_WIDTH}, or any other tag which can
      *            have format {@link PelFormat::LONG}.
-     * @param int $value...
+     * @param int $value ...
      *            the long(s) that this entry will
      *            represent or an array of longs. The argument passed must obey
      *            the same rules as the argument to {@link setValue}, namely that
@@ -88,9 +88,9 @@ class PelEntryLong extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->min = 0;
-        $this->max = 4294967295;
+        $this->tag    = $tag;
+        $this->min    = 0;
+        $this->max    = 4294967295;
         $this->format = PelFormat::LONG;
 
         $value = func_get_args();
@@ -106,6 +106,7 @@ class PelEntryLong extends PelEntryNumber
      * @param
      *            PelByteOrder one of {@link PelConvert::LITTLE_ENDIAN} and
      *            {@link PelConvert::BIG_ENDIAN}, specifying the target byte order.
+     *
      * @return string bytes representing the number given.
      */
     public function numberToBytes($number, $order)

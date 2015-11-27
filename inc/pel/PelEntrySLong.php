@@ -60,7 +60,7 @@ class PelEntrySLong extends PelEntryNumber
      *            should be one of the constants defined in {@link PelTag}
      *            which have format {@link PelFormat::SLONG}.
      *
-     * @param int $value...
+     * @param int $value ...
      *            the long(s) that this entry will represent
      *            or an array of longs. The argument passed must obey the same
      *            rules as the argument to {@link setValue}, namely that it should
@@ -70,9 +70,9 @@ class PelEntrySLong extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->min = - 2147483648;
-        $this->max = 2147483647;
+        $this->tag    = $tag;
+        $this->min    = -2147483648;
+        $this->max    = 2147483647;
         $this->format = PelFormat::SLONG;
 
         $value = func_get_args();

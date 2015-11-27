@@ -79,7 +79,7 @@ class PelEntryShort extends PelEntryNumber
      *            PelTag::IMAGE_WIDTH}, {@link PelTag::ISO_SPEED_RATINGS},
      *            or any other tag with format {@link PelFormat::SHORT}.
      *
-     * @param int $value...
+     * @param int $value ...
      *            the short(s) that this entry will
      *            represent. The argument passed must obey the same rules as the
      *            argument to {@link setValue}, namely that it should be within
@@ -89,9 +89,9 @@ class PelEntryShort extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->min = 0;
-        $this->max = 65535;
+        $this->tag    = $tag;
+        $this->min    = 0;
+        $this->max    = 65535;
         $this->format = PelFormat::SHORT;
 
         $value = func_get_args();

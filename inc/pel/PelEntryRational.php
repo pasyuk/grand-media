@@ -70,7 +70,7 @@ class PelEntryRational extends PelEntryLong
      *            PelTag::X_RESOLUTION}, or any other tag which can have format
      *            {@link PelFormat::RATIONAL}.
      *
-     * @param array $value...
+     * @param array $value ...
      *            the rational(s) that this entry will
      *            represent. The arguments passed must obey the same rules as the
      *            argument to {@link setValue}, namely that each argument should be
@@ -81,11 +81,11 @@ class PelEntryRational extends PelEntryLong
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->format = PelFormat::RATIONAL;
+        $this->tag       = $tag;
+        $this->format    = PelFormat::RATIONAL;
         $this->dimension = 2;
-        $this->min = 0;
-        $this->max = 4294967295;
+        $this->min       = 0;
+        $this->max       = 4294967295;
 
         $value = func_get_args();
         array_shift($value);

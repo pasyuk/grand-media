@@ -93,7 +93,7 @@ abstract class PelEntryNumber extends PelEntry
      * method will always return an array except for when a single
      * number is given here.
      *
-     * @param int|array $value...
+     * @param int|array $value ...
      *            the new value(s). This can be zero or
      *            more numbers, that is, either integers or arrays. The input will
      *            be checked to ensure that the numbers are within the valid range.
@@ -128,7 +128,7 @@ abstract class PelEntryNumber extends PelEntry
         }
 
         $this->components = count($value);
-        $this->value = $value;
+        $this->value      = $value;
     }
 
     /**
@@ -167,7 +167,7 @@ abstract class PelEntryNumber extends PelEntry
                 Pel::maybeThrow(new PelOverflowException($n, $this->min, $this->max));
             }
         } else {
-            for ($i = 0; $i < $this->dimension; $i ++) {
+            for ($i = 0; $i < $this->dimension; $i++) {
                 if ($n[$i] < $this->min || $n[$i] > $this->max) {
                     Pel::maybeThrow(new PelOverflowException($n[$i], $this->min, $this->max));
                 }
@@ -188,7 +188,7 @@ abstract class PelEntryNumber extends PelEntry
     {
         $this->validateNumber($n);
         $this->value[] = $n;
-        $this->components ++;
+        $this->components++;
     }
 
     /**
@@ -223,15 +223,16 @@ abstract class PelEntryNumber extends PelEntry
     public function getBytes($o)
     {
         $bytes = '';
-        for ($i = 0; $i < $this->components; $i ++) {
+        for ($i = 0; $i < $this->components; $i++) {
             if ($this->dimension == 1) {
                 $bytes .= $this->numberToBytes($this->value[$i], $o);
             } else {
-                for ($j = 0; $j < $this->dimension; $j ++) {
+                for ($j = 0; $j < $this->dimension; $j++) {
                     $bytes .= $this->numberToBytes($this->value[$i][$j], $o);
                 }
             }
         }
+
         return $bytes;
     }
 
@@ -275,7 +276,7 @@ abstract class PelEntryNumber extends PelEntry
         }
 
         $str = $this->formatNumber($this->value[0]);
-        for ($i = 1; $i < $this->components; $i ++) {
+        for ($i = 1; $i < $this->components; $i++) {
             $str .= ($brief ? ' ' : ', ');
             $str .= $this->formatNumber($this->value[$i]);
         }

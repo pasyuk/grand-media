@@ -24,8 +24,6 @@
  */
 
 
-
-
 /**
  * Classes for dealing with JPEG markers.
  *
@@ -535,8 +533,6 @@ class PelJpegMarker
                 return 'JPG12';
             case self::JPG13:
                 return 'JPG13';
-            case self::COM:
-                return 'COM';
             default:
                 return Pel::fmt('Unknown marker: 0x%02X', $m);
         }
@@ -679,8 +675,6 @@ class PelJpegMarker
                 return Pel::fmt('Extension %d', 12);
             case self::JPG13:
                 return Pel::fmt('Extension %d', 13);
-            case self::COM:
-                return Pel::tra('Comment');
             default:
                 return Pel::fmt('Unknown marker: 0x%02X', $m);
         }

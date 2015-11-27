@@ -88,7 +88,7 @@ class PelTiff
      *
      * Use {@link setIfd()} to explicitly set the IFD.
      *
-     * @param boolean|string|PelDataWindow $data;
+     * @param boolean|string|PelDataWindow $data ;
      */
     public function __construct($data = false)
     {
@@ -294,6 +294,7 @@ class PelTiff
         }
 
         /* Verify the TIFF header */
+
         return $d->getShort(2) == self::TIFF_HEADER;
     }
 }

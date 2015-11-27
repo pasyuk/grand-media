@@ -66,7 +66,7 @@ class PelEntryUndefined extends PelEntry
      */
     public function __construct($tag, $data = '')
     {
-        $this->tag = $tag;
+        $this->tag    = $tag;
         $this->format = PelFormat::UNDEFINED;
         $this->setValue($data);
     }
@@ -81,7 +81,7 @@ class PelEntryUndefined extends PelEntry
     public function setValue($data)
     {
         $this->components = strlen($data);
-        $this->bytes = $data;
+        $this->bytes      = $data;
     }
 
     /**
@@ -132,7 +132,7 @@ class PelEntryUndefined extends PelEntry
 
                 // CC (e->components, 4, v);
                 $v = '';
-                for ($i = 0; $i < 4; $i ++) {
+                for ($i = 0; $i < 4; $i++) {
                     switch (ord($this->bytes{$i})) {
                         case 0:
                             $v .= '-';
@@ -163,6 +163,7 @@ class PelEntryUndefined extends PelEntry
                         $v .= ' ';
                     }
                 }
+
                 return $v;
                 break;
             case PelTag::MAKER_NOTE:

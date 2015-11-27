@@ -58,7 +58,7 @@ class PelEntrySShort extends PelEntryNumber
      *            should be one of the constants defined in {@link PelTag}
      *            which has format {@link PelFormat::SSHORT}.
      *
-     * @param int $value...
+     * @param int $value ...
      *            the signed short(s) that this entry will
      *            represent. The argument passed must obey the same rules as the
      *            argument to {@link setValue}, namely that it should be within
@@ -68,9 +68,9 @@ class PelEntrySShort extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->min = - 32768;
-        $this->max = 32767;
+        $this->tag    = $tag;
+        $this->min    = -32768;
+        $this->max    = 32767;
         $this->format = PelFormat::SSHORT;
 
         $value = func_get_args();

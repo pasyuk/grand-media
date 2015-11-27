@@ -61,7 +61,7 @@ class PelEntrySByte extends PelEntryNumber
      *            should be one of the constants defined in {@link PelTag}
      *            which has format {@link PelFormat::BYTE}.
      *
-     * @param int $value...
+     * @param int $value ...
      *            the byte(s) that this entry will represent.
      *            The argument passed must obey the same rules as the argument to
      *            {@link setValue}, namely that it should be within range of a
@@ -70,9 +70,9 @@ class PelEntrySByte extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag = $tag;
-        $this->min = - 128;
-        $this->max = 127;
+        $this->tag    = $tag;
+        $this->min    = -128;
+        $this->max    = 127;
         $this->format = PelFormat::SBYTE;
 
         $value = func_get_args();

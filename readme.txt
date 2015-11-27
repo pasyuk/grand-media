@@ -134,6 +134,11 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= 1.7.40 =
+* Added: Grid View in Gmedia Library
+* Fixed: Sorting by Title and by Date in Gmedia Library
+* Added: Download link for modules
+
 = 1.7.30 =
 * Fixed: error T_PAAMAYIM_NEKUDOTAYIM
 * Fixed: Compatibility with PHP 5.2

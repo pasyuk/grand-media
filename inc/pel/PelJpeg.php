@@ -183,7 +183,7 @@ class PelJpeg
              * JPEG sections start with 0xFF. The first byte that is not
              * 0xFF is a marker (hopefully).
              */
-            for ($i = 0; $i < 7; $i ++) {
+            for ($i = 0; $i < 7; $i++) {
                 if ($d->getByte($i) != 0xFF) {
                     break;
                 }
@@ -217,10 +217,10 @@ class PelJpeg
                 $d->setWindowStart(2);
 
                 if ($marker == PelJpegMarker::APP1) {
-                    try {
+                    try{
                         $content = new PelExif();
                         $content->load($d->getClone(0, $len));
-                    } catch (PelInvalidDataException $e) {
+                    } catch (PelInvalidDataException $e){
                         /*
                          * We store the data as normal JPEG content if it could
                          * not be parsed as Exif data.
@@ -253,7 +253,7 @@ class PelJpeg
 
                         $length = $d->getSize();
                         while ($d->getByte($length - 2) != 0xFF || $d->getByte($length - 1) != PelJpegMarker::EOI) {
-                            $length --;
+                            $length--;
                         }
 
                         $this->jpeg_data = $d->getClone(0, $length - 2);
@@ -304,10 +304,10 @@ class PelJpeg
     public function setExif(PelExif $exif)
     {
         $app0_offset = 1;
-        $app1_offset = - 1;
+        $app1_offset = -1;
 
         /* Search through all sections looking for APP0 or APP1. */
-        for ($i = 0; $i < count($this->sections); $i ++) {
+        for ($i = 0; $i < count($this->sections); $i++) {
             if (! empty($this->sections[$i][0])) {
                 if ($this->sections[$i][0] == PelJpegMarker::APP0) {
                     $app0_offset = $i;
@@ -342,10 +342,10 @@ class PelJpeg
     public function setICC(PelJpegContent $icc)
     {
         $app1_offset = 1;
-        $app2_offset = - 1;
+        $app2_offset = -1;
 
         /* Search through all sections looking for APP0 or APP1. */
-        for ($i = 0; $i < count($this->sections); $i ++) {
+        for ($i = 0; $i < count($this->sections); $i++) {
             if (! empty($this->sections[$i][0])) {
                 if ($this->sections[$i][0] == PelJpegMarker::APP1) {
                     $app1_offset = $i;
@@ -382,6 +382,7 @@ class PelJpeg
         if ($exif instanceof PelExif) {
             return $exif;
         }
+
         return null;
     }
 
@@ -399,6 +400,7 @@ class PelJpeg
         if ($icc instanceof PelJpegContent) {
             return $icc;
         }
+
         return null;
     }
 
@@ -410,9 +412,10 @@ class PelJpeg
      */
     public function clearExif()
     {
-        for ($i = 0; $i < count($this->sections); $i ++) {
+        for ($i = 0; $i < count($this->sections); $i++) {
             if ($this->sections[$i][0] == PelJpegMarker::APP1) {
                 unset($this->sections[$i]);
+
                 return;
             }
         }
@@ -502,7 +505,7 @@ class PelJpeg
         foreach ($this->sections as $s) {
             if ($s[0] == $marker) {
                 if ($skip > 0) {
-                    $skip --;
+                    $skip--;
                 } else {
                     return $s[1];
                 }
@@ -611,7 +614,7 @@ class PelJpeg
     public function __toString()
     {
         $str = Pel::tra("Dumping JPEG data...\n");
-        for ($i = 0; $i < count($this->sections); $i ++) {
+        for ($i = 0; $i < count($this->sections); $i++) {
             $m = $this->sections[$i][0];
             $c = $this->sections[$i][1];
             $str .= Pel::fmt("Section %d (marker 0x%02X - %s):\n", $i, $m, PelJpegMarker::getName($m));
@@ -655,7 +658,7 @@ class PelJpeg
         /* JPEG data is stored in big-endian format. */
         $d->setByteOrder(PelConvert::BIG_ENDIAN);
 
-        for ($i = 0; $i < 7; $i ++) {
+        for ($i = 0; $i < 7; $i++) {
             if ($d->getByte($i) != 0xFF) {
                 break;
             }

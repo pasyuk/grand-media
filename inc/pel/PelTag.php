@@ -1889,6 +1889,7 @@ class PelTag
                     case self::PRINT_IM:
                         return Pel::tra('Print IM');
                 }
+
                 return Pel::fmt('Unknown Tag: 0x%04X', $tag);
             case PelIfd::GPS:
                 switch ($tag) {
@@ -1955,6 +1956,7 @@ class PelTag
                     case self::GPS_DIFFERENTIAL:
                         return 'GPSDifferential';
                 }
+
                 return Pel::fmt('Unknown Tag: 0x%04X', $tag);
             default:
                 return Pel::fmt('Unknown Tag: 0x%04X', $tag);

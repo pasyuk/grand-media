@@ -175,9 +175,10 @@ class PelEntryTime extends PelEntryAscii
                 break;
             case self::EXIF_STRING:
                 list ($year, $month, $day) = $this->convertJdToGregorian($this->day_count);
-                $hours = (int) ($this->seconds / 3600);
-                $minutes = (int) ($this->seconds % 3600 / 60);
+                $hours   = (int)($this->seconds / 3600);
+                $minutes = (int)($this->seconds % 3600 / 60);
                 $seconds = $this->seconds % 60;
+
                 return sprintf('%04d:%02d:%02d %02d:%02d:%02d', $year, $month, $day, $hours, $minutes, $seconds);
             case self::JULIAN_DAY_COUNT:
                 return $this->day_count + $this->seconds / 86400;
@@ -211,25 +212,25 @@ class PelEntryTime extends PelEntryAscii
         switch ($type) {
             case self::UNIX_TIMESTAMP:
                 $this->day_count = $this->convertUnixToJd($timestamp);
-                $this->seconds = $timestamp % 86400;
+                $this->seconds   = $timestamp % 86400;
                 break;
 
             case self::EXIF_STRING:
                 /* Clean the timestamp: some timestamps are broken other
                  * separators than ':' and ' '. */
                 $d = preg_split('/[^0-9]+/', $timestamp);
-                for ($i = 0; $i < 6; $i ++) {
+                for ($i = 0; $i < 6; $i++) {
                     if (empty($d[$i])) {
                         $d[$i] = 0;
                     }
                 }
                 $this->day_count = $this->convertGregorianToJd($d[0], $d[1], $d[2]);
-                $this->seconds = $d[3] * 3600 + $d[4] * 60 + $d[5];
+                $this->seconds   = $d[3] * 3600 + $d[4] * 60 + $d[5];
                 break;
 
             case self::JULIAN_DAY_COUNT:
-                $this->day_count = (int) floor($timestamp);
-                $this->seconds = (int) (86400 * ($timestamp - floor($timestamp)));
+                $this->day_count = (int)floor($timestamp);
+                $this->seconds   = (int)(86400 * ($timestamp - floor($timestamp)));
                 break;
 
             default:
@@ -259,6 +260,7 @@ class PelEntryTime extends PelEntryAscii
      *            the month, 1 to 12.
      * @param int $day
      *            the day in the month.
+     *
      * @return int the Julian Day count.
      */
     public function convertGregorianToJd($year, $month, $day)
@@ -268,7 +270,8 @@ class PelEntryTime extends PelEntryAscii
             return 0;
         }
 
-        $m1412 = ($month <= 2) ? - 1 : 0;
+        $m1412 = ($month <= 2) ? -1 : 0;
+
         return floor((1461 * ($year + 4800 + $m1412)) / 4) + floor((367 * ($month - 2 - 12 * $m1412)) / 12) - floor((3 * floor(($year + 4900 + $m1412) / 100)) / 4) + $day - 32075;
     }
 
@@ -277,6 +280,7 @@ class PelEntryTime extends PelEntryAscii
      *
      * @param
      *            int the Julian Day count.
+     *
      * @return array an array with three entries: year, month, day.
      */
     public function convertJdToGregorian($jd)
@@ -300,6 +304,7 @@ class PelEntryTime extends PelEntryAscii
         $l = floor($j / 11);
         $m = $j + 2 - (12 * $l);
         $y = 100 * ($n - 49) + $i + $l;
+
         return array(
             $y,
             $m,
@@ -312,11 +317,12 @@ class PelEntryTime extends PelEntryAscii
      *
      * @param int $timestamp
      *            the timestamp.
+     *
      * @return int the Julian Day count.
      */
     public function convertUnixToJd($timestamp)
     {
-        return (int) (floor($timestamp / 86400) + 2440588);
+        return (int)(floor($timestamp / 86400) + 2440588);
     }
 
     /**
@@ -336,6 +342,7 @@ class PelEntryTime extends PelEntryAscii
                 return $timestamp;
             }
         }
+
         return false;
     }
 }
