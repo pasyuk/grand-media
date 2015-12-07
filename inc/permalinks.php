@@ -1,13 +1,12 @@
 <?php
-if (! defined('ABSPATH')) {
+if(!defined('ABSPATH')) {
     exit;
 } // Exit if accessed directly
 
 /**
  * gmediaPermalinks class.
  */
-class gmediaPermalinks
-{
+class gmediaPermalinks {
 
     private $endpoint = 'gmedia';
 
@@ -17,8 +16,7 @@ class gmediaPermalinks
      * @access public
      * @return \gmediaPermalinks
      */
-    public function __construct()
-    {
+    public function __construct() {
         add_filter('rewrite_rules_array', array($this, 'add_rewrite_rules'));
         add_filter('query_vars', array($this, 'add_query_vars'));
         add_action('parse_request', array($this, 'handler'));
@@ -32,10 +30,9 @@ class gmediaPermalinks
      *
      * @return array
      */
-    function add_rewrite_rules($rules)
-    {
+    function add_rewrite_rules($rules) {
         global $wp_rewrite, $gmGallery;
-        $this->endpoint = ! empty($gmGallery->options['endpoint']) ? $gmGallery->options['endpoint'] : 'gmedia';
+        $this->endpoint = !empty($gmGallery->options['endpoint'])? $gmGallery->options['endpoint'] : 'gmedia';
 
         $this->add_endpoint();
 
@@ -55,8 +52,7 @@ class gmediaPermalinks
      * @access public
      * @return void
      */
-    public function add_endpoint()
-    {
+    public function add_endpoint() {
         add_rewrite_endpoint($this->endpoint, EP_NONE);
         add_rewrite_endpoint('gmedia-app', EP_NONE);
     }
@@ -70,10 +66,9 @@ class gmediaPermalinks
      *
      * @return array
      */
-    public function add_query_vars($vars)
-    {
+    public function add_query_vars($vars) {
         global $gmGallery;
-        $endpoint = ! empty($gmGallery->options['endpoint']) ? $gmGallery->options['endpoint'] : 'gmedia';
+        $endpoint = !empty($gmGallery->options['endpoint'])? $gmGallery->options['endpoint'] : 'gmedia';
 
         $vars[] = $endpoint;
         $vars[] = 't';
@@ -90,12 +85,11 @@ class gmediaPermalinks
      *
      * @param $wp - global variable
      */
-    public function handler($wp)
-    {
+    public function handler($wp) {
         global $gmGallery;
-        $endpoint = ! empty($gmGallery->options['endpoint']) ? $gmGallery->options['endpoint'] : 'gmedia';
+        $endpoint = !empty($gmGallery->options['endpoint'])? $gmGallery->options['endpoint'] : 'gmedia';
 
-        if (isset($wp->query_vars[$endpoint])) {
+        if(isset($wp->query_vars[$endpoint])) {
 
             global $wp_query;
             $wp_query->is_single  = false;
@@ -124,8 +118,8 @@ class gmediaPermalinks
         }
 
         /* Application only template */
-        $is_app = (isset($wp->query_vars['gmedia-app']) && ! empty($wp->query_vars['gmedia-app']));
-        if ($is_app) {
+        $is_app = (isset($wp->query_vars['gmedia-app']) && !empty($wp->query_vars['gmedia-app']));
+        if($is_app) {
 
             global $wp_query;
             $wp_query->is_single  = false;
@@ -134,7 +128,7 @@ class gmediaPermalinks
             $wp_query->is_search  = false;
             $wp_query->is_home    = false;
 
-            $template = GMEDIA_ABSPATH . "/access.php";
+            $template = GMEDIA_ABSPATH . "/app/access.php";
 
             load_template($template, false);
             exit();
@@ -146,19 +140,18 @@ class gmediaPermalinks
     /**
      * Filter for the post content
      *
-     * @param string $html
-     * @param int $post_id
-     * @param int $post_thumbnail_id
+     * @param string       $html
+     * @param int          $post_id
+     * @param int          $post_thumbnail_id
      * @param string|array $size Optional. Image size.  Defaults to 'thumbnail'.
      * @param string|array $attr Optional. Query string or array of attributes.
      *
      * @return string html output
      */
-    function gmedia_post_thumbnail($html, $post_id, $post_thumbnail_id, $size = 'post-thumbnail', $attr = '')
-    {
+    function gmedia_post_thumbnail($html, $post_id, $post_thumbnail_id, $size = 'post-thumbnail', $attr = '') {
 
         $gmedia_id = get_post_meta($post_thumbnail_id, '_gmedia_image_id', true);
-        if (! empty($gmedia_id)) {
+        if(!empty($gmedia_id)) {
             $html = str_replace('wp-post-image', 'wp-post-image gmedia-post-thumbnail-' . $gmedia_id, $html);
         }
 
@@ -172,11 +165,10 @@ class gmediaPermalinks
      *
      * @return array $gallery
      */
-    function gmedia_shortcode_gallery_data($gallery)
-    {
+    function gmedia_shortcode_gallery_data($gallery) {
         global $gmCore;
 
-        if (($new_query = $gmCore->_get("gm{$gallery['term_id']}"))) {
+        if(($new_query = $gmCore->_get("gm{$gallery['term_id']}"))) {
             unset($gallery['custom_query']);
             $gmCore->replace_array_keys($new_query, array('gmedia_album' => 'album__in', 'gmedia_tag' => 'tag__in', 'gmedia_category' => 'category__in'));
             $gallery['_query'] = $new_query;

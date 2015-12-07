@@ -1,9 +1,14 @@
 <?php
+/**
+ * Uninstall Gmedia plugin
+ */
+
 // If uninstall not called from WordPress, then exit
 if (! defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
-require_once(dirname(__FILE__) . '/constants.php');
+
+require_once(dirname(__FILE__) . '/config.php');
 require_once(dirname(__FILE__) . '/inc/core.php');
 require_once(dirname(__FILE__) . '/inc/db.connect.php');
 
@@ -47,7 +52,7 @@ function gmedia_uninstall()
         delete_metadata('post', 0, '_gmedia_image_id', '', true);
     }
 
-    $capabilities = gmedia_plugin_capabilities();
+    $capabilities = $gmCore->plugin_capabilities();
     $capabilities = apply_filters('gmedia_capabilities', $capabilities);
     $check_order  = $gmDB->get_sorted_roles();
     foreach ($check_order as $the_role) {

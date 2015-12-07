@@ -3,13 +3,13 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerfull media library plugin for creating beautiful galleries and managing files.
- * Version: 1.7.40
+ * Version: 1.7.50
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
  * Tested up to: 4.3.1
  * Text Domain: grand-media
- * Domain Path: /languages
+ * Domain Path: /lang
  *
  */
 /* -------------------
@@ -32,18 +32,17 @@
 */
 
 // Stop direct call
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
     die('You are not allowed to call this page directly.');
 }
 
-if (! class_exists('Gmedia')) {
+if(!class_exists('Gmedia')) {
     /**
      * Class Gmedia
      */
-    class Gmedia
-    {
+    class Gmedia {
 
-        var $version = '1.7.40';
+        var $version = '1.7.50';
         var $dbversion = '0.9.6';
         var $minium_WP = '3.6';
         var $options = '';
@@ -54,15 +53,15 @@ if (! class_exists('Gmedia')) {
         /**
          *
          */
-        function __construct()
-        {
+        function __construct() {
 
             // Stop the plugin if we missed the requirements
-            if (! $this->required_version()) {
+            if(!$this->required_version()) {
                 return;
             }
 
             // Get some constants first
+            include_once(dirname(__FILE__) . '/config.php');
             $this->load_options();
             $this->define_constant();
             $this->define_tables();
@@ -71,7 +70,7 @@ if (! class_exists('Gmedia')) {
             require_once(dirname(__FILE__) . '/inc/core.php');
             require_once(dirname(__FILE__) . '/inc/db.connect.php');
 
-            if ($this->options['debug_mode']) {
+            if($this->options['debug_mode']) {
                 ini_set('display_errors', true);
                 error_reporting(E_ALL);
             } else {
@@ -88,7 +87,7 @@ if (! class_exists('Gmedia')) {
             // Register a uninstall hook to remove all tables & option automatic
             //register_uninstall_hook( $this->plugin_name, array(__CLASS__, 'uninstall' ) );
 
-            add_action('wp_enqueue_scripts', array(&$this, 'register_scripts_frontend'), 3);
+            add_action('wp_enqueue_scripts', array(&$this, 'register_scripts_frontend'));
 
             add_action('admin_enqueue_scripts', array(&$this, 'register_scripts_backend'), 8);
 
@@ -106,8 +105,7 @@ if (! class_exists('Gmedia')) {
 
         }
 
-        function start_plugin()
-        {
+        function start_plugin() {
 
             $this->load_dependencies();
             $this->compatibility();
@@ -119,12 +117,10 @@ if (! class_exists('Gmedia')) {
             $this->upgrade();
 
             // Load the admin panel or the frontend functions
-            if (is_admin()) {
-
-                require_once(dirname(__FILE__) . '/admin/processor.php');
+            if(is_admin()) {
 
                 // Pass the init check or show a message
-                if (get_option('gmediaInitCheck')) {
+                if(get_option('gmediaInitCheck')) {
                     add_action('admin_notices', array(&$this, 'admin_notices'));
                 }
 
@@ -144,17 +140,15 @@ if (! class_exists('Gmedia')) {
 
         }
 
-        function gmedia_head_meta()
-        {
+        function gmedia_head_meta() {
             $lk = strtolower($this->options['license_key']);
             echo "\n<!-- <meta name='GmediaGallery' version='{$this->version}/{$this->dbversion}' /> -->\n";
-            if ($lk) {
+            if($lk) {
                 echo "<script type='text/javascript'>var GmediaGallery = {'lk':'{$lk}'}</script>\n";
             }
         }
 
-        function admin_notices()
-        {
+        function admin_notices() {
             echo '<div id="message" class="error"><p><strong>' . get_option('gmediaInitCheck') . '</strong></p></div>';
             delete_option('gmediaInitCheck');
         }
@@ -162,29 +156,28 @@ if (! class_exists('Gmedia')) {
         /**
          * @return bool
          */
-        function required_version()
-        {
+        function required_version() {
             global $wp_version;
 
             // Check for WP version installation
-            if (version_compare($wp_version, $this->minium_WP, '<')) {
+            if(version_compare($wp_version, $this->minium_WP, '<')) {
                 $note = sprintf(__('Sorry, Gmedia Gallery works only under WordPress %s or higher', 'grand-media'),
-                    $this->minium_WP);
+                                $this->minium_WP);
                 update_option('gmediaInitCheck', $note);
                 add_action('admin_notices', array(&$this, 'admin_notices'));
 
                 return false;
             }
-            if (version_compare('5.2', phpversion(), '>')) {
+            if(version_compare('5.2', phpversion(), '>')) {
                 $note = sprintf(__('Attention! Your server php version is: %s. Gmedia Gallery requires php version 5.2+ in order to run properly. Please upgrade your server!',
-                    'grand-media'), phpversion());
+                                   'grand-media'), phpversion());
                 update_option('gmediaInitCheck', $note);
                 add_action('admin_notices', array(&$this, 'admin_notices'));
             }
-            if (version_compare('5.3', phpversion(), '>')) {
-                if (ini_get('safe_mode')) {
+            if(version_compare('5.3', phpversion(), '>')) {
+                if(ini_get('safe_mode')) {
                     $note = __('Attention! Your server safe mode is: ON. Gmedia Gallery requires safe mode to be OFF in order to run properly. Please set your server safe mode option!',
-                        'grand-media');
+                               'grand-media');
                     update_option('gmediaInitCheck', $note);
                     add_action('admin_notices', array(&$this, 'admin_notices'));
                 }
@@ -193,34 +186,32 @@ if (! class_exists('Gmedia')) {
             return true;
         }
 
-        function upgrade()
-        {
+        function upgrade() {
             // Queue upgrades
             $current_version    = get_option('gmediaVersion', null);
             $current_db_version = get_option('gmediaDbVersion', null);
 
-            require_once(dirname(__FILE__) . '/update.php');
-            if (null === $current_db_version) {
+            require_once(dirname(__FILE__) . '/config/update.php');
+            if(null === $current_db_version) {
                 add_option("gmediaDbVersion", GMEDIA_DBVERSION);
-            } elseif (version_compare($current_db_version, GMEDIA_DBVERSION, '<')) {
-                if (isset($_GET['do_update']) && ('gmedia' == $_GET['do_update'])) {
+            } elseif(version_compare($current_db_version, GMEDIA_DBVERSION, '<')) {
+                if(isset($_GET['do_update']) && ('gmedia' == $_GET['do_update'])) {
                     add_action('admin_notices', 'gmedia_wait_admin_notice');
                 } else {
                     add_action('admin_notices', 'gmedia_update_admin_notice');
                 }
             }
 
-            if (null === $current_version) {
+            if(null === $current_version) {
                 add_option("gmediaVersion", GMEDIA_VERSION);
                 add_action('init', 'gmedia_flush_rewrite_rules', 1000);
-            } elseif (version_compare($current_version, GMEDIA_VERSION, '<')) {
+            } elseif(version_compare($current_version, GMEDIA_VERSION, '<')) {
                 gmedia_quite_update();
                 add_action('init', 'gmedia_flush_rewrite_rules', 1000);
             }
         }
 
-        function define_tables()
-        {
+        function define_tables() {
             global $wpdb;
 
             // add database pointer
@@ -232,36 +223,33 @@ if (! class_exists('Gmedia')) {
 
         }
 
-        function define_constant()
-        {
+        function define_constant() {
 
             define('GMEDIA_VERSION', $this->version);
             // Minimum required database version
             define('GMEDIA_DBVERSION', $this->dbversion);
 
-            include_once(dirname(__FILE__) . '/constants.php');
-
         }
 
-        function load_options()
-        {
+        function load_options() {
             // Load the options
             $this->options = get_option('gmediaOptions');
         }
 
-        function load_dependencies()
-        {
+        function load_dependencies() {
 
             require_once(dirname(__FILE__) . '/inc/permalinks.php');
 
             // We didn't need all stuff during a AJAX operation
-            if (defined('DOING_AJAX')) {
+            if(defined('DOING_AJAX')) {
                 require_once(dirname(__FILE__) . '/admin/ajax.php');
             } else {
                 require_once(dirname(__FILE__) . '/inc/hashids.php');
 
                 // Load backend libraries
-                if (is_admin()) {
+                if(is_admin()) {
+                    require_once(dirname(__FILE__) . '/admin/class.processor.php');
+
                     require_once(dirname(__FILE__) . '/inc/media-upload.php');
                     require_once(dirname(__FILE__) . '/inc/post-metabox.php');
 
@@ -273,43 +261,37 @@ if (! class_exists('Gmedia')) {
                 }
 
                 $current_plugins = get_option('active_plugins');
-                if (in_array('wordpress-seo/wp-seo.php', $current_plugins)) {
+                if(in_array('wordpress-seo/wp-seo.php', $current_plugins)) {
                     require_once(dirname(__FILE__) . '/inc/sitemap.php');
                 }
             }
 
         }
 
-        function compatibility()
-        {
+        function compatibility() {
             require_once(dirname(__FILE__) . '/inc/compatibility.php');
         }
 
-        function load_textdomain()
-        {
+        function load_textdomain() {
 
-            load_plugin_textdomain('grand-media', false, GMEDIA_FOLDER . '/languages/');
+            load_plugin_textdomain('grand-media', false, GMEDIA_FOLDER . '/lang/');
 
         }
 
-        function register_scripts_backend()
-        {
+        function register_scripts_backend() {
             global $gmCore;
 
-            wp_register_script('gmedia-global-backend', $gmCore->gmedia_url . '/admin/js/gmedia.global.back.js',
-                array('jquery'), '1.7.0');
+            wp_register_script('gmedia-global-backend', $gmCore->gmedia_url . '/admin/js/gmedia.global.js', array('jquery'), '1.7.0');
             wp_localize_script('gmedia-global-backend', 'gmediaGlobalVar', array(
                 'ajaxurl'    => admin_url('admin-ajax.php'),
                 'nonce'      => wp_create_nonce('grandMedia'),
-                'loading'    => $gmCore->gmedia_url . '/admin/images/throbber.gif',
+                'loading'    => $gmCore->gmedia_url . '/admin/img/throbber.gif',
                 'uploadPath' => $gmCore->upload['url'],
                 'pluginPath' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/grand-media.css', array(), '1.7.40',
-                'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/grand-media.js',
-                array('jquery', 'gmedia-global-backend'), '1.7.40');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/gmedia.admin.css', array(), '1.7.50', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.7.50');
             wp_localize_script('grand-media', 'grandMedia', array(
                 'error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                 'download' => __('downloading...', 'grand-media'),
@@ -317,22 +299,17 @@ if (! class_exists('Gmedia')) {
                 'nonce'    => wp_create_nonce('grandMedia')
             ));
 
-            wp_register_style('gmedia-bootstrap', $gmCore->gmedia_url . '/assets/bootstrap/css/bootstrap.min.css',
-                array(), '3.3.4', 'all');
-            wp_register_script('gmedia-bootstrap', $gmCore->gmedia_url . '/assets/bootstrap/js/bootstrap.min.js',
-                array('jquery'), '3.3.4');
+            wp_register_style('gmedia-bootstrap', $gmCore->gmedia_url . '/assets/bootstrap/css/bootstrap.min.css', array(), '3.3.4', 'all');
+            wp_register_script('gmedia-bootstrap', $gmCore->gmedia_url . '/assets/bootstrap/js/bootstrap.min.js', array('jquery'), '3.3.4');
 
-            wp_register_script('outside-events', $gmCore->gmedia_url . '/assets/jq-plugins/outside-events.js',
-                array('jquery'), '1.1');
+            wp_register_script('outside-events', $gmCore->gmedia_url . '/assets/jq-plugins/outside-events.js', array('jquery'), '1.1');
 
         }
 
-        function register_scripts_frontend()
-        {
-            global $gmCore;
+        function register_scripts_frontend() {
+            global $gmCore, $wp_scripts;
 
-            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js',
-                array('jquery'), '0.9.6');
+            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '0.9.6');
             wp_localize_script('gmedia-global-frontend', 'gmediaGlobalVar', array(
                 'ajaxurl'    => admin_url('admin-ajax.php'),
                 'uploadPath' => $gmCore->upload['url'],
@@ -340,81 +317,82 @@ if (! class_exists('Gmedia')) {
                 'mash'       => $this->options['license_key2']
             ));
 
-            wp_register_style('mediaelement', $gmCore->gmedia_url . '/assets/mediaelement/mediaelementplayer.min.css',
-                array(), '2.13.0', 'screen');
-            wp_register_script('mediaelement',
-                $gmCore->gmedia_url . '/assets/mediaelement/mediaelement-and-player.min.js', array('jquery'), '2.13.0',
-                true);
+
+            if(!wp_script_is('mediaelement', 'registered')) {
+                wp_register_style('mediaelement', $gmCore->gmedia_url . '/assets/mediaelement/mediaelementplayer.min.css', array(), '2.13.0', 'screen');
+                wp_register_script('mediaelement', $gmCore->gmedia_url . '/assets/mediaelement/mediaelement-and-player.min.js', array('jquery'), '2.13.0', true);
+            }
 
             wp_deregister_style('photoswipe');
-            wp_register_style('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.css', array(), '3.0.5',
-                'screen');
             wp_deregister_script('photoswipe');
-            wp_register_script('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.jquery.min.js',
-                array('jquery'), '3.0.5', true);
+            wp_register_style('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.css', array(), '3.0.5', 'screen');
+            wp_register_script('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.jquery.min.js', array('jquery'), '3.0.5', true);
 
-            if (! wp_script_is('easing', 'registered')) {
-                wp_register_script('easing', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.easing.js',
-                    array('jquery'), '1.3.0', true);
+            if(!wp_script_is('easing', 'registered') || version_compare($wp_scripts->registered['easing']->ver, '1.3.0', '<')) {
+                wp_deregister_script('easing');
+                wp_register_script('easing', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.easing.js', array('jquery'), '1.3.0', true);
             }
-            if (! wp_script_is('fancybox', 'registered')) {
-                wp_register_style('fancybox', $gmCore->gmedia_url . '/assets/fancybox/jquery.fancybox-1.3.4.css',
-                    array(), '1.3.4');
-                wp_register_script('fancybox', $gmCore->gmedia_url . '/assets/fancybox/jquery.fancybox-1.3.4.pack.js',
-                    array('jquery', 'easing'), '1.3.4', true);
+            if(!wp_script_is('fancybox', 'registered') || version_compare($wp_scripts->registered['fancybox']->ver, '1.3.4', '<')) {
+                if(!defined('FANCYBOX_VERSION')){
+                    wp_deregister_style('fancybox');
+                    wp_register_style('fancybox', $gmCore->gmedia_url . '/assets/fancybox/jquery.fancybox-1.3.4.css', array(), '1.3.4');
+                }
+                wp_deregister_script('fancybox');
+                wp_register_script('fancybox', $gmCore->gmedia_url . '/assets/fancybox/jquery.fancybox-1.3.4.pack.js', array('jquery', 'easing'), '1.3.4', true);
             }
 
-            wp_register_script('jplayer', $gmCore->gmedia_url . '/assets/jplayer/jquery.jplayer.min.js',
-                array('jquery'), '2.6.4', true);
-            wp_register_script('swfobject', $gmCore->gmedia_url . '/assets/swf/swfobject.js', array(), '2.2', true);
-            wp_register_script('swfaddress', $gmCore->gmedia_url . '/assets/swf/swfaddress.js', array(), '2.4', true);
 
-            wp_register_script('mousetrap', $gmCore->gmedia_url . '/assets/mousetrap/mousetrap.min.js', array(),
-                '1.5.2', true);
+            if(!wp_script_is('jplayer', 'registered') || version_compare($wp_scripts->registered['jplayer']->ver, '2.6.4', '<')) {
+                wp_deregister_script('jplayer');
+                wp_register_script('jplayer', $gmCore->gmedia_url . '/assets/jplayer/jquery.jplayer.min.js', array('jquery'), '2.6.4', true);
+            }
+            if(!wp_script_is('swfobject', 'registered') || version_compare($wp_scripts->registered['swfobject']->ver, '2.2', '<')) {
+                wp_deregister_script('swfobject');
+                wp_register_script('swfobject', $gmCore->gmedia_url . '/assets/swf/swfobject.js', array(), '2.2', true);
+                wp_register_script('swfaddress', $gmCore->gmedia_url . '/assets/swf/swfaddress.js', array(), '2.4', true);
+            }
+
+            wp_register_script('mousetrap', $gmCore->gmedia_url . '/assets/mousetrap/mousetrap.min.js', array(), '1.5.2', true);
 
         }
 
-        function load_scripts()
-        {
+        function load_scripts() {
             wp_enqueue_script('jquery');
             wp_enqueue_script('gmedia-global-frontend');
         }
 
-        function load_module_scripts()
-        {
+        function load_module_scripts() {
             global $wp_styles;
             $deps = array();
-            foreach ($this->do_module as $m => $module) {
+            foreach($this->do_module as $m => $module) {
                 $deps = array_merge($deps, explode(',', $module['info']['dependencies']));
                 $deps = apply_filters('gmedia_module_js_dependencies', $deps, $m);
-                foreach ($deps as $handle) {
-                    if (wp_script_is($handle, 'registered')) {
-                        wp_enqueue_script($handle, $_src = false, $_deps = array('jquery'), $_ver = false,
-                            $_in_footer = true);
+                foreach($deps as $handle) {
+                    if(wp_script_is($handle, 'registered')) {
+                        wp_enqueue_script($handle, $_src = false, $_deps = array('jquery'), $_ver = false, $_in_footer = true);
                     }
-                    if (wp_style_is($handle, 'registered')) //wp_enqueue_style( $handle );
-                    {
+                    if(wp_style_is($handle, 'registered')) {
                         //wp_print_styles($handle);
                         $this->import_styles[] = $wp_styles->registered[$handle]->src;
                     }
                 }
                 $files = glob($module['path'] . '/css/*.css', GLOB_NOSORT);
-                if (! empty($files)) {
+                if(!empty($files)) {
                     $files = array_map('basename', $files);
-                    foreach ($files as $file) {
+                    foreach($files as $file) {
                         $this->import_styles[] = "{$module['url']}/css/{$file}";
                     }
                 }
                 $files = glob($module['path'] . '/js/*.js', GLOB_NOSORT);
-                if (! empty($files)) {
+                if(!empty($files)) {
                     $files = array_map('basename', $files);
-                    foreach ($files as $file) {
+                    foreach($files as $file) {
                         wp_enqueue_script($file, "{$module['url']}/js/{$file}", array('jquery'), false, true);
                     }
                 }
             }
             $this->do_module = array();
-            if (! empty($this->import_styles)) {
+            if(!empty($this->import_styles)) {
                 add_action('gmedia_head', array(&$this, 'print_import_styles'));
                 add_action('gmedia_footer', array(&$this, 'print_import_styles'));
                 add_action('wp_print_head_scripts', array(&$this, 'print_import_styles'), 1);
@@ -422,12 +400,11 @@ if (! class_exists('Gmedia')) {
             }
         }
 
-        function print_import_styles()
-        {
-            if (! empty($this->import_styles)) {
+        function print_import_styles() {
+            if(!empty($this->import_styles)) {
                 echo "\n<style type='text/css'>";
-                foreach ($this->import_styles as $src) {
-                    if ('http' !== substr($src, 0, 4)) {
+                foreach($this->import_styles as $src) {
+                    if('http' !== substr($src, 0, 4)) {
                         $src = site_url($src);
                     }
                     echo "\n@import url('{$src}') all;";
@@ -447,20 +424,19 @@ if (! class_exists('Gmedia')) {
          *
          * @return void
          */
-        static function network_propagate($pfunction, $networkwide)
-        {
+        static function network_propagate($pfunction, $networkwide) {
 
-            include_once(dirname(__FILE__) . '/setup.php');
+            include_once(dirname(__FILE__) . '/config/setup.php');
 
-            if (function_exists('is_multisite') && is_multisite()) {
+            if(function_exists('is_multisite') && is_multisite()) {
                 // check if it is a network activation - if so, run the activation function
                 // for each blog id
-                if ($networkwide) {
+                if($networkwide) {
                     global $wpdb;
                     //$old_blog = $wpdb->blogid;
                     // Get all blog ids
                     $blogids = $wpdb->get_col("SELECT blog_id FROM {$wpdb->blogs}");
-                    foreach ($blogids as $blog_id) {
+                    foreach($blogids as $blog_id) {
                         switch_to_blog($blog_id);
                         call_user_func($pfunction);
                     }
@@ -476,8 +452,7 @@ if (! class_exists('Gmedia')) {
         /**
          * @param $networkwide
          */
-        function activate($networkwide)
-        {
+        function activate($networkwide) {
             $this->network_propagate('gmedia_install', $networkwide);
 
             require_once(dirname(__FILE__) . '/inc/permalinks.php');
@@ -487,8 +462,7 @@ if (! class_exists('Gmedia')) {
         /**
          * @param $networkwide
          */
-        function deactivate($networkwide)
-        {
+        function deactivate($networkwide) {
             $this->network_propagate('gmedia_deactivate', $networkwide);
             flush_rewrite_rules(false);
         }
@@ -508,10 +482,9 @@ if (! class_exists('Gmedia')) {
          * @param $site_id
          * @param $meta
          */
-        function new_blog($blog_id, $user_id, $domain, $path, $site_id, $meta)
-        {
-            if (is_plugin_active_for_network(GMEDIA_FOLDER . '/grand-media.php')) {
-                include_once(dirname(__FILE__) . '/setup.php');
+        function new_blog($blog_id, $user_id, $domain, $path, $site_id, $meta) {
+            if(is_plugin_active_for_network(GMEDIA_FOLDER . '/grand-media.php')) {
+                include_once(dirname(__FILE__) . '/config/setup.php');
                 switch_to_blog($blog_id);
                 gmedia_install();
                 restore_current_blog();
@@ -522,8 +495,7 @@ if (! class_exists('Gmedia')) {
          * @param $user_id
          * @param $reassign
          */
-        function reassign_media($user_id, $reassign)
-        {
+        function reassign_media($user_id, $reassign) {
             global $gmDB;
             $gmDB->reassign_media($user_id, $reassign);
         }

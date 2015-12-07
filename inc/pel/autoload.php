@@ -27,12 +27,10 @@
  *
  * @param $class
  */
-
-function gmedia_pel_autoloader($class)
-{
-    if (substr_compare($class, 'Pel', 0, 3) === 0) {
+function gmedia_pel_autoloader($class) {
+    if(substr_compare($class, 'Pel', 0, 3) === 0) {
         $load = realpath(dirname(__FILE__) . '/' . $class . '.php');
-        if ($load !== false) {
+        if($load !== false) {
             /** @noinspection PhpIncludeInspection */
             include_once realpath($load);
         }

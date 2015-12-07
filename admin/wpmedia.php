@@ -12,7 +12,7 @@ function grandWPMedia()
 {
     global $user_ID, $gmDB, $gmCore, $gmProcessor, $gmGallery;
 
-    $url = add_query_arg(array('page' => $gmProcessor->page, 'mode' => $gmProcessor->mode), admin_url('admin.php'));
+    $url = add_query_arg(array('page' => $gmProcessor->page, 'edit_mode' => $gmProcessor->edit_mode), admin_url('admin.php'));
 
     $gm_screen_options = get_user_meta($user_ID, 'gm_screen_options', true);
     if (! is_array($gm_screen_options)) {
@@ -57,7 +57,7 @@ function grandWPMedia()
             <?php echo $gmDB->query_pager(); ?>
 
             <div class="btn-toolbar pull-left">
-                <?php if (! $gmProcessor->mode) { ?>
+                <?php if (! $gmProcessor->edit_mode) { ?>
                     <div class="btn-group gm-checkgroup" id="cb_global-btn">
                         <span class="btn btn-default active"><input class="doaction" id="cb_global" data-group="cb_media-object" type="checkbox"/></span>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
@@ -178,7 +178,7 @@ function grandWPMedia()
                     $image       = wp_get_attachment_image($item->ID, array(50, 50), false);
                     if (! $image) {
                         if (($src = wp_mime_type_icon($item->ID))) {
-                            $src_image = $gmCore->gmedia_url . '/admin/images/' . wp_basename($src);
+                            $src_image = $gmCore->gmedia_url . '/admin/img/' . wp_basename($src);
                             $image     = '<img src="' . $src_image . '" width="50" height="50" alt="icon" title="' . esc_attr($item->post_title) . '"/>';
                         }
                     }

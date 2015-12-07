@@ -51,7 +51,7 @@ class GmediaAdmin
 
         switch ($gmediablank) {
             case 'update_plugin':
-                require_once(dirname(dirname(__FILE__)) . '/update.php');
+                require_once(dirname(dirname(__FILE__)) . '/config/update.php');
                 gmedia_do_update();
                 break;
             case 'image_editor':
@@ -81,7 +81,7 @@ class GmediaAdmin
     {
         $gmediaURL     = plugins_url(GMEDIA_FOLDER);
         $this->pages   = array();
-        $this->pages[] = add_object_page(__('Gmedia Library', 'grand-media'), 'Gmedia Gallery', 'gmedia_library', 'GrandMedia', array( &$this, 'shell'), $gmediaURL . '/admin/images/gm-icon.png');
+        $this->pages[] = add_object_page(__('Gmedia Library', 'grand-media'), 'Gmedia Gallery', 'gmedia_library', 'GrandMedia', array( &$this, 'shell'), $gmediaURL . '/admin/img/gm-icon.png');
         $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Library', 'grand-media'), __('Gmedia Library', 'grand-media'), 'gmedia_library', 'GrandMedia', array( &$this, 'shell'));
         if (current_user_can('gmedia_library')) {
             $this->pages[] = add_submenu_page('GrandMedia', __('Add Media Files', 'grand-media'), __('Add/Import Files', 'grand-media'), 'gmedia_upload', 'GrandMedia_AddMedia', array( &$this, 'shell'));
@@ -170,8 +170,8 @@ class GmediaAdmin
                     </div>
                     <div class="col-sm-10 col-xs-12">
                         <div id="gm-message"><?php
-                            echo $gmProcessor->alert('success', $gmProcessor->msg);
-                            echo $gmProcessor->alert('danger', $gmProcessor->error);
+                            echo GmediaProcessor::alert('success', $gmProcessor->msg);
+                            echo GmediaProcessor::alert('danger', $gmProcessor->error);
                             ?></div>
                         <?php
                         if (isset($update_frame)) {
@@ -261,8 +261,7 @@ class GmediaAdmin
                 break;
             case 'GrandMedia':
             default:
-                include_once(dirname(__FILE__) . '/gmedia.php');
-                gmediaLib();
+                include_once(dirname(__FILE__) . '/library/library.php');
                 break;
         }
     }
@@ -319,7 +318,7 @@ class GmediaAdmin
                             wp_enqueue_script('gmedia-image-editor', $gmCore->gmedia_url . '/assets/image-editor/image-editor.js', array('jquery', 'camanjs'), '0.9.16');
                             break;
                         }
-                        if ($gmProcessor->mode) {
+                        if ($gmProcessor->edit_mode) {
                             wp_enqueue_script('alphanum', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.alphanum.js', array('jquery'), '1.0.16');
 
                             wp_enqueue_script('moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', array('jquery'), '2.5.1');
@@ -331,10 +330,8 @@ class GmediaAdmin
                             ), '2.1.32');
                         }
                     }
-                    if ($gmCore->caps['gmedia_terms']) {
-                        wp_enqueue_style('selectize');
-                        wp_enqueue_script('selectize');
-                    }
+                    wp_enqueue_style('selectize');
+                    wp_enqueue_script('selectize');
                     break;
                 case "GrandMedia_WordpressLibrary" :
                     if ($gmCore->caps['gmedia_import']) {
@@ -454,7 +451,7 @@ class GmediaAdmin
         global $gmProcessor, $gmCore;
         if (in_array($screen->id, $this->pages)) {
 
-            $gm_screen_options = $gmProcessor->user_options();
+            $gm_screen_options = $gmProcessor->user_options;
 
             $title             = '<h5><strong>' . __('Settings', 'grand-media') . '</strong></h5>';
             $wp_screen_options = '<input type="hidden" name="wp_screen_options[option]" value="gm_screen_options" /><input type="hidden" name="wp_screen_options[value]" value="' . $screen->id . '" />';
@@ -489,7 +486,7 @@ class GmediaAdmin
 							</select> <span>' . __('sort order', 'grand-media') . '</span>
 						</div>
 					';
-                    if ('edit' == $gmCore->_get('mode')) {
+                    if ($gmCore->_get('edit_mode', false, true)) {
                         $settings .= '
 						<div class="form-group">
 							<select name="gm_screen_options[library_edit_quicktags]" class="form-control input-sm">

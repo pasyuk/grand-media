@@ -1,13 +1,12 @@
 <?php
-if (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+if(preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
     die('You are not allowed to call this page directly.');
 }
 
 /**
  * Main PHP class for the WordPress plugin GRAND Media
  */
-class GmediaCore
-{
+class GmediaCore {
 
     var $upload;
     var $gmedia_url;
@@ -17,26 +16,24 @@ class GmediaCore
     /**
      *
      */
-    function __construct()
-    {
+    function __construct() {
         $this->upload     = $this->gm_upload_dir();
         $this->gmedia_url = plugins_url(GMEDIA_FOLDER);
 
-        add_action('init', array(&$this, 'capabilities'), 8);
+        add_action('init', array(&$this, 'user_capabilities'), 8);
     }
 
-    function capabilities()
-    {
-        $capabilities = gmedia_plugin_capabilities();
+    function user_capabilities() {
+        $capabilities = $this->plugin_capabilities();
         $capabilities = apply_filters('gmedia_capabilities', $capabilities);
-        if (is_multisite() && is_super_admin()) {
-            foreach ($capabilities as $cap) {
+        if(is_multisite() && is_super_admin()) {
+            foreach($capabilities as $cap) {
                 $this->caps[$cap] = 1;
             }
         } else {
             $curuser = wp_get_current_user();
-            foreach ($capabilities as $cap) {
-                if (isset($curuser->allcaps[$cap]) && intval($curuser->allcaps[$cap])) {
+            foreach($capabilities as $cap) {
+                if(isset($curuser->allcaps[$cap]) && intval($curuser->allcaps[$cap])) {
                     $this->caps[$cap] = 1;
                 } else {
                     $this->caps[$cap] = 0;
@@ -49,62 +46,70 @@ class GmediaCore
      * Check GET data
      *
      * @param string $var
-     * @param mixed $def
+     * @param mixed  $def
+     * @param bool   $empty2false
      *
      * @return mixed
      */
-    function _get($var = '', $def = false)
-    {
-        return isset($_GET[$var]) ? $_GET[$var] : $def;
+    function _get($var, $def = false, $empty2false = false) {
+        return isset($_GET[$var])? (($empty2false && $this->is_empty($_GET[$var]))? false : $_GET[$var]) : $def;
+    }
+
+    /**
+     * Check empty strings
+     *
+     * @param string $var
+     *
+     * @return bool
+     */
+    function is_empty($var) {
+        return !(!empty($var) && !in_array(strtolower($var), array('null', 'false')));
     }
 
     /**
      * Check POST data
      *
-     * @param string $var
+     * @param string     $var
      * @param bool|mixed $def
      *
      * @return mixed
      */
 
-    function _post($var = '', $def = false)
-    {
-        return isset($_POST[$var]) ? $_POST[$var] : $def;
+    function _post($var, $def = false) {
+        return isset($_POST[$var])? $_POST[$var] : $def;
     }
 
     /**
      * Check REQUEST data
      *
      * @param string $var
-     * @param mixed $def
+     * @param mixed  $def
      *
      * @return mixed
      */
-    function _req($var = '', $def = false)
-    {
-        return isset($_REQUEST[$var]) ? $_REQUEST[$var] : $def;
+    function _req($var, $def = false) {
+        return isset($_REQUEST[$var])? $_REQUEST[$var] : $def;
     }
 
     /**
      * tooltip()
      *
      * @param string $style 'tooltip', 'popover'
-     * @param array $params
-     * @param bool $print
+     * @param array  $params
+     * @param bool   $print
      *
      * @return string
      */
-    function tooltip($style, $params, $print = true)
-    {
+    function tooltip($style, $params, $print = true) {
         $show_tip = 0; // TODO show tooltips checkbox in settings
-        if ($show_tip) {
+        if($show_tip) {
             $tooltip = " data-toggle='$style'";
-            if (is_array($params) && ! empty($params)) {
-                foreach ($params as $key => $val) {
+            if(is_array($params) && !empty($params)) {
+                foreach($params as $key => $val) {
                     $tooltip .= " data-$key='$val'";
                 }
             }
-            if ($print) {
+            if($print) {
                 echo $tooltip;
             } else {
                 return $tooltip;
@@ -117,18 +122,17 @@ class GmediaCore
     /**
      * @param array $add_args
      * @param array $remove_args
-     * @param bool $uri
+     * @param bool  $uri
      *
      * @return string
      */
-    function get_admin_url($add_args = array(), $remove_args = array(), $uri = false)
-    {
-        if (true === $uri) {
+    function get_admin_url($add_args = array(), $remove_args = array(), $uri = false) {
+        if(true === $uri) {
             $uri = admin_url('admin.php');
         }
         $remove_args = array_unique(array_merge(array('doing_wp_cron', '_wpnonce', 'delete', 'update_meta'), $remove_args, array_keys($add_args)));
         $new_uri     = remove_query_arg($remove_args, $uri);
-        if (! empty($add_args)) {
+        if(!empty($add_args)) {
             $new_uri = add_query_arg($add_args, $new_uri);
         }
 
@@ -140,8 +144,7 @@ class GmediaCore
      *
      * @return bool
      */
-    function is_crawler($userAgent)
-    {
+    function is_crawler($userAgent) {
         $crawlers  = 'Google|msnbot|Rambler|Yahoo|AbachoBOT|accoona|FeedBurner|' . 'AcioRobot|ASPSeek|CocoCrawler|Dumbot|FAST-WebCrawler|' . 'GeonaBot|Gigabot|Lycos|MSRBOT|Scooter|AltaVista|IDBot|eStyle|Scrubby|yandex|facebook';
         $isCrawler = (preg_match("/$crawlers/i", $userAgent) > 0);
 
@@ -153,8 +156,7 @@ class GmediaCore
      *
      * @return bool
      */
-    function is_browser($userAgent)
-    {
+    function is_browser($userAgent) {
         $browsers  = 'opera|aol|msie|firefox|chrome|konqueror|safari|netscape|navigator|mosaic|lynx|amaya|omniweb|avant|camino|flock|seamonkey|mozilla|gecko';
         $isBrowser = (preg_match("/$browsers/i", $userAgent) > 0);
 
@@ -177,11 +179,10 @@ class GmediaCore
      *
      * @return array See above for description.
      */
-    function gm_upload_dir($create = true)
-    {
+    function gm_upload_dir($create = true) {
         $slash = '/';
         // If multisite (and if not the main site)
-        if (is_multisite() && ! is_main_site()) {
+        if(is_multisite() && !is_main_site()) {
             $slash = '/blogs.dir/' . get_current_blog_id() . '/';
         }
 
@@ -192,13 +193,13 @@ class GmediaCore
 
         $uploads = apply_filters('gm_upload_dir', array('path' => $dir, 'url' => $url, 'error' => false));
 
-        if ($create) {
+        if($create) {
             // Make sure we have an uploads dir
-            if (! wp_mkdir_p($uploads['path'])) {
+            if(!wp_mkdir_p($uploads['path'])) {
                 $message          = sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?'), $uploads['path']);
                 $uploads['error'] = $message;
             }
-        } elseif (! is_dir($uploads['path'])) {
+        } elseif(!is_dir($uploads['path'])) {
             $uploads['error'] = true;
         }
 
@@ -210,14 +211,13 @@ class GmediaCore
      *
      * @return bool|null
      */
-    function delete_folder($path)
-    {
+    function delete_folder($path) {
         $path = rtrim($path, '/');
-        if (is_file($path)) {
+        if(is_file($path)) {
             return @unlink($path);
-        } elseif (is_dir($path)) {
+        } elseif(is_dir($path)) {
             $files = glob($path . '/*', GLOB_NOSORT);
-            if (! empty($files) && is_array($files)) {
+            if(!empty($files) && is_array($files)) {
                 array_map(array($this, 'delete_folder'), $files);
             }
 
@@ -233,55 +233,54 @@ class GmediaCore
      * @see  wp_get_attachment_image()
      * @uses apply_filters() Calls 'gm_get_attachment_image_attributes' hook on attributes array
      *
-     * @param int|object $item Image object.
-     * @param string $size Optional, default is empty string, could be 'thumb', 'original'
-     * @param bool $cover Optional, try to get cover url
+     * @param int|object  $item Image object.
+     * @param string      $size Optional, default is empty string, could be 'thumb', 'original'
+     * @param bool        $cover Optional, try to get cover url
      * @param bool|string $default Optional, return if no cover
      *
      * @return string img url
      */
-    function gm_get_media_image($item, $size = '', $cover = true, $default = false)
-    {
+    function gm_get_media_image($item, $size = '', $cover = true, $default = false) {
         global $gmDB, $gmGallery;
 
-        if (! is_object($item)) {
+        if(!is_object($item)) {
             $item = $gmDB->get_gmedia($item);
         }
         $type = explode('/', $item->mime_type);
 
-        if ('image' == $type[0]) {
+        if('image' == $type[0]) {
             $type_folder = $this->upload['url'] . '/' . $gmGallery->options['folder'][$type[0]];
 
-            switch ($size) {
+            switch($size) {
                 case 'thumb':
                     $size_folder = '/thumb/';
-                    break;
+                break;
                 case 'original':
                     $size_folder = '/original/';
-                    break;
+                break;
                 case 'web':
                 default:
                     $size_folder = '/';
-                    break;
+                break;
             }
 
             $image = $type_folder . $size_folder . $item->gmuid;
         } else {
             $ext = ltrim(strrchr($item->gmuid, '.'), '.');
-            if (! $type = wp_ext2type($ext)) {
+            if(!$type = wp_ext2type($ext)) {
                 $type = 'application';
             }
-            $image = $this->gmedia_url . '/admin/images/' . $type . '.png';
+            $image = $this->gmedia_url . '/admin/img/' . $type . '.png';
 
-            if ($cover) {
+            if($cover) {
                 $cover = $gmDB->get_metadata('gmedia', $item->ID, '_cover', true);
-                if (! empty($cover)) {
-                    if ($this->is_digit($cover)) {
+                if(!empty($cover)) {
+                    if($this->is_digit($cover)) {
                         $image = $this->gm_get_media_image((int)$cover, $size, false);
-                    } elseif (false !== filter_var($cover, FILTER_VALIDATE_URL)) {
+                    } elseif(false !== filter_var($cover, FILTER_VALIDATE_URL)) {
                         return $cover;
                     }
-                } elseif (false !== $default) {
+                } elseif(false !== $default) {
                     return $default;
                 }
             }
@@ -297,24 +296,23 @@ class GmediaCore
      *
      * @return array|bool Return array( 'path', 'url' ) OR false if no module
      */
-    function get_module_path($module_name)
-    {
+    function get_module_path($module_name) {
         global $gmGallery;
-        if (empty($module_name)) {
+        if(empty($module_name)) {
             return false;
         }
         $module_dirs = array(
-            'upload' => array(
-                'path' => $this->upload['path'] . '/' . $gmGallery->options['folder']['module'] . '/' . $module_name,
-                'url'  => $this->upload['url'] . '/' . $gmGallery->options['folder']['module'] . '/' . $module_name
-            ),
-            'plugin' => array(
-                'path' => GMEDIA_ABSPATH . 'module/' . $module_name,
-                'url'  => plugins_url(GMEDIA_FOLDER) . '/module/' . $module_name
-            ),
+                'upload' => array(
+                        'path' => $this->upload['path'] . '/' . $gmGallery->options['folder']['module'] . '/' . $module_name,
+                        'url'  => $this->upload['url'] . '/' . $gmGallery->options['folder']['module'] . '/' . $module_name
+                ),
+                'plugin' => array(
+                        'path' => GMEDIA_ABSPATH . 'module/' . $module_name,
+                        'url'  => plugins_url(GMEDIA_FOLDER) . '/module/' . $module_name
+                ),
         );
-        foreach ($module_dirs as $dir) {
-            if (is_dir($dir['path'])) {
+        foreach($module_dirs as $dir) {
+            if(is_dir($dir['path'])) {
                 return $dir;
             }
         }
@@ -325,12 +323,11 @@ class GmediaCore
     /** Automatic choose upload directory based on media type
      *
      * @param string $file
-     * @param int $exists
+     * @param int    $exists
      *
      * @return array|bool
      */
-    function fileinfo($file, $exists = 0)
-    {
+    function fileinfo($file, $exists = 0) {
         global $gmGallery, $user_ID;
 
         $file                  = basename($file);
@@ -339,22 +336,22 @@ class GmediaCore
         $title                 = pathinfo($file, PATHINFO_FILENAME);
         $pathinfo              = pathinfo(preg_replace('/[^a-z0-9_\.-]+/i', '_', $file));
         $pathinfo['extension'] = strtolower($pathinfo['extension']);
-        $suffix                = ((false !== $exists) && absint($exists)) ? "_$exists" : '';
+        $suffix                = ((false !== $exists) && absint($exists))? "_$exists" : '';
 
-        $fileinfo['extension'] = (empty($filetype['ext'])) ? $pathinfo['extension'] : $filetype['ext'];
+        $fileinfo['extension'] = (empty($filetype['ext']))? $pathinfo['extension'] : $filetype['ext'];
 
         $allowed_ext = get_allowed_mime_types($user_ID);
         $allowed_ext = array_keys($allowed_ext);
         $allowed_ext = implode('|', $allowed_ext);
         $allowed_ext = explode('|', $allowed_ext);
-        if (! in_array($fileinfo['extension'], $allowed_ext)) {
+        if(!in_array($fileinfo['extension'], $allowed_ext)) {
             return false;
         }
 
         $fileinfo['filename']  = $pathinfo['filename'] . $suffix;
         $fileinfo['basename']  = $fileinfo['filename'] . '.' . $fileinfo['extension'];
         $fileinfo['title']     = ucwords(str_replace('_', ' ', esc_sql($title)));
-        $fileinfo['mime_type'] = (empty($filetype['type'])) ? 'application/' . $fileinfo['extension'] : $filetype['type'];
+        $fileinfo['mime_type'] = (empty($filetype['type']))? 'application/' . $fileinfo['extension'] : $filetype['type'];
         list($dirname) = explode('/', $fileinfo['mime_type']);
         $fileinfo['dirname']           = $dirname;
         $fileinfo['dirpath']           = $this->upload['path'] . '/' . $gmGallery->options['folder'][$dirname];
@@ -365,7 +362,7 @@ class GmediaCore
         $fileinfo['filepath_original'] = $fileinfo['dirpath'] . '/' . $fileinfo['basename'];
         $fileinfo['fileurl']           = $fileinfo['dirurl'] . '/' . $fileinfo['basename'];
         $fileinfo['fileurl_original']  = $fileinfo['dirurl'] . '/' . $fileinfo['basename'];
-        if ('image' == $dirname) {
+        if('image' == $dirname) {
             $fileinfo['dirpath_original']  = $this->upload['path'] . '/' . $gmGallery->options['folder']['image_original'];
             $fileinfo['dirurl_original']   = $this->upload['url'] . '/' . $gmGallery->options['folder']['image_original'];
             $fileinfo['filepath_original'] = $fileinfo['dirpath_original'] . '/' . $fileinfo['basename'];
@@ -376,7 +373,7 @@ class GmediaCore
             $fileinfo['fileurl_thumb']     = $fileinfo['dirurl_thumb'] . '/' . $fileinfo['basename'];
         }
 
-        if ((false !== $exists) && file_exists($fileinfo['filepath'])) {
+        if((false !== $exists) && file_exists($fileinfo['filepath'])) {
             $exists   = absint($exists) + 1;
             $fileinfo = $this->fileinfo($file, $exists);
         }
@@ -391,15 +388,14 @@ class GmediaCore
      *
      * @return mixed|void
      */
-    function get_file_metadata($file, $fileinfo = array())
-    {
+    function get_file_metadata($file, $fileinfo = array()) {
 
-        if (empty($fileinfo)) {
+        if(empty($fileinfo)) {
             $fileinfo = $this->fileinfo($file, false);
         }
         $metadata = array();
         require_once(ABSPATH . 'wp-admin/includes/image.php');
-        if (preg_match('!^image/!', $fileinfo['mime_type']) && file_is_displayable_image($fileinfo['filepath'])) {
+        if(preg_match('!^image/!', $fileinfo['mime_type']) && file_is_displayable_image($fileinfo['filepath'])) {
             $imagesize            = getimagesize($fileinfo['filepath']);
             $metadata['web']      = array('width' => $imagesize[0], 'height' => $imagesize[1]);
             $imagesize            = getimagesize($fileinfo['filepath_original']);
@@ -411,13 +407,13 @@ class GmediaCore
 
             // fetch additional metadata from exif/iptc
             $image_meta = $this->wp_read_image_metadata($fileinfo['filepath_original']);
-            if ($image_meta) {
+            if($image_meta) {
                 $metadata['image_meta'] = $image_meta;
             }
 
-        } elseif (preg_match('#^video/#', $fileinfo['mime_type'])) {
+        } elseif(preg_match('#^video/#', $fileinfo['mime_type'])) {
             $metadata = $this->wp_read_video_metadata($fileinfo['filepath']);
-        } elseif (preg_match('#^audio/#', $fileinfo['mime_type'])) {
+        } elseif(preg_match('#^audio/#', $fileinfo['mime_type'])) {
             $metadata = $this->wp_read_audio_metadata($fileinfo['filepath']);
             unset($metadata['image']);
         }
@@ -436,12 +432,11 @@ class GmediaCore
      *
      * @return string relative path on success, unchanged path on failure.
      */
-    function _gm_relative_upload_path($path)
-    {
+    function _gm_relative_upload_path($path) {
         global $gmCore;
         $new_path = $path;
 
-        if ((false === $gmCore->upload['error']) && (0 === strpos($new_path, $gmCore->upload['path']))) {
+        if((false === $gmCore->upload['error']) && (0 === strpos($new_path, $gmCore->upload['path']))) {
             $new_path = str_replace($gmCore->upload['path'], '', $new_path);
             $new_path = ltrim($new_path, '/');
         }
@@ -453,8 +448,7 @@ class GmediaCore
      *
      * @param string $new_file
      */
-    function file_chmod($new_file)
-    {
+    function file_chmod($new_file) {
         $stat  = stat(dirname($new_file));
         $perms = $stat['mode'] & 0000666;
         @chmod($new_file, $perms);
@@ -467,8 +461,7 @@ class GmediaCore
      *
      * @return mixed
      */
-    function clean_input($input)
-    {
+    function clean_input($input) {
         $search = array(
             /*'@<[\/\!]*?[^<>]*?>@si'*/ /* Strip out HTML tags */
             '@<script' . '[^>]*?>.*?</script>@si' /* Strip out javascript */,
@@ -489,16 +482,15 @@ class GmediaCore
      *
      * @return mixed
      */
-    function sanitize($input)
-    {
+    function sanitize($input) {
         $output = $input;
-        if (is_array($input)) {
-            foreach ($input as $var => $val) {
+        if(is_array($input)) {
+            foreach($input as $var => $val) {
                 $output[$var] = $this->sanitize($val);
             }
         } else {
             /** @noinspection PhpDeprecationInspection */
-            if (function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
+            if(function_exists('get_magic_quotes_gpc') && get_magic_quotes_gpc()) {
                 $input = stripslashes($input);
             }
             $input  = $this->clean_input($input);
@@ -515,11 +507,10 @@ class GmediaCore
      *
      * @return bool
      */
-    function is_digit($digit)
-    {
-        if (is_int($digit)) {
+    function is_digit($digit) {
+        if(is_int($digit)) {
             return true;
-        } elseif (is_string($digit) && ! empty($digit)) {
+        } elseif(is_string($digit) && !empty($digit)) {
             return ctype_digit($digit);
         } else {
             // booleans, floats and others
@@ -532,9 +523,8 @@ class GmediaCore
      *
      * @return array
      */
-    function get_editable_user_ids()
-    {
-        if (current_user_can('gmedia_show_others_media') || current_user_can('gmedia_edit_others_media')) {
+    function get_editable_user_ids() {
+        if(current_user_can('gmedia_show_others_media') || current_user_can('gmedia_edit_others_media')) {
             return get_users(array('who' => 'authors', 'fields' => 'ID'));
         }
 
@@ -549,21 +539,20 @@ class GmediaCore
      *
      * @return string
      */
-    function gmcloudlink($id, $type)
-    {
+    function gmcloudlink($id, $type) {
         $options  = get_option('gmediaOptions');
         $endpoint = $options['endpoint'];
         $hashid   = gmedia_hash_id_encode($id, $type);
         $t        = array(
-            'gallery'  => 'g',
-            'album'    => 'a',
-            'tag'      => 't',
-            'single'   => 's',
-            'category' => 'k',
-            'filter'   => 'f',
-            'author'   => 'u'
+                'gallery'  => 'g',
+                'album'    => 'a',
+                'tag'      => 't',
+                'single'   => 's',
+                'category' => 'k',
+                'filter'   => 'f',
+                'author'   => 'u'
         );
-        if (get_option('permalink_structure')) {
+        if(get_option('permalink_structure')) {
             $cloud_link = home_url(urlencode($endpoint) . "/{$t[$type]}/{$hashid}");
         } else {
             $cloud_link = add_query_arg(array("$endpoint" => $hashid, 't' => $t[$type]), home_url('index.php'));
@@ -580,8 +569,7 @@ class GmediaCore
      *
      * @return string
      */
-    function filesize($file, $decimals = 2)
-    {
+    function filesize($file, $decimals = 2) {
         $bytes  = filesize($file);
         $sz     = array('b', 'Kb', 'Mb', 'Gb', 'Tb', 'Pb');
         $factor = (int)floor((strlen($bytes) - 1) / 3);
@@ -598,16 +586,15 @@ class GmediaCore
      *
      * @return array
      */
-    function array_diff_key_recursive(array $arr1, array $arr2)
-    {
+    function array_diff_key_recursive(array $arr1, array $arr2) {
         $diff      = array_diff_key($arr1, $arr2);
         $intersect = array_intersect_key($arr1, $arr2);
 
-        foreach ($intersect as $k => $v) {
-            if (is_array($arr1[$k]) && is_array($arr2[$k])) {
+        foreach($intersect as $k => $v) {
+            if(is_array($arr1[$k]) && is_array($arr2[$k])) {
                 $d = $this->array_diff_key_recursive($arr1[$k], $arr2[$k]);
 
-                if (! empty($d)) {
+                if(!empty($d)) {
                     $diff[$k] = $d;
                 }
             }
@@ -619,24 +606,23 @@ class GmediaCore
     /**
      * @param array $arr1
      * @param array $arr2
-     * @param bool $update
+     * @param bool  $update
      *
      * @return array
      */
-    function array_diff_keyval_recursive(array $arr1, array $arr2, $update = false)
-    {
+    function array_diff_keyval_recursive(array $arr1, array $arr2, $update = false) {
         $diff      = array_diff_key($arr1, $arr2);
         $intersect = array_intersect_key($arr1, $arr2);
 
-        foreach ($intersect as $k => $v) {
-            if (is_array($arr1[$k]) && is_array($arr2[$k])) {
+        foreach($intersect as $k => $v) {
+            if(is_array($arr1[$k]) && is_array($arr2[$k])) {
                 $d = $this->array_diff_keyval_recursive($arr1[$k], $arr2[$k], $update);
 
-                if (! empty($d)) {
+                if(!empty($d)) {
                     $diff[$k] = $d;
                 }
-            } elseif ($arr1[$k] !== $arr2[$k]) {
-                if ($update) {
+            } elseif($arr1[$k] !== $arr2[$k]) {
+                if($update) {
                     $diff[$k] = $arr2[$k];
                 } else {
                     $diff[$k] = $arr1[$k];
@@ -653,13 +639,12 @@ class GmediaCore
      *
      * @return mixed
      */
-    function array_replace_recursive($base, $replacements)
-    {
-        if (function_exists('array_replace_recursive')) {
+    function array_replace_recursive($base, $replacements) {
+        if(function_exists('array_replace_recursive')) {
             return array_replace_recursive($base, $replacements);
         }
 
-        foreach (array_slice(func_get_args(), 1) as $replacements) {
+        foreach(array_slice(func_get_args(), 1) as $replacements) {
             $bref_stack = array(&$base);
             $head_stack = array($replacements);
 
@@ -671,15 +656,15 @@ class GmediaCore
 
                 unset($bref_stack[key($bref_stack)]);
 
-                foreach (array_keys($head) as $key) {
-                    if (isset($bref[$key]) && is_array($bref[$key]) && is_array($head[$key])) {
+                foreach(array_keys($head) as $key) {
+                    if(isset($bref[$key]) && is_array($bref[$key]) && is_array($head[$key])) {
                         $bref_stack[] = &$bref[$key];
                         $head_stack[] = $head[$key];
                     } else {
                         $bref[$key] = $head[$key];
                     }
                 }
-            } while (count($head_stack));
+            } while(count($head_stack));
         }
 
         return $base;
@@ -692,10 +677,9 @@ class GmediaCore
      * @return mixed
      *
      */
-    function array_map_recursive($callback, $array)
-    {
-        foreach ($array as $key => $value) {
-            if (is_array($array[$key])) {
+    function array_map_recursive($callback, $array) {
+        foreach($array as $key => $value) {
+            if(is_array($array[$key])) {
                 $array[$key] = $this->array_map_recursive($callback, $array[$key]);
             } else {
                 $array[$key] = call_user_func($callback, $array[$key]);
@@ -711,10 +695,9 @@ class GmediaCore
      *
      * @return array|bool
      */
-    function process_gmedit_image($photo)
-    {
+    function process_gmedit_image($photo) {
         $type = null;
-        if (preg_match('/^data:image\/(jpg|jpeg|png|gif)/i', $photo, $matches)) {
+        if(preg_match('/^data:image\/(jpg|jpeg|png|gif)/i', $photo, $matches)) {
             $type = $matches[1];
         } else {
             return false;
@@ -727,415 +710,414 @@ class GmediaCore
         // Use strict mode to prevent characters from outside the base64 range
         $image = base64_decode($data, true);
 
-        if (! $image) {
+        if(!$image) {
             return false;
         }
 
         return array(
-            'data' => $image,
-            'type' => $type
+                'data' => $image,
+                'type' => $type
         );
     }
 
     /**
      * @return bool
      */
-    function is_bot()
-    {
-        if (empty($_SERVER['HTTP_USER_AGENT'])) {
+    function is_bot() {
+        if(empty($_SERVER['HTTP_USER_AGENT'])) {
             return false;
         }
 
         $spiders = array(
-            "abot",
-            "dbot",
-            "ebot",
-            "hbot",
-            "kbot",
-            "lbot",
-            "mbot",
-            "nbot",
-            "obot",
-            "pbot",
-            "rbot",
-            "sbot",
-            "tbot",
-            "vbot",
-            "ybot",
-            "zbot",
-            "bot.",
-            "bot/",
-            "_bot",
-            ".bot",
-            "/bot",
-            "-bot",
-            ":bot",
-            "(bot",
-            "crawl",
-            "slurp",
-            "spider",
-            "seek",
-            "accoona",
-            "acoon",
-            "adressendeutschland",
-            "ah-ha.com",
-            "ahoy",
-            "altavista",
-            "ananzi",
-            "anthill",
-            "appie",
-            "arachnophilia",
-            "arale",
-            "araneo",
-            "aranha",
-            "architext",
-            "aretha",
-            "arks",
-            "asterias",
-            "atlocal",
-            "atn",
-            "atomz",
-            "augurfind",
-            "backrub",
-            "bannana_bot",
-            "baypup",
-            "bdfetch",
-            "big brother",
-            "biglotron",
-            "bjaaland",
-            "blackwidow",
-            "blaiz",
-            "blog",
-            "blo.",
-            "bloodhound",
-            "boitho",
-            "booch",
-            "bradley",
-            "butterfly",
-            "calif",
-            "cassandra",
-            "ccubee",
-            "cfetch",
-            "charlotte",
-            "churl",
-            "cienciaficcion",
-            "cmc",
-            "collective",
-            "comagent",
-            "combine",
-            "computingsite",
-            "csci",
-            "curl",
-            "cusco",
-            "daumoa",
-            "deepindex",
-            "delorie",
-            "depspid",
-            "deweb",
-            "die blinde kuh",
-            "digger",
-            "ditto",
-            "dmoz",
-            "docomo",
-            "download express",
-            "dtaagent",
-            "dwcp",
-            "ebiness",
-            "ebingbong",
-            "e-collector",
-            "ejupiter",
-            "emacs-w3 search engine",
-            "esther",
-            "evliya celebi",
-            "ezresult",
-            "falcon",
-            "felix ide",
-            "ferret",
-            "fetchrover",
-            "fido",
-            "findlinks",
-            "fireball",
-            "fish search",
-            "fouineur",
-            "funnelweb",
-            "gazz",
-            "gcreep",
-            "genieknows",
-            "getterroboplus",
-            "geturl",
-            "glx",
-            "goforit",
-            "golem",
-            "grabber",
-            "grapnel",
-            "gralon",
-            "griffon",
-            "gromit",
-            "grub",
-            "gulliver",
-            "hamahakki",
-            "harvest",
-            "havindex",
-            "helix",
-            "heritrix",
-            "hku www octopus",
-            "homerweb",
-            "htdig",
-            "html index",
-            "html_analyzer",
-            "htmlgobble",
-            "hubater",
-            "hyper-decontextualizer",
-            "ia_archiver",
-            "ibm_planetwide",
-            "ichiro",
-            "iconsurf",
-            "iltrovatore",
-            "image.kapsi.net",
-            "imagelock",
-            "incywincy",
-            "indexer",
-            "infobee",
-            "informant",
-            "ingrid",
-            "inktomisearch.com",
-            "inspector web",
-            "intelliagent",
-            "internet shinchakubin",
-            "ip3000",
-            "iron33",
-            "israeli-search",
-            "ivia",
-            "jack",
-            "jakarta",
-            "javabee",
-            "jetbot",
-            "jumpstation",
-            "katipo",
-            "kdd-explorer",
-            "kilroy",
-            "knowledge",
-            "kototoi",
-            "kretrieve",
-            "labelgrabber",
-            "lachesis",
-            "larbin",
-            "legs",
-            "libwww",
-            "linkalarm",
-            "link validator",
-            "linkscan",
-            "lockon",
-            "lwp",
-            "lycos",
-            "magpie",
-            "mantraagent",
-            "mapoftheinternet",
-            "marvin/",
-            "mattie",
-            "mediafox",
-            "mediapartners",
-            "mercator",
-            "merzscope",
-            "microsoft url control",
-            "minirank",
-            "miva",
-            "mj12",
-            "mnogosearch",
-            "moget",
-            "monster",
-            "moose",
-            "motor",
-            "multitext",
-            "muncher",
-            "muscatferret",
-            "mwd.search",
-            "myweb",
-            "najdi",
-            "nameprotect",
-            "nationaldirectory",
-            "nazilla",
-            "ncsa beta",
-            "nec-meshexplorer",
-            "nederland.zoek",
-            "netcarta webmap engine",
-            "netmechanic",
-            "netresearchserver",
-            "netscoop",
-            "newscan-online",
-            "nhse",
-            "nokia6682/",
-            "nomad",
-            "noyona",
-            "nutch",
-            "nzexplorer",
-            "objectssearch",
-            "occam",
-            "omni",
-            "open text",
-            "openfind",
-            "openintelligencedata",
-            "orb search",
-            "osis-project",
-            "pack rat",
-            "pageboy",
-            "pagebull",
-            "page_verifier",
-            "panscient",
-            "parasite",
-            "partnersite",
-            "patric",
-            "pear.",
-            "pegasus",
-            "peregrinator",
-            "pgp key agent",
-            "phantom",
-            "phpdig",
-            "picosearch",
-            "piltdownman",
-            "pimptrain",
-            "pinpoint",
-            "pioneer",
-            "piranha",
-            "plumtreewebaccessor",
-            "pogodak",
-            "poirot",
-            "pompos",
-            "poppelsdorf",
-            "poppi",
-            "popular iconoclast",
-            "psycheclone",
-            "publisher",
-            "python",
-            "rambler",
-            "raven search",
-            "roach",
-            "road runner",
-            "roadhouse",
-            "robbie",
-            "robofox",
-            "robozilla",
-            "rules",
-            "salty",
-            "sbider",
-            "scooter",
-            "scoutjet",
-            "scrubby",
-            "search.",
-            "searchprocess",
-            "semanticdiscovery",
-            "senrigan",
-            "sg-scout",
-            "shai'hulud",
-            "shark",
-            "shopwiki",
-            "sidewinder",
-            "sift",
-            "silk",
-            "simmany",
-            "site searcher",
-            "site valet",
-            "sitetech-rover",
-            "skymob.com",
-            "sleek",
-            "smartwit",
-            "sna-",
-            "snappy",
-            "snooper",
-            "sohu",
-            "speedfind",
-            "sphere",
-            "sphider",
-            "spinner",
-            "spyder",
-            "steeler/",
-            "suke",
-            "suntek",
-            "supersnooper",
-            "surfnomore",
-            "sven",
-            "sygol",
-            "szukacz",
-            "tach black widow",
-            "tarantula",
-            "templeton",
-            "/teoma",
-            "t-h-u-n-d-e-r-s-t-o-n-e",
-            "theophrastus",
-            "titan",
-            "titin",
-            "tkwww",
-            "toutatis",
-            "t-rex",
-            "tutorgig",
-            "twiceler",
-            "twisted",
-            "ucsd",
-            "udmsearch",
-            "url check",
-            "updated",
-            "vagabondo",
-            "valkyrie",
-            "verticrawl",
-            "victoria",
-            "vision-search",
-            "volcano",
-            "voyager/",
-            "voyager-hc",
-            "w3c_validator",
-            "w3m2",
-            "w3mir",
-            "walker",
-            "wallpaper",
-            "wanderer",
-            "wauuu",
-            "wavefire",
-            "web core",
-            "web hopper",
-            "web wombat",
-            "webbandit",
-            "webcatcher",
-            "webcopy",
-            "webfoot",
-            "weblayers",
-            "weblinker",
-            "weblog monitor",
-            "webmirror",
-            "webmonkey",
-            "webquest",
-            "webreaper",
-            "websitepulse",
-            "websnarf",
-            "webstolperer",
-            "webvac",
-            "webwalk",
-            "webwatch",
-            "webwombat",
-            "webzinger",
-            "wget",
-            "whizbang",
-            "whowhere",
-            "wild ferret",
-            "worldlight",
-            "wwwc",
-            "wwwster",
-            "xenu",
-            "xget",
-            "xift",
-            "xirq",
-            "yandex",
-            "yanga",
-            "yeti",
-            "yodao",
-            "zao/",
-            "zippp",
-            "zyborg",
-            "...."
+                "abot",
+                "dbot",
+                "ebot",
+                "hbot",
+                "kbot",
+                "lbot",
+                "mbot",
+                "nbot",
+                "obot",
+                "pbot",
+                "rbot",
+                "sbot",
+                "tbot",
+                "vbot",
+                "ybot",
+                "zbot",
+                "bot.",
+                "bot/",
+                "_bot",
+                ".bot",
+                "/bot",
+                "-bot",
+                ":bot",
+                "(bot",
+                "crawl",
+                "slurp",
+                "spider",
+                "seek",
+                "accoona",
+                "acoon",
+                "adressendeutschland",
+                "ah-ha.com",
+                "ahoy",
+                "altavista",
+                "ananzi",
+                "anthill",
+                "appie",
+                "arachnophilia",
+                "arale",
+                "araneo",
+                "aranha",
+                "architext",
+                "aretha",
+                "arks",
+                "asterias",
+                "atlocal",
+                "atn",
+                "atomz",
+                "augurfind",
+                "backrub",
+                "bannana_bot",
+                "baypup",
+                "bdfetch",
+                "big brother",
+                "biglotron",
+                "bjaaland",
+                "blackwidow",
+                "blaiz",
+                "blog",
+                "blo.",
+                "bloodhound",
+                "boitho",
+                "booch",
+                "bradley",
+                "butterfly",
+                "calif",
+                "cassandra",
+                "ccubee",
+                "cfetch",
+                "charlotte",
+                "churl",
+                "cienciaficcion",
+                "cmc",
+                "collective",
+                "comagent",
+                "combine",
+                "computingsite",
+                "csci",
+                "curl",
+                "cusco",
+                "daumoa",
+                "deepindex",
+                "delorie",
+                "depspid",
+                "deweb",
+                "die blinde kuh",
+                "digger",
+                "ditto",
+                "dmoz",
+                "docomo",
+                "download express",
+                "dtaagent",
+                "dwcp",
+                "ebiness",
+                "ebingbong",
+                "e-collector",
+                "ejupiter",
+                "emacs-w3 search engine",
+                "esther",
+                "evliya celebi",
+                "ezresult",
+                "falcon",
+                "felix ide",
+                "ferret",
+                "fetchrover",
+                "fido",
+                "findlinks",
+                "fireball",
+                "fish search",
+                "fouineur",
+                "funnelweb",
+                "gazz",
+                "gcreep",
+                "genieknows",
+                "getterroboplus",
+                "geturl",
+                "glx",
+                "goforit",
+                "golem",
+                "grabber",
+                "grapnel",
+                "gralon",
+                "griffon",
+                "gromit",
+                "grub",
+                "gulliver",
+                "hamahakki",
+                "harvest",
+                "havindex",
+                "helix",
+                "heritrix",
+                "hku www octopus",
+                "homerweb",
+                "htdig",
+                "html index",
+                "html_analyzer",
+                "htmlgobble",
+                "hubater",
+                "hyper-decontextualizer",
+                "ia_archiver",
+                "ibm_planetwide",
+                "ichiro",
+                "iconsurf",
+                "iltrovatore",
+                "image.kapsi.net",
+                "imagelock",
+                "incywincy",
+                "indexer",
+                "infobee",
+                "informant",
+                "ingrid",
+                "inktomisearch.com",
+                "inspector web",
+                "intelliagent",
+                "internet shinchakubin",
+                "ip3000",
+                "iron33",
+                "israeli-search",
+                "ivia",
+                "jack",
+                "jakarta",
+                "javabee",
+                "jetbot",
+                "jumpstation",
+                "katipo",
+                "kdd-explorer",
+                "kilroy",
+                "knowledge",
+                "kototoi",
+                "kretrieve",
+                "labelgrabber",
+                "lachesis",
+                "larbin",
+                "legs",
+                "libwww",
+                "linkalarm",
+                "link validator",
+                "linkscan",
+                "lockon",
+                "lwp",
+                "lycos",
+                "magpie",
+                "mantraagent",
+                "mapoftheinternet",
+                "marvin/",
+                "mattie",
+                "mediafox",
+                "mediapartners",
+                "mercator",
+                "merzscope",
+                "microsoft url control",
+                "minirank",
+                "miva",
+                "mj12",
+                "mnogosearch",
+                "moget",
+                "monster",
+                "moose",
+                "motor",
+                "multitext",
+                "muncher",
+                "muscatferret",
+                "mwd.search",
+                "myweb",
+                "najdi",
+                "nameprotect",
+                "nationaldirectory",
+                "nazilla",
+                "ncsa beta",
+                "nec-meshexplorer",
+                "nederland.zoek",
+                "netcarta webmap engine",
+                "netmechanic",
+                "netresearchserver",
+                "netscoop",
+                "newscan-online",
+                "nhse",
+                "nokia6682/",
+                "nomad",
+                "noyona",
+                "nutch",
+                "nzexplorer",
+                "objectssearch",
+                "occam",
+                "omni",
+                "open text",
+                "openfind",
+                "openintelligencedata",
+                "orb search",
+                "osis-project",
+                "pack rat",
+                "pageboy",
+                "pagebull",
+                "page_verifier",
+                "panscient",
+                "parasite",
+                "partnersite",
+                "patric",
+                "pear.",
+                "pegasus",
+                "peregrinator",
+                "pgp key agent",
+                "phantom",
+                "phpdig",
+                "picosearch",
+                "piltdownman",
+                "pimptrain",
+                "pinpoint",
+                "pioneer",
+                "piranha",
+                "plumtreewebaccessor",
+                "pogodak",
+                "poirot",
+                "pompos",
+                "poppelsdorf",
+                "poppi",
+                "popular iconoclast",
+                "psycheclone",
+                "publisher",
+                "python",
+                "rambler",
+                "raven search",
+                "roach",
+                "road runner",
+                "roadhouse",
+                "robbie",
+                "robofox",
+                "robozilla",
+                "rules",
+                "salty",
+                "sbider",
+                "scooter",
+                "scoutjet",
+                "scrubby",
+                "search.",
+                "searchprocess",
+                "semanticdiscovery",
+                "senrigan",
+                "sg-scout",
+                "shai'hulud",
+                "shark",
+                "shopwiki",
+                "sidewinder",
+                "sift",
+                "silk",
+                "simmany",
+                "site searcher",
+                "site valet",
+                "sitetech-rover",
+                "skymob.com",
+                "sleek",
+                "smartwit",
+                "sna-",
+                "snappy",
+                "snooper",
+                "sohu",
+                "speedfind",
+                "sphere",
+                "sphider",
+                "spinner",
+                "spyder",
+                "steeler/",
+                "suke",
+                "suntek",
+                "supersnooper",
+                "surfnomore",
+                "sven",
+                "sygol",
+                "szukacz",
+                "tach black widow",
+                "tarantula",
+                "templeton",
+                "/teoma",
+                "t-h-u-n-d-e-r-s-t-o-n-e",
+                "theophrastus",
+                "titan",
+                "titin",
+                "tkwww",
+                "toutatis",
+                "t-rex",
+                "tutorgig",
+                "twiceler",
+                "twisted",
+                "ucsd",
+                "udmsearch",
+                "url check",
+                "updated",
+                "vagabondo",
+                "valkyrie",
+                "verticrawl",
+                "victoria",
+                "vision-search",
+                "volcano",
+                "voyager/",
+                "voyager-hc",
+                "w3c_validator",
+                "w3m2",
+                "w3mir",
+                "walker",
+                "wallpaper",
+                "wanderer",
+                "wauuu",
+                "wavefire",
+                "web core",
+                "web hopper",
+                "web wombat",
+                "webbandit",
+                "webcatcher",
+                "webcopy",
+                "webfoot",
+                "weblayers",
+                "weblinker",
+                "weblog monitor",
+                "webmirror",
+                "webmonkey",
+                "webquest",
+                "webreaper",
+                "websitepulse",
+                "websnarf",
+                "webstolperer",
+                "webvac",
+                "webwalk",
+                "webwatch",
+                "webwombat",
+                "webzinger",
+                "wget",
+                "whizbang",
+                "whowhere",
+                "wild ferret",
+                "worldlight",
+                "wwwc",
+                "wwwster",
+                "xenu",
+                "xget",
+                "xift",
+                "xirq",
+                "yandex",
+                "yanga",
+                "yeti",
+                "yodao",
+                "zao/",
+                "zippp",
+                "zyborg",
+                "...."
         );
 
-        foreach ($spiders as $spider) {
+        foreach($spiders as $spider) {
             //If the spider text is found in the current user agent, then return true
-            if (stripos($_SERVER['HTTP_USER_AGENT'], $spider) !== false) {
+            if(stripos($_SERVER['HTTP_USER_AGENT'], $spider) !== false) {
                 return true;
                 break;
             }
@@ -1153,15 +1135,14 @@ class GmediaCore
      * @param array $metadata An existing array with data
      * @param array $data Data supplied by ID3 tags
      */
-    function wp_add_id3_tag_data(&$metadata, $data)
-    {
-        foreach (array('id3v2', 'id3v1') as $version) {
-            if (! empty($data[$version]['comments'])) {
-                foreach ($data[$version]['comments'] as $key => $list) {
-                    if (! empty($list)) {
+    function wp_add_id3_tag_data(&$metadata, $data) {
+        foreach(array('id3v2', 'id3v1') as $version) {
+            if(!empty($data[$version]['comments'])) {
+                foreach($data[$version]['comments'] as $key => $list) {
+                    if(!empty($list)) {
                         $metadata[$key] = reset($list);
                         // fix bug in byte stream analysis
-                        if ('terms_of_use' === $key && 0 === strpos($metadata[$key], 'yright notice.')) {
+                        if('terms_of_use' === $key && 0 === strpos($metadata[$key], 'yright notice.')) {
                             $metadata[$key] = 'Cop' . $metadata[$key];
                         }
                     }
@@ -1170,22 +1151,22 @@ class GmediaCore
             }
         }
 
-        if (! empty($data['id3v2']['APIC'])) {
+        if(!empty($data['id3v2']['APIC'])) {
             $image = reset($data['id3v2']['APIC']);
-            if (! empty($image['data'])) {
+            if(!empty($image['data'])) {
                 $metadata['image'] = array(
-                    'data'   => $image['data'],
-                    'mime'   => $image['image_mime'],
-                    'width'  => $image['image_width'],
-                    'height' => $image['image_height']
+                        'data'   => $image['data'],
+                        'mime'   => $image['image_mime'],
+                        'width'  => $image['image_width'],
+                        'height' => $image['image_height']
                 );
             }
-        } elseif (! empty($data['comments']['picture'])) {
+        } elseif(!empty($data['comments']['picture'])) {
             $image = reset($data['comments']['picture']);
-            if (! empty($image['data'])) {
+            if(!empty($image['data'])) {
                 $metadata['image'] = array(
-                    'data' => $image['data'],
-                    'mime' => $image['image_mime']
+                        'data' => $image['data'],
+                        'mime' => $image['image_mime']
                 );
             }
         }
@@ -1208,9 +1189,8 @@ class GmediaCore
      *
      * @return bool|array False on failure. Image metadata array on success.
      */
-    function wp_read_image_metadata($file)
-    {
-        if (! file_exists($file)) {
+    function wp_read_image_metadata($file) {
+        if(!file_exists($file)) {
             return false;
         }
 
@@ -1222,60 +1202,60 @@ class GmediaCore
 		 * Read IPTC first, since it might contain data not available in exif such
 		 * as caption, description etc.
 		 */
-        if (is_callable('iptcparse')) {
+        if(is_callable('iptcparse')) {
             getimagesize($file, $info);
 
-            if (! empty($info['APP13'])) {
+            if(!empty($info['APP13'])) {
                 $iptc = iptcparse($info['APP13']);
 
                 // Headline, "A brief synopsis of the caption."
-                if (! empty($iptc['2#105'][0])) {
+                if(!empty($iptc['2#105'][0])) {
                     $meta['title'] = trim($iptc['2#105'][0]);
                     /*
 					 * Title, "Many use the Title field to store the filename of the image,
 					 * though the field may be used in many ways."
 					 */
-                } elseif (! empty($iptc['2#005'][0])) {
+                } elseif(!empty($iptc['2#005'][0])) {
                     $meta['title'] = trim($iptc['2#005'][0]);
                 }
 
-                if (! empty($iptc['2#120'][0])) { // description / legacy caption
+                if(!empty($iptc['2#120'][0])) { // description / legacy caption
                     $caption = trim($iptc['2#120'][0]);
-                    if (empty($meta['title'])) {
+                    if(empty($meta['title'])) {
                         mbstring_binary_safe_encoding();
                         $caption_length = strlen($caption);
                         reset_mbstring_encoding();
 
                         // Assume the title is stored in 2:120 if it's short.
-                        if ($caption_length < 80) {
+                        if($caption_length < 80) {
                             $meta['title'] = $caption;
                         } else {
                             $meta['caption'] = $caption;
                         }
-                    } elseif ($caption != $meta['title']) {
+                    } elseif($caption != $meta['title']) {
                         $meta['caption'] = $caption;
                     }
                 }
 
-                if (! empty($iptc['2#110'][0])) // credit
+                if(!empty($iptc['2#110'][0])) // credit
                 {
                     $meta['credit'] = trim($iptc['2#110'][0]);
-                } elseif (! empty($iptc['2#080'][0])) // creator / legacy byline
+                } elseif(!empty($iptc['2#080'][0])) // creator / legacy byline
                 {
                     $meta['credit'] = trim($iptc['2#080'][0]);
                 }
 
-                if (! empty($iptc['2#055'][0]) and ! empty($iptc['2#060'][0])) // created date and time
+                if(!empty($iptc['2#055'][0]) and !empty($iptc['2#060'][0])) // created date and time
                 {
                     $meta['created_timestamp'] = strtotime($iptc['2#055'][0] . ' ' . $iptc['2#060'][0]);
                 }
 
-                if (! empty($iptc['2#116'][0])) // copyright
+                if(!empty($iptc['2#116'][0])) // copyright
                 {
                     $meta['copyright'] = trim($iptc['2#116'][0]);
                 }
 
-                if (! empty($iptc['2#025'])) // keywords
+                if(!empty($iptc['2#025'])) // keywords
                 {
                     $meta['keywords'] = $iptc['2#025'];
                 }
@@ -1289,211 +1269,211 @@ class GmediaCore
          *
          * @param array $image_types Image types to check for exif data.
          */
-        if (is_callable('exif_read_data') && in_array($sourceImageType, apply_filters('wp_read_image_metadata_types', array(
-                IMAGETYPE_JPEG,
-                IMAGETYPE_TIFF_II,
-                IMAGETYPE_TIFF_MM
-            )))
+        if(is_callable('exif_read_data') && in_array($sourceImageType, apply_filters('wp_read_image_metadata_types', array(
+                        IMAGETYPE_JPEG,
+                        IMAGETYPE_TIFF_II,
+                        IMAGETYPE_TIFF_MM
+                )))
         ) {
             $exif = @exif_read_data($file);
             unset($exif['MakerNote']);
 
             // Title
-            if (empty($meta['title']) && ! empty($exif['Title'])) {
+            if(empty($meta['title']) && !empty($exif['Title'])) {
                 $meta['title'] = trim($exif['Title']);
             }
             // Descrioption
-            if (! empty($exif['ImageDescription'])) {
+            if(!empty($exif['ImageDescription'])) {
                 mbstring_binary_safe_encoding();
                 $description_length = strlen($exif['ImageDescription']);
                 reset_mbstring_encoding();
 
-                if (empty($meta['title']) && $description_length < 80) {
+                if(empty($meta['title']) && $description_length < 80) {
                     // Assume the title is stored in ImageDescription
                     $meta['title'] = trim($exif['ImageDescription']);
-                    if (empty($meta['caption']) && ! empty($exif['COMPUTED']['UserComment']) && trim($exif['COMPUTED']['UserComment']) != $meta['title']) {
+                    if(empty($meta['caption']) && !empty($exif['COMPUTED']['UserComment']) && trim($exif['COMPUTED']['UserComment']) != $meta['title']) {
                         $meta['caption'] = trim($exif['COMPUTED']['UserComment']);
                     }
-                } elseif (empty($meta['caption']) && trim($exif['ImageDescription']) != $meta['title']) {
+                } elseif(empty($meta['caption']) && trim($exif['ImageDescription']) != $meta['title']) {
                     $meta['caption'] = trim($exif['ImageDescription']);
                 }
-            } elseif (empty($meta['caption']) && ! empty($exif['Comments']) && trim($exif['Comments']) != $meta['title']) {
+            } elseif(empty($meta['caption']) && !empty($exif['Comments']) && trim($exif['Comments']) != $meta['title']) {
                 $meta['caption'] = trim($exif['Comments']);
             }
             // Credit
-            if (empty($meta['credit'])) {
-                if (! empty($exif['Artist'])) {
+            if(empty($meta['credit'])) {
+                if(!empty($exif['Artist'])) {
                     $meta['credit'] = trim($exif['Artist']);
-                } elseif (! empty($exif['Author'])) {
+                } elseif(!empty($exif['Author'])) {
                     $meta['credit'] = trim($exif['Author']);
                 }
             }
             // Copyright
-            if (empty($meta['copyright']) && ! empty($exif['Copyright'])) {
+            if(empty($meta['copyright']) && !empty($exif['Copyright'])) {
                 $meta['copyright'] = trim($exif['Copyright']);
             }
             // Camera Make
-            if (! empty($exif['Make'])) {
+            if(!empty($exif['Make'])) {
                 $meta['make'] = $exif['Make'];
             }
             // Camera Model
-            if (! empty($exif['Model'])) {
+            if(!empty($exif['Model'])) {
                 $meta['model'] = trim($exif['Model']);
             }
             // Exposure Time (shutter speed)
-            if (! empty($exif['ExposureTime'])) {
+            if(!empty($exif['ExposureTime'])) {
                 $meta['exposure']      = $exif['ExposureTime'] . 's';
                 $meta['shutter_speed'] = (string)wp_exif_frac2dec($exif['ExposureTime']) . 's';
             }
             // Aperture
-            if (! empty($exif['COMPUTED']['ApertureFNumber'])) {
+            if(!empty($exif['COMPUTED']['ApertureFNumber'])) {
                 $meta['aperture'] = $exif['COMPUTED']['ApertureFNumber'];
-            } elseif (! empty($exif['FNumber'])) {
+            } elseif(!empty($exif['FNumber'])) {
                 $meta['aperture'] = 'f/' . (string)round(wp_exif_frac2dec($exif['FNumber']), 2);
             }
             // ISO
-            if (! empty($exif['ISOSpeedRatings'])) {
-                $meta['iso'] = is_array($exif['ISOSpeedRatings']) ? reset($exif['ISOSpeedRatings']) : $exif['ISOSpeedRatings'];
+            if(!empty($exif['ISOSpeedRatings'])) {
+                $meta['iso'] = is_array($exif['ISOSpeedRatings'])? reset($exif['ISOSpeedRatings']) : $exif['ISOSpeedRatings'];
                 $meta['iso'] = trim($meta['iso']);
             }
             // Date
-            if (! empty($exif['DateTime'])) {
+            if(!empty($exif['DateTime'])) {
                 $meta['date'] = $exif['DateTime'];
             }
             // Created TimeStamp
-            if (empty($meta['created_timestamp']) && ! empty($exif['DateTimeDigitized'])) {
+            if(empty($meta['created_timestamp']) && !empty($exif['DateTimeDigitized'])) {
                 $meta['created_timestamp'] = wp_exif_date2ts($exif['DateTimeDigitized']);
             }
             // Lens
-            if (! empty($exif['UndefinedTag:0xA434'])) {
+            if(!empty($exif['UndefinedTag:0xA434'])) {
                 $meta['lens'] = $exif['UndefinedTag:0xA434'];
             }
             // Focus Distance
-            if (! empty($exif['COMPUTED']['FocusDistance'])) {
+            if(!empty($exif['COMPUTED']['FocusDistance'])) {
                 $meta['distance'] = $exif['COMPUTED']['FocusDistance'];
             }
             // Focal Length
-            if (! empty($exif['FocalLength'])) {
+            if(!empty($exif['FocalLength'])) {
                 $meta['focallength'] = (string)round(wp_exif_frac2dec($exif['FocalLength'])) . 'mm';
             }
             // Focal Length 35mm
-            if (! empty($exif['FocalLengthIn35mmFilm'])) {
+            if(!empty($exif['FocalLengthIn35mmFilm'])) {
                 $meta['focallength35'] = $exif['FocalLengthIn35mmFilm'] . 'mm';
             }
             // Flash data
-            if (! empty($exif['Flash'])) {
+            if(!empty($exif['Flash'])) {
                 // we need to interpret the result - it's given as a number and we want a human-readable description.
                 $fdata = $exif['Flash'];
 
-                switch ($fdata) {
+                switch($fdata) {
                     case 0 :
                         $fdata = 'No Flash';
-                        break;
+                    break;
                     case 1 :
                         $fdata = 'Flash';
-                        break;
+                    break;
                     case 5 :
                         $fdata = 'Flash, strobe return light not detected';
-                        break;
+                    break;
                     case 7 :
                         $fdata = 'Flash, strob return light detected';
-                        break;
+                    break;
                     case 9 :
                         $fdata = 'Compulsory Flash';
-                        break;
+                    break;
                     case 13:
                         $fdata = 'Compulsory Flash, Return light not detected';
-                        break;
+                    break;
                     case 15:
                         $fdata = 'Compulsory Flash, Return light detected';
-                        break;
+                    break;
                     case 16:
                         $fdata = 'No Flash';
-                        break;
+                    break;
                     case 24:
                         $fdata = 'No Flash';
-                        break;
+                    break;
                     case 25:
                         $fdata = 'Flash, Auto-Mode';
-                        break;
+                    break;
                     case 29:
                         $fdata = 'Flash, Auto-Mode, Return light not detected';
-                        break;
+                    break;
                     case 31:
                         $fdata = 'Flash, Auto-Mode, Return light detected';
-                        break;
+                    break;
                     case 32:
                         $fdata = 'No Flash';
-                        break;
+                    break;
                     case 65:
                         $fdata = 'Red Eye';
-                        break;
+                    break;
                     case 69:
                         $fdata = 'Red Eye, Return light not detected';
-                        break;
+                    break;
                     case 71:
                         $fdata = 'Red Eye, Return light detected';
-                        break;
+                    break;
                     case 73:
                         $fdata = 'Red Eye, Compulsory Flash';
-                        break;
+                    break;
                     case 77:
                         $fdata = 'Red Eye, Compulsory Flash, Return light not detected';
-                        break;
+                    break;
                     case 79:
                         $fdata = 'Red Eye, Compulsory Flash, Return light detected';
-                        break;
+                    break;
                     case 89:
                         $fdata = 'Red Eye, Auto-Mode';
-                        break;
+                    break;
                     case 93:
                         $fdata = 'Red Eye, Auto-Mode, Return light not detected';
-                        break;
+                    break;
                     case 95:
                         $fdata = 'Red Eye, Auto-Mode, Return light detected';
-                        break;
+                    break;
                     default:
                         $fdata = 'Unknown: ' . $fdata;
-                        break;
+                    break;
                 }
                 $meta['flashdata'] = $fdata;
             }
             // Lens Make
-            if (! empty($exif['UndefinedTag:0xA433'])) {
+            if(!empty($exif['UndefinedTag:0xA433'])) {
                 $meta['lensmake'] = $exif['UndefinedTag:0xA433'];
             }
             // Software
-            if (! empty($exif['Software'])) {
+            if(!empty($exif['Software'])) {
                 $meta['software'] = $exif['Software'];
             }
             // Orientation
-            if (! empty($exif['Orientation'])) {
+            if(!empty($exif['Orientation'])) {
                 $meta['orientation'] = $exif['Orientation'];
             }
 
             $exif_sections = @exif_read_data($file, null, true);
-            if (isset($exif_sections['GPS'])) {
+            if(isset($exif_sections['GPS'])) {
                 $meta['GPS'] = $this->getGPSfromExif($exif_sections['GPS']);
             }
             unset($exif_sections);
             //$meta['exif'] = $exif;
         }
 
-        foreach (array('title', 'caption', 'credit', 'copyright', 'model', 'iso', 'software') as $key) {
-            if (! empty($meta[$key]) && ! seems_utf8($meta[$key])) {
+        foreach(array('title', 'caption', 'credit', 'copyright', 'model', 'iso', 'software') as $key) {
+            if(!empty($meta[$key]) && !seems_utf8($meta[$key])) {
                 $meta[$key] = utf8_encode($meta[$key]);
             }
         }
-        if (! empty($meta['keywords'])) {
-            foreach ($meta['keywords'] as $i => $key) {
-                if (! seems_utf8($key)) {
+        if(!empty($meta['keywords'])) {
+            foreach($meta['keywords'] as $i => $key) {
+                if(!seems_utf8($key)) {
                     $meta['keywords'][$i] = utf8_encode($key);
                 }
             }
         }
 
-        foreach ($meta as &$value) {
-            if (is_string($value)) {
+        foreach($meta as &$value) {
+            if(is_string($value)) {
                 $value = wp_kses_post($value);
             }
         }
@@ -1503,9 +1483,9 @@ class GmediaCore
          *
          * @since 2.5.0
          *
-         * @param array $meta Image meta data.
+         * @param array  $meta Image meta data.
          * @param string $file Path to image file.
-         * @param int $sourceImageType Type of image.
+         * @param int    $sourceImageType Type of image.
          */
         return apply_filters('wp_read_image_metadata', $meta, $file, $sourceImageType);
 
@@ -1520,61 +1500,60 @@ class GmediaCore
      *
      * @return array|boolean Returns array of metadata, if found.
      */
-    function wp_read_video_metadata($file)
-    {
-        if (! file_exists($file)) {
+    function wp_read_video_metadata($file) {
+        if(!file_exists($file)) {
             return false;
         }
 
         $metadata = array();
 
-        if (! class_exists('getID3')) {
+        if(!class_exists('getID3')) {
             require(ABSPATH . WPINC . '/ID3/getid3.php');
         }
         $id3  = new getID3();
         $data = $id3->analyze($file);
 
-        if (isset($data['video']['lossless'])) {
+        if(isset($data['video']['lossless'])) {
             $metadata['lossless'] = $data['video']['lossless'];
         }
-        if (! empty($data['video']['bitrate'])) {
+        if(!empty($data['video']['bitrate'])) {
             $metadata['bitrate'] = (int)$data['video']['bitrate'];
         }
-        if (! empty($data['video']['bitrate_mode'])) {
+        if(!empty($data['video']['bitrate_mode'])) {
             $metadata['bitrate_mode'] = $data['video']['bitrate_mode'];
         }
-        if (! empty($data['filesize'])) {
+        if(!empty($data['filesize'])) {
             $metadata['filesize'] = (int)$data['filesize'];
         }
-        if (! empty($data['mime_type'])) {
+        if(!empty($data['mime_type'])) {
             $metadata['mime_type'] = $data['mime_type'];
         }
-        if (! empty($data['playtime_seconds'])) {
+        if(!empty($data['playtime_seconds'])) {
             $metadata['length'] = (int)ceil($data['playtime_seconds']);
         }
-        if (! empty($data['playtime_string'])) {
+        if(!empty($data['playtime_string'])) {
             $metadata['length_formatted'] = $data['playtime_string'];
         }
-        if (! empty($data['video']['resolution_x'])) {
+        if(!empty($data['video']['resolution_x'])) {
             $metadata['width'] = (int)$data['video']['resolution_x'];
         }
-        if (! empty($data['video']['resolution_y'])) {
+        if(!empty($data['video']['resolution_y'])) {
             $metadata['height'] = (int)$data['video']['resolution_y'];
         }
-        if (! empty($data['fileformat'])) {
+        if(!empty($data['fileformat'])) {
             $metadata['fileformat'] = $data['fileformat'];
         }
-        if (! empty($data['video']['dataformat'])) {
+        if(!empty($data['video']['dataformat'])) {
             $metadata['dataformat'] = $data['video']['dataformat'];
         }
-        if (! empty($data['video']['encoder'])) {
+        if(!empty($data['video']['encoder'])) {
             $metadata['encoder'] = $data['video']['encoder'];
         }
-        if (! empty($data['video']['codec'])) {
+        if(!empty($data['video']['codec'])) {
             $metadata['codec'] = $data['video']['codec'];
         }
 
-        if (! empty($data['audio'])) {
+        if(!empty($data['audio'])) {
             unset($data['audio']['streams']);
             $metadata['audio'] = $data['audio'];
         }
@@ -1593,43 +1572,42 @@ class GmediaCore
      *
      * @return array|boolean Returns array of metadata, if found.
      */
-    function wp_read_audio_metadata($file)
-    {
-        if (! file_exists($file)) {
+    function wp_read_audio_metadata($file) {
+        if(!file_exists($file)) {
             return false;
         }
         $metadata = array();
 
-        if (! class_exists('getID3')) {
+        if(!class_exists('getID3')) {
             require(ABSPATH . WPINC . '/ID3/getid3.php');
         }
         $id3  = new getID3();
         $data = $id3->analyze($file);
 
-        if (! empty($data['audio'])) {
+        if(!empty($data['audio'])) {
             unset($data['audio']['streams']);
             $metadata = $data['audio'];
         }
 
-        if (! empty($data['fileformat'])) {
+        if(!empty($data['fileformat'])) {
             $metadata['fileformat'] = $data['fileformat'];
         }
-        if (! empty($data['filesize'])) {
+        if(!empty($data['filesize'])) {
             $metadata['filesize'] = (int)$data['filesize'];
         }
-        if (! empty($data['mime_type'])) {
+        if(!empty($data['mime_type'])) {
             $metadata['mime_type'] = $data['mime_type'];
         }
-        if (! empty($data['playtime_seconds'])) {
+        if(!empty($data['playtime_seconds'])) {
             $metadata['length'] = (int)ceil($data['playtime_seconds']);
         }
-        if (! empty($data['playtime_string'])) {
+        if(!empty($data['playtime_string'])) {
             $metadata['length_formatted'] = $data['playtime_string'];
         }
 
         $this->wp_add_id3_tag_data($metadata, $data);
 
-        if (isset($metadata['image']['data']) && ! empty($metadata['image']['data'])) {
+        if(isset($metadata['image']['data']) && !empty($metadata['image']['data'])) {
             $image                     = 'data:' . $metadata['image']['mime'] . ';charset=utf-8;base64,' . base64_encode($metadata['image']['data']);
             $metadata['image']['data'] = $image;
         }
@@ -1641,14 +1619,13 @@ class GmediaCore
     /** Write the file
      *
      * @param string $file_tmp
-     * @param array $fileinfo
+     * @param array  $fileinfo
      * @param string $content_type
-     * @param array $post_data
+     * @param array  $post_data
      *
      * @return array
      */
-    function gmedia_upload_handler($file_tmp, $fileinfo, $content_type, $post_data)
-    {
+    function gmedia_upload_handler($file_tmp, $fileinfo, $content_type, $post_data) {
         global $gmGallery, $gmDB, $gmCore;
 
         $cleanup_dir = true; // Remove old files
@@ -1657,39 +1634,39 @@ class GmediaCore
         $chunks      = (int)$this->_req('chunks', 0);
 
         // try to make grand-media dir if not exists
-        if (! wp_mkdir_p($fileinfo['dirpath'])) {
+        if(!wp_mkdir_p($fileinfo['dirpath'])) {
             $return = array(
-                "error" => array(
-                    "code"    => 100,
-                    "message" => sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath'])
-                ),
-                "id"    => $fileinfo['basename']
+                    "error" => array(
+                            "code"    => 100,
+                            "message" => sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath'])
+                    ),
+                    "id"    => $fileinfo['basename']
             );
 
             return $return;
         }
         // Check if grand-media dir is writable
-        if (! is_writable($fileinfo['dirpath'])) {
+        if(!is_writable($fileinfo['dirpath'])) {
             @chmod($fileinfo['dirpath'], 0755);
-            if (! is_writable($fileinfo['dirpath'])) {
+            if(!is_writable($fileinfo['dirpath'])) {
                 $return = array(
-                    "error" => array(
-                        "code"    => 100,
-                        "message" => sprintf(__('Directory %s or its subfolders are not writable by the server.', 'grand-media'), dirname($fileinfo['dirpath']))
-                    ),
-                    "id"    => $fileinfo['basename']
+                        "error" => array(
+                                "code"    => 100,
+                                "message" => sprintf(__('Directory %s or its subfolders are not writable by the server.', 'grand-media'), dirname($fileinfo['dirpath']))
+                        ),
+                        "id"    => $fileinfo['basename']
                 );
 
                 return $return;
             }
         }
         // Remove old temp files
-        if ($cleanup_dir && is_dir($fileinfo['dirpath']) && ($_dir = opendir($fileinfo['dirpath']))) {
-            while (($_file = readdir($_dir)) !== false) {
+        if($cleanup_dir && is_dir($fileinfo['dirpath']) && ($_dir = opendir($fileinfo['dirpath']))) {
+            while(($_file = readdir($_dir)) !== false) {
                 $tmpfilePath = $fileinfo['dirpath'] . DIRECTORY_SEPARATOR . $_file;
 
                 // Remove temp file if it is older than the max age and is not the current file
-                if (preg_match('/\.part$/', $_file) && (filemtime($tmpfilePath) < time() - $file_age) && ($tmpfilePath != $fileinfo['filepath'] . '.part')) {
+                if(preg_match('/\.part$/', $_file) && (filemtime($tmpfilePath) < time() - $file_age) && ($tmpfilePath != $fileinfo['filepath'] . '.part')) {
                     @unlink($tmpfilePath);
                 }
             }
@@ -1697,21 +1674,21 @@ class GmediaCore
             closedir($_dir);
         } else {
             $return = array(
-                "error" => array("code" => 100, "message" => sprintf(__('Failed to open directory: %s', 'grand-media'), $fileinfo['dirpath'])),
-                "id"    => $fileinfo['basename']
+                    "error" => array("code" => 100, "message" => sprintf(__('Failed to open directory: %s', 'grand-media'), $fileinfo['dirpath'])),
+                    "id"    => $fileinfo['basename']
             );
 
             return $return;
         }
 
         // Open temp file
-        $out = fopen($fileinfo['filepath'] . '.part', $chunk == 0 ? "wb" : "ab");
-        if ($out) {
+        $out = fopen($fileinfo['filepath'] . '.part', $chunk == 0? "wb" : "ab");
+        if($out) {
             // Read binary input stream and append it to temp file
             $in = fopen($file_tmp, "rb");
 
-            if ($in) {
-                while (($buff = fread($in, 4096))) {
+            if($in) {
+                while(($buff = fread($in, 4096))) {
                     fwrite($out, $buff);
                 }
             } else {
@@ -1721,10 +1698,10 @@ class GmediaCore
             }
             fclose($in);
             fclose($out);
-            if (strpos($content_type, "multipart") !== false) {
+            if(strpos($content_type, "multipart") !== false) {
                 @unlink($file_tmp);
             }
-            if (! $chunks || $chunk == ($chunks - 1)) {
+            if(!$chunks || $chunk == ($chunks - 1)) {
                 sleep(1);
                 // Strip the temp .part suffix off
                 rename($fileinfo['filepath'] . '.part', $fileinfo['filepath']);
@@ -1733,28 +1710,28 @@ class GmediaCore
 
                 $size        = false;
                 $is_webimage = false;
-                if ('image' == $fileinfo['dirname']) {
+                if('image' == $fileinfo['dirname']) {
                     /** WordPress Image Administration API */
                     require_once(ABSPATH . 'wp-admin/includes/image.php');
 
                     $size = @getimagesize($fileinfo['filepath']);
-                    if ($size && file_is_displayable_image($fileinfo['filepath'])) {
+                    if($size && file_is_displayable_image($fileinfo['filepath'])) {
                         $extensions = array('1' => 'GIF', '2' => 'JPG', '3' => 'PNG', '6' => 'BMP');
-                        if (function_exists('memory_get_usage')) {
-                            switch ($extensions[$size[2]]) {
+                        if(function_exists('memory_get_usage')) {
+                            switch($extensions[$size[2]]) {
                                 case 'GIF':
                                     $CHANNEL = 1;
-                                    break;
+                                break;
                                 case 'JPG':
                                     $CHANNEL = $size['channels'];
-                                    break;
+                                break;
                                 case 'PNG':
                                     $CHANNEL = 3;
-                                    break;
+                                break;
                                 case 'BMP':
                                 default:
                                     $CHANNEL = 6;
-                                    break;
+                                break;
                             }
                             $MB                = 1048576;  // number of bytes in 1M
                             $K64               = 65536;    // number of bytes in 64K
@@ -1763,66 +1740,66 @@ class GmediaCore
                             $memoryNeeded      = memory_get_usage() + $memoryNeeded;
                             $current_limit     = @ini_get('memory_limit');
                             $current_limit_int = intval($current_limit);
-                            if (false !== strpos($current_limit, 'M')) {
+                            if(false !== strpos($current_limit, 'M')) {
                                 $current_limit_int *= $MB;
                             }
-                            if (false !== strpos($current_limit, 'G')) {
+                            if(false !== strpos($current_limit, 'G')) {
                                 $current_limit_int *= 1024;
                             }
 
-                            if (-1 != $current_limit && $memoryNeeded > $current_limit_int) {
+                            if(-1 != $current_limit && $memoryNeeded > $current_limit_int) {
                                 $newLimit = $current_limit_int / $MB + ceil(($memoryNeeded - $current_limit_int) / $MB);
                                 @ini_set('memory_limit', $newLimit . 'M');
                             }
                         }
 
-                        if (! wp_mkdir_p($fileinfo['dirpath_thumb'])) {
+                        if(!wp_mkdir_p($fileinfo['dirpath_thumb'])) {
                             $return = array(
-                                "error" => array(
-                                    "code"    => 100,
-                                    "message" => sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_thumb'])
-                                ),
-                                "id"    => $fileinfo['basename']
+                                    "error" => array(
+                                            "code"    => 100,
+                                            "message" => sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_thumb'])
+                                    ),
+                                    "id"    => $fileinfo['basename']
                             );
 
                             return $return;
                         }
-                        if (! is_writable($fileinfo['dirpath_thumb'])) {
+                        if(!is_writable($fileinfo['dirpath_thumb'])) {
                             @chmod($fileinfo['dirpath_thumb'], 0755);
-                            if (! is_writable($fileinfo['dirpath_thumb'])) {
+                            if(!is_writable($fileinfo['dirpath_thumb'])) {
                                 @unlink($fileinfo['filepath']);
                                 $return = array(
-                                    "error" => array(
-                                        "code"    => 100,
-                                        "message" => sprintf(__('Directory %s is not writable by the server.', 'grand-media'), $fileinfo['dirpath_thumb'])
-                                    ),
-                                    "id"    => $fileinfo['basename']
+                                        "error" => array(
+                                                "code"    => 100,
+                                                "message" => sprintf(__('Directory %s is not writable by the server.', 'grand-media'), $fileinfo['dirpath_thumb'])
+                                        ),
+                                        "id"    => $fileinfo['basename']
                                 );
 
                                 return $return;
                             }
                         }
-                        if (! wp_mkdir_p($fileinfo['dirpath_original'])) {
+                        if(!wp_mkdir_p($fileinfo['dirpath_original'])) {
                             $return = array(
-                                "error" => array(
-                                    "code"    => 100,
-                                    "message" => sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_original'])
-                                ),
-                                "id"    => $fileinfo['basename']
+                                    "error" => array(
+                                            "code"    => 100,
+                                            "message" => sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_original'])
+                                    ),
+                                    "id"    => $fileinfo['basename']
                             );
 
                             return $return;
                         }
-                        if (! is_writable($fileinfo['dirpath_original'])) {
+                        if(!is_writable($fileinfo['dirpath_original'])) {
                             @chmod($fileinfo['dirpath_original'], 0755);
-                            if (! is_writable($fileinfo['dirpath_original'])) {
+                            if(!is_writable($fileinfo['dirpath_original'])) {
                                 @unlink($fileinfo['filepath']);
                                 $return = array(
-                                    "error" => array(
-                                        "code"    => 100,
-                                        "message" => sprintf(__('Directory %s is not writable by the server.', 'grand-media'), $fileinfo['dirpath_original'])
-                                    ),
-                                    "id"    => $fileinfo['basename']
+                                        "error" => array(
+                                                "code"    => 100,
+                                                "message" => sprintf(__('Directory %s is not writable by the server.', 'grand-media'), $fileinfo['dirpath_original'])
+                                        ),
+                                        "id"    => $fileinfo['basename']
                                 );
 
                                 return $return;
@@ -1833,10 +1810,10 @@ class GmediaCore
                         $webimg   = $gmGallery->options['image'];
                         $thumbimg = $gmGallery->options['thumb'];
 
-                        $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1])) ? true : false;
-                        $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1])) ? true : false;
+                        $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
+                        $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1]))? true : false;
 
-                        if ($webimg['resize']) {
+                        if($webimg['resize']) {
                             rename($fileinfo['filepath'], $fileinfo['filepath_original']);
                         } else {
                             copy($fileinfo['filepath'], $fileinfo['filepath_original']);
@@ -1844,49 +1821,49 @@ class GmediaCore
 
                         $angle      = 0;
                         $image_meta = @$gmCore->wp_read_image_metadata($fileinfo['filepath_original']);
-                        if (! empty($image_meta['orientation'])) {
-                            switch ($image_meta['orientation']) {
+                        if(!empty($image_meta['orientation'])) {
+                            switch($image_meta['orientation']) {
                                 case 3:
                                     $angle = 180;
-                                    break;
+                                break;
                                 case 6:
                                     $angle = -90;
-                                    break;
+                                break;
                                 case 8:
                                     $angle = 90;
-                                    break;
+                                break;
                             }
                         }
-                        if ($webimg['resize'] || $thumbimg['resize'] || $angle) {
+                        if($webimg['resize'] || $thumbimg['resize'] || $angle) {
                             $editor = wp_get_image_editor($fileinfo['filepath_original']);
-                            if (is_wp_error($editor)) {
+                            if(is_wp_error($editor)) {
                                 @unlink($fileinfo['filepath']);
                                 @unlink($fileinfo['filepath_original']);
                                 $return = array(
-                                    "error" => array("code" => $editor->get_error_code(), "message" => $editor->get_error_message()),
-                                    "id"    => $fileinfo['basename'],
-                                    "tip"   => 'wp_get_image_editor'
+                                        "error" => array("code" => $editor->get_error_code(), "message" => $editor->get_error_message()),
+                                        "id"    => $fileinfo['basename'],
+                                        "tip"   => 'wp_get_image_editor'
                                 );
 
                                 return $return;
                             }
 
-                            if ($angle) {
+                            if($angle) {
                                 $editor->rotate($angle);
                             }
 
-                            if ($webimg['resize'] || $angle) {
+                            if($webimg['resize'] || $angle) {
                                 $editor->set_quality($webimg['quality']);
 
-                                if ($webimg['resize']) {
+                                if($webimg['resize']) {
                                     $resized = $editor->resize($webimg['width'], $webimg['height'], $webimg['crop']);
-                                    if (is_wp_error($resized)) {
+                                    if(is_wp_error($resized)) {
                                         @unlink($fileinfo['filepath']);
                                         @unlink($fileinfo['filepath_original']);
                                         $return = array(
-                                            "error" => array("code" => $resized->get_error_code(), "message" => $resized->get_error_message()),
-                                            "id"    => $fileinfo['basename'],
-                                            "tip"   => "editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})"
+                                                "error" => array("code" => $resized->get_error_code(), "message" => $resized->get_error_message()),
+                                                "id"    => $fileinfo['basename'],
+                                                "tip"   => "editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})"
                                         );
 
                                         return $return;
@@ -1894,20 +1871,20 @@ class GmediaCore
                                 }
 
                                 $saved = $editor->save($fileinfo['filepath']);
-                                if (is_wp_error($saved)) {
+                                if(is_wp_error($saved)) {
                                     @unlink($fileinfo['filepath']);
                                     @unlink($fileinfo['filepath_original']);
                                     $return = array(
-                                        "error" => array("code" => $saved->get_error_code(), "message" => $saved->get_error_message()),
-                                        "id"    => $fileinfo['basename'],
-                                        "tip"   => 'editor->save->webimage'
+                                            "error" => array("code" => $saved->get_error_code(), "message" => $saved->get_error_message()),
+                                            "id"    => $fileinfo['basename'],
+                                            "tip"   => 'editor->save->webimage'
                                     );
 
                                     return $return;
                                 }
                                 //$new_size = $editor->get_size();
 
-                                if (('JPG' == $extensions[$size[2]]) && ! (extension_loaded('imagick') || class_exists("Imagick"))) {
+                                if(('JPG' == $extensions[$size[2]]) && !(extension_loaded('imagick') || class_exists("Imagick"))) {
                                     $this->copy_exif($fileinfo['filepath_original'], $fileinfo['filepath']);
                                 }
                             }
@@ -1916,26 +1893,26 @@ class GmediaCore
                             $editor->set_quality($thumbimg['quality']);
 
                             $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
-                            if (is_wp_error($resized)) {
+                            if(is_wp_error($resized)) {
                                 @unlink($fileinfo['filepath']);
                                 @unlink($fileinfo['filepath_original']);
                                 $return = array(
-                                    "error" => array("code" => $resized->get_error_code(), "message" => $resized->get_error_message()),
-                                    "id"    => $fileinfo['basename'],
-                                    "tip"   => "editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})"
+                                        "error" => array("code" => $resized->get_error_code(), "message" => $resized->get_error_message()),
+                                        "id"    => $fileinfo['basename'],
+                                        "tip"   => "editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})"
                                 );
 
                                 return $return;
                             }
 
                             $saved = $editor->save($fileinfo['filepath_thumb']);
-                            if (is_wp_error($saved)) {
+                            if(is_wp_error($saved)) {
                                 @unlink($fileinfo['filepath']);
                                 @unlink($fileinfo['filepath_original']);
                                 $return = array(
-                                    "error" => array("code" => $saved->get_error_code(), "message" => $saved->get_error_message()),
-                                    "id"    => $fileinfo['basename'],
-                                    "tip"   => 'editor->save->thumb'
+                                        "error" => array("code" => $saved->get_error_code(), "message" => $saved->get_error_message()),
+                                        "id"    => $fileinfo['basename'],
+                                        "tip"   => 'editor->save->thumb'
                                 );
 
                                 return $return;
@@ -1948,8 +1925,8 @@ class GmediaCore
                     } else {
                         @unlink($fileinfo['filepath']);
                         $return = array(
-                            "error" => array("code" => 104, "message" => __("Could not read image size. Invalid image was deleted.", 'grand-media')),
-                            "id"    => $fileinfo['basename']
+                                "error" => array("code" => 104, "message" => __("Could not read image size. Invalid image was deleted.", 'grand-media')),
+                                "id"    => $fileinfo['basename']
                         );
 
                         return $return;
@@ -1961,55 +1938,55 @@ class GmediaCore
                 $description = '';
                 $link        = '';
                 $date        = null;
-                if (! isset($post_data['set_title'])) {
+                if(!isset($post_data['set_title'])) {
                     $post_data['set_title'] = 'filename';
                 }
-                if (! isset($post_data['set_status'])) {
-                    $post_data['set_status'] = isset($post_data['status']) ? $post_data['status'] : 'inherit';
+                if(!isset($post_data['set_status'])) {
+                    $post_data['set_status'] = isset($post_data['status'])? $post_data['status'] : 'inherit';
                 }
 
                 $keywords = array();
                 // use image exif/iptc data for title and caption defaults if possible
-                if ($size) {
-                    if (! empty($image_meta)) {
-                        if ('exif' == $post_data['set_title']) {
-                            if (! empty($image_meta['title']) && trim($image_meta['title']) && ! is_numeric(sanitize_title($image_meta['title']))) {
+                if($size) {
+                    if(!empty($image_meta)) {
+                        if('exif' == $post_data['set_title']) {
+                            if(!empty($image_meta['title']) && trim($image_meta['title']) && !is_numeric(sanitize_title($image_meta['title']))) {
                                 $title = $image_meta['title'];
                             }
                         }
-                        if (! empty($image_meta['caption']) && trim($image_meta['caption'])) {
+                        if(!empty($image_meta['caption']) && trim($image_meta['caption'])) {
                             $description = $image_meta['caption'];
                         }
-                        if (! empty($image_meta['keywords'])) {
+                        if(!empty($image_meta['keywords'])) {
                             $keywords = $image_meta['keywords'];
                         }
                     }
                 } else {
                     $file_meta = $this->get_file_metadata($fileinfo['filepath_original'], $fileinfo);
-                    if (! empty($file_meta)) {
-                        if ('exif' == $post_data['set_title']) {
-                            if (! empty($file_meta['title']) && trim($file_meta['title']) && ! is_numeric(sanitize_title($file_meta['title']))) {
+                    if(!empty($file_meta)) {
+                        if('exif' == $post_data['set_title']) {
+                            if(!empty($file_meta['title']) && trim($file_meta['title']) && !is_numeric(sanitize_title($file_meta['title']))) {
                                 $title = $file_meta['title'];
                             }
                         }
-                        if (! empty($file_meta['comment']) && trim($file_meta['comment'])) {
+                        if(!empty($file_meta['comment']) && trim($file_meta['comment'])) {
                             $description = $file_meta['comment'];
                         }
-                        if (! empty($file_meta['album']) && (! isset($post_data['terms']['gmedia_album']) || empty($post_data['terms']['gmedia_album']))) {
+                        if(!empty($file_meta['album']) && (!isset($post_data['terms']['gmedia_album']) || empty($post_data['terms']['gmedia_album']))) {
                             $post_data['terms']['gmedia_album'] = array($file_meta['album']);
                         }
                     }
                 }
-                if (('empty' != $post_data['set_title']) && empty($title)) {
+                if(('empty' != $post_data['set_title']) && empty($title)) {
                     $title = $fileinfo['title'];
                 }
 
                 $status = $post_data['set_status'];
-                if ('inherit' == $post_data['set_status']) {
-                    $gmedia_album = isset($post_data['terms']['gmedia_album']) ? $post_data['terms']['gmedia_album'] : false;
-                    if ($gmedia_album && $this->is_digit($gmedia_album)) {
+                if('inherit' == $post_data['set_status']) {
+                    $gmedia_album = isset($post_data['terms']['gmedia_album'])? $post_data['terms']['gmedia_album'] : false;
+                    if($gmedia_album && $this->is_digit($gmedia_album)) {
                         $album = $gmDB->get_term($gmedia_album, 'gmedia_album');
-                        if (empty($album) || is_wp_error($album)) {
+                        if(empty($album) || is_wp_error($album)) {
                             $status = 'public';
                         } else {
                             $status = $album->status;
@@ -2020,33 +1997,33 @@ class GmediaCore
                 }
 
                 unset($post_data['gmuid'], $post_data['mime_type'], $post_data['set_title'], $post_data['set_status']);
-                if (! $is_webimage && isset($post_data['terms']['gmedia_category'])) {
+                if(!$is_webimage && isset($post_data['terms']['gmedia_category'])) {
                     unset($post_data['terms']['gmedia_category']);
                 }
 
-                if (isset($post_data['terms']['gmedia_tag']) && ! empty($post_data['terms']['gmedia_tag']) && ! is_array($post_data['terms']['gmedia_tag'])) {
+                if(isset($post_data['terms']['gmedia_tag']) && !empty($post_data['terms']['gmedia_tag']) && !is_array($post_data['terms']['gmedia_tag'])) {
                     $post_data['terms']['gmedia_tag'] = explode(',', $post_data['terms']['gmedia_tag']);
                 } else {
                     $post_data['terms']['gmedia_tag'] = array();
                 }
-                if (! empty($keywords)) {
+                if(!empty($keywords)) {
                     $post_data['terms']['gmedia_tag'] = array_unique(array_merge($post_data['terms']['gmedia_tag'], $keywords));
                 }
 
                 // Construct the media array
                 $media_data = array(
-                    'mime_type'   => $fileinfo['mime_type'],
-                    'gmuid'       => $fileinfo['basename'],
-                    'title'       => $title,
-                    'link'        => $link,
-                    'description' => $description,
-                    'status'      => $status,
-                    'date'        => $date
+                        'mime_type'   => $fileinfo['mime_type'],
+                        'gmuid'       => $fileinfo['basename'],
+                        'title'       => $title,
+                        'link'        => $link,
+                        'description' => $description,
+                        'status'      => $status,
+                        'date'        => $date
                 );
 
                 $media_data = $this->array_replace_recursive($media_data, $post_data);
 
-                if (! current_user_can('gmedia_delete_others_media')) {
+                if(!current_user_can('gmedia_delete_others_media')) {
                     $media_data['author'] = get_current_user_id();
                 }
 
@@ -2054,22 +2031,22 @@ class GmediaCore
                 $id = $gmDB->insert_gmedia($media_data);
 
                 $media_metadata = $gmDB->generate_gmedia_metadata($id, $fileinfo);
-                if ($size && ! empty($image_meta)) {
-                    if (empty($media_metadata['image_meta'])) {
+                if($size && !empty($image_meta)) {
+                    if(empty($media_metadata['image_meta'])) {
                         $media_metadata['image_meta'] = $image_meta;
                     }
-                    if (! empty($image_meta['created_timestamp'])) {
+                    if(!empty($image_meta['created_timestamp'])) {
                         $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_created_timestamp', $image_meta['created_timestamp']);
                     }
-                    if (! empty($image_meta['GPS'])) {
+                    if(!empty($image_meta['GPS'])) {
                         $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_gps', $image_meta['GPS']);
                     }
                 }
                 $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_metadata', $media_metadata);
 
                 $return = array(
-                    "success" => array("code" => 200, "message" => sprintf(__('File uploaded successful. Assigned ID: %s', 'grand-media'), $id)),
-                    "id"      => $fileinfo['basename']
+                        "success" => array("code" => 200, "message" => sprintf(__('File uploaded successful. Assigned ID: %s', 'grand-media'), $id)),
+                        "id"      => $fileinfo['basename']
                 );
 
                 return $return;
@@ -2089,12 +2066,11 @@ class GmediaCore
      * @param     $from_file
      * @param     $to_file
      */
-    function copy_exif($from_file, $to_file)
-    {
+    function copy_exif($from_file, $to_file) {
 
         $size = @getimagesize($to_file);
 
-        if ($size) {
+        if($size) {
             require_once(dirname(__FILE__) . '/pel/autoload.php');
             Pel::setJPEGQuality(100);
             /*
@@ -2105,14 +2081,14 @@ class GmediaCore
             /* Retrieve the original Exif data in $jpeg (if any). */
             $input_exif = $input_jpeg->getExif();
             /* If no Exif data was present, then $input_exif is null. */
-            if ($input_exif != null) {
+            if($input_exif != null) {
 
                 $input_tiff = $input_exif->getTiff();
-                if ($input_tiff == null) {
+                if($input_tiff == null) {
                     return;
                 }
                 $input_ifd0 = $input_tiff->getIfd();
-                if ($input_ifd0 == null) {
+                if($input_ifd0 == null) {
                     return;
                 }
 
@@ -2120,11 +2096,11 @@ class GmediaCore
                 $input_inter_ifd = $input_ifd0->getSubIfd(PelIfd::INTEROPERABILITY);
 
                 $orientation = $input_ifd0->getEntry(PelTag::ORIENTATION);
-                if ($orientation != null) {
+                if($orientation != null) {
                     $orientation->setValue(1);
                 }
 
-                if (! empty($input_ifd0)) {
+                if(!empty($input_ifd0)) {
                     /*$x_resolution = $input_ifd0->getEntry( PelTag::X_RESOLUTION );
 					$y_resolution = $input_ifd0->getEntry( PelTag::Y_RESOLUTION );
 					if ( $x_resolution != null && $y_resolution != null ) {
@@ -2136,23 +2112,23 @@ class GmediaCore
 
                     $image_width  = $input_ifd0->getEntry(PelTag::IMAGE_WIDTH);
                     $image_length = $input_ifd0->getEntry(PelTag::IMAGE_LENGTH);
-                    if ($image_width != null && $image_length != null) {
+                    if($image_width != null && $image_length != null) {
                         $image_width->setValue($size[0]);
                         $image_length->setValue($size[1]);
                     }
                 }
-                if (! empty($input_exif_ifd)) {
+                if(!empty($input_exif_ifd)) {
                     $x_dimention = $input_exif_ifd->getEntry(PelTag::PIXEL_X_DIMENSION);
                     $y_dimention = $input_exif_ifd->getEntry(PelTag::PIXEL_Y_DIMENSION);
-                    if ($x_dimention != null && $y_dimention != null) {
+                    if($x_dimention != null && $y_dimention != null) {
                         $x_dimention->setValue($size[0]);
                         $y_dimention->setValue($size[1]);
                     }
                 }
-                if (! empty($input_inter_ifd)) {
+                if(!empty($input_inter_ifd)) {
                     $rel_image_width  = $input_inter_ifd->getEntry(PelTag::RELATED_IMAGE_WIDTH);
                     $rel_image_length = $input_inter_ifd->getEntry(PelTag::RELATED_IMAGE_LENGTH);
-                    if ($rel_image_width != null && $rel_image_length != null) {
+                    if($rel_image_width != null && $rel_image_length != null) {
                         $rel_image_width->setValue($size[0]);
                         $rel_image_length->setValue($size[1]);
                     }
@@ -2169,24 +2145,23 @@ class GmediaCore
 
 
     /**
-     * @param     $files
-     * @param     $_terms
-     * @param     $move
+     * @param            $files
+     * @param            $_terms
+     * @param            $move
      * @param int|string $exists
      */
-    function gmedia_import_files($files, $_terms, $move, $exists = 0)
-    {
+    function gmedia_import_files($files, $_terms, $move, $exists = 0) {
         global $gmCore, $gmGallery, $gmDB;
 
-        if (ob_get_level() == 0) {
+        if(ob_get_level() == 0) {
             ob_start();
         }
         $eol = '</pre>' . PHP_EOL;
 
-        $gmedia_album = isset($_terms['gmedia_album']) ? $_terms['gmedia_album'] : false;
-        if ($gmedia_album && $gmCore->is_digit($gmedia_album)) {
+        $gmedia_album = isset($_terms['gmedia_album'])? $_terms['gmedia_album'] : false;
+        if($gmedia_album && $gmCore->is_digit($gmedia_album)) {
             $album = $gmDB->get_term($gmedia_album, 'gmedia_album');
-            if (empty($album) || is_wp_error($album)) {
+            if(empty($album) || is_wp_error($album)) {
                 $_status = 'public';
             } else {
                 $_status    = $album->status;
@@ -2198,7 +2173,7 @@ class GmediaCore
 
         $c = count($files);
         $i = 0;
-        foreach ($files as $file) {
+        foreach($files as $file) {
 
             $title       = '';
             $description = '';
@@ -2206,8 +2181,8 @@ class GmediaCore
             $status      = $_status;
             $terms       = $_terms;
 
-            if (is_array($file)) {
-                if (isset($file['file'])) {
+            if(is_array($file)) {
+                if(isset($file['file'])) {
                     extract($file);
                 } else {
                     _e('Something went wrong...', 'grand-media');
@@ -2222,39 +2197,39 @@ class GmediaCore
             $prefix    = "\n<pre>$i/$c - ";
             $prefix_ko = "\n<pre class='ko'>$i/$c - ";
 
-            if (! is_file($file)) {
+            if(!is_file($file)) {
                 echo $prefix_ko . sprintf(__('File not exists: %s', 'grand-media'), $file) . $eol;
                 continue;
             }
 
-            if ('skip' === $exists) {
+            if('skip' === $exists) {
                 $file_suffix = false;
             } else {
                 $file_suffix = $exists;
             }
             $fileinfo = $gmCore->fileinfo($file, $file_suffix);
 
-            if (('skip' === $exists) && file_exists($fileinfo['filepath'])) {
+            if(('skip' === $exists) && file_exists($fileinfo['filepath'])) {
                 echo $prefix . $fileinfo['basename'] . ': ' . __('file already exists', 'grand-media') . $eol;
                 continue;
             }
 
 
             // try to make grand-media dir if not exists
-            if (! wp_mkdir_p($fileinfo['dirpath'])) {
+            if(!wp_mkdir_p($fileinfo['dirpath'])) {
                 echo $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath']) . $eol;
                 continue;
             }
             // Check if grand-media dir is writable
-            if (! is_writable($fileinfo['dirpath'])) {
+            if(!is_writable($fileinfo['dirpath'])) {
                 @chmod($fileinfo['dirpath'], 0755);
-                if (! is_writable($fileinfo['dirpath'])) {
+                if(!is_writable($fileinfo['dirpath'])) {
                     echo $prefix_ko . sprintf(__('Directory `%s` or its subfolders are not writable by the server.', 'grand-media'), dirname($fileinfo['dirpath'])) . $eol;
                     continue;
                 }
             }
 
-            if (($file != $fileinfo['filepath']) && ! copy($file, $fileinfo['filepath'])) {
+            if(($file != $fileinfo['filepath']) && !copy($file, $fileinfo['filepath'])) {
                 echo $prefix_ko . sprintf(__("Can't copy file from `%s` to `%s`", 'grand-media'), $file, $fileinfo['filepath']) . $eol;
                 continue;
             }
@@ -2263,28 +2238,28 @@ class GmediaCore
 
             $size        = false;
             $is_webimage = false;
-            if ('image' == $fileinfo['dirname']) {
+            if('image' == $fileinfo['dirname']) {
                 /** WordPress Image Administration API */
                 require_once(ABSPATH . 'wp-admin/includes/image.php');
 
                 $size = @getimagesize($fileinfo['filepath']);
-                if ($size && file_is_displayable_image($fileinfo['filepath'])) {
+                if($size && file_is_displayable_image($fileinfo['filepath'])) {
                     $extensions = array('1' => 'GIF', '2' => 'JPG', '3' => 'PNG', '6' => 'BMP');
-                    if (function_exists('memory_get_usage')) {
-                        switch ($extensions[$size[2]]) {
+                    if(function_exists('memory_get_usage')) {
+                        switch($extensions[$size[2]]) {
                             case 'GIF':
                                 $CHANNEL = 1;
-                                break;
+                            break;
                             case 'JPG':
                                 $CHANNEL = $size['channels'];
-                                break;
+                            break;
                             case 'PNG':
                                 $CHANNEL = 3;
-                                break;
+                            break;
                             case 'BMP':
                             default:
                                 $CHANNEL = 6;
-                                break;
+                            break;
                         }
                         $MB                = 1048576;  // number of bytes in 1M
                         $K64               = 65536;    // number of bytes in 64K
@@ -2293,38 +2268,38 @@ class GmediaCore
                         $memoryNeeded      = memory_get_usage() + $memoryNeeded;
                         $current_limit     = @ini_get('memory_limit');
                         $current_limit_int = intval($current_limit);
-                        if (false !== strpos($current_limit, 'M')) {
+                        if(false !== strpos($current_limit, 'M')) {
                             $current_limit_int *= $MB;
                         }
-                        if (false !== strpos($current_limit, 'G')) {
+                        if(false !== strpos($current_limit, 'G')) {
                             $current_limit_int *= 1024;
                         }
 
-                        if (-1 != $current_limit && $memoryNeeded > $current_limit_int) {
+                        if(-1 != $current_limit && $memoryNeeded > $current_limit_int) {
                             $newLimit = $current_limit_int / $MB + ceil(($memoryNeeded - $current_limit_int) / $MB);
                             @ini_set('memory_limit', $newLimit . 'M');
                         }
                     }
 
-                    if (! wp_mkdir_p($fileinfo['dirpath_thumb'])) {
+                    if(!wp_mkdir_p($fileinfo['dirpath_thumb'])) {
                         echo $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_thumb']) . $eol;
                         continue;
                     }
-                    if (! is_writable($fileinfo['dirpath_thumb'])) {
+                    if(!is_writable($fileinfo['dirpath_thumb'])) {
                         @chmod($fileinfo['dirpath_thumb'], 0755);
-                        if (! is_writable($fileinfo['dirpath_thumb'])) {
+                        if(!is_writable($fileinfo['dirpath_thumb'])) {
                             @unlink($fileinfo['filepath']);
                             echo $prefix_ko . sprintf(__('Directory `%s` is not writable by the server.', 'grand-media'), $fileinfo['dirpath_thumb']) . $eol;
                             continue;
                         }
                     }
-                    if (! wp_mkdir_p($fileinfo['dirpath_original'])) {
+                    if(!wp_mkdir_p($fileinfo['dirpath_original'])) {
                         echo $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_original']) . $eol;
                         continue;
                     }
-                    if (! is_writable($fileinfo['dirpath_original'])) {
+                    if(!is_writable($fileinfo['dirpath_original'])) {
                         @chmod($fileinfo['dirpath_original'], 0755);
-                        if (! is_writable($fileinfo['dirpath_original'])) {
+                        if(!is_writable($fileinfo['dirpath_original'])) {
                             @unlink($fileinfo['filepath']);
                             echo $prefix_ko . sprintf(__('Directory `%s` is not writable by the server.', 'grand-media'), $fileinfo['dirpath_original']) . $eol;
                             continue;
@@ -2335,48 +2310,48 @@ class GmediaCore
                     $webimg   = $gmGallery->options['image'];
                     $thumbimg = $gmGallery->options['thumb'];
 
-                    $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1])) ? true : false;
-                    $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1])) ? true : false;
+                    $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
+                    $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1]))? true : false;
 
-                    if ($webimg['resize']) {
+                    if($webimg['resize']) {
                         rename($fileinfo['filepath'], $fileinfo['filepath_original']);
                     } else {
                         copy($fileinfo['filepath'], $fileinfo['filepath_original']);
                     }
                     $angle      = 0;
                     $image_meta = @$gmCore->wp_read_image_metadata($fileinfo['filepath_original']);
-                    if (! empty($image_meta['orientation'])) {
-                        switch ($image_meta['orientation']) {
+                    if(!empty($image_meta['orientation'])) {
+                        switch($image_meta['orientation']) {
                             case 3:
                                 $angle = 180;
-                                break;
+                            break;
                             case 6:
                                 $angle = -90;
-                                break;
+                            break;
                             case 8:
                                 $angle = 90;
-                                break;
+                            break;
                         }
                     }
-                    if ($webimg['resize'] || $thumbimg['resize']) {
+                    if($webimg['resize'] || $thumbimg['resize']) {
                         $editor = wp_get_image_editor($fileinfo['filepath_original']);
-                        if (is_wp_error($editor)) {
+                        if(is_wp_error($editor)) {
                             @unlink($fileinfo['filepath']);
                             @unlink($fileinfo['filepath_original']);
                             echo $prefix_ko . $fileinfo['basename'] . " (wp_get_image_editor): " . $editor->get_error_message() . $eol;
                             continue;
                         }
 
-                        if ($angle) {
+                        if($angle) {
                             $editor->rotate($angle);
                         }
 
-                        if ($webimg['resize'] || $angle) {
+                        if($webimg['resize'] || $angle) {
                             $editor->set_quality($webimg['quality']);
 
-                            if ($webimg['resize']) {
+                            if($webimg['resize']) {
                                 $resized = $editor->resize($webimg['width'], $webimg['height'], $webimg['crop']);
-                                if (is_wp_error($resized)) {
+                                if(is_wp_error($resized)) {
                                     @unlink($fileinfo['filepath']);
                                     @unlink($fileinfo['filepath_original']);
                                     echo $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})): " . $resized->get_error_message() . $eol;
@@ -2385,7 +2360,7 @@ class GmediaCore
                             }
 
                             $saved = $editor->save($fileinfo['filepath']);
-                            if (is_wp_error($saved)) {
+                            if(is_wp_error($saved)) {
                                 @unlink($fileinfo['filepath']);
                                 @unlink($fileinfo['filepath_original']);
                                 echo $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->webimage): " . $saved->get_error_message() . $eol;
@@ -2393,7 +2368,7 @@ class GmediaCore
                             }
                             //$new_size = $editor->get_size();
 
-                            if (('JPG' == $extensions[$size[2]]) && ! (extension_loaded('imagick') || class_exists("Imagick"))) {
+                            if(('JPG' == $extensions[$size[2]]) && !(extension_loaded('imagick') || class_exists("Imagick"))) {
                                 $this->copy_exif($fileinfo['filepath_original'], $fileinfo['filepath']);
                             }
 
@@ -2403,7 +2378,7 @@ class GmediaCore
                         $editor->set_quality($thumbimg['quality']);
 
                         $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
-                        if (is_wp_error($resized)) {
+                        if(is_wp_error($resized)) {
                             @unlink($fileinfo['filepath']);
                             @unlink($fileinfo['filepath_original']);
                             echo $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
@@ -2411,7 +2386,7 @@ class GmediaCore
                         }
 
                         $saved = $editor->save($fileinfo['filepath_thumb']);
-                        if (is_wp_error($saved)) {
+                        if(is_wp_error($saved)) {
                             @unlink($fileinfo['filepath']);
                             @unlink($fileinfo['filepath_original']);
                             echo $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->thumb): " . $saved->get_error_message() . $eol;
@@ -2429,53 +2404,53 @@ class GmediaCore
             }
 
             // Write media data to DB
-            if ($size) {
-                if (! empty($image_meta)) {
-                    if (empty($title) && ! empty($image_meta['title']) && trim($image_meta['title']) && ! is_numeric(sanitize_title($image_meta['title']))) {
+            if($size) {
+                if(!empty($image_meta)) {
+                    if(empty($title) && !empty($image_meta['title']) && trim($image_meta['title']) && !is_numeric(sanitize_title($image_meta['title']))) {
                         $title = $image_meta['title'];
                     }
-                    if (empty($description) && ! empty($image_meta['caption']) && trim($image_meta['caption'])) {
+                    if(empty($description) && !empty($image_meta['caption']) && trim($image_meta['caption'])) {
                         $description = $image_meta['caption'];
                     }
-                    if (! empty($image_meta['keywords'])) {
+                    if(!empty($image_meta['keywords'])) {
                         $terms['gmedia_tag'] = array_unique(array_merge((array)$_terms['gmedia_tag'], $image_meta['keywords']));
                     }
                 }
             } else {
                 $file_meta = $this->get_file_metadata($fileinfo['filepath_original'], $fileinfo);
-                if (! empty($file_meta)) {
-                    if (empty($title) && ! empty($file_meta['title']) && trim($file_meta['title']) && ! is_numeric(sanitize_title($file_meta['title']))) {
+                if(!empty($file_meta)) {
+                    if(empty($title) && !empty($file_meta['title']) && trim($file_meta['title']) && !is_numeric(sanitize_title($file_meta['title']))) {
                         $title = $file_meta['title'];
                     }
-                    if (empty($description) && ! empty($file_meta['comment']) && trim($file_meta['comment'])) {
+                    if(empty($description) && !empty($file_meta['comment']) && trim($file_meta['comment'])) {
                         $description = $file_meta['comment'];
                     }
-                    if (empty($terms['gmedia_album']) && ! empty($file_meta['album'])) {
+                    if(empty($terms['gmedia_album']) && !empty($file_meta['album'])) {
                         $terms['gmedia_album'] = array($file_meta['album']);
                     }
                 }
             }
 
-            if (empty($title)) {
+            if(empty($title)) {
                 $title = $fileinfo['title'];
             }
 
-            if (! $is_webimage) {
+            if(!$is_webimage) {
                 unset($terms['gmedia_category']);
             }
 
             // Construct the media_data array
             $media_data = array(
-                'mime_type'   => $fileinfo['mime_type'],
-                'gmuid'       => $fileinfo['basename'],
-                'title'       => $title,
-                'link'        => $link,
-                'description' => $description,
-                'status'      => $status,
-                'terms'       => $terms
+                    'mime_type'   => $fileinfo['mime_type'],
+                    'gmuid'       => $fileinfo['basename'],
+                    'title'       => $title,
+                    'link'        => $link,
+                    'description' => $description,
+                    'status'      => $status,
+                    'terms'       => $terms
             );
 
-            if (! current_user_can('gmedia_delete_others_media')) {
+            if(!current_user_can('gmedia_delete_others_media')) {
                 $media_data['author'] = get_current_user_id();
             }
 
@@ -2483,14 +2458,14 @@ class GmediaCore
             $id = $gmDB->insert_gmedia($media_data);
 
             $media_metadata = $gmDB->generate_gmedia_metadata($id, $fileinfo);
-            if ($size && ! empty($image_meta)) {
-                if (empty($media_metadata['image_meta'])) {
+            if($size && !empty($image_meta)) {
+                if(empty($media_metadata['image_meta'])) {
                     $media_metadata['image_meta'] = $image_meta;
                 }
-                if (! empty($image_meta['created_timestamp'])) {
+                if(!empty($image_meta['created_timestamp'])) {
                     $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_created_timestamp', $image_meta['created_timestamp']);
                 }
-                if (! empty($image_meta['GPS'])) {
+                if(!empty($image_meta['GPS'])) {
                     $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_gps', $image_meta['GPS']);
                 }
             }
@@ -2498,15 +2473,15 @@ class GmediaCore
 
             echo $prefix . $fileinfo['basename'] . ': <span class="ok">' . sprintf(__('success (ID #%s)', 'grand-media'), $id) . '</span>' . $eol;
 
-            if ($move) {
+            if($move) {
                 @unlink($file);
             }
 
         }
 
-        echo '<p><b>' . __('Category') . ':</b> ' . ((isset($_terms['gmedia_category']) && ! empty($_terms['gmedia_category'])) ? esc_html($gmGallery->options['taxonomies']['gmedia_category'][$_terms['gmedia_category']]) : '-') . PHP_EOL;
-        echo '<br /><b>' . __('Album') . ':</b> ' . ((isset($_terms['gmedia_album']) && ! empty($_terms['gmedia_album'])) ? (isset($album_name) ? $album_name : esc_html($_terms['gmedia_album'])) : '-') . PHP_EOL;
-        echo '<br /><b>' . __('Tags') . ':</b> ' . ((isset($_terms['gmedia_tag']) && ! empty($_terms['gmedia_tag'])) ? esc_html(str_replace(',', ', ', $_terms['gmedia_tag'])) : '-') . '</p>' . PHP_EOL;
+        echo '<p><b>' . __('Category') . ':</b> ' . ((isset($_terms['gmedia_category']) && !empty($_terms['gmedia_category']))? esc_html($gmGallery->options['taxonomies']['gmedia_category'][$_terms['gmedia_category']]) : '-') . PHP_EOL;
+        echo '<br /><b>' . __('Album') . ':</b> ' . ((isset($_terms['gmedia_album']) && !empty($_terms['gmedia_album']))? (isset($album_name)? $album_name : esc_html($_terms['gmedia_album'])) : '-') . PHP_EOL;
+        echo '<br /><b>' . __('Tags') . ':</b> ' . ((isset($_terms['gmedia_tag']) && !empty($_terms['gmedia_tag']))? esc_html(str_replace(',', ', ', $_terms['gmedia_tag'])) : '-') . '</p>' . PHP_EOL;
 
         wp_ob_end_flush_all();
         flush();
@@ -2514,18 +2489,17 @@ class GmediaCore
 
     /**
      * @param string $service
-     * @param array $data
+     * @param array  $data
      *
      * @return array json
      */
-    function app_service($service, $data = array())
-    {
+    function app_service($service, $data = array()) {
         global $gmProcessor;
 
-        if (! current_user_can('manage_options')) {
+        if(!current_user_can('manage_options')) {
             die('-1');
         }
-        if (! $service || ! is_array($data)) {
+        if(!$service || !is_array($data)) {
             die('0');
         }
 
@@ -2538,12 +2512,12 @@ class GmediaCore
         $gm_options['site_email']    = $data['email'];
         $gm_options['site_category'] = $data['category'];
 
-        if ($service == 'app_deactivate') {
+        if($service == 'app_deactivate') {
             $gm_options['mobile_app'] = 0;
         }
 
-        if (in_array($service, array('app_activate', 'app_updateinfo')) && ! is_email($data['email'])) {
-            $result['error'] = $gmProcessor->alert('danger', __('Enter valid email, please', 'grand-media'));
+        if(in_array($service, array('app_activate', 'app_updateinfo')) && !is_email($data['email'])) {
+            $result['error'] = GmediaProcessor::alert('danger', __('Enter valid email, please', 'grand-media'));
         } else {
 
             $hash = wp_generate_password('6', false);
@@ -2559,30 +2533,30 @@ class GmediaCore
             set_transient($hash, $data, 45);
 
             $pgcpost = wp_remote_post('http://mypgc.co/?gmservice=' . $service, array(
-                'method'  => 'POST',
-                'timeout' => 45,
-                'body'    => array('hash' => $hash, 'url' => $data['url']),
+                    'method'  => 'POST',
+                    'timeout' => 45,
+                    'body'    => array('hash' => $hash, 'url' => $data['url']),
             ));
 
-            if (is_wp_error($pgcpost)) {
-                $result['error'] = $gmProcessor->alert('danger', $pgcpost->get_error_message());
+            if(is_wp_error($pgcpost)) {
+                $result['error'] = GmediaProcessor::alert('danger', $pgcpost->get_error_message());
             }
             $pgcpost_body = wp_remote_retrieve_body($pgcpost);
             $result       = (array)json_decode($pgcpost_body);
-            if (isset($result['error'])) {
-                $result['error'] = $gmProcessor->alert('danger', $result['error']);
+            if(isset($result['error'])) {
+                $result['error'] = GmediaProcessor::alert('danger', $result['error']);
             } else {
-                if (isset($result['message'])) {
-                    $result['message'] = $gmProcessor->alert('info', $result['message']);
+                if(isset($result['message'])) {
+                    $result['message'] = GmediaProcessor::alert('info', $result['message']);
                 }
 
-                if (isset($result['site_ID'])) {
+                if(isset($result['site_ID'])) {
                     $gm_options['site_ID'] = $result['site_ID'];
                 }
-                if (isset($result['mobile_app'])) {
+                if(isset($result['mobile_app'])) {
                     $gm_options['mobile_app'] = $result['mobile_app'];
                 }
-                if (isset($result['site_category'])) {
+                if(isset($result['site_category'])) {
                     $gm_options['site_category'] = $result['site_category'];
                 }
             }
@@ -2597,59 +2571,58 @@ class GmediaCore
      *
      * @return mixed
      */
-    function i18n_exif_name($key)
-    {
+    function i18n_exif_name($key) {
         $_key     = strtolower($key);
         $tagnames = array(
-            'aperture'          => __('Aperture', 'grand-media'),
-            'credit'            => __('Credit', 'grand-media'),
-            'camera'            => __('Camera', 'grand-media'),
-            'model'             => __('Camera', 'grand-media'),
-            'lens'              => __('Lens', 'grand-media'),
-            'lensmake'          => __('Lens Make', 'grand-media'),
-            'caption'           => __('Caption', 'grand-media'),
-            'date'              => __('Date/Time', 'grand-media'),
-            'created_timestamp' => __('Timestamp', 'grand-media'),
-            'created_date'      => __('Date Created', 'grand-media'),
-            'created_time'      => __('Time Created', 'grand-media'),
-            'copyright'         => __('Copyright', 'grand-media'),
-            'focallength'       => __('Focal length', 'grand-media'),
-            'focallength35'     => __('Focal length in 35mm Film', 'grand-media'),
-            'iso'               => __('ISO', 'grand-media'),
-            'exposure'          => __('Exposure Time', 'grand-media'),
-            'shutter_speed'     => __('Shutter speed', 'grand-media'),
-            'title'             => __('Title', 'grand-media'),
-            'author'            => __('Author', 'grand-media'),
-            'tags'              => __('Tags', 'grand-media'),
-            'subject'           => __('Subject', 'grand-media'),
-            'make'              => __('Make', 'grand-media'),
-            'status'            => __('Edit Status', 'grand-media'),
-            'category'          => __('Category', 'grand-media'),
-            'keywords'          => __('Keywords', 'grand-media'),
-            'position'          => __('Author Position', 'grand-media'),
-            'GPS'               => __('GPS', 'grand-media'),
-            'lat'               => __('Latitude', 'grand-media'),
-            'lng'               => __('Longtitude', 'grand-media'),
-            'city'              => __('City', 'grand-media'),
-            'location'          => __('Location', 'grand-media'),
-            'state'             => __('Province/State', 'grand-media'),
-            'country_code'      => __('Country code', 'grand-media'),
-            'country'           => __('Country', 'grand-media'),
-            'headline'          => __('Headline', 'grand-media'),
-            'source'            => __('Source', 'grand-media'),
-            'contact'           => __('Contact', 'grand-media'),
-            'last_modfied'      => __('Last modified', 'grand-media'),
-            'tool'              => __('Program tool', 'grand-media'),
-            'software'          => __('Software', 'grand-media'),
-            'format'            => __('Format', 'grand-media'),
-            'width'             => __('Width', 'grand-media'),
-            'height'            => __('Height', 'grand-media'),
-            'flash'             => __('Flash', 'grand-media'),
-            'flashdata'         => __('Flash', 'grand-media'),
-            'orientation'       => __('Orientation', 'grand-media')
+                'aperture'          => __('Aperture', 'grand-media'),
+                'credit'            => __('Credit', 'grand-media'),
+                'camera'            => __('Camera', 'grand-media'),
+                'model'             => __('Camera', 'grand-media'),
+                'lens'              => __('Lens', 'grand-media'),
+                'lensmake'          => __('Lens Make', 'grand-media'),
+                'caption'           => __('Caption', 'grand-media'),
+                'date'              => __('Date/Time', 'grand-media'),
+                'created_timestamp' => __('Timestamp', 'grand-media'),
+                'created_date'      => __('Date Created', 'grand-media'),
+                'created_time'      => __('Time Created', 'grand-media'),
+                'copyright'         => __('Copyright', 'grand-media'),
+                'focallength'       => __('Focal length', 'grand-media'),
+                'focallength35'     => __('Focal length in 35mm Film', 'grand-media'),
+                'iso'               => __('ISO', 'grand-media'),
+                'exposure'          => __('Exposure Time', 'grand-media'),
+                'shutter_speed'     => __('Shutter speed', 'grand-media'),
+                'title'             => __('Title', 'grand-media'),
+                'author'            => __('Author', 'grand-media'),
+                'tags'              => __('Tags', 'grand-media'),
+                'subject'           => __('Subject', 'grand-media'),
+                'make'              => __('Make', 'grand-media'),
+                'status'            => __('Edit Status', 'grand-media'),
+                'category'          => __('Category', 'grand-media'),
+                'keywords'          => __('Keywords', 'grand-media'),
+                'position'          => __('Author Position', 'grand-media'),
+                'GPS'               => __('GPS', 'grand-media'),
+                'lat'               => __('Latitude', 'grand-media'),
+                'lng'               => __('Longtitude', 'grand-media'),
+                'city'              => __('City', 'grand-media'),
+                'location'          => __('Location', 'grand-media'),
+                'state'             => __('Province/State', 'grand-media'),
+                'country_code'      => __('Country code', 'grand-media'),
+                'country'           => __('Country', 'grand-media'),
+                'headline'          => __('Headline', 'grand-media'),
+                'source'            => __('Source', 'grand-media'),
+                'contact'           => __('Contact', 'grand-media'),
+                'last_modfied'      => __('Last modified', 'grand-media'),
+                'tool'              => __('Program tool', 'grand-media'),
+                'software'          => __('Software', 'grand-media'),
+                'format'            => __('Format', 'grand-media'),
+                'width'             => __('Width', 'grand-media'),
+                'height'            => __('Height', 'grand-media'),
+                'flash'             => __('Flash', 'grand-media'),
+                'flashdata'         => __('Flash', 'grand-media'),
+                'orientation'       => __('Orientation', 'grand-media')
         );
 
-        if (isset($tagnames[$_key])) {
+        if(isset($tagnames[$_key])) {
             $key = $tagnames[$_key];
         }
 
@@ -2661,14 +2634,13 @@ class GmediaCore
      *
      * @since 1.6.3
      *
-     * @param int $gmedia_id
+     * @param int    $gmedia_id
      * @param string $meta_type
      */
-    function gmedia_custom_meta_box($gmedia_id, $meta_type = 'gmedia')
-    {
+    function gmedia_custom_meta_box($gmedia_id, $meta_type = 'gmedia') {
         global $gmDB;
 
-        if (! in_array($meta_type, array('gmedia', 'gmedia_term'))) {
+        if(!in_array($meta_type, array('gmedia', 'gmedia_term'))) {
             $meta_type = 'gmedia';
         }
         ?>
@@ -2676,15 +2648,15 @@ class GmediaCore
             <legend class="label label-default" style="font-size:85%;"><?php _e('Custom Fields', 'grand-media'); ?></legend>
             <?php
             $metadata = $gmDB->has_meta($gmedia_id, $meta_type);
-            foreach ($metadata as $key => $value) {
-                if (is_protected_meta($metadata[$key]['meta_key'], $meta_type)) {
+            foreach($metadata as $key => $value) {
+                if(is_protected_meta($metadata[$key]['meta_key'], $meta_type)) {
                     unset($metadata[$key]);
                 }
             } ?>
             <div class="row">
-                <?php if (! empty($metadata)) {
+                <?php if(!empty($metadata)) {
                     //$count = 0;
-                    foreach ($metadata as $entry) {
+                    foreach($metadata as $entry) {
                         echo $this->_list_meta_item($entry);
                     }
                 } ?>
@@ -2702,10 +2674,9 @@ class GmediaCore
      *
      * @return string|void
      */
-    function _list_meta_item($entry)
-    {
-        if (is_serialized($entry['meta_value'])) {
-            if (is_serialized_string($entry['meta_value'])) {
+    function _list_meta_item($entry) {
+        if(is_serialized($entry['meta_value'])) {
+            if(is_serialized_string($entry['meta_value'])) {
                 // This is a serialized string, so we should display it.
                 $entry['meta_value'] = maybe_unserialize($entry['meta_value']);
             } else {
@@ -2739,11 +2710,10 @@ class GmediaCore
      *
      * @return string
      */
-    function meta_form($meta_type = 'gmedia')
-    {
+    function meta_form($meta_type = 'gmedia') {
         global $wpdb;
 
-        if (! in_array($meta_type, array('gmedia', 'gmedia_term'))) {
+        if(!in_array($meta_type, array('gmedia', 'gmedia_term'))) {
             $meta_type = 'gmedia';
         }
 
@@ -2767,13 +2737,13 @@ class GmediaCore
 			<div class="row">
 				<div class="form-group col-sm-6">
 					<label>' . _x('Name', 'meta name') . '</label>';
-        if ($keys) {
+        if($keys) {
             natcasesort($keys);
             $meta_form .= '
 						<select class="metakeyselect form-control input-sm" name="metakeyselect">
 							<option value="">' . __('&mdash; Select &mdash;') . '</option>';
-            foreach ($keys as $key) {
-                if (is_protected_meta($key, 'gmedia')) {
+            foreach($keys as $key) {
+                if(is_protected_meta($key, 'gmedia')) {
                     continue;
                 }
                 $meta_form .= '
@@ -2805,40 +2775,39 @@ class GmediaCore
     /**
      * @since 1.6.3
      *
-     * @param int $gmedia_ID
+     * @param int    $gmedia_ID
      * @param string $meta_type
      *
      * @return bool|int
      */
-    function add_meta($gmedia_ID, $meta_type = 'gmedia')
-    {
+    function add_meta($gmedia_ID, $meta_type = 'gmedia') {
         global $gmDB;
 
-        if (! in_array($meta_type, array('gmedia', 'gmedia_term'))) {
+        if(!in_array($meta_type, array('gmedia', 'gmedia_term'))) {
             $meta_type = 'gmedia';
         }
 
         $gmedia_ID = (int)$gmedia_ID;
 
-        $metakeyselect = isset($_POST['metakeyselect']) ? wp_unslash(trim($_POST['metakeyselect'])) : '';
-        $metakeyinput  = isset($_POST['metakeyinput']) ? wp_unslash(trim($_POST['metakeyinput'])) : '';
-        $metavalue     = isset($_POST['metavalue']) ? $_POST['metavalue'] : '';
-        if (is_string($metavalue)) {
+        $metakeyselect = isset($_POST['metakeyselect'])? wp_unslash(trim($_POST['metakeyselect'])) : '';
+        $metakeyinput  = isset($_POST['metakeyinput'])? wp_unslash(trim($_POST['metakeyinput'])) : '';
+        $metavalue     = isset($_POST['metavalue'])? $_POST['metavalue'] : '';
+        if(is_string($metavalue)) {
             $metavalue = trim($metavalue);
         }
 
-        if (('0' === $metavalue || ! empty ($metavalue)) && ((! empty($metakeyselect) && ! empty($metakeyselect)) || ! empty ($metakeyinput))) {
+        if(('0' === $metavalue || !empty ($metavalue)) && ((!empty($metakeyselect) && !empty($metakeyselect)) || !empty ($metakeyinput))) {
             /*
 			 * We have a key/value pair. If both the select and the input
 			 * for the key have data, the input takes precedence.
 			 */
             $metakey = $metakeyselect;
 
-            if ($metakeyinput) {
+            if($metakeyinput) {
                 $metakey = $metakeyinput;
             } // default
 
-            if (is_protected_meta($metakey, $meta_type)) {
+            if(is_protected_meta($metakey, $meta_type)) {
                 return false;
             }
 
@@ -2856,13 +2825,12 @@ class GmediaCore
      *
      * @return array metadata[key] = array(name, value);
      */
-    function metadata_info($item)
-    {
+    function metadata_info($item) {
         global $gmDB;
 
-        if (is_object($item)) {
+        if(is_object($item)) {
             $item_id = $item->ID;
-        } elseif ($this->is_digit($item)) {
+        } elseif($this->is_digit($item)) {
             $item_id = (int)$item;
         } else {
             return null;
@@ -2871,22 +2839,26 @@ class GmediaCore
         $metadata = array();
 
         $meta = $gmDB->get_metadata('gmedia', $item_id, '_metadata', true);
-        if (isset($meta['image_meta'])) {
-            $metainfo = $meta['image_meta'];
-        } else {
-            $metainfo = $meta;
-            unset($metainfo['web'], $metainfo['original'], $metainfo['thumb'], $metainfo['file']);
-        }
-
-        if (! empty($metainfo)) {
-            foreach ($metainfo as $key => $value) {
-                if (empty($value)) {
-                    continue;
+        if($meta) {
+            if(isset($meta['image_meta'])) {
+                $metainfo = $meta['image_meta'];
+            } else {
+                $metainfo = $meta;
+                if(is_array($metainfo)) {
+                    unset($metainfo['web'], $metainfo['original'], $metainfo['thumb'], $metainfo['file']);
                 }
-                $key_name       = $this->i18n_exif_name($key);
-                $key_name       = ucwords(str_replace('_', ' ', $key_name));
-                $value          = $this->sanitize_meta_value($value);
-                $metadata[$key] = array('name' => $key_name, 'value' => $value);
+            }
+
+            if(!empty($metainfo)) {
+                foreach($metainfo as $key => $value) {
+                    if(empty($value)) {
+                        continue;
+                    }
+                    $key_name       = $this->i18n_exif_name($key);
+                    $key_name       = ucwords(str_replace('_', ' ', $key_name));
+                    $value          = $this->sanitize_meta_value($value);
+                    $metadata[$key] = array('name' => $key_name, 'value' => $value);
+                }
             }
         }
 
@@ -2898,17 +2870,16 @@ class GmediaCore
      *
      * @return array
      */
-    function sanitize_meta_value($value)
-    {
-        if (is_array($value) && (bool)count(array_filter(array_keys($value), 'is_string'))) {
+    function sanitize_meta_value($value) {
+        if(is_array($value) && (bool)count(array_filter(array_keys($value), 'is_string'))) {
             $value_return = array();
-            foreach ($value as $key => $val) {
-                if (empty($value)) {
+            foreach($value as $key => $val) {
+                if(empty($value)) {
                     continue;
                 }
                 $key_name = $this->i18n_exif_name($key);
                 $key_name = ucwords(str_replace('_', ' ', $key_name));
-                if (is_array($val)) {
+                if(is_array($val)) {
                     $val = $this->sanitize_meta_value($val);
                 }
                 $value_return[$key] = array('name' => $key_name, 'value' => $val);
@@ -2926,16 +2897,15 @@ class GmediaCore
      *
      * @return string Meta text;
      */
-    function metadata_text($id)
-    {
+    function metadata_text($id) {
         $metatext = '';
-        if (($metadata = $this->metadata_info($id))) {
-            foreach ($metadata as $meta) {
-                if ($meta['name'] == 'Image') {
+        if(($metadata = $this->metadata_info($id))) {
+            foreach($metadata as $meta) {
+                if($meta['name'] == 'Image') {
                     continue;
                 }
                 $metatext .= "<b>{$meta['name']}:</b>";
-                if (! is_array($meta['value'])) {
+                if(!is_array($meta['value'])) {
                     $metatext .= " {$meta['value']}\n";
                 } else {
                     $value = $meta['value'];
@@ -2948,17 +2918,16 @@ class GmediaCore
     }
 
     /**
-     * @param $metatext
-     * @param $value
+     * @param     $metatext
+     * @param     $value
      * @param int $pad
      */
-    function meta_value_array_show(&$metatext, $value, $pad = 0)
-    {
-        if ((bool)count(array_filter(array_keys($value), 'is_string'))) {
+    function meta_value_array_show(&$metatext, $value, $pad = 0) {
+        if((bool)count(array_filter(array_keys($value), 'is_string'))) {
             $pad++;
-            foreach ($value as $val) {
+            foreach($value as $val) {
                 $metatext .= "\n" . str_pad('&nbsp;', $pad) . "- <b>{$val['name']}:</b> ";
-                if (is_array($val['value'])) {
+                if(is_array($val['value'])) {
                     $this->meta_value_array_show($metatext, $val['value'], $pad);
                 } else {
                     $metatext .= $val['value'];
@@ -2976,8 +2945,7 @@ class GmediaCore
      *
      * @return array
      */
-    function getGPSfromExif($gps)
-    {
+    function getGPSfromExif($gps) {
         $lat = $this->getGPS($gps['GPSLatitude'], $gps['GPSLatitudeRef']);
         $lng = $this->getGPS($gps['GPSLongitude'], $gps['GPSLongitudeRef']);
 
@@ -2990,20 +2958,19 @@ class GmediaCore
      *
      * @return int
      */
-    function getGPS($coordinate, $hemisphere)
-    {
-        for ($i = 0; $i < 3; $i++) {
+    function getGPS($coordinate, $hemisphere) {
+        for($i = 0; $i < 3; $i++) {
             $part = explode('/', $coordinate[$i]);
-            if (count($part) == 1) {
+            if(count($part) == 1) {
                 $coordinate[$i] = $part[0];
-            } else if (count($part) == 2) {
+            } else if(count($part) == 2) {
                 $coordinate[$i] = floatval($part[0]) / floatval($part[1]);
             } else {
                 $coordinate[$i] = 0;
             }
         }
         list($degrees, $minutes, $seconds) = $coordinate;
-        $sign = ($hemisphere == 'W' || $hemisphere == 'S') ? -1 : 1;
+        $sign = ($hemisphere == 'W' || $hemisphere == 'S')? -1 : 1;
 
         return $sign * ($degrees + $minutes / 60 + $seconds / 3600);
     }
@@ -3016,11 +2983,10 @@ class GmediaCore
      *
      * @return
      */
-    function gm_hitcounter($gmID, $meta)
-    {
+    function gm_hitcounter($gmID, $meta) {
         /** @var wpdb $wpdb */
         global $gmDB;
-        if (isset($_POST['vote'])) {
+        if(isset($_POST['vote'])) {
             $meta['likes'] += 1;
             $gmDB->update_metadata('gmedia', $gmID, 'likes', $meta['likes']);
         } else {
@@ -3040,22 +3006,21 @@ class GmediaCore
      * @return array
      * @throws Exception
      */
-    function replace_array_keys(&$array, $keymap)
-    {
+    function replace_array_keys(&$array, $keymap) {
         $replaced_keys = array();
         $skipped       = $keymap;
         do {
             $keymap = $skipped;
-            foreach ($keymap as $new_key => $original_key) {
-                if (isset($array[$original_key])) {
-                    if (! isset($array[$new_key]) || (isset($replaced_keys[$new_key]) && ! isset($replaced_keys[$original_key]))) {
+            foreach($keymap as $new_key => $original_key) {
+                if(isset($array[$original_key])) {
+                    if(!isset($array[$new_key]) || (isset($replaced_keys[$new_key]) && !isset($replaced_keys[$original_key]))) {
                         $array[$new_key] = $array[$original_key];
                         unset($array[$original_key]);
                         $replaced_keys[$original_key] = $new_key;
                         unset($skipped[$new_key]);
-                    } elseif (isset($array[$new_key]) && array_search($new_key, $keymap) === false) {
+                    } elseif(isset($array[$new_key]) && array_search($new_key, $keymap) === false) {
                         throw new Exception('Trying to replace an array key with an already existing array key, without providing a new position for the existing array key in replace_array_keys().');
-                    } elseif (isset($array[$new_key]) && $keymap[$original_key] == $new_key && ! isset($replaced_keys[$original_key])) {
+                    } elseif(isset($array[$new_key]) && $keymap[$original_key] == $new_key && !isset($replaced_keys[$original_key])) {
                         //switch places.
                         $temp                         = $array[$new_key];
                         $array[$new_key]              = $array[$original_key];
@@ -3069,7 +3034,7 @@ class GmediaCore
                     unset($skipped[$new_key]);
                 }
             }
-        } while (! empty($skipped));
+        } while(!empty($skipped));
 
         return $replaced_keys;
     }
@@ -3081,11 +3046,10 @@ class GmediaCore
      *
      * @return array [r ,g, b]
      */
-    function hex2rgb($hex)
-    {
+    function hex2rgb($hex) {
         $hex = str_replace("#", "", $hex);
 
-        if (strlen($hex) == 3) {
+        if(strlen($hex) == 3) {
             $r = hexdec(substr($hex, 0, 1) . substr($hex, 0, 1));
             $g = hexdec(substr($hex, 1, 1) . substr($hex, 1, 1));
             $b = hexdec(substr($hex, 2, 1) . substr($hex, 2, 1));
@@ -3098,6 +3062,31 @@ class GmediaCore
 
         return $rgb;
     }
+
+    /**
+     * @return array Gmedia Capabilities
+     */
+    function plugin_capabilities() {
+        return array(
+                'gmedia_library'
+                , 'gmedia_show_others_media'
+                , 'gmedia_edit_media'
+                , 'gmedia_edit_others_media'
+                , 'gmedia_delete_media'
+                , 'gmedia_delete_others_media'
+                , 'gmedia_upload'
+                , 'gmedia_import'
+                , 'gmedia_terms'
+                , 'gmedia_album_manage'
+                , 'gmedia_filter_manage'
+                , 'gmedia_tag_manage'
+                , 'gmedia_terms_delete'
+                , 'gmedia_gallery_manage'
+                , 'gmedia_module_manage'
+                , 'gmedia_settings'
+        );
+    }
+
 }
 
 global $gmCore;

@@ -1,10 +1,11 @@
 <?php
-//ini_set('display_errors', '1');
-//ini_set('error_reporting', E_ALL);
+/**
+ * Application access
+ */
 
+// don't load directly
 if (! defined('ABSPATH')) {
-    die(0);
-    //@require_once(dirname(__FILE__) . '/config.php');
+    die('-1');
 }
 
 global $wp;

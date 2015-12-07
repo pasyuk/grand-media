@@ -33,6 +33,7 @@ input::-moz-focus-inner {
 form {
     margin:0;
 }
+legend.label { text-align:left; }
 textarea.vert { resize:vertical; }
 textarea.noResize { resize:none; }
 body.gmedia-busy {
@@ -110,11 +111,8 @@ div#gmedia-navbar {
     font-size:14px;
 }
 div.custom-message {
-    position:absolute;
-    right:15px;
-    top:-35px;
     padding:5px 10px;
-    margin:0
+    margin:0 0 10px;
 }
 form.gmedia-search-form {
     float:right;

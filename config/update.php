@@ -1,8 +1,7 @@
 <?php
-// If not called from WordPress, then exit
-if (! defined('ABSPATH')) {
-    exit;
-}
+/**
+ * Update Gmedia plugin
+ */
 
 function gmedia_update_admin_notice()
 {

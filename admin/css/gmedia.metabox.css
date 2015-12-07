@@ -26,7 +26,7 @@ div#gmedia-wraper * {
     text-decoration:none;
 }
 div#gmedia-message {
-    background:#a1a1a1 url(../images/metabox.png) 0 -25px;
+    background:#a1a1a1 url(../img/metabox.png) 0 -25px;
     position:relative;
     z-index:20;
     border-bottom:1px solid #ccc;
@@ -54,7 +54,7 @@ div#gmedia-galleries {
 div#gmedia-galleries .title-bar {
     position:relative;
     padding:0 7px;
-    background:#a1a1a1 url(../images/metabox.png) repeat-x 0 -25px;
+    background:#a1a1a1 url(../img/metabox.png) repeat-x 0 -25px;
     text-shadow:0 1px 0 rgba(255, 255, 255, 0.4);
     height:25px;
     line-height:27px;
@@ -153,7 +153,7 @@ div#gmedia-galleries ul#gmedia-galleries-list .gmedia-gallery-li .gmedia-gallery
     top:1px;
     width:16px;
     height:16px;
-    background:url(../images/metabox.png) 0 -258px no-repeat;
+    background:url(../img/metabox.png) 0 -258px no-repeat;
 }
 div#gmedia-galleries ul#gmedia-galleries-list .gmedia-gallery-li .gmedia-selector {
     z-index:2;
@@ -163,7 +163,7 @@ div#gmedia-galleries ul#gmedia-galleries-list .gmedia-gallery-li .gmedia-selecto
     width:100%;
     height:100%;
     display:none;
-    background:url(../images/clicked.png) 100% 0 no-repeat;
+    background:url(../img/clicked.png) 100% 0 no-repeat;
 }
 div#gmedia-galleries ul#gmedia-galleries-list .gmedia-gallery-li.gmedia-selected .gmedia-selector {
     display:block;
@@ -232,7 +232,7 @@ div#gmedia-galleries .ui-resizable-s {
     bottom:0;
     height:10px;
     width:100%;
-    background:#2e6286 url(../images/social-footer.png) 50% -243px no-repeat;
+    background:#2e6286 url(../img/social-footer.png) 50% -243px no-repeat;
     border-radius:0 0 2px 2px;
     box-shadow:2px 0 0 #2e6286;
     margin-left:-1px;
@@ -254,7 +254,7 @@ div#gmedia-galleries .ui-resizable-s {
     color:#fff;
     font-weight:bold;
     width:176px;
-    background:transparent url(../images/social-footer.png) -7px -196px no-repeat;
+    background:transparent url(../img/social-footer.png) -7px -196px no-repeat;
 }
 #gmedia-wraper #gmedia-social p a {
     color:#fff;

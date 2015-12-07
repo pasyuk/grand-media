@@ -20,7 +20,7 @@ function gmediaApp()
     $alert     = '';
     $btn_state = '';
     if ('127.0.0.1' == $_SERVER['SERVER_ADDR']) {
-        $alert     = $gmProcessor->alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
+        $alert     = GmediaProcessor::alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
         $btn_state = ' disabled';
     }
 
@@ -56,8 +56,8 @@ function gmediaApp()
 
                             <p><?php _e('Download Gmedia iOS application from the App Store to manage your Gmedia Library from iPhone.', 'grand-media'); ?></p>
 
-                            <div class="text-center"><img style="max-width:100%;" src="<?php echo $gmCore->gmedia_url; ?>/admin/images/mobile_app.png"/>
-                                <br/><a target="_blank" href="https://itunes.apple.com/ua/app/gmedia/id947515626?mt=8"><img style="max-width:100%;" src="<?php echo $gmCore->gmedia_url; ?>/admin/images/appstore_button.png"/></a>
+                            <div class="text-center"><img style="max-width:100%;" src="<?php echo $gmCore->gmedia_url; ?>/admin/img/mobile_app.png"/>
+                                <br/><a target="_blank" href="https://itunes.apple.com/ua/app/gmedia/id947515626?mt=8"><img style="max-width:100%;" src="<?php echo $gmCore->gmedia_url; ?>/admin/img/appstore_button.png"/></a>
                             </div>
                         </div>
                         <div class="col-xs-5">

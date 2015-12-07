@@ -75,7 +75,7 @@ function gmedia_upload_files()
     $maxupsize    = floor($maxupsize * 0.99);
     $maxupsize_mb = floor($maxupsize / 1024 / 1024);
 
-    $gm_screen_options = $gmProcessor->user_options();
+    $gm_screen_options = $gmProcessor->user_options;
 
     $gm_terms = array();
 

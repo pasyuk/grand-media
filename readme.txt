@@ -1,7 +1,7 @@
 === Gmedia Gallery - Photo Gallery, Image Slider, Music Player, Video Player, Media Library ===
 Contributors: Rattus
 Donate link: http://codeasily.com/donate/
-Tags: gallery, image, images, library, music, video, slideshow, responsive, admin, Post, posts, easy gallery, iphone gallery, best gallery, portfolio, image gallery, photo gallery, photo, slider, header slider, admin, page, relative image, gallery slider, iOS app
+Tags: admin, best gallery, easy gallery, gallery, gallery slider, header slider, image, image gallery, images, iOS app, iphone gallery, media library, music, page, photo, photo gallery, portfolio, Post, posts, responsive, slider, slideshow, video
 Requires at least: 3.6
 Tested up to: 4.3.1
 Stable tag: trunk
@@ -133,6 +133,12 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= 1.7.50 =
+* Fixed: JS error in Library if user have no Terms capability
+* Fixed: Views and Likes not count on some themes (400 error)
+* Fixed: Error when file have no metadata (exif info)
+* Other small fixes, new bugs and improvements
 
 = 1.7.40 =
 * Added: Grid View in Gmedia Library

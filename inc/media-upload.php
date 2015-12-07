@@ -25,7 +25,7 @@ function gmedia_media_buttons_context($context)
 {
     $button = '
 	<div style="display:inline-block;">
-	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url(GMEDIA_FOLDER . '/admin/images/gm-icon.png') . ') no-repeat top left;"></span> ' . __('Gmedia', 'grand-media') . '</a>
+	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url(GMEDIA_FOLDER . '/admin/img/gm-icon.png') . ') no-repeat top left;"></span> ' . __('Gmedia', 'grand-media') . '</a>
 	</div>';
 
     return $context . $button;
@@ -226,7 +226,7 @@ function gmedia_add_media_galleries()
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
     if (is_wp_error($gmediaTerms)) {
-        $alert       = $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
+        $alert       = GmediaProcessor::alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 
@@ -524,7 +524,7 @@ function gmedia_add_media_terms()
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
     if (is_wp_error($gmediaTerms)) {
-        $alert       = $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
+        $alert       = GmediaProcessor::alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 
@@ -1121,7 +1121,7 @@ function gmedia_add_media_upload()
     $maxupsize    = floor($maxupsize * 0.99);
     $maxupsize_mb = floor($maxupsize / 1024 / 1024);
 
-    $gm_screen_options = $gmProcessor->user_options();
+    $gm_screen_options = $gmProcessor->user_options;
     $gm_terms          = array();
 
     ?>

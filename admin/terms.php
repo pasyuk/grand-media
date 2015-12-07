@@ -152,7 +152,7 @@ function gmediaTerms()
                     </ul>
                 </div>
 
-                <?php if (('gmedia_filter' == $taxonomy)) { ?>
+                <?php if (('gmedia_filter' == $taxonomy) && $gmCore->caps['gmedia_filter_manage']) { ?>
                     <a class="btn btn-success pull-left" href="<?php echo add_query_arg(array('edit_filter' => '0'), $url); ?>"><?php _e('Create Filter', 'grand-media'); ?></a>
                 <?php } ?>
 
@@ -1235,6 +1235,7 @@ function gmediaFilterEdit()
         ,'gmedia__not_in'   => array() // use gmedia ids. Specify post NOT to retrieve
         ,'mime_type'        => array() // mime types
 
+        ,'per_page'         => '' // (int) - set limit
         ,'order'            => '' // Designates the ascending or descending order of the 'orderby' parameter. Defaults to 'DESC'
         ,'orderby'          => '' // Sort retrieved posts by parameter. Defaults to 'ID'
         ,'year'             => '' // (int) - 4 digit year

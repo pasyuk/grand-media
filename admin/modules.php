@@ -47,7 +47,7 @@ function gmediaModules()
         if (is_wp_error($get_xml)) {
             $alert[] = $get_xml->get_error_message();
         }
-        echo $gmProcessor->alert('danger', $alert);
+        echo GmediaProcessor::alert('danger', $alert);
     }
 
     if (! empty($xml)) {

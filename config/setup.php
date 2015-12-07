@@ -1,8 +1,7 @@
 <?php
-// Stop direct call
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-    die('You are not allowed to call this page directly.');
-}
+/**
+ * Setup Gmedia plugin
+ */
 
 /**
  * Setup the default option array for the plugin
@@ -96,7 +95,7 @@ function gmedia_default_options()
     $gm['gm_screen_options']['orderby_gmedia']   = 'ID';
     $gm['gm_screen_options']['sortorder_gmedia'] = 'DESC';
     $gm['gm_screen_options']['display_mode_gmedia'] = 'list';
-    $gm['gm_screen_options']['grid_cell_fit_gmedia'] = '';
+    $gm['gm_screen_options']['grid_cell_fit_gmedia'] = false;
 
     $gm['gm_screen_options']['per_page_gmedia_terms']  = 30;
     $gm['gm_screen_options']['orderby_gmedia_terms']   = 'name';
@@ -126,6 +125,7 @@ function gmedia_default_options()
  **/
 function gmedia_capabilities()
 {
+    global $gmCore;
     // Set the capabilities for the administrator
     $role = get_role('administrator');
     // We need this role, no other chance
@@ -134,7 +134,7 @@ function gmedia_capabilities()
 
         return;
     }
-    $capabilities = gmedia_plugin_capabilities();
+    $capabilities = $gmCore->plugin_capabilities();
     $capabilities = apply_filters('gmedia_capabilities', $capabilities);
     foreach ($capabilities as $cap) {
         $role->add_cap($cap);

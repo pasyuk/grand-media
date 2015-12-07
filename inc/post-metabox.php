@@ -37,9 +37,9 @@ function gmedia_meta_box_load_scripts($hook)
 {
     if ((in_array($hook, array('post.php', 'edit.php')) && isset($_GET['post']) && isset($_GET['action']) && $_GET['action'] == 'edit') || $hook == 'post-new.php') {
         //wp_enqueue_style('wp-jquery-ui-dialog');
-        //wp_enqueue_style('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/css/meta-box.css', array('wp-jquery-ui-dialog'), '1.3.0');
-        //wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/js/meta-box.js', array('jquery','jquery-ui-dialog','gmedia-global-backend'), '1.4.2', true);
-        wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/js/meta-box.js', array('jquery', 'gmedia-global-backend'), '1.4.2', true);
+        //wp_enqueue_style('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/css/gmedia.metabox.css', array('wp-jquery-ui-dialog'), '1.3.0');
+        //wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/js/gmedia.metabox.js', array('jquery','jquery-ui-dialog','gmedia-global-backend'), '1.4.2', true);
+        wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/js/gmedia.metabox.js', array('jquery', 'gmedia-global-backend'), '1.4.2', true);
     }
 }
 
@@ -115,7 +115,7 @@ return $plugin_array;
 function gmedia_post_metabox()
 {
     global $gmCore, $gmDB, $user_ID;
-    $t = $gmCore->gmedia_url . '/admin/images/blank.gif';
+    $t = $gmCore->gmedia_url . '/admin/img/blank.gif';
     ?>
     <div id="gmedia-wraper">
         <div id="gmedia-message">
