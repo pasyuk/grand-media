@@ -34,25 +34,6 @@ class GmediaProcessor_Library extends GmediaProcessor {
     public function query_args() {
         global $gmCore, $gmDB, $user_ID, $gmGallery;
 
-        if($gmCore->_get('custom_filter', false, true) && ($custom_filter = $gmDB->get_term($_GET['custom_filter'], 'gmedia_filter'))) {
-            if(!is_wp_error($custom_filter)) {
-                if(($custom_filter->global == $user_ID) || $gmCore->caps['gmedia_show_others_media']) {
-                    $args = $gmDB->get_metadata('gmedia_term', $custom_filter->term_id, '_query', true);
-
-                    $this->filters['custom_filter'] = array(
-                        'title'  => __('Cusom Filter', 'grand-media'),
-                        'filter' => array($custom_filter->name)
-                    );
-
-                    return array_filter($args);
-                } else {
-                    $this->error[] = __('You are not allowed to see others media', 'grand-media');
-                }
-            } else {
-                $this->error[] = $custom_filter->get_error_message();
-            }
-        }
-
         $args['mime_type']        = $gmCore->_get('mime_type');
         $args['status']           = $gmCore->_get('status');
         $args['page']             = $gmCore->_get('pager');
@@ -83,7 +64,32 @@ class GmediaProcessor_Library extends GmediaProcessor {
             $args['order']      = $gmCore->_get('order', 'ASC');
         }
 
-        $query_args = array_filter(apply_filters('gmedia_library_query_args', $args));
+        $query_args = apply_filters('gmedia_library_query_args', $args);
+
+        if($gmCore->_get('custom_filter', false, true) && ($custom_filter = $gmDB->get_term($_GET['custom_filter'], 'gmedia_filter'))) {
+            if(!is_wp_error($custom_filter)) {
+                if(($custom_filter->global == $user_ID) || $gmCore->caps['gmedia_show_others_media']) {
+                    $args = $gmDB->get_metadata('gmedia_term', $custom_filter->term_id, '_query', true);
+
+                    $this->filters['custom_filter'] = array(
+                        'title'  => __('Cusom Filter', 'grand-media'),
+                        'filter' => array($custom_filter->name)
+                    );
+
+                    $query_args = array_merge($query_args, $args);
+                } else {
+                    $this->error[] = __('You are not allowed to see others media', 'grand-media');
+                }
+            } else {
+                $this->error[] = $custom_filter->get_error_message();
+            }
+        }
+
+        foreach($query_args as $key => $val){
+            if(empty($val) && ('0' !== $val) && (0 !== $val)){
+                unset($query_args[$key]);
+            }
+        }
 
         if(!empty($query_args['author__in']) && $gmCore->caps['gmedia_show_others_media']) {
             $authors_names = $query_args['author__in'];
@@ -107,7 +113,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
             }
         }
         if(!empty($query_args['album__not_in'])) {
-            $albums_names = $gmDB->get_terms('gmedia_album', array('fields' => 'names', 'global' => $user_ID, 'exclude' => $query_args['album__not_in']));
+            $albums_names = $gmDB->get_terms('gmedia_album', array('fields' => 'names', 'global' => $user_ID, 'include' => $query_args['album__not_in']));
             if(!empty($albums_names)) {
                 $this->filters['exclude_albums'] = array(
                     'title'  => __('Exclude Album', 'grand-media'),
@@ -130,7 +136,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
             }
         }
         if(!empty($query_args['category__not_in'])) {
-            $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'exclude' => $query_args['category__not_in']));
+            $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['category__not_in']));
             if(!empty($category_names)) {
                 foreach($category_names as $i => $name) {
                     $category_names[$i] = $gmGallery->options['taxonomies']['gmedia_category'][$name];
@@ -153,7 +159,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
             }
         }
         if(!empty($query_args['tag__not_in'])) {
-            $tag_names = $gmDB->get_terms('gmedia_tag', array('fields' => 'names', 'exclude' => $query_args['tag__not_in']));
+            $tag_names = $gmDB->get_terms('gmedia_tag', array('fields' => 'names', 'include' => $query_args['tag__not_in']));
             if(!empty($tag_names)) {
                 $this->filters['exclude_tags'] = array(
                     'title'  => __('Exclude Tag', 'grand-media'),
@@ -243,28 +249,28 @@ class GmediaProcessor_Library extends GmediaProcessor {
         }
 
         if(isset($_POST['filter_categories'])) {
-            if(($term = $gmCore->_post('cat'))) {
+            if(false !== ($term = $gmCore->_post('cat'))) {
                 $location = add_query_arg(array('page' => $this->page, 'edit_mode' => $this->edit_mode, 'category__in' => implode(',', $term)), admin_url('admin.php'));
                 wp_redirect($location);
                 exit;
             }
         }
         if(isset($_POST['filter_albums'])) {
-            if(($term = $gmCore->_post('alb'))) {
+            if(false !== ($term = $gmCore->_post('alb'))) {
                 $location = add_query_arg(array('page' => $this->page, 'edit_mode' => $this->edit_mode, 'album__in' => implode(',', $term)), admin_url('admin.php'));
                 wp_redirect($location);
                 exit;
             }
         }
         if(isset($_POST['filter_tags'])) {
-            if(($term = $gmCore->_post('tag_ids'))) {
+            if(false !== ($term = $gmCore->_post('tag_ids'))) {
                 $location = add_query_arg(array('page' => $this->page, 'edit_mode' => $this->edit_mode, 'tag__in' => $term), admin_url('admin.php'));
                 wp_redirect($location);
                 exit;
             }
         }
         if(isset($_POST['custom_filter'])) {
-            if(($term = $gmCore->_post('custom_filter'))) {
+            if(false !== ($term = $gmCore->_post('custom_filter_id'))) {
                 $location = add_query_arg(array('page' => $this->page, 'edit_mode' => $this->edit_mode, 'custom_filter' => $term), admin_url('admin.php'));
                 wp_redirect($location);
                 exit;

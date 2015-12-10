@@ -928,7 +928,7 @@ function gmedia_get_modal() {
             if(count($gm_terms)) { ?>
                 <div class="form-group">
                     <label><?php _e('Choose Filter', 'grand-media'); ?> </label>
-                    <select id="combobox_gmedia_filter" name="custom_filter" class="form-control" placeholder="<?php _e('Filter Name...', 'grand-media'); ?>">
+                    <select id="combobox_gmedia_filter" name="custom_filter_id" class="form-control" placeholder="<?php _e('Filter Name...', 'grand-media'); ?>">
                         <option></option>
                         <?php foreach($gm_terms as $term) {
                             $author_name = '';

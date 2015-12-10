@@ -1235,6 +1235,7 @@ function gmediaFilterEdit()
         ,'gmedia__not_in'   => array() // use gmedia ids. Specify post NOT to retrieve
         ,'mime_type'        => array() // mime types
 
+        ,'limit'            => '' // (int) - set limit
         ,'per_page'         => '' // (int) - set limit
         ,'order'            => '' // Designates the ascending or descending order of the 'orderby' parameter. Defaults to 'DESC'
         ,'orderby'          => '' // Sort retrieved posts by parameter. Defaults to 'ID'
@@ -1288,7 +1289,7 @@ function gmediaFilterEdit()
     extract($filter_form_custom_data);
 
     $totalResult = 0;
-    $limit       = 0;
+    $trueTotalResult       = 0;
     if ($term_id) {
         $term = $gmDB->get_term($term_id, $taxonomy, ARRAY_A);
         if (! empty($term) && ! is_wp_error($term)) {
@@ -1296,11 +1297,6 @@ function gmediaFilterEdit()
             $term_query  = $gmDB->get_metadata('gmedia_term', $term['term_id'], '_query', true);
             $filter_data = array_merge($filter_data, $term_query);
 
-            if (isset($term_query['per_page'])) {
-                //$term_query['offset'] = 0;
-                $limit = $term_query['per_page'];
-                unset($term_query['per_page']);
-            }
             $term_query = array_merge($filter_variable_data, $term_query);
 
             if (isset($_GET['author']) && ($term['global'] != $author)) {
@@ -1340,6 +1336,9 @@ function gmediaFilterEdit()
             $totalResult = (int)$gmDB->totalResult;
             if (! $totalResult && ! empty($termItems)) {
                 $totalResult = count($termItems);
+            }
+            if (!empty($gmDB->trueTotalResult)) {
+                $trueTotalResult = $gmDB->trueTotalResult;
             }
 
             if (! empty($termItems)) {
@@ -1748,7 +1747,7 @@ function gmediaFilterEdit()
                     </div>
                     <div class="col-xs-6 col-sm-3">
                         <label><?php _e('Limit', 'grand-media'); ?></label>
-                        <input type="text" class="form-control input-sm" value="<?php echo $filter_data['per_page']; ?>" name="gmedia_filter[per_page]" placeholder="<?php _e('leave empty for no limit', 'grand-media'); ?>">
+                        <input type="text" class="form-control input-sm" value="<?php echo $filter_data['limit']; ?>" name="gmedia_filter[limit]" placeholder="<?php _e('leave empty for no limit', 'grand-media'); ?>">
                         <span class="help-block"><?php _e('Limit number of gmedia items', 'grand-media'); ?></span>
                     </div>
                     <div class="col-xs-6 col-sm-3 text-right">
@@ -1806,13 +1805,8 @@ function gmediaFilterEdit()
         <div class="panel-body">
             <div class="termItems clearfix">
                 <?php if (! empty($termItems)) {
-                    $ic = ((int)$term_query['page'] - 1) * (int)$term_query['per_page'];
                     foreach ($termItems as $item) {
-                        $ic++;
                         $item_class = '';
-                        if ($limit && $limit < $ic) {
-                            $item_class = ' item-after-limit';
-                        }
                         ?>
                         <div class="gm-img-thumbnail<?php echo $item_class; ?>" data-gmid="<?php echo $item->ID; ?>"><?php
                             ?><img src="<?php echo $gmCore->gm_get_media_image($item, 'thumb', false); ?>" alt="<?php echo $item->ID; ?>" title="<?php echo esc_attr($item->title); ?>"/><?php
@@ -1831,10 +1825,12 @@ function gmediaFilterEdit()
             </div>
         </div>
         <div class="panel-footer clearfix" style="margin-top:20px;"><?php echo $pager_html; ?>
-            <?php if ($limit) { ?>
-                <div class="well well-sm pull-left" style="margin-right:10px;"><?php printf(__('Limited to: %d'), $limit); ?></div>
+            <?php if ($trueTotalResult) { ?>
+                <div class="well well-sm pull-left" style="margin-right:10px;"><?php printf(__('Limited to: %d'), $totalResult); ?></div>
+                <div class="well well-sm pull-left" style="margin:0;"><?php printf(__('Total items: %d'), $trueTotalResult); ?></div>
+            <?php } else { ?>
+                <div class="well well-sm pull-left" style="margin:0;"><?php printf(__('Total items: %d'), $totalResult); ?></div>
             <?php } ?>
-            <div class="well well-sm pull-left" style="margin:0;"><?php printf(__('Total items: %d'), $totalResult); ?></div>
         </div>
     </div>
 

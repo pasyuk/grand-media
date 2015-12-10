@@ -134,6 +134,13 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= 1.7.52 =
+* Fixed: Custom Filter in Gmedia Library
+* Fixed: Limit field in Custom Filter now works properly (require re-save Custom Filter)
+
+= 1.7.51 =
+* Fixed: View/Like counter in flash modules
+
 = 1.7.50 =
 * Fixed: JS error in Library if user have no Terms capability
 * Fixed: Views and Likes not count on some themes (400 error)

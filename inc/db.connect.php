@@ -11,6 +11,8 @@ class GmediaDB {
     var $filter_tax = array(); // is there filter by taxonomy for get_gmedias()
     var $resultLimited; // Total records for limited query (with offset)
     var $resultPerPage; // Total records in each pages
+    var $hardlimit; // Hard limit query
+    var $trueTotalResult; // Total records in DB without limit
     var $totalResult; // Total records in DB
     var $gmediaCount; // Query gmedia count
     var $pages; // Total number of pages required
@@ -266,15 +268,6 @@ class GmediaDB {
             extract($this->clauses, EXTR_OVERWRITE);
         }
 
-        /*
-		$count = $wpdb->get_results("SELECT COUNT(*) as total,
-						SUM(CASE WHEN {$wpdb->prefix}gmedia.mime_type LIKE 'image%' THEN 1 ELSE 0 END) as image,
-						SUM(CASE WHEN {$wpdb->prefix}gmedia.mime_type LIKE 'audio%' THEN 1 ELSE 0 END) as audio,
-						SUM(CASE WHEN {$wpdb->prefix}gmedia.mime_type LIKE 'video%' THEN 1 ELSE 0 END) as video,
-						SUM(CASE WHEN {$wpdb->prefix}gmedia.mime_type LIKE 'text%' THEN 1 ELSE 0 END) as text,
-						SUM(CASE WHEN {$wpdb->prefix}gmedia.mime_type LIKE 'application%' THEN 1 ELSE 0 END) as application
-						FROM {$wpdb->prefix}gmedia $join WHERE 1 = 1 $where $whichauthor $groupby", ARRAY_A);
-		*/
         $count = $wpdb->get_results("SELECT count(DISTINCT {$wpdb->prefix}gmedia.ID) as total,
 			(SELECT count(DISTINCT {$wpdb->prefix}gmedia.ID) FROM {$wpdb->prefix}gmedia $join WHERE {$wpdb->prefix}gmedia.mime_type LIKE 'image%' $where $whichauthor) as image,
 			(SELECT count(DISTINCT {$wpdb->prefix}gmedia.ID) FROM {$wpdb->prefix}gmedia $join WHERE {$wpdb->prefix}gmedia.mime_type LIKE 'audio%' $where $whichauthor) as audio,
@@ -283,7 +276,6 @@ class GmediaDB {
 			(SELECT count(DISTINCT {$wpdb->prefix}gmedia.ID) FROM {$wpdb->prefix}gmedia $join WHERE {$wpdb->prefix}gmedia.mime_type LIKE 'application%' $where $whichauthor) as application
 			 FROM {$wpdb->prefix}gmedia $join WHERE 1=1 $where $whichauthor
 			", ARRAY_A);
-
 
         $count          = $count[0];
         $count['other'] = (int)$count['text'] + (int)$count['application'];
@@ -850,10 +842,11 @@ class GmediaDB {
         }
 
 
-        /*if ( ! isset( $q['per_page'] ) ) {
-			$gmOptions   = get_option( 'gmediaOptions' );
-			$q['per_page'] = $gmOptions['per_page_gmedia'];
-		}*/
+        if(!isset($q['limit']) || empty($q['limit'])) {
+            $q['limit'] = 0;
+        }
+        $q['limit'] = absint($q['limit']);
+
         if(!isset($q['per_page']) || empty($q['per_page'])) {
             $q['per_page'] = -1;
         }
@@ -1408,15 +1401,28 @@ class GmediaDB {
                 $page = 1;
             }
 
+            if($q['limit'] && ($q['per_page'] > $q['limit'])){
+                $q['per_page'] = $q['limit'];
+            }
             if(empty($q['offset']) && ((0 != $q['offset']) || ('0' != $q['offset']))) {
-                $pgstrt = ($page - 1) * $q['per_page'] . ', ';
-                $limits = 'LIMIT ' . $pgstrt . $q['per_page'];
+                $per_page = $q['per_page'];
+                $offset = ($page - 1) * $per_page;
+                if($q['limit'] && (($offset + $per_page) > $q['limit'])){
+                    $per_page = $q['limit'] - $offset;
+                    if(0 > $per_page) {
+                        $per_page = 0;
+                    }
+                }
+                $pgstrt = $offset . ', ';
+                $limits = 'LIMIT ' . $pgstrt . $per_page;
             } else { // we're ignoring $page and using 'offset'
                 $q['offset']         = absint($q['offset']);
                 $pgstrt              = $q['offset'] . ', ';
                 $limits              = 'LIMIT ' . $pgstrt . $q['per_page'];
                 $this->resultLimited = true;
             }
+        } elseif($q['limit']) {
+            $limits = 'LIMIT ' . $q['limit'];
         }
 
         // Announce current selection parameters.  For use by caching plugins.
@@ -1452,7 +1458,14 @@ class GmediaDB {
         $gmedias = $wpdb->get_results($request);
 
         if(!$q['no_found_rows'] && !empty($limits)) {
-            $this->totalResult   = $wpdb->get_var('SELECT FOUND_ROWS()');
+            $this->totalResult   = (int) $wpdb->get_var('SELECT FOUND_ROWS()');
+            if($q['limit']){
+                $this->hardlimit = $q['limit'];
+                $this->trueTotalResult = $this->totalResult;
+                if($this->totalResult > $q['limit']) {
+                    $this->totalResult     = $q['limit'];
+                }
+            }
             $this->resultPerPage = $q['per_page'];
             $this->pages         = ceil($this->totalResult / $q['per_page']);
             $this->openPage      = $page;
@@ -1509,7 +1522,7 @@ class GmediaDB {
             }
         }
         if(isset($q['cat'])) {
-            if(!empty($q['cat']) && '0' != $q['cat']) {
+            if(!empty($q['cat']) && ('0' !== $q['cat']) && (0 !== $q['cat'])) {
                 $q['cat']  = '' . urldecode($q['cat']) . '';
                 $q['cat']  = addslashes_gpc($q['cat']);
                 $cat_array = preg_split('/[,\s]+/', $q['cat']);
@@ -1527,12 +1540,12 @@ class GmediaDB {
                     }
                 }
                 $q['cat'] = implode(',', $req_cats);
-            } elseif('0' == $q['cat']) {
+            } elseif(('0' === $q['cat']) || (0 === $q['cat'])) {
                 $q['category__not_in'] = $this->get_terms('gmedia_category', array('fields' => 'ids'));
             }
         }
 
-        if(isset($q['category__in']) && (!empty($q['category__in']) || '0' == $q['category__in'])) {
+        if(isset($q['category__in']) && (!empty($q['category__in']) || ('0' === $q['category__in']) || (0 === $q['category__in']))) {
             $q['category__in'] = wp_parse_id_list($q['category__in']);
             if(in_array(0, $q['category__in'])) {
                 $q['category__in']     = array_filter($q['category__in']);
@@ -1540,7 +1553,7 @@ class GmediaDB {
                 $q['category__in']     = array();
             }
         }
-        if(isset($q['category__not_in']) && (!empty($q['category__not_in']) || '0' == $q['category__not_in'])) {
+        if(isset($q['category__not_in']) && (!empty($q['category__not_in']) || ('0' === $q['category__not_in']) || (0 === $q['category__not_in']))) {
             $q['category__not_in'] = wp_parse_id_list($q['category__not_in']);
             if(in_array(0, $q['category__not_in'])) {
                 $q['category__not_in'] = array_filter($q['category__not_in']);
@@ -1571,7 +1584,7 @@ class GmediaDB {
             }
         }
         if(isset($q['alb'])) {
-            if(!empty($q['alb']) && '0' != $q['alb']) {
+            if(!empty($q['alb']) && ('0' !== $q['alb']) && (0 !== $q['alb'])) {
                 $q['alb']  = '' . urldecode($q['alb']) . '';
                 $q['alb']  = addslashes_gpc($q['alb']);
                 $alb_array = preg_split('/[,\s]+/', $q['alb']);
@@ -1598,12 +1611,12 @@ class GmediaDB {
                     }
                 }
                 $q['alb'] = implode(',', $req_albs);
-            } elseif('0' == $q['alb']) {
+            } elseif(('0' === $q['alb']) || (0 === $q['alb'])) {
                 $q['album__not_in'] = $this->get_terms('gmedia_album', array('fields' => 'ids'));
             }
         }
 
-        if(isset($q['album__in']) && (!empty($q['album__in']) || '0' == $q['album__in'])) {
+        if(isset($q['album__in']) && (!empty($q['album__in']) || ('0' === $q['album__in']) || (0 === $q['album__in']))) {
             $q['album__in'] = wp_parse_id_list($q['album__in']);
             $without_album  = in_array(0, $q['album__in'])? true : false;
             if(isset($q['album__status'])) {
@@ -1615,7 +1628,7 @@ class GmediaDB {
                 $q['album__in']     = array();
             }
         }
-        if(isset($q['album__not_in']) && (!empty($q['album__not_in']) || '0' == $q['album__not_in'])) {
+        if(isset($q['album__not_in']) && (!empty($q['album__not_in']) || ('0' === $q['album__not_in']) || (0 === $q['album__not_in']))) {
             $q['album__not_in'] = wp_parse_id_list($q['album__not_in']);
             if(in_array(0, $q['album__not_in'])) {
                 $q['album__not_in'] = array_filter($q['album__not_in']);
