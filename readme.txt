@@ -3,7 +3,7 @@ Contributors: Rattus
 Donate link: http://codeasily.com/donate/
 Tags: admin, best gallery, easy gallery, gallery, gallery slider, header slider, image, image gallery, images, iOS app, iphone gallery, media library, music, page, photo, photo gallery, portfolio, Post, posts, responsive, slider, slideshow, video
 Requires at least: 3.6
-Tested up to: 4.3.1
+Tested up to: 4.4.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -134,9 +134,15 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= 1.7.53 =
+* Fixed: Import from WP Media Library
+* Fixed: Image Editor
+* Fixed: Create Album in Edit mode
+
 = 1.7.52 =
 * Fixed: Custom Filter in Gmedia Library
 * Fixed: Limit field in Custom Filter now works properly (require re-save Custom Filter)
+* Fixed: Filter with "No Album" and Uncategorised items
 
 = 1.7.51 =
 * Fixed: View/Like counter in flash modules

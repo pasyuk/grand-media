@@ -170,8 +170,8 @@ class GmediaAdmin
                     </div>
                     <div class="col-sm-10 col-xs-12">
                         <div id="gm-message"><?php
-                            echo GmediaProcessor::alert('success', $gmProcessor->msg);
-                            echo GmediaProcessor::alert('danger', $gmProcessor->error);
+                            echo $gmProcessor->alert('success', $gmProcessor->msg);
+                            echo $gmProcessor->alert('danger', $gmProcessor->error);
                             ?></div>
                         <?php
                         if (isset($update_frame)) {
@@ -222,8 +222,7 @@ class GmediaAdmin
         global $gmProcessor;
         switch ($gmProcessor->page) {
             case 'GrandMedia_AddMedia':
-                include_once(dirname(__FILE__) . '/addmedia.php');
-                gmedia_AddMedia();
+                include_once(dirname(__FILE__) . '/addmedia/addmedia.php');
                 break;
             case 'GrandMedia_Terms':
                 include_once(dirname(__FILE__) . '/terms.php');

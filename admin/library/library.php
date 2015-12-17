@@ -8,6 +8,7 @@ if(!defined('ABSPATH')) {
     die('-1');
 }
 
+include_once(GMEDIA_ABSPATH. 'admin/functions.php');
 include_once(GMEDIA_ABSPATH. 'admin/library/functions.php');
 
 global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor;

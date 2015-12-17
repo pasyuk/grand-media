@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerfull media library plugin for creating beautiful galleries and managing files.
- * Version: 1.7.52
+ * Version: 1.7.53
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
@@ -42,7 +42,7 @@ if(!class_exists('Gmedia')) {
      */
     class Gmedia {
 
-        var $version = '1.7.52';
+        var $version = '1.7.53';
         var $dbversion = '0.9.6';
         var $minium_WP = '3.6';
         var $options = '';
@@ -123,6 +123,8 @@ if(!class_exists('Gmedia')) {
                 if(get_option('gmediaInitCheck')) {
                     add_action('admin_notices', array(&$this, 'admin_notices'));
                 }
+
+                require_once(dirname(__FILE__) . '/admin/class.processor.php');
 
             } else {
 
@@ -248,8 +250,6 @@ if(!class_exists('Gmedia')) {
 
                 // Load backend libraries
                 if(is_admin()) {
-                    require_once(dirname(__FILE__) . '/admin/class.processor.php');
-
                     require_once(dirname(__FILE__) . '/inc/media-upload.php');
                     require_once(dirname(__FILE__) . '/inc/post-metabox.php');
 
@@ -290,8 +290,8 @@ if(!class_exists('Gmedia')) {
                 'pluginPath' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/gmedia.admin.css', array(), '1.7.50', 'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.7.50');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/gmedia.admin.css', array(), '1.7.53', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.7.53');
             wp_localize_script('grand-media', 'grandMedia', array(
                 'error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                 'download' => __('downloading...', 'grand-media'),

@@ -227,7 +227,8 @@ function gmedit_save() {
             }
             // Thumbnail
             if('web_thumb' == $applyto) {
-                $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1]))? true : false;
+                $size_ratio = $size[0]/$size[1];
+                $thumbimg['resize'] = (((1 >= $size_ratio) && ($thumbimg['width'] > $size[0])) || ((1 <= $size_ratio) && ($thumbimg['height'] > $size[1])))? false : true;
                 if($thumbimg['resize']) {
                     $editor = wp_get_image_editor($editfile);
                     if(is_wp_error($editor)) {
@@ -236,7 +237,13 @@ function gmedit_save() {
                     }
 
                     $editor->set_quality($thumbimg['quality']);
-                    $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
+                    $ed_size = $editor->get_size();
+                    $ed_ratio = $ed_size['width']/$ed_size['height'];
+                    if(1 > $ed_ratio) {
+                        $resized = $editor->resize($thumbimg['width'], 0, $thumbimg['crop']);
+                    } else {
+                        $resized = $editor->resize(0, $thumbimg['height'], $thumbimg['crop']);
+                    }
                     if(is_wp_error($resized)) {
                         $fail = $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})) applyto-{$applyto}: " . $resized->get_error_message();
                         break;
@@ -275,9 +282,9 @@ function gmedit_save() {
         } while(0);
 
         if(empty($fail)) {
-            $out = array('msg' => GmediaProcessor::alert('info', $success), 'modified' => $gmedia['modified']);
+            $out = array('msg' => $gmProcessor->alert('info', $success), 'modified' => $gmedia['modified']);
         } else {
-            $out = array('error' => GmediaProcessor::alert('danger', $fail));
+            $out = array('error' => $gmProcessor->alert('danger', $fail));
         }
 
         header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
@@ -359,6 +366,8 @@ function gmedit_restore() {
                 }
             }
 
+            $size_ratio = $size[0]/$size[1];
+
             $angle      = 0;
             $image_meta = @$gmCore->wp_read_image_metadata($fileinfo['filepath_original']);
             if(!empty($image_meta['orientation'])) {
@@ -368,15 +377,19 @@ function gmedit_restore() {
                     break;
                     case 6:
                         $angle = -90;
+                        $size_ratio = $size[1]/$size[0];
                     break;
                     case 8:
                         $angle = 90;
+                        $size_ratio = $size[1]/$size[0];
                     break;
                 }
             }
 
-            $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1]))? true : false;
-            if($thumbimg['resize'] || $angle) {
+            $webimg['resize'] = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
+            $thumbimg['resize'] = (((1 >= $size_ratio) && ($thumbimg['width'] > $size[0])) || ((1 <= $size_ratio) && ($thumbimg['height'] > $size[1])))? false : true;
+
+            if($webimg['resize'] || $thumbimg['resize'] || $angle) {
 
                 $editor = wp_get_image_editor($fileinfo['filepath_original']);
                 if(is_wp_error($editor)) {
@@ -388,7 +401,6 @@ function gmedit_restore() {
                     $editor->rotate($angle);
                 }
 
-                $webimg['resize'] = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
                 if($webimg['resize'] || $angle) {
                     // Web-image
                     $editor->set_quality($webimg['quality']);
@@ -416,7 +428,13 @@ function gmedit_restore() {
                 // Thumbnail
                 $editor->set_quality($thumbimg['quality']);
                 if($thumbimg['resize']) {
-                    $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
+                    $ed_size = $editor->get_size();
+                    $ed_ratio = $ed_size['width']/$ed_size['height'];
+                    if(1 > $ed_ratio) {
+                        $resized = $editor->resize($thumbimg['width'], 0, $thumbimg['crop']);
+                    } else {
+                        $resized = $editor->resize(0, $thumbimg['height'], $thumbimg['crop']);
+                    }
                     if(is_wp_error($resized)) {
                         $fail = $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message();
                         break;
@@ -448,9 +466,9 @@ function gmedit_restore() {
         } while(0);
 
         if(empty($fail)) {
-            $out = array('msg' => GmediaProcessor::alert('info', $success), 'modified' => $gmedia['modified']);
+            $out = array('msg' => $gmProcessor->alert('info', $success), 'modified' => $gmedia['modified']);
         } else {
-            $out = array('error' => GmediaProcessor::alert('danger', $fail));
+            $out = array('error' => $gmProcessor->alert('danger', $fail));
         }
 
         header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
@@ -1137,7 +1155,7 @@ function gmedia_tag_edit() {
 
     check_ajax_referer('GmediaTerms');
     if(!current_user_can('gmedia_tag_manage') && !current_user_can('gmedia_edit_others_media')) {
-        $out['error'] = GmediaProcessor::alert('danger', __("You are not allowed to edit others media", 'grand-media'));
+        $out['error'] = $gmProcessor->alert('danger', __("You are not allowed to edit others media", 'grand-media'));
         header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
         echo json_encode($out);
         die();
@@ -1151,18 +1169,18 @@ function gmedia_tag_edit() {
             if(!$gmDB->term_exists($term['name'], $term['taxonomy'])) {
                 $term_id = $gmDB->update_term($term['term_id'], $term['taxonomy'], $term);
                 if(is_wp_error($term_id)) {
-                    $out['error'] = GmediaProcessor::alert('danger', $term_id->get_error_message());
+                    $out['error'] = $gmProcessor->alert('danger', $term_id->get_error_message());
                 } else {
-                    $out['msg'] = GmediaProcessor::alert('info', sprintf(__("Tag #%d successfuly updated", 'grand-media'), $term_id));
+                    $out['msg'] = $gmProcessor->alert('info', sprintf(__("Tag #%d successfuly updated", 'grand-media'), $term_id));
                 }
             } else {
-                $out['error'] = GmediaProcessor::alert('danger', __("A term with the name provided already exists", 'grand-media'));
+                $out['error'] = $gmProcessor->alert('danger', __("A term with the name provided already exists", 'grand-media'));
             }
         } else {
-            $out['error'] = GmediaProcessor::alert('danger', __("A term with the id provided do not exists", 'grand-media'));
+            $out['error'] = $gmProcessor->alert('danger', __("A term with the id provided do not exists", 'grand-media'));
         }
     } else {
-        $out['error'] = GmediaProcessor::alert('danger', __("Term name can't be only digits or empty", 'grand-media'));
+        $out['error'] = $gmProcessor->alert('danger', __("Term name can't be only digits or empty", 'grand-media'));
     }
 
     header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
@@ -1179,7 +1197,7 @@ function gmedia_module_preset_delete() {
 
     check_ajax_referer('GmediaGallery');
     if(!current_user_can('gmedia_gallery_manage')) {
-        $out['error'] = GmediaProcessor::alert('danger', __("You are not allowed to manage galleries", 'grand-media'));
+        $out['error'] = $gmProcessor->alert('danger', __("You are not allowed to manage galleries", 'grand-media'));
     } else {
         $taxonomy = 'gmedia_module';
         $term_id  = intval($gmCore->_post('preset_id', 0));
@@ -1202,7 +1220,7 @@ function gmedia_module_install() {
 
     check_ajax_referer('GmediaModule');
     if(!current_user_can('gmedia_module_manage')) {
-        echo GmediaProcessor::alert('danger', __('You are not allowed to install modules'));
+        echo $gmProcessor->alert('danger', __('You are not allowed to install modules'));
         die();
     }
 
@@ -1210,20 +1228,20 @@ function gmedia_module_install() {
         $module = $gmCore->_post('module');
         $mzip   = download_url($download);
         if(is_wp_error($mzip)) {
-            echo GmediaProcessor::alert('danger', $mzip->get_error_message());
+            echo $gmProcessor->alert('danger', $mzip->get_error_message());
             die();
         }
 
         $mzip      = str_replace("\\", "/", $mzip);
         $to_folder = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['module'] . '/';
         if(!wp_mkdir_p($to_folder)) {
-            echo GmediaProcessor::alert('danger', sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $to_folder));
+            echo $gmProcessor->alert('danger', sprintf(__('Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media'), $to_folder));
             die();
         }
         if(!is_writable($to_folder)) {
             @chmod($to_folder, 0755);
             if(!is_writable($to_folder)) {
-                echo GmediaProcessor::alert('danger', sprintf(__('Directory %s is not writable by the server.', 'grand-media'), $to_folder));
+                echo $gmProcessor->alert('danger', sprintf(__('Directory %s is not writable by the server.', 'grand-media'), $to_folder));
                 die();
             }
         }
@@ -1246,13 +1264,13 @@ function gmedia_module_install() {
         unlink($mzip);
 
         if(is_wp_error($result)) {
-            echo GmediaProcessor::alert('danger', $result->get_error_message());
+            echo $gmProcessor->alert('danger', $result->get_error_message());
             die();
         } else {
-            echo GmediaProcessor::alert('success', sprintf(__("The `%s` module successfuly installed", 'flag'), $module));
+            echo $gmProcessor->alert('success', sprintf(__("The `%s` module successfuly installed", 'flag'), $module));
         }
     } else {
-        echo GmediaProcessor::alert('danger', __('No file specified', 'grand-media'));
+        echo $gmProcessor->alert('danger', __('No file specified', 'grand-media'));
     }
 
     die();
@@ -1941,7 +1959,7 @@ function gmedia_share_page() {
     $email        = $gmCore->_post('email', '');
     $sharemessage = $gmCore->_post('message', '');
     if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo GmediaProcessor::alert('danger', __('Invalid email', 'grand-media') . ': ' . esc_html($email));
+        echo $gmProcessor->alert('danger', __('Invalid email', 'grand-media') . ': ' . esc_html($email));
         die();
     }
 
@@ -1994,7 +2012,7 @@ EOT;
 
     $headers = array('Content-Type: text/html; charset=UTF-8');
     if(wp_mail($email, $subject, $message, $headers)) {
-        echo GmediaProcessor::alert('success', sprintf(__('Message sent to %s', 'grand-media'), $email));
+        echo $gmProcessor->alert('success', sprintf(__('Message sent to %s', 'grand-media'), $email));
     }
 
     die();

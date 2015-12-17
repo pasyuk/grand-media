@@ -4,7 +4,7 @@
  */
 ?>
 <form class="cb_list-item list-group-item row d-row edit-gmedia<?php echo ($item->selected? ' gm-selected ' : ' ') . implode(' ', $item->classes); ?>" id="list-item-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-type="<?php echo $item->type; ?>" role="form">
-    <div class="col-sm-4" style="max-width:350px;">
+    <div class="col-sm-4" style="max-width:340px;">
         <input name="ID" type="hidden" value="<?php echo $item->ID; ?>"/>
         <label class="cb_media-object">
             <input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" class="hidden" value="<?php echo $item->ID; ?>"/>
@@ -115,7 +115,7 @@
                     ?>
                     <div class="form-group status-album bg-status-<?php echo $album_status; ?>">
                         <label><?php _e('Album ', 'grand-media'); ?></label>
-                        <select name="terms[gmedia_album]" class="combobox_gmedia_album form-control input-sm" placeholder="<?php _e('Album Name...', 'grand-media'); ?>">
+                        <select name="terms[gmedia_album]" data-create="<?php echo gm_user_can('album_manage')? 'true' : 'false'; ?>" class="combobox_gmedia_album form-control input-sm" placeholder="<?php _e('Album Name...', 'grand-media'); ?>">
                             <option<?php echo $alb_id? '' : ' selected="selected"'; ?> value=""></option>
                             <?php echo $terms_album; ?>
                         </select>

@@ -8,7 +8,7 @@
 ?>
 <div class="cb_list-item list-group-item d-row clearfix<?php echo ($item->selected? ' gm-selected ' : ' ') . implode(' ', $item->classes); ?>" id="list-item-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-type="<?php echo $item->type; ?>">
     <div class="gmedia_id">#<?php echo $item->ID; ?></div>
-    <label class="cb_media-object col-sm-4" style="max-width:350px;">
+    <label class="cb_media-object col-sm-4" style="max-width:340px;">
         <input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" class="hidden" value="<?php echo $item->ID; ?>"/>
         <span data-target="<?php echo $item->url; ?>" class="thumbnail">
             <?php gmedia_item_thumbnail($item); ?>

@@ -130,6 +130,7 @@ class GmediaCore {
         if(true === $uri) {
             $uri = admin_url('admin.php');
         }
+        $remove_args = empty($remove_args)? array() : (array) $remove_args;
         $remove_args = array_unique(array_merge(array('doing_wp_cron', '_wpnonce', 'delete', 'update_meta'), $remove_args, array_keys($add_args)));
         $new_uri     = remove_query_arg($remove_args, $uri);
         if(!empty($add_args)) {
@@ -1811,13 +1812,14 @@ class GmediaCore {
                         $thumbimg = $gmGallery->options['thumb'];
 
                         $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
-                        $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1]))? true : false;
 
                         if($webimg['resize']) {
                             rename($fileinfo['filepath'], $fileinfo['filepath_original']);
                         } else {
                             copy($fileinfo['filepath'], $fileinfo['filepath_original']);
                         }
+
+                        $size_ratio = $size[0]/$size[1];
 
                         $angle      = 0;
                         $image_meta = @$gmCore->wp_read_image_metadata($fileinfo['filepath_original']);
@@ -1828,12 +1830,17 @@ class GmediaCore {
                                 break;
                                 case 6:
                                     $angle = -90;
+                                    $size_ratio = $size[1]/$size[0];
                                 break;
                                 case 8:
                                     $angle = 90;
+                                    $size_ratio = $size[1]/$size[0];
                                 break;
                             }
                         }
+
+                        $thumbimg['resize'] = (((1 >= $size_ratio) && ($thumbimg['width'] > $size[0])) || ((1 <= $size_ratio) && ($thumbimg['height'] > $size[1])))? false : true;
+
                         if($webimg['resize'] || $thumbimg['resize'] || $angle) {
                             $editor = wp_get_image_editor($fileinfo['filepath_original']);
                             if(is_wp_error($editor)) {
@@ -1882,7 +1889,6 @@ class GmediaCore {
 
                                     return $return;
                                 }
-                                //$new_size = $editor->get_size();
 
                                 if(('JPG' == $extensions[$size[2]]) && !(extension_loaded('imagick') || class_exists("Imagick"))) {
                                     $this->copy_exif($fileinfo['filepath_original'], $fileinfo['filepath']);
@@ -1891,18 +1897,25 @@ class GmediaCore {
 
                             // Thumbnail
                             $editor->set_quality($thumbimg['quality']);
+                            if($thumbimg['resize']) {
+                                $ed_size  = $editor->get_size();
+                                $ed_ratio = $ed_size['width'] / $ed_size['height'];
+                                if(1 > $ed_ratio) {
+                                    $resized = $editor->resize($thumbimg['width'], 0, $thumbimg['crop']);
+                                } else {
+                                    $resized = $editor->resize(0, $thumbimg['height'], $thumbimg['crop']);
+                                }
+                                if(is_wp_error($resized)) {
+                                    @unlink($fileinfo['filepath']);
+                                    @unlink($fileinfo['filepath_original']);
+                                    $return = array(
+                                            "error" => array("code" => $resized->get_error_code(), "message" => $resized->get_error_message()),
+                                            "id"    => $fileinfo['basename'],
+                                            "tip"   => "editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})"
+                                    );
 
-                            $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
-                            if(is_wp_error($resized)) {
-                                @unlink($fileinfo['filepath']);
-                                @unlink($fileinfo['filepath_original']);
-                                $return = array(
-                                        "error" => array("code" => $resized->get_error_code(), "message" => $resized->get_error_message()),
-                                        "id"    => $fileinfo['basename'],
-                                        "tip"   => "editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})"
-                                );
-
-                                return $return;
+                                    return $return;
+                                }
                             }
 
                             $saved = $editor->save($fileinfo['filepath_thumb']);
@@ -2311,13 +2324,15 @@ class GmediaCore {
                     $thumbimg = $gmGallery->options['thumb'];
 
                     $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
-                    $thumbimg['resize'] = (($thumbimg['width'] < $size[0]) || ($thumbimg['height'] < $size[1]))? true : false;
 
                     if($webimg['resize']) {
                         rename($fileinfo['filepath'], $fileinfo['filepath_original']);
                     } else {
                         copy($fileinfo['filepath'], $fileinfo['filepath_original']);
                     }
+
+                    $size_ratio = $size[0]/$size[1];
+
                     $angle      = 0;
                     $image_meta = @$gmCore->wp_read_image_metadata($fileinfo['filepath_original']);
                     if(!empty($image_meta['orientation'])) {
@@ -2327,13 +2342,18 @@ class GmediaCore {
                             break;
                             case 6:
                                 $angle = -90;
+                                $size_ratio = $size[1]/$size[0];
                             break;
                             case 8:
                                 $angle = 90;
+                                $size_ratio = $size[1]/$size[0];
                             break;
                         }
                     }
-                    if($webimg['resize'] || $thumbimg['resize']) {
+
+                    $thumbimg['resize'] = (((1 >= $size_ratio) && ($thumbimg['width'] > $size[0])) || ((1 <= $size_ratio) && ($thumbimg['height'] > $size[1])))? false : true;
+
+                    if($webimg['resize'] || $thumbimg['resize'] || $angle) {
                         $editor = wp_get_image_editor($fileinfo['filepath_original']);
                         if(is_wp_error($editor)) {
                             @unlink($fileinfo['filepath']);
@@ -2366,7 +2386,6 @@ class GmediaCore {
                                 echo $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->webimage): " . $saved->get_error_message() . $eol;
                                 continue;
                             }
-                            //$new_size = $editor->get_size();
 
                             if(('JPG' == $extensions[$size[2]]) && !(extension_loaded('imagick') || class_exists("Imagick"))) {
                                 $this->copy_exif($fileinfo['filepath_original'], $fileinfo['filepath']);
@@ -2376,13 +2395,20 @@ class GmediaCore {
 
                         // Thumbnail
                         $editor->set_quality($thumbimg['quality']);
-
-                        $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
-                        if(is_wp_error($resized)) {
-                            @unlink($fileinfo['filepath']);
-                            @unlink($fileinfo['filepath_original']);
-                            echo $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
-                            continue;
+                        if($thumbimg['resize']) {
+                            $ed_size  = $editor->get_size();
+                            $ed_ratio = $ed_size['width'] / $ed_size['height'];
+                            if(1 > $ed_ratio) {
+                                $resized = $editor->resize($thumbimg['width'], 0, $thumbimg['crop']);
+                            } else {
+                                $resized = $editor->resize(0, $thumbimg['height'], $thumbimg['crop']);
+                            }
+                            if(is_wp_error($resized)) {
+                                @unlink($fileinfo['filepath']);
+                                @unlink($fileinfo['filepath_original']);
+                                echo $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
+                                continue;
+                            }
                         }
 
                         $saved = $editor->save($fileinfo['filepath_thumb']);
@@ -2517,7 +2543,7 @@ class GmediaCore {
         }
 
         if(in_array($service, array('app_activate', 'app_updateinfo')) && !is_email($data['email'])) {
-            $result['error'] = GmediaProcessor::alert('danger', __('Enter valid email, please', 'grand-media'));
+            $result['error'] = $gmProcessor->alert('danger', __('Enter valid email, please', 'grand-media'));
         } else {
 
             $hash = wp_generate_password('6', false);
@@ -2539,15 +2565,15 @@ class GmediaCore {
             ));
 
             if(is_wp_error($pgcpost)) {
-                $result['error'] = GmediaProcessor::alert('danger', $pgcpost->get_error_message());
+                $result['error'] = $gmProcessor->alert('danger', $pgcpost->get_error_message());
             }
             $pgcpost_body = wp_remote_retrieve_body($pgcpost);
             $result       = (array)json_decode($pgcpost_body);
             if(isset($result['error'])) {
-                $result['error'] = GmediaProcessor::alert('danger', $result['error']);
+                $result['error'] = $gmProcessor->alert('danger', $result['error']);
             } else {
                 if(isset($result['message'])) {
-                    $result['message'] = GmediaProcessor::alert('info', $result['message']);
+                    $result['message'] = $gmProcessor->alert('info', $result['message']);
                 }
 
                 if(isset($result['site_ID'])) {

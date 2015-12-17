@@ -45,7 +45,7 @@ function gmediaGalleries()
     $taxonomy    = 'gmedia_gallery';
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     if (is_wp_error($gmediaTerms)) {
-        echo GmediaProcessor::alert('danger', $gmediaTerms->get_error_message());
+        echo $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 
@@ -470,7 +470,7 @@ function gmediaGalleryEdit()
     }
 
     if (! empty($alert)) {
-        echo GmediaProcessor::alert('danger', $alert);
+        echo $gmProcessor->alert('danger', $alert);
         gmediaGalleries();
 
         return;
@@ -556,12 +556,12 @@ function gmediaGalleryEdit()
     }
 
     if (! empty($alert)) {
-        echo GmediaProcessor::alert('danger', $alert);
+        echo $gmProcessor->alert('danger', $alert);
     }
 
     if (! empty($load_preset)) {
         $gallery['_settings'][$module_name] = $gmCore->array_replace_recursive($gallery['_settings'][$module_name], $load_preset);
-        echo GmediaProcessor::alert('info', sprintf(__('Preset `%s` loaded. To apply it for current gallery click Save button'), $load_preset['name']));
+        echo $gmProcessor->alert('info', sprintf(__('Preset `%s` loaded. To apply it for current gallery click Save button'), $load_preset['name']));
     }
     if (isset($gallery['_settings'][$module_name])) {
         $gallery_settings = $gmCore->array_replace_recursive($default_options, $gallery['_settings'][$module_name]);
@@ -1066,7 +1066,7 @@ function gmediaGalleryEdit()
                 <div class="modal-body linkblock">
                     <?php
                     if (! empty($alert)) {
-                        echo GmediaProcessor::alert('danger', $alert);
+                        echo $gmProcessor->alert('danger', $alert);
                     }
 
                     $current_module = $module_name;

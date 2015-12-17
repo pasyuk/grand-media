@@ -104,7 +104,7 @@ class GmediaProcessor {
      *
      * @return string
      */
-    public static function alert($type = 'info', $content = '') {
+    public function alert($type = 'info', $content = '') {
         if(empty($content)) {
             return '';
         } elseif(is_array($content)) {
@@ -162,7 +162,7 @@ class GmediaProcessor {
                 include_once($path_ . 'settings.php');
             break;
             case 'GrandMedia_WordpressLibrary':
-                include_once($path_ . 'wplib.php');
+                include_once($path_ . 'wpmedia.php');
             break;
             default:
                 global $gmProcessor;

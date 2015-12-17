@@ -3,7 +3,6 @@
  */
 var GmediaLibrary = {
     init: function () {
-        // Todo: Select items in Edit Mode
         jQuery('#gm-selected').on('change', function() {
             var val = jQuery(this).val();
             jQuery('.edit-mode-link').each(function() {
@@ -25,8 +24,9 @@ var GmediaLibrary = {
      */
     editmode: function() {
         // SelectBox for albums
-        jQuery('.combobox_gmedia_album').selectize({
-            create: (jQuery(this).data('create')? true : false),
+        var combobox_albums = jQuery('.combobox_gmedia_album');
+        combobox_albums.selectize({
+            create: (combobox_albums.data('create')? true : false),
             persist: false
         });
 
@@ -59,6 +59,101 @@ var GmediaLibrary = {
             });
         }
 
+    }
+};
+
+/**
+ * Gmedia AddMedia
+ */
+var GmediaAddMedia = {
+    init: function () {
+
+        jQuery('#uploader_runtime select').change(function () {
+            if ('html4' == jQuery(this).val()) {
+                jQuery('#uploader_chunking').addClass('hide');
+                jQuery('#uploader_urlstream_upload').addClass('hide');
+            } else {
+                jQuery('#uploader_chunking').removeClass('hide');
+                jQuery('#uploader_urlstream_upload').removeClass('hide');
+            }
+        });
+
+        var albums = jQuery('#combobox_gmedia_album');
+        if(albums.length) {
+            var albums_data = jQuery('option', albums);
+            albums.selectize({
+                create: function(input) {
+                    if(albums.data('create')) {
+                        return {
+                            value: input,
+                            text: input
+                        }
+                    } else {
+                        return false;
+                    }
+                },
+                createOnBlur: true,
+                persist: false,
+                render: {
+                    item: function(item, escape) {
+                        if(0 === (parseInt(item.value, 10) || 0)) {
+                            return '<div>' + escape(item.text) + '</div>';
+                        }
+                        if(item.$order) {
+                            var data = jQuery(albums_data[item.$order]).data();
+                            return '<div>' + escape(data.name) + ' <small>' + escape(data.meta) + '</small></div>';
+                        }
+                    },
+                    option: function(item, escape) {
+                        if(0 === (parseInt(item.value) || 0)) {
+                            return '<div>' + escape(item.text) + '</div>';
+                        }
+                        if(item.$order) {
+                            var data = jQuery(albums_data[item.$order]).data();
+                            return '<div>' + escape(data.name) + ' <small>' + escape(data.meta) + '</small></div>';
+                        }
+                    }
+                }
+            });
+        }
+
+        if(window.gmedia_tags) {
+            var tags = jQuery('#combobox_gmedia_tag');
+            if(tags.length) {
+                var tags_data = window.gmedia_tags.map(function(x) {
+                    return {item: x};
+                });
+
+                tags.selectize({
+                    create: function(input) {
+                        if(tags.data('create')) {
+                            return {
+                                item: input
+                            }
+                        } else {
+                            return false;
+                        }
+                    },
+                    createOnBlur: true,
+                    delimiter: ',',
+                    maxItems: null,
+                    openOnFocus: false,
+                    persist: false,
+                    options: tags_data,
+                    labelField: 'item',
+                    valueField: 'item',
+                    searchField: ['item'],
+                    hideSelected: true
+                });
+            }
+        }
+
+
+    },
+    /**
+     * Gmedia Import
+     */
+    importmode: function() {
     }
 };
 
@@ -668,6 +763,7 @@ jQuery(function ($) {
     GmediaSelect.init();
     GmediaFunction.init();
     GmediaLibrary.init();
+    GmediaAddMedia.init();
 
 });
 

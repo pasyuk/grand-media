@@ -1,5 +1,5 @@
 <?php
-if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
     die('You are not allowed to call this page directly.');
 }
 
@@ -8,32 +8,31 @@ if (preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
  *
  * @return mixed content
  */
-function grandWPMedia()
-{
+function grandWPMedia() {
     global $user_ID, $gmDB, $gmCore, $gmProcessor, $gmGallery;
 
-    $url = add_query_arg(array('page' => $gmProcessor->page, 'edit_mode' => $gmProcessor->edit_mode), admin_url('admin.php'));
+    $url = add_query_arg(array('page' => $gmProcessor->page), admin_url('admin.php'));
 
     $gm_screen_options = get_user_meta($user_ID, 'gm_screen_options', true);
-    if (! is_array($gm_screen_options)) {
+    if(!is_array($gm_screen_options)) {
         $gm_screen_options = array();
     }
     $gm_screen_options = array_merge($gmGallery->options['gm_screen_options'], $gm_screen_options);
 
     $arg        = array(
-        'mime_type' => $gmCore->_get('mime_type', ''),
-        'orderby'   => $gmCore->_get('orderby', $gm_screen_options['orderby_wpmedia']),
-        'order'     => $gmCore->_get('order', $gm_screen_options['sortorder_wpmedia']),
-        'limit'     => $gm_screen_options['per_page_wpmedia'],
-        'filter'    => $gmCore->_get('filter', ''),
-        's'         => $gmCore->_get('s', '')
+            'mime_type' => $gmCore->_get('mime_type', ''),
+            'orderby'   => $gmCore->_get('orderby', $gm_screen_options['orderby_wpmedia']),
+            'order'     => $gmCore->_get('order', $gm_screen_options['sortorder_wpmedia']),
+            'limit'     => $gm_screen_options['per_page_wpmedia'],
+            'filter'    => $gmCore->_get('filter', ''),
+            's'         => $gmCore->_get('s', '')
     );
     $wpMediaLib = $gmDB->get_wp_media_lib($arg);
 
     $gm_qty = array('total' => '', 'image' => '', 'audio' => '', 'video' => '', 'text' => '', 'application' => '', 'other' => '');
 
     $gmDbCount = $gmDB->count_wp_media($arg);
-    foreach ($gmDbCount as $key => $value) {
+    foreach($gmDbCount as $key => $value) {
         $gm_qty[$key] = '<span class="badge pull-right">' . (int)$value . '</span>';
     }
     ?>
@@ -42,8 +41,8 @@ function grandWPMedia()
         <div class="panel-heading clearfix">
             <form class="form-inline gmedia-search-form" role="search">
                 <div class="form-group">
-                    <?php foreach ($_GET as $key => $value) {
-                        if (in_array($key, array('page', 'mime_type'))) {
+                    <?php foreach($_GET as $key => $value) {
+                        if(in_array($key, array('page', 'mime_type'))) {
                             ?>
                             <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
                             <?php
@@ -57,30 +56,28 @@ function grandWPMedia()
             <?php echo $gmDB->query_pager(); ?>
 
             <div class="btn-toolbar pull-left">
-                <?php if (! $gmProcessor->edit_mode) { ?>
-                    <div class="btn-group gm-checkgroup" id="cb_global-btn">
-                        <span class="btn btn-default active"><input class="doaction" id="cb_global" data-group="cb_media-object" type="checkbox"/></span>
-                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                            <span class="caret"></span>
-                            <span class="sr-only"><?php _e('Toggle Dropdown', 'grand-media'); ?></span></button>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a data-select="total" href="#"><?php _e('All', 'grand-media'); ?></a></li>
-                            <li><a data-select="none" href="#"><?php _e('None', 'grand-media'); ?></a></li>
-                            <li class="divider"></li>
-                            <li><a data-select="image" href="#"><?php _e('Images', 'grand-media'); ?></a></li>
-                            <li><a data-select="audio" href="#"><?php _e('Audio', 'grand-media'); ?></a></li>
-                            <li><a data-select="video" href="#"><?php _e('Video', 'grand-media'); ?></a></li>
-                            <li class="divider"></li>
-                            <li>
-                                <a data-select="reverse" href="#" title="<?php _e('Reverse only visible items', 'grand-media'); ?>"><?php _e('Reverse', 'grand-media'); ?></a>
-                            </li>
-                        </ul>
-                    </div>
-                <?php } ?>
+                <div class="btn-group gm-checkgroup" id="cb_global-btn">
+                    <span class="btn btn-default active"><input class="doaction" id="cb_global" data-group="cb_media-object" type="checkbox"/></span>
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                        <span class="sr-only"><?php _e('Toggle Dropdown', 'grand-media'); ?></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a data-select="total" href="#"><?php _e('All', 'grand-media'); ?></a></li>
+                        <li><a data-select="none" href="#"><?php _e('None', 'grand-media'); ?></a></li>
+                        <li class="divider"></li>
+                        <li><a data-select="image" href="#"><?php _e('Images', 'grand-media'); ?></a></li>
+                        <li><a data-select="audio" href="#"><?php _e('Audio', 'grand-media'); ?></a></li>
+                        <li><a data-select="video" href="#"><?php _e('Video', 'grand-media'); ?></a></li>
+                        <li class="divider"></li>
+                        <li>
+                            <a data-select="reverse" href="#" title="<?php _e('Reverse only visible items', 'grand-media'); ?>"><?php _e('Reverse', 'grand-media'); ?></a>
+                        </li>
+                    </ul>
+                </div>
 
                 <div class="btn-group">
                     <?php $curr_mime = explode(',', $gmCore->_get('mime_type', 'total')); ?>
-                    <?php if ($gmDB->filter) { ?>
+                    <?php if($gmDB->filter) { ?>
                         <a class="btn btn-warning" title="<?php _e('Reset Filter', 'grand-media'); ?>" rel="total" href="<?php echo $url; ?>"><?php _e('Filter', 'grand-media'); ?></a>
                     <?php } else { ?>
                         <button type="button" class="btn btn-default"><?php _e('Filter', 'grand-media'); ?></button>
@@ -115,7 +112,7 @@ function grandWPMedia()
                     ?>
                     <ul class="dropdown-menu" role="menu">
                         <li class="<?php echo $rel_selected_show;
-                        if (! $gmCore->caps['gmedia_import']) {
+                        if(!$gmCore->caps['gmedia_import']) {
                             echo ' disabled';
                         } ?>">
                             <a href="#importModal" data-modal="import-wpmedia" data-action="gmedia_import_wpmedia_modal" class="gmedia-modal"><?php _e('Import to Gmedia Library...', 'grand-media'); ?></a>
@@ -127,7 +124,7 @@ function grandWPMedia()
                 </div>
 
                 <form class="btn-group" id="gm-selected-btn" name="gm-selected-form" action="<?php echo add_query_arg(array('filter' => 'selected'), $url); ?>" method="post">
-                    <button type="submit" class="btn btn<?php echo ('selected' == $gmCore->_req('filter')) ? '-success' : '-info' ?>"><?php printf(__('%s selected', 'grand-media'), '<span id="gm-selected-qty">' . count($gmProcessor->selected_items) . '</span>'); ?></button>
+                    <button type="submit" class="btn btn<?php echo ('selected' == $gmCore->_req('filter'))? '-success' : '-info' ?>"><?php printf(__('%s selected', 'grand-media'), '<span id="gm-selected-qty">' . count($gmProcessor->selected_items) . '</span>'); ?></button>
                     <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
                         <span class="sr-only"><?php _e('Toggle Dropdown', 'grand-media'); ?></span></button>
@@ -142,7 +139,7 @@ function grandWPMedia()
 
         </div>
         <div class="panel-body"></div>
-        <?php if (! empty($wpMediaLib)) { ?>
+        <?php if(!empty($wpMediaLib)) { ?>
             <table class="table table-striped table-hover table-condenced" cellspacing="0">
                 <col class="cb" style="width:40px;"/>
                 <col class="id" style="width:80px;"/>
@@ -151,56 +148,56 @@ function grandWPMedia()
                 <col class="title"/>
                 <col class="descr hidden-xs"/>
                 <thead>
-                <tr>
-                    <th class="cb"><span>#</span></th>
-                    <th class="id">
-                        <?php $new_order = ('ID' == $arg['orderby']) ? (('DESC' == $arg['order']) ? 'ASC' : 'DESC') : 'DESC'; ?>
-                        <a href="<?php echo $gmCore->get_admin_url(array('orderby' => 'ID', 'order' => $new_order)); ?>"><?php _e('ID', 'grand-media'); ?></a>
-                    </th>
-                    <th class="file" title="<?php _e('Sort by filename', 'grand-media'); ?>">
-                        <?php $new_order = ('filename' == $arg['orderby']) ? (('DESC' == $arg['order']) ? 'ASC' : 'DESC') : 'DESC'; ?>
-                        <a href="<?php echo $gmCore->get_admin_url(array(
-                            'orderby' => 'filename',
-                            'order'   => $new_order
-                        )); ?>"><?php _e('File', 'grand-media'); ?></a>
-                    </th>
-                    <th class="type"><span><?php _e('Type', 'grand-media'); ?></span></th>
-                    <th class="title">
-                        <?php $new_order = ('title' == $arg['orderby']) ? (('DESC' == $arg['order']) ? 'ASC' : 'DESC') : 'DESC'; ?>
-                        <a href="<?php echo $gmCore->get_admin_url(array('orderby' => 'title', 'order' => $new_order)); ?>"><?php _e('Title', 'grand-media'); ?></a>
-                    </th>
-                    <th class="descr hidden-xs"><span><?php _e('Description', 'grand-media'); ?></span></th>
-                </tr>
+                    <tr>
+                        <th class="cb"><span>#</span></th>
+                        <th class="id">
+                            <?php $new_order = ('ID' == $arg['orderby'])? (('DESC' == $arg['order'])? 'ASC' : 'DESC') : 'DESC'; ?>
+                            <a href="<?php echo $gmCore->get_admin_url(array('orderby' => 'ID', 'order' => $new_order)); ?>"><?php _e('ID', 'grand-media'); ?></a>
+                        </th>
+                        <th class="file" title="<?php _e('Sort by filename', 'grand-media'); ?>">
+                            <?php $new_order = ('filename' == $arg['orderby'])? (('DESC' == $arg['order'])? 'ASC' : 'DESC') : 'DESC'; ?>
+                            <a href="<?php echo $gmCore->get_admin_url(array(
+                                                                               'orderby' => 'filename',
+                                                                               'order'   => $new_order
+                                                                       )); ?>"><?php _e('File', 'grand-media'); ?></a>
+                        </th>
+                        <th class="type"><span><?php _e('Type', 'grand-media'); ?></span></th>
+                        <th class="title">
+                            <?php $new_order = ('title' == $arg['orderby'])? (('DESC' == $arg['order'])? 'ASC' : 'DESC') : 'DESC'; ?>
+                            <a href="<?php echo $gmCore->get_admin_url(array('orderby' => 'title', 'order' => $new_order)); ?>"><?php _e('Title', 'grand-media'); ?></a>
+                        </th>
+                        <th class="descr hidden-xs"><span><?php _e('Description', 'grand-media'); ?></span></th>
+                    </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($wpMediaLib as $item) {
-                    $is_selected = in_array($item->ID, $gmProcessor->selected_items) ? true : false;
-                    $image       = wp_get_attachment_image($item->ID, array(50, 50), false);
-                    if (! $image) {
-                        if (($src = wp_mime_type_icon($item->ID))) {
-                            $src_image = $gmCore->gmedia_url . '/admin/img/' . wp_basename($src);
-                            $image     = '<img src="' . $src_image . '" width="50" height="50" alt="icon" title="' . esc_attr($item->post_title) . '"/>';
+                    <?php foreach($wpMediaLib as $item) {
+                        $is_selected = in_array($item->ID, $gmProcessor->selected_items)? true : false;
+                        $image       = wp_get_attachment_image($item->ID, array(50, 50), false);
+                        if(!$image) {
+                            if(($src = wp_mime_type_icon($item->ID))) {
+                                $src_image = $gmCore->gmedia_url . '/admin/img/' . wp_basename($src);
+                                $image     = '<img src="' . $src_image . '" width="50" height="50" alt="icon" title="' . esc_attr($item->post_title) . '"/>';
+                            }
                         }
-                    }
-                    $item_url  = wp_get_attachment_url($item->ID);
-                    $file_info = pathinfo($item_url);
-                    $type      = explode('/', $item->post_mime_type);
-                    ?>
-                    <tr data-id="<?php echo $item->ID; ?>">
-                        <td class="cb">
-                            <span class="cb_media-object"><input name="doaction[]" type="checkbox" data-type="<?php echo $type[0]; ?>" value="<?php echo $item->ID; ?>"<?php echo $is_selected ? ' checked="checked"' : ''; ?>/></span>
-                        </td>
-                        <td class="id"><span><?php echo $item->ID; ?></span></td>
-                        <td class="file">
-                            <span><a href="<?php echo admin_url('media.php?action=edit&amp;attachment_id=' . $item->ID); ?>"><?php echo $image; ?></a></span>
-                        </td>
-                        <td class="type"><span><?php echo $file_info['extension']; ?></span></td>
-                        <td class="title"><span><?php echo esc_html($item->post_title); ?></span></td>
-                        <td class="descr hidden-xs">
-                            <div><?php echo esc_html($item->post_content); ?></div>
-                        </td>
-                    </tr>
-                <?php } ?>
+                        $item_url  = wp_get_attachment_url($item->ID);
+                        $file_info = pathinfo($item_url);
+                        $type      = explode('/', $item->post_mime_type);
+                        ?>
+                        <tr data-id="<?php echo $item->ID; ?>">
+                            <td class="cb">
+                                <span class="cb_media-object"><input name="doaction[]" type="checkbox" data-type="<?php echo $type[0]; ?>" value="<?php echo $item->ID; ?>"<?php echo $is_selected? ' checked="checked"' : ''; ?>/></span>
+                            </td>
+                            <td class="id"><span><?php echo $item->ID; ?></span></td>
+                            <td class="file">
+                                <span><a href="<?php echo admin_url('media.php?action=edit&amp;attachment_id=' . $item->ID); ?>"><?php echo $image; ?></a></span>
+                            </td>
+                            <td class="type"><span><?php echo $file_info['extension']; ?></span></td>
+                            <td class="title"><span><?php echo esc_html($item->post_title); ?></span></td>
+                            <td class="descr hidden-xs">
+                                <div><?php echo esc_html($item->post_content); ?></div>
+                            </td>
+                        </tr>
+                    <?php } ?>
                 </tbody>
             </table>
         <?php } else { ?>
@@ -218,7 +215,7 @@ function grandWPMedia()
 
     <script type="text/javascript">
         function gmedia_import_done() {
-            if (jQuery('#import_window').is(':visible')) {
+            if(jQuery('#import_window').is(':visible')) {
                 var btn = jQuery('#import-done');
                 btn.text(btn.data('complete-text')).prop('disabled', false);
             }

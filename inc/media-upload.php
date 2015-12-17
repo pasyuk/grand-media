@@ -226,7 +226,7 @@ function gmedia_add_media_galleries()
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
     if (is_wp_error($gmediaTerms)) {
-        $alert       = GmediaProcessor::alert('danger', $gmediaTerms->get_error_message());
+        $alert       = $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 
@@ -524,7 +524,7 @@ function gmedia_add_media_terms()
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
     if (is_wp_error($gmediaTerms)) {
-        $alert       = GmediaProcessor::alert('danger', $gmediaTerms->get_error_message());
+        $alert       = $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 

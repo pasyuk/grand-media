@@ -20,7 +20,7 @@ function gmediaApp()
     $alert     = '';
     $btn_state = '';
     if ('127.0.0.1' == $_SERVER['SERVER_ADDR']) {
-        $alert     = GmediaProcessor::alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
+        $alert     = $gmProcessor->alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
         $btn_state = ' disabled';
     }
 
