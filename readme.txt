@@ -1,9 +1,9 @@
 === Gmedia Gallery - Photo Gallery, Image Slider, Music Player, Video Player, Media Library ===
 Contributors: Rattus
 Donate link: http://codeasily.com/donate/
-Tags: admin, best gallery, easy gallery, gallery, gallery slider, header slider, image, image gallery, images, iOS app, iphone gallery, media library, music, page, photo, photo gallery, portfolio, Post, posts, responsive, slider, slideshow, video
+Tags: admin, best gallery, easy gallery, gallery, gallery slider, header slider, image, image gallery, images, iOS app, iphone gallery, media library, music, page, photo, photo gallery, portfolio, Post, posts, responsive, slider, slideshow, video, flagallery, gmedia
 Requires at least: 3.6
-Tested up to: 4.4.0
+Tested up to: 4.4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -94,6 +94,7 @@ Features:
 
 TODO List:
 
+*   Comments (work in progress..)
 *   Integration with WP search (work in progress..)
 *   Duplicate item in Gmedia Library (work in progress..)
 *   More Batch operations with selected Gmedia items (work in progress..)
@@ -133,6 +134,14 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= 1.7.56 =
+* Fixed: error "jQuery is not defined" on some themes
+
+= 1.7.55 =
+* Fixed: ajax requests required login
+* Fixed: error in class.processor.php file
+* Fixed: CSS conflict for forms
 
 = 1.7.53 =
 * Fixed: Import from WP Media Library

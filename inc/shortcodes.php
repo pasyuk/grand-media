@@ -109,7 +109,7 @@ function gmedia_shortcode($atts, $content = '')
         'term_id' => 0,
         'name' => '',
         'description' => '',
-        'status' => 'public',
+        'status' => 'publish',
         '_edited' => '&#8212;',
         '_module' => 'phantom',
         '_query' => array(),
@@ -193,7 +193,7 @@ function gmedia_shortcode($atts, $content = '')
     $terms  = array();
     $gmedia = array();
     if (! empty($gallery['_query'])) {
-        $gmedia_status = array('public');
+        $gmedia_status = array('publish');
         if (is_user_logged_in()) {
             $gmedia_status[] = 'private';
         }

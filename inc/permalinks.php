@@ -20,9 +20,83 @@ class gmediaPermalinks {
         add_filter('rewrite_rules_array', array($this, 'add_rewrite_rules'));
         add_filter('query_vars', array($this, 'add_query_vars'));
         add_action('parse_request', array($this, 'handler'));
+        add_action('parse_query', array($this, 'bridge'));
 
         add_filter('post_thumbnail_html', array($this, 'gmedia_post_thumbnail'), 10, 5);
         add_filter('gmedia_shortcode_gallery_data', array($this, 'gmedia_shortcode_gallery_data'));
+
+        add_filter('show_admin_bar', array($this, 'comments_admin_bar_hide'));
+        add_action('single_template', array($this, 'comments_gmedia_template_redirect'));
+        add_filter('comment_post_redirect', array($this, 'redirect_after_comment'), 10, 2);
+
+    }
+
+    /**
+     * Change the template used when the gmedia post permalink has ?comments
+     *
+     * @param string $templates
+     *
+     * @return string
+     */
+    function comments_gmedia_template_redirect($templates = "") {
+        //if(!in_array($post->post_type, array('gmedia','gmedia_album','gmedia_gallery','gmedia_filter'))) {
+        if(!(isset($_GET['comments']) && is_singular(array('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter')))) {
+            return $templates;
+        }
+
+        $templates = locate_template("gmedia_comments-popup.php", false);
+        if(empty($templates)) {
+            $templates = GMEDIA_ABSPATH . 'template/comments-popup.php';
+        }
+
+        return $templates;
+    }
+
+    /**
+     * @param $show_admin_bar
+     *
+     * @return string
+     */
+    function comments_admin_bar_hide($show_admin_bar) {
+        if(!(isset($_GET['comments']) && is_singular(array('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter')))) {
+            return $show_admin_bar;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param $location
+     *
+     * @param $comment
+     *
+     * @return string
+     */
+    function redirect_after_comment($location, $comment) {
+        global $wpdb;
+
+        $queryParts = explode('#', $_SERVER["HTTP_REFERER"], 2);
+        $queryParts = explode('?', $queryParts[0], 2);
+        if(!(isset($queryParts[1]) && !empty($queryParts[1]))) {
+            return $location;
+        }
+        $queryParts = explode('&', $queryParts[1]);
+        $params     = array();
+        foreach($queryParts as $param) {
+            $item             = explode('=', $param);
+            $params[$item[0]] = isset($item[1])? $item[1] : '';
+        }
+        if(!isset($params['comments'])) {
+            return $location;
+        }
+
+        $post = get_post($comment->comment_post_ID);
+
+        if(!in_array($post->post_type, array('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter'))) {
+            return $location;
+        }
+
+        return $_SERVER["HTTP_REFERER"] . "#comment-" . $wpdb->insert_id;
     }
 
     /**
@@ -88,8 +162,7 @@ class gmediaPermalinks {
     public function handler($wp) {
         global $gmGallery;
         $endpoint = !empty($gmGallery->options['endpoint'])? $gmGallery->options['endpoint'] : 'gmedia';
-
-        if(isset($wp->query_vars[$endpoint])) {
+        if(isset($wp->query_vars[$endpoint]) && isset($wp->query_vars['t']) && in_array($wp->query_vars['t'], array('g', 'a', 't', 's', 'k', 'f', 'u'))) {
 
             global $wp_query;
             $wp_query->is_single  = false;
@@ -137,6 +210,23 @@ class gmediaPermalinks {
 
     }
 
+    /**
+     * Listen for gmServiceLink query
+     *
+     * @access public
+     *
+     * @param $wp - global variable
+     */
+    public function bridge($wp) {
+        if (isset($_GET['gmServiceLink'])) {
+            $transient_key = preg_replace('/[^A-Za-z0-9]/', '', $_GET['gmServiceLink']);
+            if (false !== ($result = get_transient($transient_key))) {
+                header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+                echo json_encode($result);
+                die();
+            }
+        }
+    }
     /**
      * Filter for the post content
      *

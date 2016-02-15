@@ -175,7 +175,7 @@ function grandWPMedia() {
                         $image       = wp_get_attachment_image($item->ID, array(50, 50), false);
                         if(!$image) {
                             if(($src = wp_mime_type_icon($item->ID))) {
-                                $src_image = $gmCore->gmedia_url . '/admin/img/' . wp_basename($src);
+                                $src_image = $gmCore->gmedia_url . '/admin/assets/img/' . wp_basename($src);
                                 $image     = '<img src="' . $src_image . '" width="50" height="50" alt="icon" title="' . esc_attr($item->post_title) . '"/>';
                             }
                         }

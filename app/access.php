@@ -14,18 +14,10 @@ if (! $gmedia_app) {
     die();
 }
 
-global $gmCore;
-$out = array();
+global $gmCore, $gmapp_version;
+$gmapp_version = isset($_GET['gmappversion']) ? $_GET['gmappversion'] : 1;
 
-if (isset($_GET['service-link'])) {
-    $transient_key = preg_replace('/[^A-Za-z0-9]/', '', $_GET['service-link']);
-    if (false !== ($result = get_transient($transient_key))) {
-        //$result['mypgc_REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR']; //216.70.94.77
-        header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
-        echo json_encode($result);
-    }
-    die();
-}
+$out = array();
 
 $gmedia_options = get_option('gmediaOptions');
 if (empty($gmedia_options['mobile_app'])) {
@@ -71,8 +63,12 @@ if ($globaldata) {
                 $out = array_merge($out, $job);
             } elseif (isset($json->library)) {
                 $out = gmedia_ios_app_processor('library', $json->library);
+            } elseif(isset($json->library_terms)) {
+                $args = (array)$json->library_terms;
+                if(isset($args['taxonomy'])) {
+                    $out   = gmedia_ios_app_library_data(array($args['taxonomy']), $args);
+                }
             }
-
 
         } else {
             $out['error'] = array('code' => 'wrongcookie', 'message' => 'Not Valid User');
@@ -108,6 +104,11 @@ if ($globaldata) {
     } else {
         if (isset($json->library)) {
             $out = gmedia_ios_app_processor('library', $json->library);
+        } elseif(isset($json->library_terms)) {
+            $args = (array)$json->library_terms;
+            if(isset($args['taxonomy'])) {
+                $out   = gmedia_ios_app_library_data(array($args['taxonomy']), $args);
+            }
         } else {
             $out = gmedia_ios_app_library_data();
         }
@@ -166,12 +167,26 @@ function gmedia_ios_app_login($json)
 /**
  * @param array $data
  *
+ * @param       $args
+ *
  * @return array
  */
 function gmedia_ios_app_library_data(
-    $data = array('site', 'authors', 'filter', 'gmedia_category', 'gmedia_album', 'gmedia_tag')
+    $data = array('site', 'authors', 'filter', 'gmedia_category', 'gmedia_album', 'gmedia_tag'),
+    $args = array()
 ) {
-    global $user_ID, $gmCore, $gmDB, $gmGallery;
+    global $user_ID, $gmCore, $gmDB, $gmGallery, $gmapp_version;
+
+    if(null === $data){
+        $data = array('site', 'authors', 'filter', 'gmedia_category', 'gmedia_album', 'gmedia_tag');
+    }
+
+    if(version_compare('3', $gmapp_version, '<=')){
+        $terms_per_page = 40;
+    } else {
+        $terms_per_page = '';
+    }
+    $args = array_merge(array('number' => $terms_per_page), (array)$args);
 
     $out = array();
 
@@ -225,7 +240,19 @@ function gmedia_ios_app_library_data(
             $cap = 0;
         }
         */
-        $gmediaTerms       = $gmDB->get_terms('gmedia_category', array('fields' => 'name=>all'));
+        $default_args = array('fields' => 'name=>all');
+        if(isset($args['per_page'])){
+            $args['number'] = $args['per_page'];
+        }
+        $args = array_merge($default_args, $args);
+        $gmediaTerms       = $gmDB->get_terms('gmedia_category', $args);
+        $props = array(
+            'per_page'     => $args['number'],
+            'total_pages'  => $gmDB->pages,
+            'current_page' => $gmDB->openPage,
+            'items_count'  => $gmDB->resultPerPage,
+            'total_count'  => $gmDB->totalResult
+        );
         $terms             = array_merge(array('0' => __('Uncategorized', 'grand-media')),
             $gmGallery->options['taxonomies']['gmedia_category']);
         $out['categories'] = array(
@@ -234,22 +261,74 @@ function gmedia_ios_app_library_data(
             'data' => array()
         );
         if (! empty($gmediaTerms)) {
-            foreach ($gmediaTerms as $name => $term) {
-                unset($gmediaTerms[$name]->description, $gmediaTerms[$name]->global, $gmediaTerms[$name]->status);
-                $gmediaTerms[$name]->title = $terms[$name];
+            foreach ($gmediaTerms as $i => $term) {
+                unset($gmediaTerms[$i]->description, $gmediaTerms[$i]->global, $gmediaTerms[$i]->status);
+                $gmediaTerms[$i]->title = $terms[$i];
 
-                $gmedia_hashid                 = gmedia_hash_id_encode($gmediaTerms[$name]->term_id, 'category');
-                $gmediaTerms[$name]->sharelink = str_replace(array('$1', '$2'), array(urlencode($gmedia_hashid), 'k'),
+                $term_meta            = $gmDB->get_metadata('gmedia_term', $term->term_id);
+                $term_meta            = array_map('reset', $term_meta);
+                $term_meta            = array_merge(array('_orderby' => $gmGallery->options['in_category_orderby'], '_order' => $gmGallery->options['in_category_order']), $term_meta);
+                $term_meta['orderby'] = $term_meta['_orderby'];
+                $term_meta['order']   = $term_meta['_order'];
+
+                if (empty($term_meta['_cover'])) {
+                    $term_meta['_cover'] = false;
+                } else {
+                    $term_meta['_cover'] = intval($term_meta['_cover']);
+                }
+                if ($term_meta['_cover']) {
+                    $cover_id = (int)$term_meta['_cover'];
+                    $cover    = gmedia_ios_app_processor('library', array('gmedia__in' => array($cover_id)), false);
+                    if (isset($cover['data'][0])) {
+                        $term_meta['_cover']        = $cover['data'][0];
+                        $gmediaTerms[$i]->thumbnail = $gmCore->gm_get_media_image($cover_id, 'thumb', false);
+                    } else {
+                        $term_meta['_cover'] = false;
+                    }
+                }
+                if (! $term_meta['_cover'] && $term->count) {
+                    $gmargs = array(
+                        'no_found_rows' => true,
+                        'mime_type'     => 'image/*',
+                        'per_page'      => 1,
+                        'album__in'     => array($term->term_id),
+                        'status'        => 'publish'
+                    );
+                    if ($user_ID) {
+                        $gmargs['status'] = array('publish', 'private');
+                        if (user_can($user_ID, 'gmedia_edit_others_media')) {
+                            $gmargs['status'] = '';
+                        }
+                    } else {
+                        $gmargs['status'] = 'publish';
+                    }
+
+                    $termItems = $gmDB->get_gmedias($gmargs);
+                    if (! empty($termItems)) {
+                        $cover = gmedia_ios_app_processor('library', array('gmedia__in' => array($termItems[0]->ID)),
+                                                          false);
+                        if (isset($cover['data'][0])) {
+                            $term_meta['_cover'] = $cover['data'][0];
+                        }
+                        $gmediaTerms[$i]->thumbnail = $gmCore->gm_get_media_image($termItems[0], 'thumb', false);
+                    }
+                }
+
+                $gmediaTerms[$i]->meta = $term_meta;
+
+                $gmedia_hashid                 = gmedia_hash_id_encode($gmediaTerms[$i]->term_id, 'category');
+                $gmediaTerms[$i]->sharelink = str_replace(array('$1', '$2'), array(urlencode($gmedia_hashid), 'k'),
                     $share_link);
 
-                $gmediaTerms[$name]->cap = 0;
+                $gmediaTerms[$i]->cap = 0;
             }
 
+            $out['categories']['properties'] = $props;
             $out['categories']['data'] = array_values($gmediaTerms);
         }
     }
     if (in_array('gmedia_album', $data)) {
-        $args = array();
+        $default_args = array();
         if ($user_ID) {
             if (current_user_can('gmedia_delete_terms')) {
                 $cap = 4;
@@ -259,14 +338,26 @@ function gmedia_ios_app_library_data(
                 $cap = 0;
             }
             /*if( !current_user_can('gmedia_edit_others_media')){
-                //$args = array( 'status' => array('public', 'private') );
-                //$args['global'] = array( $user_ID, 0 );
+                //$default_args = array( 'status' => array('publish', 'private') );
+                //$default_args['global'] = array( $user_ID, 0 );
             }*/
         } else {
             $cap  = 0;
-            $args = array('status' => 'public');
+            $default_args = array('status' => 'publish');
         }
+        if(isset($args['per_page'])){
+            $args['number'] = $args['per_page'];
+        }
+        $args = array_merge($default_args, $args);
+
         $gmediaTerms = $gmDB->get_terms('gmedia_album', $args);
+        $props = array(
+            'per_page'     => $args['number'],
+            'total_pages'  => $gmDB->pages,
+            'current_page' => $gmDB->openPage,
+            'items_count'  => $gmDB->resultPerPage,
+            'total_count'  => $gmDB->totalResult
+        );
         foreach ($gmediaTerms as $i => $term) {
             $author_id = (int)$term->global;
             if ($author_id) {
@@ -301,37 +392,39 @@ function gmedia_ios_app_library_data(
             $term_meta['orderby'] = $term_meta['_orderby'];
             $term_meta['order']   = $term_meta['_order'];
 
-            if (! isset($term_meta['_cover'])) {
-                $term_meta['_cover'] = '';
+            if (empty($term_meta['_cover'])) {
+                $term_meta['_cover'] = false;
+            } else {
+                $term_meta['_cover'] = intval($term_meta['_cover']);
             }
             if ($term_meta['_cover']) {
-                $cover_id = intval($term_meta['_cover']);
+                $cover_id = (int)$term_meta['_cover'];
                 $cover    = gmedia_ios_app_processor('library', array('gmedia__in' => array($cover_id)), false);
                 if (isset($cover['data'][0])) {
                     $term_meta['_cover']        = $cover['data'][0];
                     $gmediaTerms[$i]->thumbnail = $gmCore->gm_get_media_image($cover_id, 'thumb', false);
                 } else {
-                    $term_meta['_cover'] = '';
+                    $term_meta['_cover'] = false;
                 }
             }
             if (! $term_meta['_cover'] && $term->count) {
-                $args = array(
+                $gmargs = array(
                     'no_found_rows' => true,
                     'mime_type'     => 'image/*',
                     'per_page'      => 1,
                     'album__in'     => array($term->term_id),
-                    'status'        => 'public'
+                    'status'        => 'publish'
                 );
                 if ($user_ID) {
-                    $args['status'] = array('public', 'private');
+                    $gmargs['status'] = array('publish', 'private');
                     if ($author_id === $user_ID) {
-                        $args['status'] = '';
+                        $gmargs['status'] = '';
                     }
                 } else {
-                    $args['status'] = 'public';
+                    $gmargs['status'] = 'publish';
                 }
 
-                $termItems = $gmDB->get_gmedias($args);
+                $termItems = $gmDB->get_gmedias($gmargs);
                 if (! empty($termItems)) {
                     $cover = gmedia_ios_app_processor('library', array('gmedia__in' => array($termItems[0]->ID)),
                         false);
@@ -352,19 +445,34 @@ function gmedia_ios_app_library_data(
         }
         $out['albums'] = array(
             'cap'  => $cap,
+            'properties' => $props,
             'data' => array_values($gmediaTerms)
         );
     }
     if (in_array('gmedia_tag', $data)) {
+        $default_args = array();
         if ($user_ID) {
             $cap = (is_super_admin($user_ID) || user_can($user_ID, 'gmedia_tag_delete')) ? 4 : (user_can($user_ID,
                 'gmedia_tag_edit') ? 2 : 0);
         } else {
             $cap = 0;
         }
-        $gmediaTerms = $gmDB->get_terms('gmedia_tag');
+        if(isset($args['per_page'])){
+            $args['number'] = $args['per_page'];
+        }
+        $args = array_merge($default_args, $args);
+        $gmediaTerms = $gmDB->get_terms('gmedia_tag', $args);
+        $props = array(
+            'per_page'     => $args['number'],
+            'total_pages'  => $gmDB->pages,
+            'current_page' => $gmDB->openPage,
+            'items_count'  => $gmDB->resultPerPage,
+            'total_count'  => $gmDB->totalResult
+        );
         foreach ($gmediaTerms as $i => $term) {
             unset($gmediaTerms[$i]->description, $gmediaTerms[$i]->global, $gmediaTerms[$i]->status);
+
+            $gmediaTerms[$i]->meta = array('_orderby' => $gmGallery->options['in_tag_orderby'], '_order' => $gmGallery->options['in_tag_order']);
 
             $gmedia_hashid              = gmedia_hash_id_encode($term->term_id, 'tag');
             $gmediaTerms[$i]->sharelink = str_replace(array('$1', '$2'), array(urlencode($gmedia_hashid), 't'),
@@ -374,7 +482,8 @@ function gmedia_ios_app_library_data(
         }
         $out['tags'] = array(
             'cap'  => $cap,
-            'data' => $gmediaTerms
+            'properties' => $props,
+            'data' => array_values($gmediaTerms)
         );
     }
 
@@ -476,9 +585,8 @@ function gmedia_ios_app_processor($action, $data, $filter = true)
                     if (! empty($gmedia['ID'])) {
                         $item = $gmDB->get_gmedia($gmedia['ID']);
 
-                        $gmedia['modified']  = current_time('mysql');
-                        $gmedia['mime_type'] = $item->mime_type;
-                        $gmedia['gmuid']     = $item->gmuid;
+                        unset($gmedia['date'], $gmedia['mime_type'], $gmedia['gmuid'], $gmedia['modified']);
+                        //$gmedia['modified']  = current_time('mysql');
                         if (! current_user_can('gmedia_delete_others_media')) {
                             $gmedia['author'] = $item->author;
                         }
@@ -713,11 +821,11 @@ function gmedia_ios_app_processor($action, $data, $filter = true)
             //$is_collection = ! ( empty( $data['album__in'] ) && empty( $data['tag__in'] ) && empty( $data['category__in'] ) );
             $is_admin = isset($data['admin']) ? intval($data['admin']) : 0;
             if (! is_user_logged_in()) {
-                $data['status'] = array('public');
+                $data['status'] = array('publish');
                 //if ( $is_collection ) {
                 if (! empty($data['album__in'])) {
                     $alb = $gmDB->get_term((int)$data['album__in'][0], 'gmedia_album');
-                    if (! (isset($alb->status) && ('public' == $alb->status))) {
+                    if (! (isset($alb->status) && ('publish' == $alb->status))) {
                         $out = $false_out;
                         break;
                     }
@@ -854,7 +962,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true)
                     'request'      => isset($data['request']) ? $data['request'] : null,
                     'total_pages'  => $gmDB->pages,
                     'current_page' => $gmDB->openPage,
-                    'items_count'  => $gmDB->gmediaCount,
+                    'items_count'  => $gmDB->resultPerPage,
                     'total_count'  => $gmDB->totalResult
                 ),
                 'data'       => array_values($gmedias)

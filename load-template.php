@@ -22,13 +22,14 @@ $template = array(
     'u' => 'author'
 );
 if (! isset($template[$type])) {
-    locate_template(array('404'), true);
+    locate_template('404', true);
     exit();
 }
 
 $gmedia_type = $template[$type];
 $gmedia_id   = gmedia_hash_id_decode($gmedia_hashid, $gmedia_type);
 if (empty($gmedia_id)) {
+    locate_template('404', true);
     exit();
 }
 

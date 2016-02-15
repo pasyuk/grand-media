@@ -37,9 +37,9 @@ function gmedia_meta_box_load_scripts($hook)
 {
     if ((in_array($hook, array('post.php', 'edit.php')) && isset($_GET['post']) && isset($_GET['action']) && $_GET['action'] == 'edit') || $hook == 'post-new.php') {
         //wp_enqueue_style('wp-jquery-ui-dialog');
-        //wp_enqueue_style('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/css/gmedia.metabox.css', array('wp-jquery-ui-dialog'), '1.3.0');
-        //wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/js/gmedia.metabox.js', array('jquery','jquery-ui-dialog','gmedia-global-backend'), '1.4.2', true);
-        wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/js/gmedia.metabox.js', array('jquery', 'gmedia-global-backend'), '1.4.2', true);
+        //wp_enqueue_style('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/assets/css/gmedia.metabox.css', array('wp-jquery-ui-dialog'), '1.3.0');
+        //wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/assets/js/gmedia.metabox.js', array('jquery','jquery-ui-dialog','gmedia-global-backend'), '1.4.2', true);
+        wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/assets/js/gmedia.metabox.js', array('jquery', 'gmedia-global-backend'), '1.4.2', true);
     }
 }
 
@@ -50,7 +50,7 @@ function gmedia_post_modal_tpl()
     <script type="text/html" id="tpl__gm-uploader">
         <div id="__gm-uploader" tabindex="0">
             <div class="media-modal wp-core-ui">
-                <a class="media-modal-close" style="line-height:50px;width:50px;height:50px;text-align:center;text-decoration:none;" href="javascript:void(0)"><span class="media-modal-icon" style="margin-top:0;"></span></a>
+                <a class="media-modal-close" style="right:0;top:0;line-height:40px;width:40px;height:40px;text-align:center;text-decoration:none;" href="javascript:void(0)"><span class="media-modal-icon" style="margin-top:0;"></span></a>
 
                 <div class="media-modal-content">
                     <div class="media-frame wp-core-ui hide-router hide-toolbar">
@@ -105,7 +105,7 @@ function gmedia_post_modal_tpl()
 
 function gmedia_tinymce_plugin( $plugin_array ) {
 
-$plugin_array['gmedia'] = plugins_url( GMEDIA_FOLDER ) . '/admin/js/tinymce_gmedia_plugin.js';
+$plugin_array['gmedia'] = plugins_url( GMEDIA_FOLDER ) . '/admin/assets/js/gmedia.tinymce.js';
 
 return $plugin_array;
 }
@@ -115,7 +115,7 @@ return $plugin_array;
 function gmedia_post_metabox()
 {
     global $gmCore, $gmDB, $user_ID;
-    $t = $gmCore->gmedia_url . '/admin/img/blank.gif';
+    $t = $gmCore->gmedia_url . '/admin/assets/img/blank.gif';
     ?>
     <div id="gmedia-wraper">
         <div id="gmedia-message">

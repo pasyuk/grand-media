@@ -1,5 +1,5 @@
 /**
  * gmedia Globals
- * @var gmediaGlobalVar
+ * @var GmediaGallery
  */
-var ajaxurl = gmediaGlobalVar.ajaxurl;
+var ajaxurl = GmediaGallery.ajaxurl;

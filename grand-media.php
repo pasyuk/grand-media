@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerfull media library plugin for creating beautiful galleries and managing files.
- * Version: 1.7.53
+ * Version: 1.8.0
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
@@ -42,8 +42,8 @@ if(!class_exists('Gmedia')) {
      */
     class Gmedia {
 
-        var $version = '1.7.53';
-        var $dbversion = '0.9.6';
+        var $version = '1.8.0';
+        var $dbversion = '1.8.0';
         var $minium_WP = '3.6';
         var $options = '';
         var $do_module = array();
@@ -80,6 +80,8 @@ if(!class_exists('Gmedia')) {
 
             $this->plugin_name = plugin_basename(__FILE__);
 
+            add_filter('cron_schedules', array(&$this, 'gmedia_cron_schedules'));
+
             // Init options & tables during activation & deregister init option
             register_activation_hook($this->plugin_name, array(&$this, 'activate'));
             register_deactivation_hook($this->plugin_name, array(&$this, 'deactivate'));
@@ -97,6 +99,10 @@ if(!class_exists('Gmedia')) {
             add_action('plugins_loaded', array(&$this, 'start_plugin'));
 
             add_action('deleted_user', array(&$this, 'reassign_media'), 10, 2);
+
+            add_action('init', array(&$this, 'gmedia_post_type'), 0);
+
+            add_action('gmedia_app_cronjob', array(&$this, 'gmedia_app_cronjob'));
 
             //Add some message on the plugins page
             //add_action( 'after_plugin_row', array(&$this, 'check_message_version') );
@@ -129,7 +135,9 @@ if(!class_exists('Gmedia')) {
             } else {
 
                 // Add the script and style files
-                add_action('wp_enqueue_scripts', array(&$this, 'load_scripts'), 4);
+                //add_action('wp_enqueue_scripts', array(&$this, 'load_scripts'), 4);
+
+                require_once(dirname(__FILE__) . '/inc/frontend.filters.php');
 
                 // Add a version number to the header
                 add_action('wp_head', array(&$this, 'gmedia_head_meta'));
@@ -144,10 +152,8 @@ if(!class_exists('Gmedia')) {
 
         function gmedia_head_meta() {
             $lk = strtolower($this->options['license_key']);
-            echo "\n<!-- <meta name='GmediaGallery' version='{$this->version}/{$this->dbversion}' /> -->\n";
-            if($lk) {
-                echo "<script type='text/javascript'>var GmediaGallery = {'lk':'{$lk}'}</script>\n";
-            }
+            $db_version = get_option('gmediaDbVersion');
+            echo "\n<!-- <meta name='GmediaGallery' version='{$this->version}/{$db_version}' license='{$lk}' /> -->\n";
         }
 
         function admin_notices() {
@@ -193,23 +199,32 @@ if(!class_exists('Gmedia')) {
             $current_version    = get_option('gmediaVersion', null);
             $current_db_version = get_option('gmediaDbVersion', null);
 
-            require_once(dirname(__FILE__) . '/config/update.php');
             if(null === $current_db_version) {
                 add_option("gmediaDbVersion", GMEDIA_DBVERSION);
             } elseif(version_compare($current_db_version, GMEDIA_DBVERSION, '<')) {
-                if(isset($_GET['do_update']) && ('gmedia' == $_GET['do_update'])) {
-                    add_action('admin_notices', 'gmedia_wait_admin_notice');
+                require_once(dirname(__FILE__) . '/config/update.php');
+
+                if(get_transient('gmediaUpgrade') || (isset($_GET['do_update']) && ('gmedia' == $_GET['do_update']))) {
+                    add_action('admin_notices', 'gmedia_upgrade_process_admin_notice');
                 } else {
-                    add_action('admin_notices', 'gmedia_update_admin_notice');
+                    add_action('admin_notices', 'gmedia_upgrade_required_admin_notice');
                 }
             }
 
             if(null === $current_version) {
+                require_once(dirname(__FILE__) . '/config/update.php');
+
                 add_option("gmediaVersion", GMEDIA_VERSION);
                 add_action('init', 'gmedia_flush_rewrite_rules', 1000);
             } elseif(version_compare($current_version, GMEDIA_VERSION, '<')) {
+                require_once(dirname(__FILE__) . '/config/update.php');
+
                 gmedia_quite_update();
                 add_action('init', 'gmedia_flush_rewrite_rules', 1000);
+            }
+
+            if(!wp_get_schedule('gmedia_app_cronjob')) {
+                wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
             }
         }
 
@@ -234,8 +249,11 @@ if(!class_exists('Gmedia')) {
         }
 
         function load_options() {
+            include_once(dirname(__FILE__) . '/config/setup.php');
             // Load the options
-            $this->options = get_option('gmediaOptions');
+            $default_options = gmedia_default_options();
+            $db_options      = get_option('gmediaOptions');
+            $this->options   = array_merge($default_options, $db_options);
         }
 
         function load_dependencies() {
@@ -281,17 +299,16 @@ if(!class_exists('Gmedia')) {
         function register_scripts_backend() {
             global $gmCore;
 
-            wp_register_script('gmedia-global-backend', $gmCore->gmedia_url . '/admin/js/gmedia.global.js', array('jquery'), '1.7.0');
-            wp_localize_script('gmedia-global-backend', 'gmediaGlobalVar', array(
-                'ajaxurl'    => admin_url('admin-ajax.php'),
-                'nonce'      => wp_create_nonce('grandMedia'),
-                'loading'    => $gmCore->gmedia_url . '/admin/img/throbber.gif',
-                'uploadPath' => $gmCore->upload['url'],
-                'pluginPath' => $gmCore->gmedia_url
+            wp_register_script('gmedia-global-backend', $gmCore->gmedia_url . '/admin/assets/js/gmedia.global.js', array('jquery'), '1.8.0');
+            wp_localize_script('gmedia-global-backend', 'GmediaGallery', array(
+                'ajaxurl'       => admin_url('admin-ajax.php'),
+                'nonce'         => wp_create_nonce('GmediaGallery'),
+                'upload_dirurl' => $gmCore->upload['url'],
+                'plugin_dirurl' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/css/gmedia.admin.css', array(), '1.7.53', 'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.7.53');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.0', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.8.0');
             wp_localize_script('grand-media', 'grandMedia', array(
                 'error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                 'download' => __('downloading...', 'grand-media'),
@@ -309,12 +326,14 @@ if(!class_exists('Gmedia')) {
         function register_scripts_frontend() {
             global $gmCore, $wp_scripts;
 
-            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '0.9.6');
-            wp_localize_script('gmedia-global-frontend', 'gmediaGlobalVar', array(
-                'ajaxurl'    => admin_url('admin-ajax.php'),
-                'uploadPath' => $gmCore->upload['url'],
-                'gmediaKey'  => strtolower($this->options['license_key']),
-                'mash'       => $this->options['license_key2']
+            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '1.8.0');
+            wp_localize_script('gmedia-global-frontend', 'GmediaGallery', array(
+                'ajaxurl'       => admin_url('admin-ajax.php'),
+                'nonce'         => wp_create_nonce('GmediaGallery'),
+                'upload_dirurl' => $gmCore->upload['url'],
+                'plugin_dirurl' => $gmCore->upload['url'],
+                'license'       => strtolower($this->options['license_key']),
+                'license2'      => $this->options['license_key2']
             ));
 
 
@@ -323,17 +342,26 @@ if(!class_exists('Gmedia')) {
                 wp_register_script('mediaelement', $gmCore->gmedia_url . '/assets/mediaelement/mediaelement-and-player.min.js', array('jquery'), '2.13.0', true);
             }
 
-            wp_deregister_style('photoswipe');
-            wp_deregister_script('photoswipe');
-            wp_register_style('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.css', array(), '3.0.5', 'screen');
-            wp_register_script('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.jquery.min.js', array('jquery'), '3.0.5', true);
+            if(!wp_script_is('magnific-popup', 'registered') || version_compare($wp_scripts->registered['magnific-popup']->ver, '1.0.2', '<')) {
+                wp_deregister_style('magnific-popup');
+                wp_deregister_script('magnific-popup');
+                wp_register_style('magnific-popup', $gmCore->gmedia_url . '/assets/mag-popup/magnific-popup.css', array(), '1.0.2', 'screen');
+                wp_register_script('magnific-popup', $gmCore->gmedia_url . '/assets/mag-popup/jquery.magnific-popup.min.js', array('jquery'), '1.0.2', true);
+            }
+
+            if(!wp_script_is('photoswipe', 'registered') || version_compare($wp_scripts->registered['photoswipe']->ver, '3.0.5', '<=')) {
+                wp_deregister_style('photoswipe');
+                wp_deregister_script('photoswipe');
+                wp_register_style('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.css', array(), '3.0.5', 'screen');
+                wp_register_script('photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.jquery.min.js', array('jquery'), '3.0.5', true);
+            }
 
             if(!wp_script_is('easing', 'registered') || version_compare($wp_scripts->registered['easing']->ver, '1.3.0', '<')) {
                 wp_deregister_script('easing');
                 wp_register_script('easing', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.easing.js', array('jquery'), '1.3.0', true);
             }
             if(!wp_script_is('fancybox', 'registered') || version_compare($wp_scripts->registered['fancybox']->ver, '1.3.4', '<')) {
-                if(!defined('FANCYBOX_VERSION')){
+                if(!defined('FANCYBOX_VERSION')) {
                     wp_deregister_style('fancybox');
                     wp_register_style('fancybox', $gmCore->gmedia_url . '/assets/fancybox/jquery.fancybox-1.3.4.css', array(), '1.3.4');
                 }
@@ -354,6 +382,7 @@ if(!class_exists('Gmedia')) {
 
             wp_register_script('mousetrap', $gmCore->gmedia_url . '/assets/mousetrap/mousetrap.min.js', array(), '1.5.2', true);
 
+            $this->load_scripts();
         }
 
         function load_scripts() {
@@ -457,6 +486,9 @@ if(!class_exists('Gmedia')) {
 
             require_once(dirname(__FILE__) . '/inc/permalinks.php');
             flush_rewrite_rules(false);
+
+            $this->gmedia_app_cronjob();
+            wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
         }
 
         /**
@@ -465,6 +497,15 @@ if(!class_exists('Gmedia')) {
         function deactivate($networkwide) {
             $this->network_propagate('gmedia_deactivate', $networkwide);
             flush_rewrite_rules(false);
+
+            wp_clear_scheduled_hook('gmedia_app_cronjob');
+            global $gmCore;
+            $gmCore->app_service('app_deactivateplugin');
+        }
+
+        function gmedia_app_cronjob() {
+            global $gmCore;
+            $gmCore->app_service('app_updatecron');
         }
 
         /*
@@ -498,6 +539,101 @@ if(!class_exists('Gmedia')) {
         function reassign_media($user_id, $reassign) {
             global $gmDB;
             $gmDB->reassign_media($user_id, $reassign);
+        }
+
+        /**
+         * Register Gmedia Post Types
+         */
+        function gmedia_post_type() {
+            $args = array(
+                'label'               => __('Gmedia Posts', 'grand-media'),
+                'supports'            => array('comments'),
+                'hierarchical'        => false,
+                'public'              => true,
+                'show_ui'             => false,
+                'show_in_menu'        => false,
+                'show_in_admin_bar'   => true,
+                'show_in_nav_menus'   => false,
+                'can_export'          => false,
+                'has_archive'         => true, //'gmedia-library',
+                'publicly_queryable'  => true,
+                'exclude_from_search' => (bool)$this->options['gmedia_exclude_from_search'],
+                'rewrite'             => array('slug' => $this->options['gmedia_post_slug'])
+            );
+            register_post_type('gmedia', $args);
+
+            $args['label']               = __('Gmedia Custom Filters', 'grand-media');
+            $args['exclude_from_search'] = (bool)$this->options['gmedia_filter_exclude_from_search'];
+            $args['rewrite']             = array('slug' => $this->options['gmedia_filter_post_slug']);
+            register_post_type('gmedia_filter', $args);
+
+            $args['label']               = __('Gmedia Albums', 'grand-media');
+            $args['hierarchical']        = true;
+            $args['exclude_from_search'] = (bool)$this->options['gmedia_album_exclude_from_search'];
+            $args['rewrite']             = array('slug' => $this->options['gmedia_album_post_slug']);
+            register_post_type('gmedia_album', $args);
+
+            $args['label']               = __('Gmedia Galleries', 'grand-media');
+            $args['show_in_nav_menus']   = true;
+            $args['exclude_from_search'] = (bool)$this->options['gmedia_gallery_exclude_from_search'];
+            $args['rewrite']             = array('slug' => $this->options['gmedia_gallery_post_slug']);
+            register_post_type('gmedia_gallery', $args);
+
+            add_filter('get_edit_post_link', array($this, 'gmedia_post_type_edit_link'), 10, 3);
+
+        }
+
+        /**
+         * Edit link for gmedia
+         *
+         * @param $link
+         * @param $post_ID
+         * @param $context
+         *
+         * @return string|void
+         */
+        function gmedia_post_type_edit_link($link, $post_ID, $context) {
+            $post = get_post($post_ID);
+            if(isset($post->ID) && 'gmedia' == substr($post->post_type, 0, 6)) {
+                global $gmDB;
+                if($post->post_type == 'gmedia') {
+                    $gmedia_id = get_post_meta($post->ID, '_gmedia_ID', true);
+                    $gmedia    = $gmDB->get_gmedia($gmedia_id);
+                    if($gmedia) {
+                        $link = admin_url("admin.php?page=GrandMedia&edit_mode=1&gmedia__in={$gmedia->ID}");
+                    } else {
+                        wp_delete_post($post->ID, true);
+                        $link = '#';
+                    }
+                } else {
+                    $term_id     = get_post_meta($post->ID, '_gmedia_term_ID', true);
+                    $gmedia_term = $gmDB->get_term($term_id, $post->post_type);
+                    if($gmedia_term) {
+                        if($post->post_type == 'gmedia_album') {
+                            $link = admin_url("admin.php?page=GrandMedia_Terms&taxonomy={$post->post_type}&edit_item={$gmedia_term->term_id}");
+                        } elseif($post->post_type == 'gmedia_filter') {
+                            $link = admin_url("admin.php?page=GrandMedia_Terms&taxonomy={$post->post_type}&edit_item={$gmedia_term->term_id}");
+                        } elseif($post->post_type == 'gmedia_gallery') {
+                            $link = admin_url("admin.php?page=GrandMedia_Galleries&edit_item={$gmedia_term->term_id}");
+                        }
+                    } else {
+                        wp_delete_post($post->ID, true);
+                        $link = '#';
+                    }
+                }
+            }
+
+            return $link;
+        }
+
+
+        function gmedia_cron_schedules( $shedules ) {
+            $gmedia_shedules = array(
+                'gmedia_app' => array( 'interval' => 5 * DAY_IN_SECONDS, 'display' => __( 'Gmedia App Defined' ) )
+            );
+            $shedules = array_merge($shedules, $gmedia_shedules);
+
+            return $shedules;
         }
 
         /*

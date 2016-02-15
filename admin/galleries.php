@@ -49,7 +49,26 @@ function gmediaGalleries()
         $gmediaTerms = array();
     }
 
-    $modules = array();
+    $modules = array(
+            'phantom' => ''
+            , 'phototravlr' => ''
+            , 'realslider' => ''
+            , 'mosaic' => ''
+            , 'photobox' => ''
+            , 'photomania' => ''
+            , 'jq-mplayer' => ''
+            , 'wp-videoplayer' => ''
+            , 'photo-pro' => ''
+            , 'optima' => ''
+            , 'afflux' => ''
+            , 'slider' => ''
+            , 'green-style' => ''
+            , 'photo-blog' => ''
+            , 'minima' => ''
+            , 'sphere' => ''
+            , 'cube' => ''
+            , 'flatwall' => ''
+    );
     if (($plugin_modules = glob(GMEDIA_ABSPATH . 'module/*', GLOB_ONLYDIR | GLOB_NOSORT))) {
         foreach ($plugin_modules as $path) {
             $mfold           = basename($path);
@@ -70,25 +89,19 @@ function gmediaGalleries()
             );
         }
     }
+    $modules = array_filter($modules);
     ?>
 
     <div class="panel panel-default  panel-fixed-header">
         <div class="panel-heading-fake"></div>
         <div class="panel-heading clearfix">
-            <form class="form-inline gmedia-search-form" role="search" method="get">
-                <div class="form-group">
-                    <?php foreach ($_GET as $key => $value) {
-                        if (in_array($key, array('orderby', 'order', 'number', 'global'))) {
-                            ?>
-                            <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
-                            <?php
-                        }
-                    } ?>
-                    <input id="gmedia-search" class="form-control input-sm" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php echo $gmCore->_get('s', ''); ?>"/>
-                </div>
-                <button type="submit" class="btn btn-default input-sm"><span class="glyphicon glyphicon-search"></span></button>
-            </form>
-            <?php echo $gmDB->query_pager(); ?>
+
+            <?php
+
+            include(dirname(__FILE__) . '/tpl/search-form.php');
+
+            echo $gmDB->query_pager();
+            ?>
 
             <div class="btn-toolbar pull-left">
                 <div class="btn-group gm-checkgroup" id="cb_global-btn">
@@ -172,7 +185,7 @@ function gmediaGalleries()
                     $is_selected = in_array($term->term_id, $gmProcessor->selected_items) ? true : false;
 
                     $list_row_class = '';
-                    if ('public' != $term->status) {
+                    if ('publish' != $term->status) {
                         if ('private' == $term->status) {
                             $list_row_class = ' list-group-item-info';
                         } elseif ('draft' == $term->status) {
@@ -215,17 +228,17 @@ function gmediaGalleries()
                                 echo '<a title="' . __('Filter in Gmedia Library', 'grand-media') . '" href="#">'.$filter_icon.'</a>';
                                 */
 
-                                $gmedia_hashid = gmedia_hash_id_encode($term->term_id, 'gallery');
-                                if (get_option('permalink_structure')) {
-                                    $cloud_link = home_url(urlencode($endpoint) . '/g/' . $gmedia_hashid);
+                                $cloud_link = $gmCore->gmcloudlink($term->term_id, 'gallery');
+                                if(!empty($term_meta['_post_ID'])){
+                                    $post_link = get_permalink($term_meta['_post_ID']);
                                 } else {
-                                    $cloud_link = add_query_arg(array("$endpoint" => $gmedia_hashid, 't' => 'g'), home_url('index.php'));
+                                    $post_link = '';
                                 }
                                 $share_icon      = '<span class="glyphicon glyphicon-share"></span>';
                                 $new_window_icon = '<span class="glyphicon glyphicon-new-window"></span>';
                                 if ('draft' !== $term->status) {
-                                    echo '<a target="_blank" data-target="#shareModal" data-share="' . $term->term_id . '" class="share-modal" title="' . __('Share', 'grand-media') . '" href="' . $cloud_link . '">' . $share_icon . '</a>';
-                                    echo '<a target="_blank" title="' . __('GmediaCloud Page', 'grand-media') . '" href="' . $cloud_link . '">' . $new_window_icon . '</a>';
+                                    echo '<a target="_blank" data-target="#shareModal" data-share="' . $term->term_id . '" class="share-modal" title="' . __('Share', 'grand-media') . '" data-gmediacloud="' . $cloud_link . '" href="' . $post_link . '">' . $share_icon . '</a>';
+                                    //echo '<a target="_blank" title="' . __('GmediaCloud Page', 'grand-media') . '" href="' . $cloud_link . '">' . $new_window_icon . '</a>';
                                 } else {
                                     echo "<span class='action-inactive'>$share_icon</span>";
                                     echo "<span class='action-inactive'>$new_window_icon</span>";
@@ -371,34 +384,10 @@ function gmediaGalleries()
         </div>
     </div>
 
-    <div class="modal fade gmedia-modal" id="shareModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title"><?php _e('GmediaCloud Page'); ?></h4>
-                </div>
-                <form class="modal-body" method="post" id="shareForm">
-                    <div class="form-group">
-                        <label><?php _e('Link to page', 'grand-media'); ?></label>
-                        <input name="sharelink" type="text" class="form-control sharelink" readonly="readonly" value=""/>
-                    </div>
-                    <div class="form-group">
-                        <label><?php _e('Send this link to', 'grand-media'); ?></label>
-                        <input name="email" type="email" class="form-control sharetoemail" value="" placeholder="<?php _e('Email', 'grand-media'); ?>"/>
-                        <textarea name="message" cols="20" rows="3" class="form-control" placeholder="<?php _e('Message (optional)', 'grand-media'); ?>"></textarea>
-                    </div>
-                    <input type="hidden" name="action" value="gmedia_share_page"/>
-                    <?php wp_nonce_field('share_modal', '_sharenonce'); ?>
-                </form>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary sharebutton" disabled="disabled"><?php _e('Send', 'grand-media'); ?></button>
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
-                </div>
-            </div>
-        </div>
-    </div>
     <?php
+
+    include(GMEDIA_ABSPATH. 'admin/tpl/modal-share.php');
+
 }
 
 /**
@@ -427,7 +416,7 @@ function gmediaGalleryEdit()
         'name'        => '',
         'description' => '',
         'global'      => $author,
-        'status'      => 'public',
+        'status'      => 'publish',
         '_edited'     => '&#8212;',
         '_module'     => '',
         '_query'      => array(),
@@ -476,7 +465,26 @@ function gmediaGalleryEdit()
         return;
     }
 
-    $modules = array();
+    $modules = array(
+        'phantom' => ''
+        , 'phototravlr' => ''
+        , 'realslider' => ''
+        , 'mosaic' => ''
+        , 'photobox' => ''
+        , 'photomania' => ''
+        , 'jq-mplayer' => ''
+        , 'wp-videoplayer' => ''
+        , 'photo-pro' => ''
+        , 'optima' => ''
+        , 'afflux' => ''
+        , 'slider' => ''
+        , 'green-style' => ''
+        , 'photo-blog' => ''
+        , 'minima' => ''
+        , 'sphere' => ''
+        , 'cube' => ''
+        , 'flatwall' => ''
+    );
     if (($plugin_modules = glob(GMEDIA_ABSPATH . 'module/*', GLOB_ONLYDIR | GLOB_NOSORT))) {
         foreach ($plugin_modules as $path) {
             $mfold           = basename($path);
@@ -499,6 +507,8 @@ function gmediaGalleryEdit()
             );
         }
     }
+
+    $modules = array_filter($modules);
 
     $default_options = array();
     $presets         = false;
@@ -689,7 +699,7 @@ function gmediaGalleryEdit()
                             <div class="form-group">
                                 <label><?php _e('Status', 'grand-media'); ?></label>
                                 <select name="gallery[status]" class="form-control input-sm">
-                                    <option value="public"<?php selected($gallery['status'], 'public'); ?>><?php _e('Public', 'grand-media'); ?></option>
+                                    <option value="publish"<?php selected($gallery['status'], 'publish'); ?>><?php _e('Public', 'grand-media'); ?></option>
                                     <option value="private"<?php selected($gallery['status'], 'private'); ?>><?php _e('Private', 'grand-media'); ?></option>
                                     <option value="draft"<?php selected($gallery['status'], 'draft'); ?>><?php _e('Draft', 'grand-media'); ?></option>
                                 </select>
@@ -777,7 +787,7 @@ function gmediaGalleryEdit()
                                     if (count($gm_terms)) {
                                         foreach ($gm_terms as $term) {
                                             $selected = (isset($gallery['_query'][$term_type]) && in_array($term->term_id, $gallery['_query'][$term_type])) ? ' selected="selected"' : '';
-                                            $terms_items .= '<option value="' . $term->term_id . '"' . $selected . '>' . esc_html($term->name) . ('public' == $term->status ? '' : " [{$term->status}]") . ' &nbsp; (' . $term->count . ')</option>' . "\n";
+                                            $terms_items .= '<option value="' . $term->term_id . '"' . $selected . '>' . esc_html($term->name) . ('publish' == $term->status ? '' : " [{$term->status}]") . ' &nbsp; (' . $term->count . ')</option>' . "\n";
                                         }
                                     }
                                     $setvalue = isset($gallery['_query'][$term_type]) ? 'data-setvalue="' . implode(',', $gallery['_query'][$term_type]) . '"' : '';
@@ -817,9 +827,7 @@ function gmediaGalleryEdit()
                                     </select>
 
                                     <p class="help-block"><?php _e('Filter - is custom query with multiple parameters.', 'grand-media'); ?>
-                                        <a target="_blank" href="<?php echo add_query_arg(array('page'        => 'GrandMedia_Terms',
-                                                                                                'edit_filter' => '0'
-                                        ), admin_url('admin.php')); ?>"><?php _e('Create Filter', 'grand-media'); ?></a></p>
+                                        <a target="_blank" href="<?php echo add_query_arg(array('page' => 'GrandMedia_Terms', 'taxonomy' => 'gmedia_filter', 'edit_item' => '0'), admin_url('admin.php')); ?>"><?php _e('Create Filter', 'grand-media'); ?></a></p>
                                 </div>
                             <?php } ?>
 
@@ -863,6 +871,12 @@ function gmediaGalleryEdit()
                             } ?>
                             <br/><a target="_blank" href="<?php echo $gallery_link; ?>"><?php echo $gallery_link; ?></a>
                         </p>
+                        <?php if(isset($gallery['_post_ID'])){ ?>
+                        <p><b><?php _e('Gmedia Post URL for current gallery:'); ?></b>
+                            <?php $post_link = get_permalink($gallery['_post_ID']); ?>
+                            <br/><a target="_blank" href="<?php echo $post_link; ?>"><?php echo $post_link; ?></a>
+                        </p>
+                        <?php } ?>
                         <div class="help-block">
                             <?php _e('update <a href="options-permalink.php">Permalink Settings</a> if above link not working', 'grand-media'); ?>
                             <?php if (current_user_can('manage_options')) {

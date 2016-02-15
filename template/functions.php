@@ -69,19 +69,19 @@ function gmedia_head()
     global $gmedia_id, $gmedia_type, $gmedia_shortcode_content;
 
     do_action('wp_enqueue_scripts');
+    add_filter('show_admin_bar', '__return_false');
     if ($gmCore->_get('iframe')) {
         wp_deregister_script('swfaddress');
-        add_filter('show_admin_bar', '__return_false');
     }
     $wp_styles->queue  = array();
     $wp_scripts->queue = array();
 
-    if (is_admin_bar_showing()) {
+    /*if (is_admin_bar_showing()) {
         add_action('gmedia_head', 'wp_admin_bar_header', 0);
         add_action('gmedia_head', '_admin_bar_bump_cb', 0);
         add_action('gmedia_head', '_wp_admin_bar_init');
         add_action('gmedia_footer', 'wp_admin_bar_render', 1000);
-    }
+    }*/
 
     $gmedia_shortcode_content = get_the_gmedia_content($gmedia_id, $gmedia_type);
 
@@ -348,7 +348,7 @@ function gmedia_default_template_styles()
         .gmedia-header-description { position:absolute; top:100%; left:0; right:0; font-size:13px; overflow:visible; background-color:#0f0f0f; padding:10px 30px; border-bottom:1px solid #444444; }
         .gmedia-header-description { display:none; }
         .gmedia-header-description-button { position:absolute; top:5px; right:15px; width:18px; height:20px; background-image:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yOTMuNzUxLDQ1NS44NjhjLTIwLjE4MSwyMC4xNzktNTMuMTY1LDE5LjkxMy03My42NzMtMC41OTVsMCwwYy0yMC41MDgtMjAuNTA4LTIwLjc3My01My40OTMtMC41OTQtNzMuNjcyICBsMTg5Ljk5OS0xOTBjMjAuMTc4LTIwLjE3OCw1My4xNjQtMTkuOTEzLDczLjY3MiwwLjU5NWwwLDBjMjAuNTA4LDIwLjUwOSwyMC43NzIsNTMuNDkyLDAuNTk1LDczLjY3MUwyOTMuNzUxLDQ1NS44Njh6Ii8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjIwLjI0OSw0NTUuODY4YzIwLjE4LDIwLjE3OSw1My4xNjQsMTkuOTEzLDczLjY3Mi0wLjU5NWwwLDBjMjAuNTA5LTIwLjUwOCwyMC43NzQtNTMuNDkzLDAuNTk2LTczLjY3MiAgbC0xOTAtMTkwYy0yMC4xNzgtMjAuMTc4LTUzLjE2NC0xOS45MTMtNzMuNjcxLDAuNTk1bDAsMGMtMjAuNTA4LDIwLjUwOS0yMC43NzIsNTMuNDkyLTAuNTk1LDczLjY3MUwyMjAuMjQ5LDQ1NS44Njh6Ii8+DQo8L3N2Zz4=); background-size:contain; cursor:pointer; }
-        .gmedia-menu { float:right; margin:0; padding:0; }
+        .gmedia-menu { float:right; margin:0 30px 0 0; padding:0; }
         .gmedia-menu .gmedia-menu-items { margin-right:30px; float:right; margin-top:2px; }
         .gmedia-menu .gmedia-menu-items a,
         .gmedia-menu .gmedia-menu-items a:visited { display:inline-block; color:#ffffff; background:#444444; border:none; padding:2px 7px; min-width:2.1em; opacity:0.9; box-shadow:0 2px 0 0 rgba(0, 0, 0, 0.2); outline:none; text-align:center; box-sizing:border-box; text-decoration:none; }

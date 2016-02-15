@@ -227,7 +227,7 @@ function gmedit_save() {
             }
             // Thumbnail
             if('web_thumb' == $applyto) {
-                $size_ratio = $size[0]/$size[1];
+                $size_ratio         = $size[0] / $size[1];
                 $thumbimg['resize'] = (((1 >= $size_ratio) && ($thumbimg['width'] > $size[0])) || ((1 <= $size_ratio) && ($thumbimg['height'] > $size[1])))? false : true;
                 if($thumbimg['resize']) {
                     $editor = wp_get_image_editor($editfile);
@@ -237,8 +237,8 @@ function gmedit_save() {
                     }
 
                     $editor->set_quality($thumbimg['quality']);
-                    $ed_size = $editor->get_size();
-                    $ed_ratio = $ed_size['width']/$ed_size['height'];
+                    $ed_size  = $editor->get_size();
+                    $ed_ratio = $ed_size['width'] / $ed_size['height'];
                     if(1 > $ed_ratio) {
                         $resized = $editor->resize($thumbimg['width'], 0, $thumbimg['crop']);
                     } else {
@@ -366,7 +366,7 @@ function gmedit_restore() {
                 }
             }
 
-            $size_ratio = $size[0]/$size[1];
+            $size_ratio = $size[0] / $size[1];
 
             $angle      = 0;
             $image_meta = @$gmCore->wp_read_image_metadata($fileinfo['filepath_original']);
@@ -376,17 +376,17 @@ function gmedit_restore() {
                         $angle = 180;
                     break;
                     case 6:
-                        $angle = -90;
-                        $size_ratio = $size[1]/$size[0];
+                        $angle      = 270;
+                        $size_ratio = $size[1] / $size[0];
                     break;
                     case 8:
-                        $angle = 90;
-                        $size_ratio = $size[1]/$size[0];
+                        $angle      = 90;
+                        $size_ratio = $size[1] / $size[0];
                     break;
                 }
             }
 
-            $webimg['resize'] = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
+            $webimg['resize']   = (($webimg['width'] < $size[0]) || ($webimg['height'] < $size[1]))? true : false;
             $thumbimg['resize'] = (((1 >= $size_ratio) && ($thumbimg['width'] > $size[0])) || ((1 <= $size_ratio) && ($thumbimg['height'] > $size[1])))? false : true;
 
             if($webimg['resize'] || $thumbimg['resize'] || $angle) {
@@ -428,8 +428,8 @@ function gmedit_restore() {
                 // Thumbnail
                 $editor->set_quality($thumbimg['quality']);
                 if($thumbimg['resize']) {
-                    $ed_size = $editor->get_size();
-                    $ed_ratio = $ed_size['width']/$ed_size['height'];
+                    $ed_size  = $editor->get_size();
+                    $ed_ratio = $ed_size['width'] / $ed_size['height'];
                     if(1 > $ed_ratio) {
                         $resized = $editor->resize($thumbimg['width'], 0, $thumbimg['crop']);
                     } else {
@@ -654,21 +654,22 @@ function gmedia_get_modal() {
             break;
             case 'exclude_categories':
             case 'filter_categories':
-            $gm_terms = $gmDB->get_terms('gmedia_category');
-            ?>
-                <div class="checkbox"><label><input type="checkbox" name="cat[]" value="0"> <?php _e('Uncategorized', 'grand-media'); ?></label></div>
-                <?php if(count($gm_terms)) {
-            foreach($gm_terms as $term) {
-            if($term->count) {
+                $gm_terms = $gmDB->get_terms('gmedia_category');
                 ?>
-                <div class="checkbox">
-                    <label><input type="checkbox" name="cat[]" value="<?php echo $term->term_id; ?>"> <?php echo esc_html($term->name); ?></label>
-                    <span class="badge pull-right"><?php echo $term->count; ?></span>
-                </div>
-            <?php
-            }
-            }
-            }
+                    <div class="checkbox"><label><input type="checkbox" name="cat[]" value="0"> <?php _e('Uncategorized', 'grand-media'); ?></label></div>
+                    <?php
+                    if(count($gm_terms)) {
+                        foreach($gm_terms as $term) {
+                            if($term->count) {
+                                ?>
+                                <div class="checkbox">
+                                    <label><input type="checkbox" name="cat[]" value="<?php echo $term->term_id; ?>"> <?php echo esc_html($term->name); ?></label>
+                                    <span class="badge pull-right"><?php echo $term->count; ?></span>
+                                </div>
+                            <?php
+                            }
+                        }
+                    }
             break;
             case 'assign_category':
             $term_type = 'gmedia_category';
@@ -705,7 +706,7 @@ function gmedia_get_modal() {
                 } else {
                     $author_name .= '(' . __('shared', 'grand-media') . ')';
                 }
-                if('public' != $term->status) {
+                if('publish' != $term->status) {
                     $author_name .= ' [' . $term->status . ']';
                 }
                 if($author_name) {
@@ -744,7 +745,7 @@ function gmedia_get_modal() {
                     } else {
                         $author_name .= ' &nbsp; (' . __('shared', 'grand-media') . ')';
                     }
-                    if('public' != $term->status) {
+                    if('publish' != $term->status) {
                         $author_name .= ' [' . $term->status . ']';
                     }
                     $terms_album .= '<option value="' . $term->term_id . '" data-count="' . $term->count . '" data-name="' . esc_html($term->name) . '" data-meta="' . $author_name . '">' . esc_html($term->name) . $author_name . '</option>' . "\n";
@@ -855,7 +856,6 @@ function gmedia_get_modal() {
             case 'add_tags':
             $gm_terms = $gmDB->get_terms('gmedia_tag', array('fields' => 'names_count'));
             $gm_terms = array_values($gm_terms);
-            if(count($gm_terms)){
             ?>
                 <div class="form-group">
                     <input id="combobox_gmedia_tag" name="tag_names" class="form-control input-sm" value="" placeholder="<?php _e('Add Tags...', 'grand-media'); ?>"/>
@@ -904,11 +904,6 @@ function gmedia_get_modal() {
                     });
                 </script>
             <?php
-            } else {
-            $modal_button = false; ?>
-                <p class="notags"><?php _e('No tags', 'grand-media'); ?></p>
-            <?php
-            }
             break;
             case 'delete_tags':
             // get selected items in Gmedia Library
@@ -997,7 +992,7 @@ function gmedia_get_modal() {
                     _e('There is no Filters created yet.');
                     if($gmCore->caps['gmedia_filter_manage']) {
                         ?>
-                        <a href="<?php echo add_query_arg(array('page' => 'GrandMedia_Terms', 'edit_filter' => '0'), admin_url('admin.php')); ?>"><?php _e('Create Filter', 'grand-media'); ?></a>
+                        <a href="<?php echo add_query_arg(array('page' => 'GrandMedia_Terms', 'taxonomy' => 'gmedia_filter', 'edit_item' => '0'), admin_url('admin.php')); ?>"><?php _e('Create Filter', 'grand-media'); ?></a>
                     <?php } ?>
                 </p>
             <?php }
@@ -1091,7 +1086,7 @@ function gmedia_get_modal() {
                     <label><?php _e('Status', 'grand-media'); ?></label>
                     <select class="form-control input-sm batch_set" name="batch_status">
                         <option value=""><?php _e('Skip. Do not change', 'grand-media'); ?></option>
-                        <option value="public"><?php _e('Public', 'grand-media'); ?></option>
+                        <option value="publish"><?php _e('Public', 'grand-media'); ?></option>
                         <option value="private"><?php _e('Private', 'grand-media'); ?></option>
                         <option value="draft"><?php _e('Draft', 'grand-media'); ?></option>
                     </select>
@@ -1333,7 +1328,7 @@ function gmedia_import_wpmedia_modal() {
                         $terms_album = '';
                         if(count($gm_terms)) {
                             foreach($gm_terms as $term) {
-                                $terms_album .= '<option value="' . esc_attr($term->term_id) . '">' . esc_html($term->name) . ($term->global? '' : __(' (shared)', 'grand-media')) . ('public' == $term->status? '' : " [{$term->status}]") . '</option>' . "\n";
+                                $terms_album .= '<option value="' . esc_attr($term->term_id) . '">' . esc_html($term->name) . ($term->global? '' : __(' (shared)', 'grand-media')) . ('publish' == $term->status? '' : " [{$term->status}]") . '</option>' . "\n";
                             }
                         }
                         ?>
@@ -1926,7 +1921,7 @@ function gmedia_import_handler() {
 
 add_action('wp_ajax_gmedia_application', 'gmedia_application');
 function gmedia_application() {
-    global $gmCore;
+    global $gmCore, $gmGallery;
 
     // if nonce is not correct it returns -1
     check_ajax_referer('GmediaService');
@@ -1941,7 +1936,16 @@ function gmedia_application() {
     $_data = $gmCore->_post('data');
     wp_parse_str($_data, $data);
 
-    $result = $gmCore->app_service($service, $data);
+    $options                     = $gmGallery->options;
+    $options['site_email']       = $data['site_email'];
+    $options['site_title']       = $data['site_title'];
+    $options['site_description'] = $data['site_description'];
+    if($options != $gmGallery->options) {
+        $gmGallery->options = $options;
+        update_option('gmediaOptions', $options);
+    }
+
+    $result = $gmCore->app_service($service);
 
     header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
     echo json_encode($result);
@@ -2198,6 +2202,25 @@ function gmedia_term_delete_custom_field() {
 
 }
 
+add_action('wp_ajax_gmedia_upgrade_process', 'gmedia_upgrade_process');
+function gmedia_upgrade_process() {
+
+    $db_version = get_option('gmediaDbVersion');
+    $info = get_transient('gmediaHeavyJob');
+    $result = array( 'content' => '' );
+
+    if(!empty($info)) {
+        $result['content'] = '<div>' . implode("</div>\n<div>", $info) . '</div>';
+    } elseif($db_version == GMEDIA_DBVERSION) {
+        $result['status'] = 'done';
+    }
+
+    header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+    echo json_encode($result);
+    die();
+
+}
+
 add_action('wp_ajax_gmedia_module_interaction', 'gmedia_module_interaction');
 add_action('wp_ajax_nopriv_gmedia_module_interaction', 'gmedia_module_interaction');
 function gmedia_module_interaction() {
@@ -2270,6 +2293,51 @@ function gmedia_module_interaction() {
         echo json_encode(array($rating));
         die();
     }
+
+    die();
+}
+
+add_action('wp_ajax_load_comments', 'gmedia_module_load_comments');
+add_action('wp_ajax_nopriv_load_comments', 'gmedia_module_load_comments');
+function gmedia_module_load_comments() {
+    global $gmCore;
+
+    /*    if(empty($_SERVER['HTTP_REFERER'])) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
+            die();
+        }
+
+        $ref = $_SERVER['HTTP_REFERER'];
+        //$uip = str_replace('.', '', $_SERVER['REMOTE_ADDR'])
+        if((false === strpos($ref, get_home_url())) && (false === strpos($ref, get_site_url()))) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
+            die();
+        }
+        if(('POST' !== $_SERVER['REQUEST_METHOD']) || !isset($_SERVER['HTTP_HOST']) || !strpos(get_home_url(), $_SERVER['HTTP_HOST'])) {
+            header($_SERVER['SERVER_PROTOCOL'] . ' 400 Bad Request');
+            die();
+        }*/
+
+    check_ajax_referer('GmediaGallery');
+
+    $data = $gmCore->_post('data', false);
+
+    $post_id = (int)$data['post_id'];
+    if($post_id) {
+        $comments_link  = apply_filters('get_comments_link', add_query_arg('comments', 'show', get_permalink($post_id), $post_id));
+        $comments_count = wp_count_comments($post_id);
+        $comments_count = $comments_count->approved;
+    } else {
+        $comments_link  = '//about:blank';
+        $comments_count = 0;
+    }
+
+    $result                   = array();
+    $result['comments_count'] = $comments_count;
+    $result['content']        = "<iframe class='gmedia-comments' src='{$comments_link}' frameborder='0' allowtransparency='true'>";
+
+    header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+    echo json_encode($result);
 
     die();
 }

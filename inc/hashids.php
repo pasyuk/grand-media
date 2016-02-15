@@ -356,7 +356,11 @@ function gmedia_hash_id_decode($id, $_salt = '', $min_hash_length = 5, $alphabet
     if ($return_int) {
         $id_arr = $hashid->decode($id);
 
-        return $id_arr[0];
+        if(is_array($id_arr) && isset($id_arr[0])) {
+            return $id_arr[0];
+        } else {
+            return 0;
+        }
     } else {
         return $hashid->decode($id);
     }

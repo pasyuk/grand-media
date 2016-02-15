@@ -8,25 +8,43 @@ $default_options = array(
     'bgAlpha'                 => '0',
     'thumbWidth'              => '160',
     'thumbHeight'             => '120',
+    'thumbWidthMobile'        => '96',
+    'thumbHeightMobile'       => '72',
     'thumbsSpacing'           => '10',
     'thumbsVerticalPadding'   => '5',
     'thumbsHorizontalPadding' => '3',
     'thumbsAlign'             => 'left',
+    'thumbScale'              => '1',
+    'thumbBG'                 => 'ffffff',
     'thumbAlpha'              => '85',
     'thumbAlphaHover'         => '100',
     'thumbBorderSize'         => '1',
     'thumbBorderColor'        => 'cccccc',
     'thumbPadding'            => '5',
     'thumbsInfo'              => 'label',
+    'labelOnHover'            => '1',
+    'labelTextColor'          => 'e7e7e7',
+    'labelLinkColor'          => 'e7e179',
+    'label8TextColor'         => '0b0b0b',
+    'label8LinkColor'         => '3695E7',
+    'tooltipTextColor'        => '0b0b0b',
     'tooltipBgColor'          => 'ffffff',
     'tooltipStrokeColor'      => '000000',
-    'tooltipTextColor'        => '000000',
-    'captionTitleColor'       => 'ffffff',
-    'captionTextColor'        => 'ffffff',
-    'lightboxPosition'        => 'document',
-    'lightboxWindowColor'     => '000000',
-    'lightboxWindowAlpha'     => '80',
+    'lightboxControlsColor'   => 'ffffff',
+    'lightboxTitleColor'      => 'f3f3f3',
+    'lightboxTextColor'       => 'f3f3f3',
+    'lightboxBGColor'         => '0b0b0b',
+    'lightboxBGAlpha'         => '80',
+    'commentsBGColor'         => 'ffffff',
+    'commentsBGAlpha'         => '80',
     'socialShareEnabled'      => '1',
+    'share_post_link'         => '0',
+    'deepLinks'               => '1',
+    'lightbox800HideArrows'   => '0',
+    'viewsEnabled'            => '1',
+    'likesEnabled'            => '1',
+    'commentsEnabled'         => '1',
+    'thumb2link'              => '1',
     'initRPdelay'             => '100',
     'customCSS'               => ''
 );
@@ -80,6 +98,18 @@ $options_tree    = array(
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" max="100" step="5"',
                 'text'  => 'Set gallery background alpha opacity'
+            ),
+            'thumb2link'       => array(
+                'label' => 'Thumbnail to Link',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'If item have Link, then open Link instead of lightbox. Note: Link also will be available via item Title on the thumbnail\'s label and in the lightbox'
+            ),
+            'deepLinks'       => array(
+                'label' => 'Deep Links',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'Change URL hash in the address bar for each big image'
             )
         )
     ),
@@ -97,6 +127,18 @@ $options_tree    = array(
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="10" max="400"',
                 'text'  => ''
+            ),
+            'thumbWidthMobile'        => array(
+                'label' => 'Thumbnail Width Mobile',
+                'tag'   => 'input',
+                'attr'  => 'type="number" min="10" max="400"',
+                'text'  => 'Set width for thumbnail if window width is less than 640px'
+            ),
+            'thumbHeightMobile'       => array(
+                'label' => 'Thumbnail Height Mobile',
+                'tag'   => 'input',
+                'attr'  => 'type="number" min="10" max="400"',
+                'text'  => 'Set height for thumbnail if window width is less than 640px'
             ),
             'thumbsSpacing'           => array(
                 'label' => 'Thumbnails Spacing',
@@ -135,13 +177,42 @@ $options_tree    = array(
                         'value' => 'right'
                     )
                 )
-
+            ),
+            'viewsEnabled'            => array(
+                'label' => 'Views Counter',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'Show Views counter?'
+            ),
+            'likesEnabled'            => array(
+                'label' => 'Like Button',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'Enable Like Button?'
+            ),
+            'commentsEnabled'         => array(
+                'label' => 'Comments',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'Enable Comments?'
             )
         )
     ),
     array(
         'label'  => 'Thumbnail Style',
         'fields' => array(
+            'thumbScale'       => array(
+                'label' => 'Thumbnail Scale on mouseover',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => ''
+            ),
+            'thumbBG'          => array(
+                'label' => 'Thumbnail Container Background',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color"',
+                'text'  => 'Set empty for transparent background'
+            ),
             'thumbAlpha'       => array(
                 'label' => 'Thumbnail Alpha',
                 'tag'   => 'input',
@@ -180,12 +251,16 @@ $options_tree    = array(
             'thumbsInfo'         => array(
                 'label'   => 'Display Thumbnails Title',
                 'tag'     => 'select',
-                'attr'    => ' data-watch="change"',
+                'attr'    => 'data-watch="change"',
                 'text'    => 'Default value: Label. Display a small info text on the thumbnails, a tooltip or a label.',
                 'choices' => array(
                     array(
-                        'label' => 'Label',
+                        'label' => 'Label Over Image',
                         'value' => 'label'
+                    ),
+                    array(
+                        'label' => 'Label Under Image',
+                        'value' => 'label_bottom'
                     ),
                     array(
                         'label' => 'Tooltip',
@@ -198,6 +273,42 @@ $options_tree    = array(
                 )
 
             ),
+            'labelOnHover'       => array(
+                'label' => 'Show Label on Mouseover',
+                'tag'   => 'checkbox',
+                'attr'  => 'data-thumbsinfo="is:label:0"',
+                'text'  => 'Uncheck to show thumbnail\'s label all time'
+            ),
+            'labelTextColor'     => array(
+                'label' => 'Label-Over Text Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:label"',
+                'text'  => 'Set Label-Over text color'
+            ),
+            'labelLinkColor'     => array(
+                'label' => 'Label-Over Link Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:label"',
+                'text'  => 'Set Label-Over link color'
+            ),
+            'label8TextColor'    => array(
+                'label' => 'Label Text Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:label_bottom"',
+                'text'  => 'Set Label text color'
+            ),
+            'label8LinkColor'    => array(
+                'label' => 'Label Link Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:label_bottom"',
+                'text'  => 'Set Label-Bottom link color'
+            ),
+            'tooltipTextColor'   => array(
+                'label' => 'Tooltip Text Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:tooltip"',
+                'text'  => 'Set Tooltip text color'
+            ),
             'tooltipBgColor'     => array(
                 'label' => 'Tooltip Background Color',
                 'tag'   => 'input',
@@ -209,63 +320,71 @@ $options_tree    = array(
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:tooltip"',
                 'text'  => 'Set tooltip stroke color. Ignore this if Display Thumbnails Title value is not Tooltip'
-            ),
-            'tooltipTextColor'   => array(
-                'label' => 'Tooltip Text Color',
-                'tag'   => 'input',
-                'attr'  => 'type="text" data-type="color" data-thumbsinfo="is:tooltip"',
-                'text'  => 'Set tooltip text color. Ignore this if Display Thumbnails Title value is not Tooltip'
             )
         )
     ),
     array(
         'label'  => 'Lightbox Settings',
         'fields' => array(
-            'lightboxPosition'    => array(
-                'label'   => 'Lightbox Position',
-                'tag'     => 'select',
-                'attr'    => '',
-                'text'    => 'If the value is Document the lightbox is displayed over the web page fitting in the browser\'s window, else the lightbox is displayed in the gallery\'s container',
-                'choices' => array(
-                    array(
-                        'label' => 'Document',
-                        'value' => 'document'
-                    ),
-                    array(
-                        'label' => 'Gallery',
-                        'value' => 'gallery'
-                    )
-                )
+            'lightboxControlsColor' => array(
+                'label' => 'Lightbox Controls / Buttons Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color"',
+                'text'  => 'Set the color for lightbox control buttons'
             ),
-            'captionTitleColor'   => array(
+            'lightboxTitleColor'    => array(
                 'label' => 'Lightbox Image Title Color',
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => 'Set the text color for image title'
             ),
-            'captionTextColor'    => array(
+            'lightboxTextColor'     => array(
                 'label' => 'Lightbox Image Description Color',
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => 'Set the text color for image caption'
             ),
-            'lightboxWindowColor' => array(
+            'lightboxBGColor'       => array(
                 'label' => 'Lightbox Window Color',
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => 'Set the background color for the lightbox window'
             ),
-            'lightboxWindowAlpha' => array(
+            'lightboxBGAlpha'       => array(
                 'label' => 'Lightbox Window Alpha',
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" max="100" step="5"',
                 'text'  => 'Set the transparancy for the lightbox window'
             ),
-            'socialShareEnabled'  => array(
+            'commetnsBGColor'       => array(
+                'label' => 'Commetns Block BG Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color"',
+                'text'  => 'Set the background color for the comments block'
+            ),
+            'commentsBGAlpha'       => array(
+                'label' => 'Comments Block BG Alpha',
+                'tag'   => 'input',
+                'attr'  => 'type="number" min="0" max="100" step="5"',
+                'text'  => 'Set the transparancy for the commetns block'
+            ),
+            'socialShareEnabled'    => array(
                 'label' => 'Social Share',
                 'tag'   => 'checkbox',
-                'attr'  => '',
+                'attr'  => 'data-watch="change"',
                 'text'  => 'Enable AddThis Social Share?'
+            ),
+            'share_post_link'    => array(
+                'label' => 'Share link to Gmedia Post',
+                'tag'   => 'checkbox',
+                'attr'  => 'data-socialshareenabled="is:1"',
+                'text'  => 'Share link to the individual Gmedia Post instead of to the image in gallery.'
+            ),
+            'lightbox800HideArrows' => array(
+                'label' => 'Hide Arrows when small window',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'Hide Arrows if window width less than 800px'
             )
         )
     ),

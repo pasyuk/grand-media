@@ -38,11 +38,27 @@ function gmedia_uninstall()
     /** @var $wpdb wpdb */
     global $wpdb, $gmCore, $gmDB;
 
+    $gmCore->app_service('app_uninstallplugin');
+
     $options = get_option('gmediaOptions');
     $upload  = $gmCore->gm_upload_dir(false);
 
     // remove all tables if allowed
     if (('all' == $options['uninstall_dropdata']) || 'db' == $options['uninstall_dropdata']) {
+        // TODO separate button with progress on settings page to delete data and DB records
+        $gmediacustomposts = array();
+        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia_gallery') );
+        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia_filter') );
+        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia_album') );
+        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia') );
+        foreach( $gmediacustomposts as $gmediaposts ) {
+            if(empty($gmediaposts)){
+                continue;
+            }
+            foreach($gmediaposts as $custompost) {
+                wp_delete_post($custompost->ID, true);
+            }
+        }
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia_meta");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia_term");
@@ -70,6 +86,9 @@ function gmedia_uninstall()
     }
 
     // then remove all options
+    delete_transient('gmediaHeavyJob');
+    delete_transient('gmediaUpgrade');
+    delete_transient('gmediaUpgradeSteps');
     delete_option('gmediaOptions');
     delete_option('gmediaDbVersion');
     delete_option('gmediaVersion');

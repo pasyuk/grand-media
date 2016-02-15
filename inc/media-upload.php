@@ -25,7 +25,7 @@ function gmedia_media_buttons_context($context)
 {
     $button = '
 	<div style="display:inline-block;">
-	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url(GMEDIA_FOLDER . '/admin/img/gm-icon.png') . ') no-repeat top left;"></span> ' . __('Gmedia', 'grand-media') . '</a>
+	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url(GMEDIA_FOLDER . '/admin/assets/img/gm-icon.png') . ') no-repeat top left;"></span> ' . __('Gmedia', 'grand-media') . '</a>
 	</div>';
 
     return $context . $button;
@@ -211,7 +211,7 @@ function gmedia_add_media_galleries()
         'number'     => $gmCore->_get('number', $per_page),
         'hide_empty' => 0,
         'page'       => $gmCore->_get('pager', 1),
-        'status'     => array('public', 'private')
+        'status'     => array('publish', 'private')
     );
     $args['offset'] = ($args['page'] - 1) * $args['number'];
 
@@ -490,7 +490,7 @@ function gmedia_add_media_terms()
 
     switch ($taxonomy) {
         case 'gmedia_album':
-            $args['status'] = array('public', 'private');
+            $args['status'] = array('publish', 'private');
             $args['global'] = $gmCore->_get('author', $gmCore->caps['gmedia_edit_others_media'] ? '' : array(0, $user_ID));
             if (! $gmCore->caps['gmedia_show_others_media']) {
                 $args['global'] = wp_parse_id_list($args['global']);
@@ -636,7 +636,7 @@ function gmedia_add_media_terms()
                                         $row_class .= ' shared';
                                         $allow_edit = $gmCore->caps['gmedia_edit_others_media'];
                                     }
-                                    if ('public' != $item->status) {
+                                    if ('publish' != $item->status) {
                                         $author_name .= ' [' . $item->status . ']';
                                         if ('private' == $item->status) {
                                             $list_row_class = ' list-group-item-info';
@@ -789,12 +789,14 @@ function gmedia_add_media_terms()
                                             <?php if (('gmedia_album' == $taxonomy) && $allow_edit) { ?>
                                                 &nbsp; | &nbsp; <a href="<?php echo add_query_arg(array(
                                                     'page'       => 'GrandMedia_Terms',
-                                                    'edit_album' => $item->term_id
+                                                    'taxonomy'   => 'gmedia_album',
+                                                    'edit_item'  => $item->term_id
                                                 ), admin_url('admin.php')); ?>" target="_blank"><?php _e('Edit Album', 'grand-media'); ?></a>
                                             <?php } elseif (('gmedia_filter' == $taxonomy) && $allow_edit) { ?>
                                                 &nbsp; | &nbsp; <a href="<?php echo add_query_arg(array(
                                                     'page'        => 'GrandMedia_Terms',
-                                                    'edit_filter' => $item->term_id
+                                                    'taxonomy'    => 'gmedia_filter',
+                                                    'edit_item'   => $item->term_id
                                                 ), admin_url('admin.php')); ?>" target="_blank"><?php _e('Edit Filter', 'grand-media'); ?></a>
                                             <?php } ?>
                                         </p>
@@ -1253,7 +1255,7 @@ function gmedia_add_media_upload()
                         <label><?php _e('Status', 'grand-media'); ?></label>
                         <select name="set_status" class="form-control input-sm">
                             <option value="inherit"><?php _e('Same as Album or Public', 'grand-media'); ?></option>
-                            <option value="public"><?php _e('Public', 'grand-media'); ?></option>
+                            <option value="publish"><?php _e('Public', 'grand-media'); ?></option>
                             <option value="private"><?php _e('Private', 'grand-media'); ?></option>
                             <option value="draft"><?php _e('Draft', 'grand-media'); ?></option>
                         </select>
@@ -1290,7 +1292,7 @@ function gmedia_add_media_upload()
                             $terms_album = '';
                             if (count($gm_terms)) {
                                 foreach ($gm_terms as $term) {
-                                    $terms_album .= '<option value="' . esc_attr($term->term_id) . '">' . esc_html($term->name) . ($term->global ? '' : __(' (shared)', 'grand-media')) . ('public' == $term->status ? '' : " [{$term->status}]") . '</option>' . "\n";
+                                    $terms_album .= '<option value="' . esc_attr($term->term_id) . '">' . esc_html($term->name) . ($term->global ? '' : __(' (shared)', 'grand-media')) . ('publish' == $term->status ? '' : " [{$term->status}]") . '</option>' . "\n";
                                 }
                             }
                             ?>
