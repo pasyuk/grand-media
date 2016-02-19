@@ -5,7 +5,7 @@
 add_filter('comment_text', 'popuplinks');
 ?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" style="padding:0;background:transparent none;min-width:auto;">
+<html xmlns="http://www.w3.org/1999/xhtml" style="padding:0;background:transparent none;min-width:0;">
 <head>
     <title><?php printf(__('%1$s - Comments on %2$s'), get_option('blogname'), the_title('', '', false)); ?></title>
 
@@ -21,7 +21,7 @@ add_filter('comment_text', 'popuplinks');
     <link rel="stylesheet" type="text/css" media="all" href="<?php bloginfo('stylesheet_url'); ?>"/>
     <?php wp_head(); ?>
 </head>
-<body id="commentspopup" style="padding:10px 20px;background:transparent none;min-width:auto;">
+<body id="commentspopup" style="padding:10px 20px;background:transparent none;min-width:0;">
 <?php
 if(have_posts()) :
     while(have_posts()) : the_post();

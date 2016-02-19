@@ -4,19 +4,17 @@
  */
 
 // If uninstall not called from WordPress, then exit
-if (! defined('WP_UNINSTALL_PLUGIN')) {
+if(!defined('WP_UNINSTALL_PLUGIN')) {
     exit;
 }
 
-require_once(dirname(__FILE__) . '/config.php');
-require_once(dirname(__FILE__) . '/inc/core.php');
-require_once(dirname(__FILE__) . '/inc/db.connect.php');
+require_once(dirname(__FILE__) . '/grand-media.php');
 
-if (function_exists('is_multisite') && is_multisite()) {
+if(function_exists('is_multisite') && is_multisite()) {
     global $wpdb;
     $blogs = $wpdb->get_results("SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A);
-    if ($blogs) {
-        foreach ($blogs as $blog) {
+    if($blogs) {
+        foreach($blogs as $blog) {
             switch_to_blog($blog['blog_id']);
             gmedia_uninstall();
             restore_current_blog();
@@ -33,8 +31,7 @@ if (function_exists('is_multisite') && is_multisite()) {
  * @access internal
  * @return void
  */
-function gmedia_uninstall()
-{
+function gmedia_uninstall() {
     /** @var $wpdb wpdb */
     global $wpdb, $gmCore, $gmDB;
 
@@ -43,22 +40,28 @@ function gmedia_uninstall()
     $options = get_option('gmediaOptions');
     $upload  = $gmCore->gm_upload_dir(false);
 
+    if(!$options){
+        return;
+    }
+
     // remove all tables if allowed
-    if (('all' == $options['uninstall_dropdata']) || 'db' == $options['uninstall_dropdata']) {
-        // TODO separate button with progress on settings page to delete data and DB records
-        $gmediacustomposts = array();
-        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia_gallery') );
-        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia_filter') );
-        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia_album') );
-        $gmediacustomposts[] = get_pages( array( 'post_type' => 'gmedia') );
-        foreach( $gmediacustomposts as $gmediaposts ) {
-            if(empty($gmediaposts)){
+    if(('all' == $options['uninstall_dropdata']) || 'db' == $options['uninstall_dropdata']) {
+        /*$gmediacustomposts   = array();
+        $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia_gallery', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
+        $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia_filter', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
+        $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia_album', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
+        $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
+        foreach($gmediacustomposts as $gmediaposts) {
+            if(empty($gmediaposts)) {
                 continue;
             }
             foreach($gmediaposts as $custompost) {
                 wp_delete_post($custompost->ID, true);
             }
-        }
+        }*/
+
+        $wpdb->query("DELETE a, b FROM {$wpdb->posts} a LEFT JOIN {$wpdb->postmeta} b ON ( a.ID = b.post_id ) WHERE a.`post_type` IN ('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter')");
+
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia_meta");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia_term");
@@ -71,14 +74,14 @@ function gmedia_uninstall()
     $capabilities = $gmCore->plugin_capabilities();
     $capabilities = apply_filters('gmedia_capabilities', $capabilities);
     $check_order  = $gmDB->get_sorted_roles();
-    foreach ($check_order as $the_role) {
+    foreach($check_order as $the_role) {
         // If you rename the roles, then please use the role manager plugin
-        if (empty($the_role)) {
+        if(empty($the_role)) {
             continue;
         }
-        foreach ($capabilities as $cap) {
+        foreach($capabilities as $cap) {
             /** @noinspection PhpUndefinedMethodInspection */
-            if ($the_role->has_cap($cap)) {
+            if($the_role->has_cap($cap)) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $the_role->remove_cap($cap);
             }
@@ -95,14 +98,19 @@ function gmedia_uninstall()
     delete_option('gmediaInstallDate');
     delete_option('GmediaHashID_salt');
     delete_metadata('user', 0, 'gm_screen_options', '', true);
+    wp_clear_scheduled_hook('gmedia_app_cronjob');
 
-    if (! $upload['error']) {
-        if ('all' == $options['uninstall_dropdata']) {
+    if(empty($upload['error'])) {
+        if('all' == $options['uninstall_dropdata']) {
             $files_folder = $upload['path'];
             $gmCore->delete_folder($files_folder);
-        } else {
-            $files_folder = $upload['path'] . '/' . $options['folder']['module'];
-            $gmCore->delete_folder($files_folder);
         }
+        /*else {
+            $folders = $options['folder'];
+            if(!empty($folders['module']) && is_dir($upload['path'] . '/' . $folders['module'])) {
+                $files_folder = $upload['path'] . '/' . $folders['module'];
+                $gmCore->delete_folder($files_folder);
+            }
+        }*/
     }
 }

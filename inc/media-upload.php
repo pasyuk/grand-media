@@ -191,7 +191,7 @@ function gmedia_add_media_popup_enqueue_scripts()
 function gmedia_add_media_galleries()
 {
 
-    global $user_ID, $gmCore, $gmDB, $gmGallery, $gmProcessor;
+    global $user_ID, $gmCore, $gmDB, $gmGallery;
 
     $post_id = intval($gmCore->_get('post_id'));
 
@@ -226,7 +226,7 @@ function gmedia_add_media_galleries()
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
     if (is_wp_error($gmediaTerms)) {
-        $alert       = $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
+        $alert       = $gmCore->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 
@@ -457,7 +457,7 @@ function gmedia_add_media_galleries()
 function gmedia_add_media_terms()
 {
 
-    global $user_ID, $gmCore, $gmDB, $gmGallery, $gmProcessor;
+    global $user_ID, $gmCore, $gmDB, $gmGallery;
 
     $post_id = intval($gmCore->_get('post_id'));
 
@@ -524,7 +524,7 @@ function gmedia_add_media_terms()
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
     if (is_wp_error($gmediaTerms)) {
-        $alert       = $gmProcessor->alert('danger', $gmediaTerms->get_error_message());
+        $alert       = $gmCore->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
 
@@ -936,7 +936,7 @@ function gmedia_add_media_library()
         </div>
         <div class="panel-body" id="gm-list-table">
             <div class="row">
-                <div class="col-xs-7 col-md-9" style="text-align:justify;">
+                <div class="col-xs-7 col-md-9" style="text-align:justify;white-space:normal;">
                     <?php
                     if (count($gmediaQuery)) {
                         foreach ($gmediaQuery as $item) {

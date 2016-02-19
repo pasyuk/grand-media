@@ -38,40 +38,40 @@ function gmedia_upgrade_process_admin_notice() {
 function gmedia_upgrade_progress_panel() {
     gmedia_do_update();
     ?>
-<div id="gmediaUpdate" class="panel panel-default">
-    <div class="panel-body">
-        <div id="gmUpdateProgress">
+    <div id="gmediaUpdate" class="panel panel-default">
+        <div class="panel-body">
+            <div id="gmUpdateProgress">
 
+            </div>
+            <div class="gm_upgrade_busy"><img src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'admin/assets/img/loading.gif' ?>" alt="updating..."/></div>
         </div>
-        <div class="gm_upgrade_busy"><img src="<?php echo plugin_dir_url(dirname(__FILE__)) . 'admin/assets/img/loading.gif' ?>" alt="updating..." /></div>
-    </div>
-    <script type="text/javascript">
-        jQuery(function(){
-            gmUpdateProgress();
-        });
-        function gmUpdateProgress(){
-            jQuery.ajax({
-                type: "get",
-                dataType: "json",
-                url: ajaxurl,
-                data: {action: 'gmedia_upgrade_process'}
-            }).done(function(data){
-                if(data.content) {
-                    jQuery('#gmUpdateProgress').html(data.content);
-                }
-                if(data.status == 'done'){
-                    jQuery('.gm_upgrade_busy').remove();
-                    if('' == data.content){
-                        jQuery('#gmUpdateProgress').append('<p><a class="btn btn-success" href="<?php echo admin_url('admin.php?page=GrandMedia'); ?>"><?php _e('Go to Gmedia Library', 'grand-media') ?></a></p>');
-                    }
-                    return;
-                } else {
-                    setTimeout(function(){ gmUpdateProgress(); }, 2000);
-                }
+        <script type="text/javascript">
+            jQuery(function() {
+                gmUpdateProgress();
             });
-        }
-    </script>
-</div>
+            function gmUpdateProgress() {
+                jQuery.ajax({
+                    type: "get",
+                    dataType: "json",
+                    url: ajaxurl,
+                    data: {action: 'gmedia_upgrade_process'}
+                }).done(function(data) {
+                    if(data.content) {
+                        jQuery('#gmUpdateProgress').html(data.content);
+                    }
+                    if(data.status == 'done') {
+                        jQuery('.gm_upgrade_busy').remove();
+                        if('' == data.content) {
+                            jQuery('#gmUpdateProgress').append('<p><a class="btn btn-success" href="<?php echo admin_url('admin.php?page=GrandMedia'); ?>"><?php _e('Go to Gmedia Library', 'grand-media') ?></a></p>');
+                        }
+                        return;
+                    } else {
+                        setTimeout(function() { gmUpdateProgress(); }, 2000);
+                    }
+                });
+            }
+        </script>
+    </div>
     <?php
 }
 
@@ -80,9 +80,9 @@ function gmedia_do_update() {
 
     $info = get_transient('gmediaHeavyJob');
 
-    ignore_user_abort(true);
-    // 10 minutes execution time
+    @ignore_user_abort(true);
     @set_time_limit(0);
+    @ini_set('max_execution_time', 0);
 
     // upgrade function changed in WordPress 2.3
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -152,25 +152,29 @@ function gmedia_do_update() {
     set_transient('gmediaHeavyJob', $info);
 
     $upgrading = get_transient('gmediaUpgrade');
-    if($upgrading && (time() - $upgrading) > 30){
+    if($upgrading && (time() - $upgrading) > 20) {
         $upgrading = false;
     }
-    if(!wp_get_schedule('gmedia_db_update') && !$upgrading) {
-        delete_transient('gmediaUpgradeSteps');
+    if((defined('DISABLE_WP_CRON') && DISABLE_WP_CRON) && !$upgrading) {
+        set_transient('gmediaUpgrade', time());
+        gmedia_db_update();
+    } elseif(!wp_get_schedule('gmedia_db_update') && !$upgrading) {
+        //delete_transient('gmediaUpgradeSteps');
         set_transient('gmediaUpgrade', time());
         wp_schedule_single_event(time() + 1, 'gmedia_db_update');
     }
 
 }
-add_action( 'gmedia_db_update', 'gmedia_db_update' );
+
+add_action('gmedia_db_update', 'gmedia_db_update');
 function gmedia_db_update() {
 
-    ignore_user_abort(true);
-    // 10 minutes execution time
+    @ignore_user_abort(true);
     @set_time_limit(0);
+    @ini_set('max_execution_time', 0);
 
     $db_version = get_option('gmediaDbVersion');
-    $info = get_transient('gmediaHeavyJob');
+    $info       = get_transient('gmediaHeavyJob');
 
     if(version_compare($db_version, '0.9.6', '<')) {
         gmedia_db_update__0_9_6();
@@ -302,7 +306,7 @@ function gmedia_db_update__0_9_6() {
 function gmedia_db_update__1_8_0() {
     global $wpdb, $gmDB, $gmGallery;
 
-    $info = get_transient('gmediaHeavyJob');
+    $info  = get_transient('gmediaHeavyJob');
     $steps = get_transient('gmediaUpgradeSteps');
     if(!isset($steps['status_update'])) {
         $wpdb->update($wpdb->prefix . 'gmedia', array('status' => 'publish'), array('status' => 'public'));
@@ -313,17 +317,17 @@ function gmedia_db_update__1_8_0() {
         $info['180_1'] = __('Gmedia database data updated...', 'grand-media');
         $info['180_2'] = __('Adding ability to comment gmedia items...', 'grand-media');
         set_transient('gmediaHeavyJob', $info);
-        set_transient('gmediaUpgrade', time());
-
         $steps['status_update'] = 1;
-        $steps['step'] = 0;
+        $steps['step']          = 0;
     }
+
+    set_transient('gmediaUpgrade', time());
 
     $steps['step']++;
 
     if(!isset($steps['gmedia_posts'])) {
         $gm_options = $gmGallery->options;
-        $step    = $steps['step'];
+        $step       = $steps['step'];
 
         $gmedias = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}gmedia WHERE post_id IS NULL OR post_id = '' OR post_id = 0 LIMIT 100");
         if(!empty($gmedias)) {
@@ -362,7 +366,11 @@ function gmedia_db_update__1_8_0() {
             $gmDB->update_gmedia_caches($gmedias, false, false);
 
             set_transient('gmediaUpgradeSteps', $steps);
-            wp_schedule_single_event(time(), 'gmedia_db_update');
+            if((defined('DISABLE_WP_CRON') && DISABLE_WP_CRON)) {
+                set_transient('gmediaUpgrade', time() - 17);
+            } else {
+                wp_schedule_single_event(time(), 'gmedia_db_update');
+            }
         } else {
             $info['180_5'] = __('Adding other features...', 'grand-media');
             set_transient('gmediaHeavyJob', $info);
@@ -372,10 +380,10 @@ function gmedia_db_update__1_8_0() {
     }
 
     if(isset($steps['gmedia_posts']) && !isset($steps['terms_posts'])) {
-        $taxonomies   = array('gmedia_album', 'gmedia_filter', 'gmedia_gallery');
+        $taxonomies             = array('gmedia_album', 'gmedia_filter', 'gmedia_gallery');
         $gmedia_terms_with_post = $wpdb->get_col("SELECT gmedia_term_id FROM {$wpdb->prefix}gmedia_term_meta WHERE meta_key = '_post_ID' AND meta_value != ''");
-        $gmedia_terms_exclude = '';
-        if(!empty($gmedia_terms_with_post)){
+        $gmedia_terms_exclude   = '';
+        if(!empty($gmedia_terms_with_post)) {
             $gmedia_terms_exclude = "AND term_id NOT IN ('" . implode("','", $gmedia_terms_with_post) . "')";
         }
         $gmedia_terms = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}gmedia_term WHERE taxonomy IN('" . implode("','", $taxonomies) . "') {$gmedia_terms_exclude} LIMIT 100");
@@ -406,7 +414,11 @@ function gmedia_db_update__1_8_0() {
             }
 
             set_transient('gmediaUpgradeSteps', $steps);
-            wp_schedule_single_event(time(), 'gmedia_db_update');
+            if((defined('DISABLE_WP_CRON') && DISABLE_WP_CRON)) {
+                set_transient('gmediaUpgrade', time() - 17);
+            } else {
+                wp_schedule_single_event(time(), 'gmedia_db_update');
+            }
         } else {
             $info['180_7'] = __('Update cache...', 'grand-media');
             set_transient('gmediaHeavyJob', $info);
@@ -422,7 +434,7 @@ function gmedia_db_update__1_8_0() {
         }
     }
 
-    if(isset($steps['terms_posts'])){
+    if(isset($steps['terms_posts'])) {
         update_option("gmediaDbVersion", '1.8.0');
         set_transient('gmediaUpgradeSteps', $steps);
         //wp_schedule_single_event(time() + 2, 'gmedia_db_update');
@@ -466,7 +478,7 @@ function gmedia_images_update($files) {
             if(is_file($fileinfo['filepath_original'])) {
                 @rename($fileinfo['filepath_original'], $fileinfo['filepath']);
             } else {
-                $info['img_'.$i] = $prefix_ko . sprintf(__('File not exists: %s', 'grand-media'), $file) . $eol;
+                $info['img_' . $i] = $prefix_ko . sprintf(__('File not exists: %s', 'grand-media'), $file) . $eol;
                 set_transient('gmediaHeavyJob', $info);
                 continue;
             }
@@ -521,27 +533,27 @@ function gmedia_images_update($files) {
                 }
 
                 if(!wp_mkdir_p($fileinfo['dirpath_thumb'])) {
-                    $info['img_'.$i] = $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_thumb']) . $eol;
+                    $info['img_' . $i] = $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_thumb']) . $eol;
                     set_transient('gmediaHeavyJob', $info);
                     continue;
                 }
                 if(!is_writable($fileinfo['dirpath_thumb'])) {
                     @chmod($fileinfo['dirpath_thumb'], 0755);
                     if(!is_writable($fileinfo['dirpath_thumb'])) {
-                        $info['img_'.$i] = $prefix_ko . sprintf(__('Directory `%s` is not writable by the server.', 'grand-media'), $fileinfo['dirpath_thumb']) . $eol;
+                        $info['img_' . $i] = $prefix_ko . sprintf(__('Directory `%s` is not writable by the server.', 'grand-media'), $fileinfo['dirpath_thumb']) . $eol;
                         set_transient('gmediaHeavyJob', $info);
                         continue;
                     }
                 }
                 if(!wp_mkdir_p($fileinfo['dirpath_original'])) {
-                    $info['img_'.$i] = $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_original']) . $eol;
+                    $info['img_' . $i] = $prefix_ko . sprintf(__('Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media'), $fileinfo['dirpath_original']) . $eol;
                     set_transient('gmediaHeavyJob', $info);
                     continue;
                 }
                 if(!is_writable($fileinfo['dirpath_original'])) {
                     @chmod($fileinfo['dirpath_original'], 0755);
                     if(!is_writable($fileinfo['dirpath_original'])) {
-                        $info['img_'.$i] = $prefix_ko . sprintf(__('Directory `%s` is not writable by the server.', 'grand-media'), $fileinfo['dirpath_original']) . $eol;
+                        $info['img_' . $i] = $prefix_ko . sprintf(__('Directory `%s` is not writable by the server.', 'grand-media'), $fileinfo['dirpath_original']) . $eol;
                         set_transient('gmediaHeavyJob', $info);
                         continue;
                     }
@@ -562,7 +574,7 @@ function gmedia_images_update($files) {
                 if($webimg['resize'] || $thumbimg['resize']) {
                     $editor = wp_get_image_editor($fileinfo['filepath_original']);
                     if(is_wp_error($editor)) {
-                        $info['img_'.$i] = $prefix_ko . $fileinfo['basename'] . " (wp_get_image_editor): " . $editor->get_error_message();
+                        $info['img_' . $i] = $prefix_ko . $fileinfo['basename'] . " (wp_get_image_editor): " . $editor->get_error_message();
                         set_transient('gmediaHeavyJob', $info);
                         continue;
                     }
@@ -572,14 +584,14 @@ function gmedia_images_update($files) {
 
                         $resized = $editor->resize($webimg['width'], $webimg['height'], $webimg['crop']);
                         if(is_wp_error($resized)) {
-                            $info['img_'.$i] = $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})): " . $resized->get_error_message() . $eol;
+                            $info['img_' . $i] = $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})): " . $resized->get_error_message() . $eol;
                             set_transient('gmediaHeavyJob', $info);
                             continue;
                         }
 
                         $saved = $editor->save($fileinfo['filepath']);
                         if(is_wp_error($saved)) {
-                            $info['img_'.$i] = $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->webimage): " . $saved->get_error_message() . $eol;
+                            $info['img_' . $i] = $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->webimage): " . $saved->get_error_message() . $eol;
                             set_transient('gmediaHeavyJob', $info);
                             continue;
                         }
@@ -590,14 +602,14 @@ function gmedia_images_update($files) {
 
                     $resized = $editor->resize($thumbimg['width'], $thumbimg['height'], $thumbimg['crop']);
                     if(is_wp_error($resized)) {
-                        $info['img_'.$i] = $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
+                        $info['img_' . $i] = $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
                         set_transient('gmediaHeavyJob', $info);
                         continue;
                     }
 
                     $saved = $editor->save($fileinfo['filepath_thumb']);
                     if(is_wp_error($saved)) {
-                        $info['img_'.$i] = $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->thumb): " . $saved->get_error_message() . $eol;
+                        $info['img_' . $i] = $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->thumb): " . $saved->get_error_message() . $eol;
                         set_transient('gmediaHeavyJob', $info);
                         continue;
                     }
@@ -605,12 +617,12 @@ function gmedia_images_update($files) {
                     copy($fileinfo['filepath'], $fileinfo['filepath_thumb']);
                 }
             } else {
-                $info['img_'.$i] = $prefix . $fileinfo['basename'] . ": " . __("Ignored", 'grand-media') . $eol;
+                $info['img_' . $i] = $prefix . $fileinfo['basename'] . ": " . __("Ignored", 'grand-media') . $eol;
                 set_transient('gmediaHeavyJob', $info);
                 continue;
             }
         } else {
-            $info['img_'.$i] = $prefix_ko . $fileinfo['basename'] . ": " . __("Invalid image.", 'grand-media') . $eol;
+            $info['img_' . $i] = $prefix_ko . $fileinfo['basename'] . ": " . __("Invalid image.", 'grand-media') . $eol;
             set_transient('gmediaHeavyJob', $info);
             continue;
         }
@@ -619,7 +631,7 @@ function gmedia_images_update($files) {
         // Save the data
         $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_metadata', $gmDB->generate_gmedia_metadata($id, $fileinfo));
 
-        $info['img_'.$i] = $prefix . $fileinfo['basename'] . ': <span  style="color:darkgreen;">' . sprintf(__('success (ID #%s)', 'grand-media'), $id) . '</span>' . $eol;
+        $info['img_' . $i] = $prefix . $fileinfo['basename'] . ': <span  style="color:darkgreen;">' . sprintf(__('success (ID #%s)', 'grand-media'), $id) . '</span>' . $eol;
         set_transient('gmediaHeavyJob', $info);
     }
 

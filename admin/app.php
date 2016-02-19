@@ -9,7 +9,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
  * @return mixed content
  */
 function gmediaApp() {
-    global $gmCore, $gmProcessor, $gmGallery;
+    global $gmCore, $gmGallery;
 
     if(false !== ($force_app_status = $gmCore->_get('force_app_status'))) {
         $gm_options               = get_option('gmediaOptions');
@@ -19,7 +19,7 @@ function gmediaApp() {
     $alert     = '';
     $btn_state = '';
     if('127.0.0.1' == $_SERVER['SERVER_ADDR']) {
-        $alert     = $gmProcessor->alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
+        $alert     = $gmCore->alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
         $btn_state = ' disabled';
     }
 

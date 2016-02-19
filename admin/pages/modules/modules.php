@@ -13,7 +13,7 @@ global $gmCore, $gmProcessor, $gmGallery;
 $modules = gmedia_get_modules();
 
 if(isset($modules['error'])) {
-    echo $gmProcessor->alert('danger', $modules['error']);
+    echo $gmCore->alert('danger', $modules['error']);
 }
 
 ?>

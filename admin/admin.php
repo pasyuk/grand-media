@@ -105,7 +105,7 @@ class GmediaAdmin {
      * Display shell of plugin
      */
     function shell() {
-        global $gmProcessor, $gmGallery;
+        global $gmCore, $gmProcessor, $gmGallery;
 
         $sideLinks = $this->sideLinks();
 
@@ -168,8 +168,8 @@ class GmediaAdmin {
                     </div>
                     <div class="col-sm-10 col-xs-12">
                         <div id="gm-message"><?php
-                            echo $gmProcessor->alert('success', $gmProcessor->msg);
-                            echo $gmProcessor->alert('danger', $gmProcessor->error);
+                            echo $gmCore->alert('success', $gmProcessor->msg);
+                            echo $gmCore->alert('danger', $gmProcessor->error);
                             ?></div>
 
                         <?php $this->controller(); ?>

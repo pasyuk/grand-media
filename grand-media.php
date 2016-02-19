@@ -2,8 +2,8 @@
 /*
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
- * Description: Gmedia Gallery - powerfull media library plugin for creating beautiful galleries and managing files.
- * Version: 1.8.0
+ * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
+ * Version: 1.8.06
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
@@ -42,7 +42,7 @@ if(!class_exists('Gmedia')) {
      */
     class Gmedia {
 
-        var $version = '1.8.0';
+        var $version = '1.8.06';
         var $dbversion = '1.8.0';
         var $minium_WP = '3.6';
         var $options = '';
@@ -69,6 +69,7 @@ if(!class_exists('Gmedia')) {
             // Load global libraries
             require_once(dirname(__FILE__) . '/inc/core.php');
             require_once(dirname(__FILE__) . '/inc/db.connect.php');
+            require_once(dirname(__FILE__) . '/inc/permalinks.php');
 
             if($this->options['debug_mode']) {
                 ini_set('display_errors', true);
@@ -124,6 +125,11 @@ if(!class_exists('Gmedia')) {
 
             // Load the admin panel or the frontend functions
             if(is_admin()) {
+
+                // Pass the init check or show a message
+                if(get_option('gmediaActivated')) {
+                    add_action('init', array(&$this, 'gmedia_after_activation'));
+                }
 
                 // Pass the init check or show a message
                 if(get_option('gmediaInitCheck')) {
@@ -194,6 +200,19 @@ if(!class_exists('Gmedia')) {
             return true;
         }
 
+        /**
+         * Called via Setup and register_activate hook after gmedia_install() function
+         */
+        function gmedia_after_activation() {
+            global $gmCore;
+
+            delete_option('gmediaActivated');
+
+            flush_rewrite_rules(false);
+
+            $gmCore->app_service('app_activateplugin');
+        }
+
         function upgrade() {
             // Queue upgrades
             $current_version    = get_option('gmediaVersion', null);
@@ -221,11 +240,12 @@ if(!class_exists('Gmedia')) {
 
                 gmedia_quite_update();
                 add_action('init', 'gmedia_flush_rewrite_rules', 1000);
+
+                if(!wp_get_schedule('gmedia_app_cronjob')) {
+                    wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
+                }
             }
 
-            if(!wp_get_schedule('gmedia_app_cronjob')) {
-                wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
-            }
         }
 
         function define_tables() {
@@ -253,12 +273,13 @@ if(!class_exists('Gmedia')) {
             // Load the options
             $default_options = gmedia_default_options();
             $db_options      = get_option('gmediaOptions');
+            if(!is_array($db_options)){
+                $db_options = array();
+            }
             $this->options   = array_merge($default_options, $db_options);
         }
 
         function load_dependencies() {
-
-            require_once(dirname(__FILE__) . '/inc/permalinks.php');
 
             // We didn't need all stuff during a AJAX operation
             if(defined('DOING_AJAX')) {
@@ -307,7 +328,7 @@ if(!class_exists('Gmedia')) {
                 'plugin_dirurl' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.0', 'all');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.06', 'all');
             wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.8.0');
             wp_localize_script('grand-media', 'grandMedia', array(
                 'error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
@@ -483,12 +504,6 @@ if(!class_exists('Gmedia')) {
          */
         function activate($networkwide) {
             $this->network_propagate('gmedia_install', $networkwide);
-
-            require_once(dirname(__FILE__) . '/inc/permalinks.php');
-            flush_rewrite_rules(false);
-
-            $this->gmedia_app_cronjob();
-            wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
         }
 
         /**
@@ -496,11 +511,6 @@ if(!class_exists('Gmedia')) {
          */
         function deactivate($networkwide) {
             $this->network_propagate('gmedia_deactivate', $networkwide);
-            flush_rewrite_rules(false);
-
-            wp_clear_scheduled_hook('gmedia_app_cronjob');
-            global $gmCore;
-            $gmCore->app_service('app_deactivateplugin');
         }
 
         function gmedia_app_cronjob() {

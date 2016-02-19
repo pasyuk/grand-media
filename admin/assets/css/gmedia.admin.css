@@ -421,6 +421,9 @@ label.cb_media-object-gallery {
   max-height:60%;
   width:auto;
 }
+.cb_media-object .thumbnail {
+  width:100%;
+}
 .media-title {
   font-weight:bold;
   font-size:15px;

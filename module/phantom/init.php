@@ -16,7 +16,7 @@ $settings    = array_merge($settings, array(
         'ajax_actions'  => array(
                 'comments' => array(
                         'action' => 'load_comments',
-                        'data'   => array('test' => 'ok')
+                        'data'   => array()
                 )
         ),
 ));

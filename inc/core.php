@@ -695,6 +695,23 @@ class GmediaCore {
         return $array;
     }
 
+    /**
+     * @param string $type
+     * @param string $content
+     *
+     * @return string
+     */
+    public function alert($type = 'info', $content = '') {
+        if(empty($content)) {
+            return '';
+        } elseif(is_array($content)) {
+            $content = array_filter($content);
+            $content = implode('<br />', $content);
+        }
+        $alert = '<div class="alert alert-' . $type . ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' . $content . '</div>';
+
+        return $alert;
+    }
 
     /**
      * @param $photo
@@ -1999,6 +2016,10 @@ class GmediaCore {
                     $title = $fileinfo['title'];
                 }
 
+                if('public' == $post_data['set_status']) {
+                    $post_data['set_status'] = 'publish';
+                }
+
                 $status = $post_data['set_status'];
                 if('inherit' == $post_data['set_status']) {
                     $gmedia_album = isset($post_data['terms']['gmedia_album'])? $post_data['terms']['gmedia_album'] : false;
@@ -2524,7 +2545,7 @@ class GmediaCore {
      * @return array json
      */
     function app_service($service) {
-        global $gmProcessor, $gmGallery, $gmDB;
+        global $gmGallery, $gmDB;
 
         if('127.0.0.1' == $_SERVER['SERVER_ADDR']) {
             return false;
@@ -2549,22 +2570,39 @@ class GmediaCore {
             $result['error'][] = __('Enter valid email, please', 'grand-media');
         } else {
 
+            $url         = home_url();
+            $post_data = array('url' => $url);
+
+            if('app_uninstallplugin' == $service){
+                if(!empty($options['site_ID'])) {
+                    $post_data['site_id'] = $options['site_ID'];
+                    wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
+                            'method'  => 'POST',
+                            'timeout' => 5,
+                            'body'    => $post_data
+                    ));
+                }
+                return false;
+            }
+
+            $hash = wp_generate_password('6', false);
+
             if(in_array($service, array('app_activate', 'app_updateinfo'))) {
                 $status = 1;
             } else {
                 $status = $options['mobile_app'];
             }
-
-            $hash = wp_generate_password('6', false);
+            $install_date = get_option('gmediaInstallDate');
 
             $data['service']     = $service;
             $data['site_hash']   = $hash;
             $data['site_ID']     = $options['site_ID'];
             $data['title']       = empty($options['site_title'])? get_bloginfo('name') : $options['site_title'];
             $data['description'] = empty($options['site_description'])? get_bloginfo('description') : $options['site_description'];
-            $data['url']         = home_url();
+            $data['url']         = $url;
             $data['license']     = $options['license_key'];
             $data['status']      = $status;
+            $data['install_date']= $install_date? $install_date : time();
 
             $tagslist = $gmDB->get_terms('gmedia_tag', array(
                     'hide_empty'    => true,
@@ -2579,10 +2617,11 @@ class GmediaCore {
 
             set_transient($hash, $data, 45);
 
+            $post_data['hash'] = $hash;
             $gms_post = wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
                     'method'  => 'POST',
                     'timeout' => 45,
-                    'body'    => array('hash' => $hash, 'url' => $data['url']),
+                    'body'    => $post_data
             ));
             if(is_wp_error($gms_post)) {
                 $result['error'][] = $gms_post->get_error_message();
@@ -2601,7 +2640,7 @@ class GmediaCore {
                 //$result['gms_post'] = $gms_post;
                 //$result['gms_post_body'] = $gms_post_body;
                 if(isset($result['message'])) {
-                    $result['message'] = $gmProcessor->alert('info', $result['message']);
+                    $result['message'] = $this->alert('info', $result['message']);
                 }
 
                 if(isset($result['site_ID'])) {
@@ -2612,7 +2651,7 @@ class GmediaCore {
                 }
             }
             if(isset($result['error'])) {
-                $result['error'] = $gmProcessor->alert('danger', $result['error']);
+                $result['error'] = $this->alert('danger', $result['error']);
             }
         }
         update_option('gmediaOptions', $options);

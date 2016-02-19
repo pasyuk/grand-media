@@ -1,14 +1,14 @@
 === Gmedia Gallery - Photo Gallery, Image Slider, Music Player, Video Player, Media Library ===
 Contributors: Rattus
 Donate link: http://codeasily.com/donate/
-Tags: admin, best gallery, easy gallery, gallery, gallery slider, header slider, image, image gallery, images, iOS app, iphone gallery, media library, music, page, photo, photo gallery, portfolio, Post, posts, responsive, slider, slideshow, video, flagallery, gmedia
+Tags: admin, best gallery, flagallery, gallery, gallery slider, gallery with comments, gmedia, header slider, image, image gallery, images, iOS app, iphone gallery, media library, music, page, photo, photo gallery, portfolio, Post, posts, responsive, slider, slideshow, video
 Requires at least: 3.6
 Tested up to: 4.4.1
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Gmedia Gallery - powerfull media library plugin for creating beautiful galleries and managing files (from creator of Flagallery plugin)
+Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files (from creator of Flagallery plugin)
 
 == Description ==
 
@@ -53,19 +53,12 @@ See demo of Gmedia Gallery Modules:
 *   [3D Sphere Module](http://codeasily.com/portfolio-item/gmedia-sphere/) - is 3D picture gallery which arranges your images in beautiful sphere which rotates and interacts on your mouse move.
 *   ...
 
-Translations:
-
-*   English (default)
-*   Serbian by Ogi Djuraskovic (http://firstsiteguide.com/)
-*   French by Serge Couture (http://www.choeurlabruyante.org/)
-*   Українська Іванкою Скакун з Everycloud (http://www.everycloudtech.com/)
-*   German by Werner Hoffmann
-*   Dutch by Roy de Laat (http://www.truebluedesign.nl/)
-
 Help me make it best gallery plugin: test it and [write suggestions](http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/) how it could be improved in feature versions.
 
 Features:
 
+*   New in 1.8.*: Comments for Gmedia Items (For now only Phantom module support comments. Later will add other modules)
+*   New in 1.8.*: Integration with WP search. Gmedia items looks like a regular post with comments. Also you can search for albums, galleries and filters.
 *   iOS application "Gmedia" - [iOS manage application](https://itunes.apple.com/ua/app/gmedia/id947515626?mt=8) to manage your Library with your iPhone
 *   Full Page Template for Galleries with permalink support
 *   Share Images, Albums, Tags, Galleries via admin panel
@@ -94,8 +87,6 @@ Features:
 
 TODO List:
 
-*   Comments (work in progress..)
-*   Integration with WP search (work in progress..)
 *   Duplicate item in Gmedia Library (work in progress..)
 *   More Batch operations with selected Gmedia items (work in progress..)
 *   Related Post images on Edit Post. Option to automatically create gallery in Post with related images (work in progress..)
@@ -103,6 +94,15 @@ TODO List:
 *   More modules for creating photo gallery, audio playlist, video playlist
 *   Easily add to Post audio and video files with tags related to post tags
 *   Watermark/Crop image feature
+
+Translations:
+
+*   English (default)
+*   Serbian by Ogi Djuraskovic (http://firstsiteguide.com/)
+*   French by Serge Couture (http://www.choeurlabruyante.org/)
+*   Українська Іванкою Скакун з Everycloud (http://www.everycloudtech.com/)
+*   German by Werner Hoffmann
+*   Dutch by Roy de Laat (http://www.truebluedesign.nl/)
 
 
 == Installation ==
@@ -134,6 +134,21 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= 1.8.06 =
+* Fixed: Notice on first install
+* Fixed: Ignored uninstall settings and plugin doesn't delete database records and delete all files
+
+= 1.8.05 =
+* Improved: update process
+* Fixed: access point for iOS app
+* Fixed: comments in Phantom module not worked on some themes
+
+= 1.8.0 =
+* Added: Comments for Gmedia Items
+* Added: WP search integration for gmedia items, albums, galleries, filters
+* New: Phantom module with comments support
+* Fixed: gallery search in admin and a lot of other bugs that I don't remember
 
 = 1.7.56 =
 * Fixed: error "jQuery is not defined" on some themes
@@ -564,6 +579,9 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 
 == Upgrade Notice ==
+
+= 1.8.0 =
+Database changed. Backup before updating.
 
 = 1.5.5 =
 If you want to import IPTC Keywords to Tags for already uploaded images, you need:

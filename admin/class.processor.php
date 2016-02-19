@@ -105,24 +105,6 @@ class GmediaProcessor {
     }
 
     /**
-     * @param string $type
-     * @param string $content
-     *
-     * @return string
-     */
-    public function alert($type = 'info', $content = '') {
-        if(empty($content)) {
-            return '';
-        } elseif(is_array($content)) {
-            $content = array_filter($content);
-            $content = implode('<br />', $content);
-        }
-        $alert = '<div class="alert alert-' . $type . ' alert-dismissable"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>' . $content . '</div>';
-
-        return $alert;
-    }
-
-    /**
      * redirect to original referer after update
      *
      * @param $location

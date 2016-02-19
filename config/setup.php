@@ -303,6 +303,11 @@ function gmedia_install() {
     foreach($gmGallery->options['folder'] as $folder) {
         wp_mkdir_p($gmCore->upload['path'] . '/' . $folder);
     }
+
+    wp_clear_scheduled_hook('gmedia_app_cronjob');
+    wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
+
+    add_option('gmediaActivated', time());
 }
 
 /**
@@ -312,11 +317,14 @@ function gmedia_install() {
  * @return void
  */
 function gmedia_deactivate() {
-    //$gm_options = get_option('gmediaOptions');
-    //if((int)$gm_options['mobile_app']) {
-    //    global $gmCore;
-    //    $gmCore->app_service('app_deactivate');
-    //}
+    global $gmCore;
+
+    flush_rewrite_rules(false);
+
+    wp_clear_scheduled_hook('gmedia_app_cronjob');
+
+    $gmCore->app_service('app_deactivateplugin');
+
     // remove & reset the init check option
     delete_option('gmediaInitCheck');
 }
