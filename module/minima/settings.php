@@ -1,7 +1,7 @@
 <?php
 $default_options = array(
     'maxwidth'              => '0',
-    'lockheight'            => '0',
+    'lockheight'            => '1',
     'height'                => '500',
     'maxheight'             => '0',
     'autoSlideshow'         => '1',

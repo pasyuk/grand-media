@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.8.06
+ * Version: 1.8.24
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
@@ -42,7 +42,7 @@ if(!class_exists('Gmedia')) {
      */
     class Gmedia {
 
-        var $version = '1.8.06';
+        var $version = '1.8.24';
         var $dbversion = '1.8.0';
         var $minium_WP = '3.6';
         var $options = '';
@@ -135,6 +135,8 @@ if(!class_exists('Gmedia')) {
                 if(get_option('gmediaInitCheck')) {
                     add_action('admin_notices', array(&$this, 'admin_notices'));
                 }
+
+                require_once(dirname(__FILE__) . '/admin/functions.php');
 
                 require_once(dirname(__FILE__) . '/admin/class.processor.php');
 
@@ -320,7 +322,7 @@ if(!class_exists('Gmedia')) {
         function register_scripts_backend() {
             global $gmCore;
 
-            wp_register_script('gmedia-global-backend', $gmCore->gmedia_url . '/admin/assets/js/gmedia.global.js', array('jquery'), '1.8.0');
+            wp_register_script('gmedia-global-backend', $gmCore->gmedia_url . '/admin/assets/js/gmedia.global.js', array('jquery'), '1.8.24');
             wp_localize_script('gmedia-global-backend', 'GmediaGallery', array(
                 'ajaxurl'       => admin_url('admin-ajax.php'),
                 'nonce'         => wp_create_nonce('GmediaGallery'),
@@ -328,8 +330,8 @@ if(!class_exists('Gmedia')) {
                 'plugin_dirurl' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.06', 'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.8.0');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.24', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.8.24');
             wp_localize_script('grand-media', 'grandMedia', array(
                 'error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                 'download' => __('downloading...', 'grand-media'),
@@ -347,7 +349,7 @@ if(!class_exists('Gmedia')) {
         function register_scripts_frontend() {
             global $gmCore, $wp_scripts;
 
-            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '1.8.0');
+            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '1.8.24');
             wp_localize_script('gmedia-global-frontend', 'GmediaGallery', array(
                 'ajaxurl'       => admin_url('admin-ajax.php'),
                 'nonce'         => wp_create_nonce('GmediaGallery'),
@@ -572,11 +574,6 @@ if(!class_exists('Gmedia')) {
             );
             register_post_type('gmedia', $args);
 
-            $args['label']               = __('Gmedia Custom Filters', 'grand-media');
-            $args['exclude_from_search'] = (bool)$this->options['gmedia_filter_exclude_from_search'];
-            $args['rewrite']             = array('slug' => $this->options['gmedia_filter_post_slug']);
-            register_post_type('gmedia_filter', $args);
-
             $args['label']               = __('Gmedia Albums', 'grand-media');
             $args['hierarchical']        = true;
             $args['exclude_from_search'] = (bool)$this->options['gmedia_album_exclude_from_search'];
@@ -617,14 +614,12 @@ if(!class_exists('Gmedia')) {
                     }
                 } else {
                     $term_id     = get_post_meta($post->ID, '_gmedia_term_ID', true);
-                    $gmedia_term = $gmDB->get_term($term_id, $post->post_type);
-                    if($gmedia_term) {
-                        if($post->post_type == 'gmedia_album') {
-                            $link = admin_url("admin.php?page=GrandMedia_Terms&taxonomy={$post->post_type}&edit_item={$gmedia_term->term_id}");
-                        } elseif($post->post_type == 'gmedia_filter') {
-                            $link = admin_url("admin.php?page=GrandMedia_Terms&taxonomy={$post->post_type}&edit_item={$gmedia_term->term_id}");
-                        } elseif($post->post_type == 'gmedia_gallery') {
-                            $link = admin_url("admin.php?page=GrandMedia_Galleries&edit_item={$gmedia_term->term_id}");
+                    $term = $gmDB->get_term($term_id);
+                    if($term) {
+                        if($term->taxonomy == 'gmedia_album') {
+                            $link = admin_url("admin.php?page=GrandMedia_Albums&edit_item={$term->term_id}");
+                        } elseif($term->taxonomy == 'gmedia_gallery') {
+                            $link = admin_url("admin.php?page=GrandMedia_Galleries&edit_item={$term->term_id}");
                         }
                     } else {
                         wp_delete_post($post->ID, true);

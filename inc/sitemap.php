@@ -4,16 +4,14 @@
  * PHP Class for Wordpress SEO plugin
  *
  */
-class gmediaSitemaps
-{
+class gmediaSitemaps{
 
     var $images = array();
 
     /**
      * gmediaSitemaps::__construct()
      */
-    function __construct()
-    {
+    function __construct(){
 
         add_filter('wpseo_sitemap_urlimages', array(&$this, 'add_wpseo_xml_sitemap_images'), 10, 2);
 
@@ -29,9 +27,8 @@ class gmediaSitemaps
      *
      * @return array $image list of all founded images
      */
-    function add_wpseo_xml_sitemap_images($images, $post_id)
-    {
-        global $gmGallery, $gmCore;
+    function add_wpseo_xml_sitemap_images($images, $post_id){
+        global $gmGallery, $gmCore, $gmDB;
 
         $this->images = $images;
 
@@ -49,19 +46,19 @@ class gmediaSitemaps
         // Search now for shortcodes
         do_shortcode($content);
 
-        if (isset($gmGallery->shortcode['gmedia'])) {
-            foreach ($gmGallery->shortcode['gmedia'] as $termitems) {
-                foreach ($termitems as $item) {
-                    $newimage        = array();
-                    $newimage['src'] = $gmCore->gm_get_media_image($item, 'web');
-                    if (! empty($item->title)) {
-                        $newimage['title'] = strip_tags($item->title);
-                    }
-                    if (! empty($item->description)) {
-                        $newimage['alt'] = strip_tags($item->description);
-                    }
-                    $this->images[] = $newimage;
+        if(isset($gmGallery->shortcode['query'])){
+            $query = array_merge($gmGallery->shortcode['query'], array('status' => 'publish', 'mime_type' => 'image'));
+            $gmedias = $gmDB->get_gmedias($query);
+            foreach($gmedias as $item){
+                $newimage        = array();
+                $newimage['src'] = $gmCore->gm_get_media_image($item, 'web');
+                if(!empty($item->title)){
+                    $newimage['title'] = strip_tags($item->title);
                 }
+                if(!empty($item->description)){
+                    $newimage['alt'] = strip_tags($item->description);
+                }
+                $this->images[] = $newimage;
             }
         }
 

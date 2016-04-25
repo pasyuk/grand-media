@@ -48,7 +48,6 @@ function gmedia_uninstall() {
     if(('all' == $options['uninstall_dropdata']) || 'db' == $options['uninstall_dropdata']) {
         /*$gmediacustomposts   = array();
         $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia_gallery', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
-        $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia_filter', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
         $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia_album', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
         $gmediacustomposts[] = get_posts(array('post_type' => 'gmedia', 'posts_per_page' => -1, 'post_status' => 'any', 'post_parent' => null));
         foreach($gmediacustomposts as $gmediaposts) {
@@ -60,7 +59,7 @@ function gmedia_uninstall() {
             }
         }*/
 
-        $wpdb->query("DELETE a, b FROM {$wpdb->posts} a LEFT JOIN {$wpdb->postmeta} b ON ( a.ID = b.post_id ) WHERE a.`post_type` IN ('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter')");
+        $wpdb->query("DELETE a, b FROM {$wpdb->posts} a LEFT JOIN {$wpdb->postmeta} b ON ( a.ID = b.post_id ) WHERE a.`post_type` IN ('gmedia', 'gmedia_album', 'gmedia_gallery')");
 
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}gmedia_meta");

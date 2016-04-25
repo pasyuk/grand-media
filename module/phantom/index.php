@@ -3,7 +3,7 @@ $module_info = array(
     'base'         => 'phantom',
     'name'         => 'phantom',
     'title'        => 'Phantom',
-    'version'      => '3.0',
+    'version'      => '3.4',
     'author'       => 'CodEasily.com',
     'description'  => 'This module will help you to easily add a grid gallery to your WordPress website or blog. The gallery is completely customizable, resizable and is compatible with all browsers and devices (iPhone, iPad and Android smartphones).
 
@@ -16,9 +16,11 @@ $module_info = array(
     'download'     => 'http://codeasily.com/download/phantom-module-zip/',
     'dependencies' => 'magnific-popup'
 );
-if (isset($_GET['info'])) {
-    echo '<pre>' . print_r($module_info, true) . '</pre>';
-} elseif (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-    header("Location: {$module_info['demo']}");
-    die();
+if (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+    if (isset($_GET['info'])) {
+        echo '<pre>' . print_r($module_info, true) . '</pre>';
+    } else {
+        header("Location: {$module_info['demo']}");
+        die();
+    }
 }

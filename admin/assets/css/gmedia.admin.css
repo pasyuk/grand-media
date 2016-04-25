@@ -24,6 +24,10 @@ input[type="checkbox"], input[type="radio"] {
   height:16px;
   width:16px;
 }
+.checkbox, .radio {
+  margin-top:5px;
+  margin-bottom:5px;
+}
 input::-moz-focus-inner {
   border:0;
   padding:0;
@@ -421,6 +425,11 @@ label.cb_media-object-gallery {
   max-height:60%;
   width:auto;
 }
+.thumbwrap { position:relative; margin-bottom:5px; }
+.gm-stack { position:absolute; right:-8px; bottom:-8px; padding:5px; margin:0; border:1px solid #1e8cbe; background-color:#ffffff; border-width:1px 0 0 1px; }
+.gm-stack input{ margin:0; padding:0; }
+.thumbwrap .gm-stack { right:1px; bottom:1px; border:1px solid #dddddd; border-radius:5px 0 5px 0; border-right-color:transparent; border-bottom-color:transparent; border-width:1px; }
+.thumbwrap .cb_media-object { width:100%; margin:0; display:flex; }
 .cb_media-object .thumbnail {
   width:100%;
 }
@@ -476,7 +485,7 @@ label.cb_media-object-gallery {
   -webkit-box-shadow:-10px 0 5px -2px #ffffff;
   -moz-box-shadow:-10px 0 5px -2px #ffffff;
   box-shadow:-10px 0 5px -2px #ffffff;
-  z-index:1000;
+  z-index:10;
 }
 .term-list-item.gm-selected .term_id {
   display:block;
@@ -978,6 +987,8 @@ body.gmedia-blank .media-edit-sidebar .panel-footer {
   padding:0 0 5px 5px;
   width:250px;
 }
+#save_buttons_duplicate { display:none;}
+.panel-floatingHeader #save_buttons_duplicate { display:block;}
 #gallery_preview_ {
   width:200%;
   height:800px;
@@ -995,9 +1006,18 @@ body.gmedia-blank .media-edit-sidebar .panel-footer {
   transform-origin:top left;
   border:solid #cccccc 2px;
 }
-#gallery_preview {
+.gallery_preview {
+  overflow:auto;
+  padding:0 5px 5px 0;
+  border-right:1px dotted;
+  border-bottom:1px dotted;
+  background-color:#eee;
   width:100%;
   height:600px;
+}
+#gallery_preview {
+  width:100%;
+  height:100%;
   border:solid #cccccc 1px;
   overflow:auto;
 }
@@ -1014,7 +1034,7 @@ body.gmedia-blank .media-edit-sidebar .panel-footer {
 input.sharelink[readonly] { cursor:text; }
 fieldset.gmediacustomstuff { margin:0 0 10px; padding:.35em .625em .4em; position:relative; border:1px solid silver }
 .delete-custom-field { margin:4px 2px 0; cursor:pointer; }
-.newcustomfield-modal { position:absolute; bottom:-0.6em; right:8px; font-size:95%; }
+.newcustomfield-modal { position:absolute; bottom:-0.6em; right:8px; font-size:100%; }
 @media (min-width:782px) {
   div.modal {
     top:32px;

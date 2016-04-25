@@ -55,10 +55,17 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
                     if($item->selected){
                         $item->classes[] = 'gm-selected';
                     }
+                    $item->in_stack = in_array($item->ID, (array)$gmProcessor->stack_items);
 
                     include(dirname(__FILE__) . '/tpl/' . $gmedia_user_options['display_mode_gmedia'] . '-item.php');
                 }
             } elseif(gm_user_can('edit_media')) {
+                $gm_category_terms  = $gmDB->get_terms('gmedia_category', array('fields' => 'names'));
+                ?>
+                <script type="text/javascript">
+                    var gmedia_categories = <?php echo json_encode($gm_category_terms); ?>;
+                </script>
+                <?php
                 foreach($gmedia_query as &$item) {
                     gmedia_item_more_data($item);
 
@@ -74,6 +81,7 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
                     if($item->selected){
                         $item->classes[] = 'gm-selected';
                     }
+                    $item->in_stack = in_array($item->ID, (array)$gmProcessor->stack_items);
 
                     if(((int)$item->author != $user_ID) && !gm_user_can('edit_others_media')) {
                         include(dirname(__FILE__) . '/tpl/list-item.php');

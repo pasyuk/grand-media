@@ -94,7 +94,7 @@ function gmedia_item_more_data(&$item) {
 
     $item->tags     = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_tag');
     $item->album    = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_album');
-    $item->category = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category');
+    $item->categories = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category');
 
     $item = apply_filters('gmedia_item_more_data', $item);
 }

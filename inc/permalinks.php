@@ -23,7 +23,7 @@ class gmediaPermalinks {
         add_action('parse_query', array($this, 'bridge'));
 
         add_filter('post_thumbnail_html', array($this, 'gmedia_post_thumbnail'), 10, 5);
-        add_filter('gmedia_shortcode_gallery_data', array($this, 'gmedia_shortcode_gallery_data'));
+        add_filter('gmedia_shortcode_query', array($this, 'gmedia_shortcode_query'), 10, 2);
 
         add_filter('show_admin_bar', array($this, 'comments_admin_bar_hide'));
         add_action('single_template', array($this, 'comments_gmedia_template_redirect'));
@@ -39,8 +39,7 @@ class gmediaPermalinks {
      * @return string
      */
     function comments_gmedia_template_redirect($templates = "") {
-        //if(!in_array($post->post_type, array('gmedia','gmedia_album','gmedia_gallery','gmedia_filter'))) {
-        if(!(isset($_GET['comments']) && is_singular(array('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter')))) {
+        if(!(isset($_GET['comments']) && is_singular(array('gmedia', 'gmedia_album', 'gmedia_gallery')))) {
             return $templates;
         }
 
@@ -58,7 +57,7 @@ class gmediaPermalinks {
      * @return string
      */
     function comments_admin_bar_hide($show_admin_bar) {
-        if(!(isset($_GET['comments']) && is_singular(array('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter')))) {
+        if(!(isset($_GET['comments']) && is_singular(array('gmedia', 'gmedia_album', 'gmedia_gallery')))) {
             return $show_admin_bar;
         }
 
@@ -92,7 +91,7 @@ class gmediaPermalinks {
 
         $post = get_post($comment->comment_post_ID);
 
-        if(!in_array($post->post_type, array('gmedia', 'gmedia_album', 'gmedia_gallery', 'gmedia_filter'))) {
+        if(!in_array($post->post_type, array('gmedia', 'gmedia_album', 'gmedia_gallery'))) {
             return $location;
         }
 
@@ -111,7 +110,7 @@ class gmediaPermalinks {
         $this->add_endpoint();
 
         $new_rules = array(
-            $this->endpoint . '/(g|s|a|t|k|f|u)/(.+?)/?$' => 'index.php?' . $this->endpoint . '=' . $wp_rewrite->preg_index(2) . '&t=' . $wp_rewrite->preg_index(1),
+            $this->endpoint . '/(g|s|a|t|k|u)/(.+?)/?$' => 'index.php?' . $this->endpoint . '=' . $wp_rewrite->preg_index(2) . '&t=' . $wp_rewrite->preg_index(1),
             'gmedia-app/?$'                               => 'index.php?gmedia-app=1'
         );
 
@@ -162,7 +161,7 @@ class gmediaPermalinks {
     public function handler($wp) {
         global $gmGallery;
         $endpoint = !empty($gmGallery->options['endpoint'])? $gmGallery->options['endpoint'] : 'gmedia';
-        if(isset($wp->query_vars[$endpoint]) && isset($wp->query_vars['t']) && in_array($wp->query_vars['t'], array('g', 'a', 't', 's', 'k', 'f', 'u'))) {
+        if(isset($wp->query_vars[$endpoint]) && isset($wp->query_vars['t']) && in_array($wp->query_vars['t'], array('g', 'a', 't', 's', 'k', 'u'))) {
 
             global $wp_query;
             $wp_query->is_single  = false;
@@ -251,20 +250,32 @@ class gmediaPermalinks {
     /**
      * Filter for the shortcode gallery data
      *
-     * @param array $gallery
+     * @param array $query
+     * @param string $id
      *
-     * @return array $gallery
+     * @return array $query
      */
-    function gmedia_shortcode_gallery_data($gallery) {
-        global $gmCore;
+    function gmedia_shortcode_query($query, $id = '') {
+        global $gmCore, $gmDB, $gmGallery;
 
-        if(($new_query = $gmCore->_get("gm{$gallery['term_id']}"))) {
-            unset($gallery['custom_query']);
-            $gmCore->replace_array_keys($new_query, array('gmedia_album' => 'album__in', 'gmedia_tag' => 'tag__in', 'gmedia_category' => 'category__in'));
-            $gallery['_query'] = $new_query;
+        //$gmCore->replace_array_keys($query, array('album__in' => 'gmedia_album', 'tag__in' => 'gmedia_tag', 'category__in' => 'gmedia_category'));
+        if(($new_query = $gmCore->_get("gm{$id}"))) {
+            //$query = array_merge($query, $new_query);
+            $query = $new_query;
+        }
+        if(isset($query['album__in'])){
+            $alb_ids = wp_parse_id_list($query['album__in']);
+            if(1 == count($alb_ids)) {
+                $album_meta        = $gmDB->get_metadata('gmedia_term', $alb_ids[0]);
+                $album_query_order = array(
+                    'orderby' => !empty($album_meta['_orderby'][0])? $album_meta['_orderby'][0] : $gmGallery->options['in_album_orderby'],
+                    'order'   => !empty($album_meta['_order'][0])? $album_meta['_order'][0] : $gmGallery->options['in_album_order']
+                );
+                $query = array_merge($album_query_order, $query);
+            }
         }
 
-        return $gallery;
+        return $query;
     }
 
 }

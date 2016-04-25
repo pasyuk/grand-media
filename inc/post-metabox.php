@@ -175,7 +175,7 @@ function gmedia_post_metabox()
                                         </div>
                                     </div>
                                     <div class="gmedia-selector"></div>
-                                    <a href="<?php echo admin_url("admin.php?page=GrandMedia_Galleries&amp;edit_gallery=" . $item->term_id); ?>"
+                                    <a href="<?php echo admin_url("admin.php?page=GrandMedia_Galleries&amp;edit_item=" . $item->term_id); ?>"
                                        title="Edit Gallery #<?php echo $item->term_id; ?> in New Window" target="_blank" class="gmedia-gallery-gear"><?php _e('edit', 'grand-media'); ?></a>
                                 </li>
                                 <?php

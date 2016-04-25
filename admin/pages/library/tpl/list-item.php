@@ -8,13 +8,17 @@
 ?>
 <div class="cb_list-item list-group-item d-row clearfix <?php echo implode(' ', $item->classes); ?>" id="list-item-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-type="<?php echo $item->type; ?>">
     <div class="gmedia_id">#<?php echo $item->ID; ?></div>
-    <label class="cb_media-object col-sm-4" style="max-width:340px;">
-        <input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" class="hidden" value="<?php echo $item->ID; ?>"/>
-        <span data-target="<?php echo $item->url; ?>" class="thumbnail">
-            <?php gmedia_item_thumbnail($item); ?>
-        </span>
-    </label>
-
+    <div class="col-sm-4" style="max-width:340px;">
+        <div class="thumbwrap">
+            <label class="cb_media-object">
+                <input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" class="hidden" value="<?php echo $item->ID; ?>"/>
+                <span data-target="<?php echo $item->url; ?>" class="thumbnail">
+                    <?php gmedia_item_thumbnail($item); ?>
+                </span>
+            </label>
+            <label class="gm-stack"><input title="<?php _e('Add to Stack', 'grand-media'); ?>" name="stack[]" type="checkbox"<?php echo $item->in_stack? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
+        </div>
+    </div>
     <div class="col-sm-8">
         <div class="row" style="margin:0;">
             <div class="col-lg-6">
@@ -36,22 +40,20 @@
                         $terms_album = sprintf('<a class="album" href="%s">%s</a>', esc_url(add_query_arg(array('alb' => 0), $gmedia_url)), '&#8212;');
                     }
                     echo $terms_album;
-
-                    if($item->editor) {
-                        ?>
-                        <br/><span class="label label-default"><?php _e('Category', 'grand-media'); ?>:</span>
-                        <?php
-                        if($item->category) {
-                            $terms_category = array();
-                            foreach($item->category as $c) {
-                                $terms_category[] = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => $c->term_id), $gmedia_url)), esc_html($gmGallery->options['taxonomies']['gmedia_category'][$c->name]));
-                            }
-                            $terms_category = join(', ', $terms_category);
-                        } else {
-                            $terms_category = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => 0), $gmedia_url)), __('Uncategorized', 'grand-media'));
+                    ?>
+                    <br/><span class="label label-default"><?php _e('Category', 'grand-media'); ?>:</span>
+                    <?php
+                    if($item->categories) {
+                        $terms_category = array();
+                        foreach($item->categories as $c) {
+                            $terms_category[] = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => $c->term_id), $gmedia_url)), esc_html($c->name));
                         }
-                        echo $terms_category;
-                    } ?>
+                        $terms_category = join(', ', $terms_category);
+                    } else {
+                        $terms_category = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => 0), $gmedia_url)), __('Uncategorized', 'grand-media'));
+                    }
+                    echo $terms_category;
+                    ?>
                     <br/><span class="label label-default"><?php _e('Tags', 'grand-media'); ?>:</span>
                     <?php
                     if($item->tags) {

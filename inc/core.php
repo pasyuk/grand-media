@@ -309,18 +309,29 @@ class GmediaCore {
         }
         $module_dirs = array(
                 'upload' => array(
+                        'name' => $module_name,
                         'path' => $this->upload['path'] . '/' . $gmGallery->options['folder']['module'] . '/' . $module_name,
                         'url'  => $this->upload['url'] . '/' . $gmGallery->options['folder']['module'] . '/' . $module_name
                 ),
                 'plugin' => array(
+                        'name' => $module_name,
                         'path' => GMEDIA_ABSPATH . 'module/' . $module_name,
                         'url'  => plugins_url(GMEDIA_FOLDER) . '/module/' . $module_name
                 ),
+                'theme'  => array(
+                        'name' => $module_name,
+                        'path' => get_template_directory() . '/gmedia-module/' . $module_name,
+                        'url'  => get_template_directory_uri() . '/gmedia-module/' . $module_name
+                )
         );
         foreach($module_dirs as $dir) {
             if(is_dir($dir['path'])) {
                 return $dir;
             }
+        }
+
+        if($module_name != $gmGallery->options['default_gmedia_module']) {
+            return $this->get_module_path($gmGallery->options['default_gmedia_module']);
         }
 
         return false;
@@ -555,7 +566,6 @@ class GmediaCore {
                 'tag'      => 't',
                 'single'   => 's',
                 'category' => 'k',
-                'filter'   => 'f',
                 'author'   => 'u'
         );
         if(get_option('permalink_structure')) {
@@ -1985,7 +1995,7 @@ class GmediaCore {
                 if($size) {
                     if(!empty($image_meta)) {
                         if('exif' == $post_data['set_title']) {
-                            if(!empty($image_meta['title']) && trim($image_meta['title']) && !is_numeric(sanitize_title($image_meta['title']))) {
+                            if(!empty($image_meta['title']) && trim($image_meta['title'])) {
                                 $title = $image_meta['title'];
                             }
                         }
@@ -2000,7 +2010,7 @@ class GmediaCore {
                     $file_meta = $this->get_file_metadata($fileinfo['filepath_original'], $fileinfo);
                     if(!empty($file_meta)) {
                         if('exif' == $post_data['set_title']) {
-                            if(!empty($file_meta['title']) && trim($file_meta['title']) && !is_numeric(sanitize_title($file_meta['title']))) {
+                            if(!empty($file_meta['title']) && trim($file_meta['title'])) {
                                 $title = $file_meta['title'];
                             }
                         }
@@ -2024,7 +2034,7 @@ class GmediaCore {
                 if('inherit' == $post_data['set_status']) {
                     $gmedia_album = isset($post_data['terms']['gmedia_album'])? $post_data['terms']['gmedia_album'] : false;
                     if($gmedia_album && $this->is_digit($gmedia_album)) {
-                        $album = $gmDB->get_term($gmedia_album, 'gmedia_album');
+                        $album = $gmDB->get_term($gmedia_album);
                         if(empty($album) || is_wp_error($album)) {
                             $status = 'publish';
                         } else {
@@ -2036,12 +2046,19 @@ class GmediaCore {
                 }
 
                 unset($post_data['gmuid'], $post_data['mime_type'], $post_data['set_title'], $post_data['set_status']);
-                if(!$is_webimage && isset($post_data['terms']['gmedia_category'])) {
-                    unset($post_data['terms']['gmedia_category']);
+
+                if(isset($post_data['terms']['gmedia_category']) && !empty($post_data['terms']['gmedia_category'])) {
+                    if(!is_array($post_data['terms']['gmedia_category'])) {
+                        $post_data['terms']['gmedia_category'] = explode(',', $post_data['terms']['gmedia_category']);
+                    }
+                } else {
+                    $post_data['terms']['gmedia_category'] = array();
                 }
 
-                if(isset($post_data['terms']['gmedia_tag']) && !empty($post_data['terms']['gmedia_tag']) && !is_array($post_data['terms']['gmedia_tag'])) {
-                    $post_data['terms']['gmedia_tag'] = explode(',', $post_data['terms']['gmedia_tag']);
+                if(isset($post_data['terms']['gmedia_tag']) && !empty($post_data['terms']['gmedia_tag'])) {
+                    if(!is_array($post_data['terms']['gmedia_tag'])) {
+                        $post_data['terms']['gmedia_tag'] = explode(',', $post_data['terms']['gmedia_tag']);
+                    }
                 } else {
                     $post_data['terms']['gmedia_tag'] = array();
                 }
@@ -2199,7 +2216,7 @@ class GmediaCore {
 
         $gmedia_album = isset($_terms['gmedia_album'])? $_terms['gmedia_album'] : false;
         if($gmedia_album && $gmCore->is_digit($gmedia_album)) {
-            $album = $gmDB->get_term($gmedia_album, 'gmedia_album');
+            $album = $gmDB->get_term($gmedia_album);
             if(empty($album) || is_wp_error($album)) {
                 $_status = 'publish';
             } else {
@@ -2208,6 +2225,21 @@ class GmediaCore {
             }
         } else {
             $_status = 'publish';
+        }
+
+        if(isset($_terms['gmedia_category']) && !empty($_terms['gmedia_category'])) {
+            if(!is_array($_terms['gmedia_category'])) {
+                $_terms['gmedia_category'] = explode(',', $_terms['gmedia_category']);
+            }
+        } else {
+            $_terms['gmedia_category'] = array();
+        }
+        if(isset($_terms['gmedia_tag']) && !empty($_terms['gmedia_tag'])) {
+            if(!is_array($_terms['gmedia_tag'])) {
+                $_terms['gmedia_tag'] = explode(',', $_terms['gmedia_tag']);
+            }
+        } else {
+            $_terms['gmedia_tag'] = array();
         }
 
         $c = count($files);
@@ -2487,10 +2519,6 @@ class GmediaCore {
                 $title = $fileinfo['title'];
             }
 
-            if(!$is_webimage) {
-                unset($terms['gmedia_category']);
-            }
-
             // Construct the media_data array
             $media_data = array(
                     'mime_type'   => $fileinfo['mime_type'],
@@ -2531,7 +2559,7 @@ class GmediaCore {
 
         }
 
-        echo '<p><b>' . __('Category') . ':</b> ' . ((isset($_terms['gmedia_category']) && !empty($_terms['gmedia_category']))? esc_html($gmGallery->options['taxonomies']['gmedia_category'][$_terms['gmedia_category']]) : '-') . PHP_EOL;
+        echo '<p><b>' . __('Category') . ':</b> ' . ((isset($_terms['gmedia_category']) && !empty($_terms['gmedia_category']))? esc_html(str_replace(',', ', ', $_terms['gmedia_category'])) : '-') . PHP_EOL;
         echo '<br /><b>' . __('Album') . ':</b> ' . ((isset($_terms['gmedia_album']) && !empty($_terms['gmedia_album']))? (isset($album_name)? $album_name : esc_html($_terms['gmedia_album'])) : '-') . PHP_EOL;
         echo '<br /><b>' . __('Tags') . ':</b> ' . ((isset($_terms['gmedia_tag']) && !empty($_terms['gmedia_tag']))? esc_html(str_replace(',', ', ', $_terms['gmedia_tag'])) : '-') . '</p>' . PHP_EOL;
 
@@ -2570,10 +2598,10 @@ class GmediaCore {
             $result['error'][] = __('Enter valid email, please', 'grand-media');
         } else {
 
-            $url         = home_url();
+            $url       = home_url();
             $post_data = array('url' => $url);
 
-            if('app_uninstallplugin' == $service){
+            if('app_uninstallplugin' == $service) {
                 if(!empty($options['site_ID'])) {
                     $post_data['site_id'] = $options['site_ID'];
                     wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
@@ -2582,6 +2610,7 @@ class GmediaCore {
                             'body'    => $post_data
                     ));
                 }
+
                 return false;
             }
 
@@ -2594,15 +2623,15 @@ class GmediaCore {
             }
             $install_date = get_option('gmediaInstallDate');
 
-            $data['service']     = $service;
-            $data['site_hash']   = $hash;
-            $data['site_ID']     = $options['site_ID'];
-            $data['title']       = empty($options['site_title'])? get_bloginfo('name') : $options['site_title'];
-            $data['description'] = empty($options['site_description'])? get_bloginfo('description') : $options['site_description'];
-            $data['url']         = $url;
-            $data['license']     = $options['license_key'];
-            $data['status']      = $status;
-            $data['install_date']= $install_date? $install_date : time();
+            $data['service']      = $service;
+            $data['site_hash']    = $hash;
+            $data['site_ID']      = $options['site_ID'];
+            $data['title']        = empty($options['site_title'])? get_bloginfo('name') : $options['site_title'];
+            $data['description']  = empty($options['site_description'])? get_bloginfo('description') : $options['site_description'];
+            $data['url']          = $url;
+            $data['license']      = $options['license_key'];
+            $data['status']       = $status;
+            $data['install_date'] = $install_date? $install_date : time();
 
             $tagslist = $gmDB->get_terms('gmedia_tag', array(
                     'hide_empty'    => true,
@@ -2618,7 +2647,7 @@ class GmediaCore {
             set_transient($hash, $data, 45);
 
             $post_data['hash'] = $hash;
-            $gms_post = wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
+            $gms_post          = wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
                     'method'  => 'POST',
                     'timeout' => 45,
                     'body'    => $post_data
@@ -2737,6 +2766,10 @@ class GmediaCore {
      */
     function gmedia_custom_meta_box($gmedia_id, $meta_type = 'gmedia') {
         global $gmDB;
+
+        if(empty($gmedia_id)) {
+            return;
+        }
 
         if(!in_array($meta_type, array('gmedia', 'gmedia_term'))) {
             $meta_type = 'gmedia';
@@ -3166,22 +3199,48 @@ class GmediaCore {
      */
     function plugin_capabilities() {
         return array(
-                'gmedia_library'
-                , 'gmedia_show_others_media'
-                , 'gmedia_edit_media'
-                , 'gmedia_edit_others_media'
-                , 'gmedia_delete_media'
-                , 'gmedia_delete_others_media'
-                , 'gmedia_upload'
-                , 'gmedia_import'
-                , 'gmedia_terms'
-                , 'gmedia_album_manage'
-                , 'gmedia_filter_manage'
-                , 'gmedia_tag_manage'
-                , 'gmedia_terms_delete'
-                , 'gmedia_gallery_manage'
-                , 'gmedia_module_manage'
-                , 'gmedia_settings'
+                'gmedia_library',
+                'gmedia_show_others_media',
+                'gmedia_edit_media',
+                'gmedia_edit_others_media',
+                'gmedia_delete_media',
+                'gmedia_delete_others_media',
+                'gmedia_upload',
+                'gmedia_import',
+                'gmedia_terms',
+                'gmedia_album_manage',
+                'gmedia_category_manage',
+                'gmedia_tag_manage',
+                'gmedia_terms_delete',
+                'gmedia_gallery_manage',
+                'gmedia_module_manage',
+                'gmedia_settings'
+        );
+    }
+
+    /**
+     * @return array Gmedia Capabilities
+     */
+    function modules_order() {
+        return array(
+                'phantom'        => '',
+                'phototravlr'    => '',
+                'realslider'     => '',
+                'mosaic'         => '',
+                'photobox'       => '',
+                'photomania'     => '',
+                'jq-mplayer'     => '',
+                'wp-videoplayer' => '',
+                'photo-pro'      => '',
+                'optima'         => '',
+                'afflux'         => '',
+                'slider'         => '',
+                'green-style'    => '',
+                'photo-blog'     => '',
+                'minima'         => '',
+                'sphere'         => '',
+                'cube'           => '',
+                'flatwall'       => ''
         );
     }
 }

@@ -1,6 +1,6 @@
 /*
  * Title                   : gmPhantom
- * Version                 : 3.0
+ * Version                 : 3.4
  * Copyright               : 2013-2015 CodEasily.com
  * Website                 : http://www.codeasily.com
  */
@@ -86,6 +86,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                 LinksTarget = [],
                 noItems = 0,
 
+                magItems = {},
                 Storage = {},
 
                 startGalleryID = 0,
@@ -93,7 +94,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
 
                 scrollTop = 0,
                 scrollLeft = 0,
-                itemLoaded = false,
+                itemLoaded = 0,
                 thumbsNavigationArrowsSpeed = 200,
                 cc = 0,
 
@@ -113,7 +114,8 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         opt.initialRows = opt.thumbRows;
                         opt.thumbWidthDesktop = opt.thumbWidth;
                         opt.thumbHeightDesktop = opt.thumbHeight;
-                        opt.ratio = opt.thumbWidth / opt.thumbHeight;
+                        opt.dratio = opt.thumbWidthDesktop / opt.thumbHeightDesktop;
+                        opt.mratio = opt.thumbWidthMobile / opt.thumbHeightMobile;
 
                         Content = arguments[0];
                         methods.parseContent();
@@ -264,6 +266,9 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                             item.liked = false;
                                         }
                                     }
+                                    if(typeof(magItems[item.index]) == 'undefined') {
+                                        magItems[item.index] = item;
+                                    }
                                 },
                                 markupParse: function(template, values, item) {
                                     if(item.gm_link) {
@@ -283,7 +288,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 },
                                 open: function() {
                                     $(document.body).addClass('mfp-gmedia-open');
-                                    itemLoaded = true;
+                                    itemLoaded = 1;
                                     if(opt.commentsEnabled){
                                         this.wrap.on('click.gmCloseComments', '.mfp-img--comments-div', function() {
                                             $('#mfp_comments_' + ID, this.wrap).trigger('click');
@@ -293,7 +298,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 },
                                 close: function() {
                                     $(document.body).removeClass('mfp-gmedia-open');
-                                    if('image' != this.currItem.gm_type) {
+                                    if('image' != magItems[this.currItem.index].gm_type) {
                                         $(document.body).removeClass('mfp-zoom-out-cur');
                                         this.wrap.removeClass('mfp-iframe-loaded');
                                     }
@@ -311,9 +316,9 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                             location.replace(url);
                                         }
                                     }
-                                    this.contentContainer.attr('data-gmtype', this.currItem.gm_type).attr('data-ext', this.currItem.gm_ext);
+                                    this.contentContainer.attr('data-gmtype', magItems[this.currItem.index].gm_type).attr('data-ext', magItems[this.currItem.index].gm_ext);
                                     $('#wpadminbar').css({'z-index':''});
-                                    itemLoaded = false;
+                                    itemLoaded = 0;
                                     $(window).scrollTop(scrollTop);
                                 },
                                 beforeOpen: function() {
@@ -330,7 +335,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 },
                                 change: function() {
                                     if(opt.deepLinks) {
-                                        var hash = "#!gallery-" + ID + '-' + this.currItem.gm_id,
+                                        var hash = "#!gallery-" + ID + '-' + magItems[this.currItem.index].gm_id,
                                             url = ('' + window.location).split('#')[0] + hash;
                                         if(!!(window.history && window.history.replaceState)) {
                                             window.history.replaceState({}, document.title, url);
@@ -338,7 +343,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                             location.replace(url);
                                         }
                                     }
-                                    this.contentContainer.attr('data-gmtype', this.currItem.gm_type).attr('data-ext', this.currItem.gm_ext);
+                                    this.contentContainer.attr('data-gmtype', magItems[this.currItem.index].gm_type).attr('data-ext', magItems[this.currItem.index].gm_ext);
                                     if(opt.commentsEnabled) {
                                         this.wrap.removeClass('mfp-comments-open mfp-comments-loaded');
                                         $('.mfp-comments-wrapper', this.contentContainer).css({height: ''}).empty();
@@ -347,7 +352,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                         this.wrap.removeClass('phantom-gmedia-liked');
                                     }
                                     clearTimeout(timeout);
-                                    if('image' != this.currItem.gm_type) {
+                                    if('image' != magItems[this.currItem.index].gm_type) {
                                         $(document.body).addClass('mfp-zoom-out-cur');
                                         var self = this;
                                         setTimeout(function() {
@@ -357,22 +362,22 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 },
                                 afterChange: function() {
                                     if(opt.socialShareEnabled) {
-                                        methods.initSocialShare(this.currItem.no, this);
+                                        methods.initSocialShare(magItems[this.currItem.index].no, this);
                                     }
                                     if(opt.viewsEnabled) {
-                                        methods.initViews(this.currItem.no, this);
+                                        methods.initViews(magItems[this.currItem.index].no, this);
                                     }
                                     if(opt.likesEnabled) {
-                                        methods.initLikes(this.currItem.no, this);
+                                        methods.initLikes(magItems[this.currItem.index].no, this);
                                     }
                                     if(opt.commentsEnabled) {
-                                        methods.initComments(this.currItem.no, this);
+                                        methods.initComments(magItems[this.currItem.index].no, this);
                                     }
                                     var self = this;
                                     timeout = setTimeout(function () {
                                         methods.viewLike(self.currItem);
                                     }, 1000);
-                                    if (Storage[this.currItem.gm_id] && Storage[this.currItem.gm_id].status && 'liked' == Storage[this.currItem.gm_id].status) {
+                                    if (Storage[magItems[this.currItem.index].gm_id] && Storage[magItems[this.currItem.index].gm_id].status && 'liked' == Storage[magItems[this.currItem.index].gm_id].status) {
                                         this.wrap.addClass('phantom-gmedia-liked');
                                     } else {
                                         this.wrap.removeClass('phantom-gmedia-liked');
@@ -613,7 +618,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         comments_wrapper.empty();
                         mfp.wrap.removeClass('mfp-comments-loaded').addClass('mfp-comments-loading');
                         if (GmediaGallery) {
-                            opt.ajax_actions['comments']['data'].post_id = Post_IDs[no];
+                            opt.ajax_actions['comments']['data']['post_id'] = Post_IDs[no];
                             $.ajax({
                                 type : "post",
                                 dataType : "json",
@@ -734,26 +739,25 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         var hiddenBustedItems = prototypes.doHideBuster($(Container));
 
                         if($(window).width() <= 640) {
-                            $(Container).addClass('gmPhantom_MobileView');
+                            $('.gmPhantom_Container', Container).addClass('gmPhantom_MobileView');
                             opt.thumbWidth = opt.thumbWidthMobile;
                             opt.thumbHeight = opt.thumbHeightMobile;
+                            opt.ratio = opt.mratio;
                         } else {
-                            $(Container).removeClass('gmPhantom_MobileView');
+                            $('.gmPhantom_Container', Container).removeClass('gmPhantom_MobileView');
                             opt.thumbWidth = opt.thumbWidthDesktop;
                             opt.thumbHeight = opt.thumbHeightDesktop;
+                            opt.ratio = opt.dratio;
                         }
 
-                        opt.width = $(Container).width();
-
+                        setTimeout(function(){ opt.width = $(Container).width(); }, 0);
                         prototypes.undoHideBuster(hiddenBustedItems);
 
                         return opt.width;
                     },
 
                     initContainer: function() {// Init Container
-                        setTimeout(function() {
-                            $('.gmPhantom_Container', Container).removeClass('delay').css('opacity', 1);
-                        }, 3000);
+                        $('.gmPhantom_Container', Container).removeClass('delay');
                         $('.gmPhantom_Container', Container).css({'display': 'block', 'text-align': opt.thumbsAlign});
 
                         if(opt.maxheight === 0) {
@@ -902,6 +906,14 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 $(this).css('margin-right', '-1px');
                             }
 
+                            var img = $('.gmPhantom_Thumb > img', this);
+                            var thumb_ratio = $(this).data('ratio');
+                            if(opt.ratio < thumb_ratio){
+                                img.attr('class', 'landscape').attr('style', 'margin:0 0 0 -' + Math.floor((opt.thumbHeight * thumb_ratio - opt.thumbWidth) / opt.thumbWidth * 50) + '%');
+                            } else {
+                                img.attr('class', 'portrait').attr('style', 'margin:-' + Math.floor((opt.thumbWidth / thumb_ratio - opt.thumbHeight) / opt.thumbHeight * 25) + '% 0 0 0');
+                            }
+
                         });
                         var thumbs_el = $('.gmPhantom_thumbsWrapper', Container),
                             thumbs_el_width = thumbW * opt.thumbCols + (opt.thumbCols - 1) * opt.thumbsSpacing,
@@ -914,12 +926,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         if(opt.initialHeight !== 0) {
                             var thumbH = opt.thumbHeight + opt.thumbBorderSize * 2 + opt.thumbPadding * 2,
                                 thumbs_el_height = thumbH * opt.thumbRows + (opt.thumbRows - 1) * opt.thumbsSpacing;
-                            if((thumbs_el_height + scrollbar_width + opt.thumbsVerticalPadding * 2) >= $('.gmPhantom_Container', Container).height()) {
-                                $('.gmPhantom_thumbsWrapper', Container).height(thumbs_el_height + scrollbar_width);
-                            }
-                            else {
-                                $('.gmPhantom_thumbsWrapper', Container).height($('.gmPhantom_Container', Container).height() - opt.thumbsVerticalPadding * 2);
-                            }
+                            $('.gmPhantom_thumbsWrapper', Container).height(thumbs_el_height + scrollbar_width);
 
                             if((opt.thumbsNavigation == 'mouse')) {
                                 if($('.gmPhantom_Container', Container).width() > thumbs_el.outerWidth()) {
@@ -1051,8 +1058,8 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                             thumbsPositionX = currX > prevX? parseInt(child.css('margin-left')) + (currX - prevX) : parseInt(child.css('margin-left')) - (prevX - currX);
                             thumbsPositionY = currY > prevY? parseInt(child.css('margin-top')) + (currY - prevY) : parseInt(child.css('margin-top')) - (prevY - currY);
 
-                            if(thumbsPositionX < (-1) * (child.width() - parent.width())) {
-                                thumbsPositionX = (-1) * (child.width() - parent.width());
+                            if(thumbsPositionX < (-1) * (child.outerWidth() - parent.width())) {
+                                thumbsPositionX = (-1) * (child.outerWidth() - parent.width());
                             }
                             else if(thumbsPositionX > 0) {
                                 thumbsPositionX = 0;
@@ -1061,8 +1068,8 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 e.preventDefault();
                             }
 
-                            if(thumbsPositionY < (-1) * (child.height() - parent.height())) {
-                                thumbsPositionY = (-1) * (child.height() - parent.height());
+                            if(thumbsPositionY < (-1) * (child.outerHeight() - parent.height())) {
+                                thumbsPositionY = (-1) * (child.outerHeight() - parent.height());
                             }
                             else if(thumbsPositionY > 0) {
                                 thumbsPositionY = 0;
@@ -1074,49 +1081,14 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                             prevX = currX;
                             prevY = currY;
 
-                            if(parent.width() < child.width()) {
+                            if(parent.width() < child.outerWidth()) {
                                 child.css('margin-left', thumbsPositionX);
                             }
-                            if(parent.height() < child.height()) {
+                            if(parent.height() < child.outerHeight()) {
                                 child.css('margin-top', thumbsPositionY);
                             }
                         });
 
-                        parent.bind('touchend', function(e) {
-                            e.preventDefault();
-                            var arrowsClicked;
-                            if(thumbsPositionX % (opt.thumbWidth + opt.thumbsSpacing) !== 0) {
-                                if($('.gMedia_thumbScroller_thumbs', Container).width() > $('.gMedia_thumbScroller_thumbsWrapper', Container).width()) {
-                                    if(prevX > touch.clientX) {
-                                        moveTo = parseInt(thumbsPositionX / (thumbW + opt.thumbsSpacing)) * (thumbW + opt.thumbsSpacing);
-                                    }
-                                    else {
-                                        moveTo = (parseInt(thumbsPositionX / (thumbW + opt.thumbsSpacing)) - 1) * (thumbW + opt.thumbsSpacing);
-                                    }
-                                    arrowsClicked = true;
-
-                                    $('.gMedia_thumbScroller_thumbs', Container).stop(true, true).animate({'margin-left': moveTo}, thumbsNavigationArrowsSpeed, function() {
-                                        arrowsClicked = false;
-                                    });
-                                }
-                            }
-
-                            if(thumbsPositionY % (opt.thumbHeight + opt.thumbsSpacing) !== 0) {
-                                if($('.gMedia_thumbScroller_thumbs', Container).height() > $('.gMedia_thumbScroller_thumbsWrapper', Container).height()) {
-                                    if(prevY > touch.clientY) {
-                                        moveTo = parseInt(thumbsPositionY / (thumbH + opt.thumbsSpacing)) * (thumbH + opt.thumbsSpacing);
-                                    }
-                                    else {
-                                        moveTo = (parseInt(thumbsPositionY / (thumbH + opt.thumbsSpacing)) - 1) * (thumbH + opt.thumbsSpacing);
-                                    }
-                                    arrowsClicked = true;
-
-                                    $('.gMedia_thumbScroller_thumbs', Container).stop(true, true).animate({'margin-top': moveTo}, thumbsNavigationArrowsSpeed, function() {
-                                        arrowsClicked = false;
-                                    });
-                                }
-                            }
-                        });
                     },
 
                     openLink: function(url, target) {// Open a link.

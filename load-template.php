@@ -7,7 +7,7 @@ if (! defined('ABSPATH')) {
  * @var $endpoint
  */
 
-global $gmedia, $gmedia_id, $gmedia_type, $gmedia_module, $gmedia_module_preset, $gmedia_shortcode_content, $gmedia_share_img;
+global $gmedia, $gmedia_id, $gmedia_type, $gmedia_module, $gmedia_shortcode_content, $gmedia_share_img;
 
 $gmedia_hashid = urldecode($wp->query_vars[$endpoint]);
 $type          = isset($wp->query_vars['t']) ? $wp->query_vars['t'] : 'g';
@@ -18,7 +18,6 @@ $template = array(
     't' => 'tag',
     's' => 'single',
     'k' => 'category',
-    'f' => 'filter',
     'u' => 'author'
 );
 if (! isset($template[$type])) {
@@ -37,37 +36,28 @@ global $user_ID, $gmCore, $gmDB, $gmGallery;
 
 switch ($gmedia_type) {
     case 'gallery':
-        $gmedia = $gmDB->get_term($gmedia_id, 'gmedia_gallery');
-        if ($gmCore->_get('set_module') && $user_ID) {
-            $gmedia_module = $_GET['set_module'];
-        } else {
-            $gmedia_module = $gmDB->get_metadata('gmedia_term', $gmedia_id, '_module', true);
-        }
+        $gmedia = $gmDB->get_term($gmedia_id);
+        $gmedia_module = $gmDB->get_metadata('gmedia_term', $gmedia_id, '_module', true);
         break;
     case 'album':
     case 'tag':
     case 'category':
-    case 'filter':
-        $gmedia = $gmDB->get_term($gmedia_id, "gmedia_{$gmedia_type}");
-
-        if (empty($gmGallery->options['gmediacloud_module'])) {
-            $gmedia_module = 'phantom';
-        } else {
-            if ($gmCore->is_digit($gmGallery->options['gmediacloud_module'])) {
-                $get_preset = $gmDB->get_term((int)$gmGallery->options['gmediacloud_module'], 'gmedia_module');
-                if (! empty($get_preset) && ! is_wp_error($get_preset)) {
-                    $gmedia_module        = $get_preset->status;
-                    $gmedia_module_preset = $get_preset->term_id;
-                }
-            } else {
-                $gmedia_module = $gmGallery->options['gmediacloud_module'];
-            }
+        $gmedia = $gmDB->get_term($gmedia_id);
+        $gmedia_module = $gmDB->get_metadata('gmedia_term', $gmedia_id, '_module', true);
+        if (empty($gmedia_module)) {
+            $gmedia_module = $gmGallery->options['default_gmedia_module'];
         }
         break;
     case 'single':
         $gmedia = $gmDB->get_gmedia($gmedia_id);
         break;
 }
+
+$set_module = $gmCore->_get('gmedia_module');
+if ($set_module && $user_ID && current_user_can('gmedia_gallery_manage')) {
+    $gmedia_module = $set_module;
+}
+
 if (! $gmedia_module) {
     $gmedia_module = 'phantom';
 }
@@ -84,7 +74,7 @@ if (file_exists($module['path'] . "/template/functions.php")) {
 if (file_exists($module['path'] . "/template/{$gmedia_type}.php")) {
     /** @noinspection PhpIncludeInspection */
     require_once($module['path'] . "/template/{$gmedia_type}.php");
-} elseif (in_array($gmedia_type, array('album', 'tag', 'category', 'filter')) && file_exists($module['path'] . "/template/gallery.php")) {
+} elseif (in_array($gmedia_type, array('album', 'tag', 'category')) && file_exists($module['path'] . "/template/gallery.php")) {
     /** @noinspection PhpIncludeInspection */
     require_once($module['path'] . "/template/gallery.php");
 } else {

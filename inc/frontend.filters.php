@@ -47,7 +47,7 @@ function gmedia_post_type__the_content($content) {
     } else {
         if('get_the_excerpt' != current_filter()) {
             $term_id = get_post_meta($post->ID, '_gmedia_term_ID', true);
-            if(in_array($post->post_type, array('gmedia_album', 'gmedia_filter'))) {
+            if(in_array($post->post_type, array('gmedia_album'))) {
                 $content .= do_shortcode("[gm id={$term_id} module=phantom]");
             } elseif($post->post_type == 'gmedia_gallery') {
                 $content .= do_shortcode("[gmedia id={$term_id}]");

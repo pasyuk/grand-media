@@ -24,9 +24,6 @@ function gmedia_default_options() {
     $gm['gmedia_album_post_slug']           = 'gmedia-album';
     $gm['gmedia_album_exclude_from_search'] = '0';
 
-    $gm['gmedia_filter_post_slug']           = 'gmedia-filter';
-    $gm['gmedia_filter_exclude_from_search'] = '0';
-
     $gm['gmedia_gallery_post_slug']           = 'gmedia-gallery';
     $gm['gmedia_gallery_exclude_from_search'] = '0';
 
@@ -34,17 +31,20 @@ function gmedia_default_options() {
 
     $gm['uninstall_dropdata'] = 'none'; // can be 'all', 'none', 'db'
 
-    $gm['in_tag_orderby']      = 'ID';
-    $gm['in_tag_order']        = 'DESC';
-    $gm['in_category_orderby'] = 'ID';
-    $gm['in_category_order']   = 'DESC';
+    $gm['in_tag_orderby']        = 'ID';
+    $gm['in_tag_order']          = 'DESC';
+    $gm['in_category_orderby']   = 'ID';
+    $gm['in_category_order']     = 'DESC';
+    $gm['in_album_orderby']      = 'ID';
+    $gm['in_album_order']        = 'DESC';
+    $gm['in_album_status']       = 'publish';
+    $gm['default_gmedia_module'] = 'phantom';
 
     $gm['isolation_mode'] = '0';
     $gm['shortcode_raw']  = '0';
     $gm['debug_mode']     = WP_DEBUG? '1' : '';
 
     $gm['endpoint']                  = 'gmedia';
-    $gm['gmediacloud_module']        = '';
     $gm['gmediacloud_socialbuttons'] = '1';
     $gm['gmediacloud_footer_js']     = '';
     $gm['gmediacloud_footer_css']    = '';
@@ -68,39 +68,10 @@ function gmedia_default_options() {
     $gm['license_key']  = '';
     $gm['license_key2'] = '';
 
-    $gm['taxonomies']['gmedia_category'] = array(
-        'abstract'              => __('Abstract', 'grand-media'),
-        'animals'               => __('Animals', 'grand-media'),
-        'black-and-white'       => __('Black and White', 'grand-media'),
-        'celebrities'           => __('Celebrities', 'grand-media'),
-        'city-and-architecture' => __('City & Architecture', 'grand-media'),
-        'commercial'            => __('Commercial', 'grand-media'),
-        'concert'               => __('Concert', 'grand-media'),
-        'family'                => __('Family', 'grand-media'),
-        'fashion'               => __('Fashion', 'grand-media'),
-        'film'                  => __('Film', 'grand-media'),
-        'fine-art'              => __('Fine Art', 'grand-media'),
-        'food'                  => __('Food', 'grand-media'),
-        'journalism'            => __('Journalism', 'grand-media'),
-        'landscapes'            => __('Landscapes', 'grand-media'),
-        'macro'                 => __('Macro', 'grand-media'),
-        'nature'                => __('Nature', 'grand-media'),
-        'nude'                  => __('Nude', 'grand-media'),
-        'people'                => __('People', 'grand-media'),
-        'performing-arts'       => __('Performing Arts', 'grand-media'),
-        'sport'                 => __('Sport', 'grand-media'),
-        'still-life'            => __('Still Life', 'grand-media'),
-        'street'                => __('Street', 'grand-media'),
-        'transportation'        => __('Transportation', 'grand-media'),
-        'travel'                => __('Travel', 'grand-media'),
-        'underwater'            => __('Underwater', 'grand-media'),
-        'urban-exploration'     => __('Urban Exploration', 'grand-media'),
-        'wedding'               => __('Wedding', 'grand-media')
-    );
+    $gm['taxonomies']['gmedia_category'] = array();
     $gm['taxonomies']['gmedia_tag']      = array();
     $gm['taxonomies']['gmedia_album']    = array();
 
-    $gm['taxonomies']['gmedia_filter']  = array(); // not linked with gmedia_term_relationships table
     $gm['taxonomies']['gmedia_gallery'] = array(); // not linked with gmedia_term_relationships table
     $gm['taxonomies']['gmedia_module']  = array(); // not linked with gmedia_term_relationships table
 
@@ -112,13 +83,21 @@ function gmedia_default_options() {
     $gm['gm_screen_options']['display_mode_gmedia']  = 'list';
     $gm['gm_screen_options']['grid_cell_fit_gmedia'] = false;
 
-    $gm['gm_screen_options']['per_page_gmedia_terms']  = 30;
-    $gm['gm_screen_options']['orderby_gmedia_terms']   = 'name';
-    $gm['gm_screen_options']['sortorder_gmedia_terms'] = 'DESC';
+    $gm['gm_screen_options']['per_page_gmedia_album']  = 30;
+    $gm['gm_screen_options']['orderby_gmedia_album']   = 'name';
+    $gm['gm_screen_options']['sortorder_gmedia_album'] = 'ASC';
 
-    $gm['gm_screen_options']['per_page_gmedia_galleries']  = 30;
-    $gm['gm_screen_options']['orderby_gmedia_galleries']   = 'name';
-    $gm['gm_screen_options']['sortorder_gmedia_galleries'] = 'DESC';
+    $gm['gm_screen_options']['per_page_gmedia_category']  = 30;
+    $gm['gm_screen_options']['orderby_gmedia_category']   = 'name';
+    $gm['gm_screen_options']['sortorder_gmedia_category'] = 'ASC';
+
+    $gm['gm_screen_options']['per_page_gmedia_tag']  = 30;
+    $gm['gm_screen_options']['orderby_gmedia_tag']   = 'name';
+    $gm['gm_screen_options']['sortorder_gmedia_tag'] = 'ASC';
+
+    $gm['gm_screen_options']['per_page_gmedia_gallery']  = 30;
+    $gm['gm_screen_options']['orderby_gmedia_gallery']   = 'name';
+    $gm['gm_screen_options']['sortorder_gmedia_gallery'] = 'ASC';
 
     $gm['gm_screen_options']['per_page_wpmedia']  = 30;
     $gm['gm_screen_options']['orderby_wpmedia']   = 'ID';

@@ -1,6 +1,6 @@
 /*
  * Title                   : Afflux Gallery Module
- * Version                 : 3.8
+ * Version                 : 3.9
  * Copyright               : 2013-2015 CodEasily.com
  * Website                 : http://www.codeasily.com
  */
@@ -39,7 +39,7 @@ if (typeof jQuery.fn.gmAfflux == 'undefined') {
                     'postID': 0
                 },
                 bool = {
-                    'lockheight': false,
+                    'lockheight': true,
                     'autoSlideshow': true,
                     'descrVisOnMouseover': true,
                     'loveLink': false,

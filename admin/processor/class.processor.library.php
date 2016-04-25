@@ -8,6 +8,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
     public static $cookie_key = false;
     public $edit_mode = false;
     public $selected_items = array();
+    public $stack_items = array();
     public $query_args;
     public $filters = array();
 
@@ -24,6 +25,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
         $this->edit_mode      = $gmCore->_get('edit_mode', false, true);
         $this->url            = add_query_arg(array('page' => $this->page, 'edit_mode' => $this->edit_mode), admin_url('admin.php'));
         $this->selected_items = parent::selected_items(self::$cookie_key);
+        $this->stack_items    = parent::selected_items("gmuser_{$user_ID}_library_stack", 'stack_items');
 
     }
 
@@ -31,7 +33,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
      * @return array
      */
     public function query_args() {
-        global $gmCore, $gmDB, $user_ID, $gmGallery;
+        global $gmCore, $gmDB;
 
         $args['mime_type']        = $gmCore->_get('mime_type');
         $args['status']           = $gmCore->_get('status');
@@ -47,6 +49,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
         $args['cat']              = $gmCore->_get('cat');
         $args['category__in']     = $gmCore->_get('category__in');
         $args['category__not_in'] = $gmCore->_get('category__not_in');
+        $args['category__and']    = $gmCore->_get('category__and');
         $args['gmedia__in']       = $gmCore->_get('gmedia__in');
         $args['s']                = $gmCore->_get('s');
         $args['orderby']          = $gmCore->_get('orderby', $this->user_options['orderby_gmedia']);
@@ -57,35 +60,30 @@ class GmediaProcessor_Library extends GmediaProcessor {
             $args['s']          = false;
         }
 
-        if(('selected' == $gmCore->_req('filter')) && !empty($this->selected_items)) {
-            $args['gmedia__in'] = $this->selected_items;
+        $show_stack = false;
+        if(('show' == $gmCore->_req('stack')) && !empty($this->stack_items)) {
+            $args['gmedia__in'] = $this->stack_items;
             $args['orderby']    = $gmCore->_get('orderby', 'gmedia__in');
             $args['order']      = $gmCore->_get('order', 'ASC');
+            $show_stack         = true;
+        }
+        if(('selected' == $gmCore->_req('filter')) && !empty($this->selected_items)) {
+            if($show_stack) {
+                $stack_items        = wp_parse_id_list($this->stack_items);
+                $selected_items     = wp_parse_id_list($this->selected_items);
+                $gmedia_in          = array_intersect($stack_items, $selected_items);
+                $args['gmedia__in'] = $gmedia_in;
+            } else {
+                $args['gmedia__in'] = $this->selected_items;
+                $args['orderby']    = $gmCore->_get('orderby', 'gmedia__in');
+                $args['order']      = $gmCore->_get('order', 'ASC');
+            }
         }
 
         $query_args = apply_filters('gmedia_library_query_args', $args);
 
-        if($gmCore->_get('custom_filter', false, true) && ($custom_filter = $gmDB->get_term($_GET['custom_filter'], 'gmedia_filter'))) {
-            if(!is_wp_error($custom_filter)) {
-                if(($custom_filter->global == $user_ID) || $gmCore->caps['gmedia_show_others_media']) {
-                    $args = $gmDB->get_metadata('gmedia_term', $custom_filter->term_id, '_query', true);
-
-                    $this->filters['custom_filter'] = array(
-                        'title'  => __('Cusom Filter', 'grand-media'),
-                        'filter' => array($custom_filter->name)
-                    );
-
-                    $query_args = array_merge($query_args, $args);
-                } else {
-                    $this->error[] = __('You are not allowed to see others media', 'grand-media');
-                }
-            } else {
-                $this->error[] = $custom_filter->get_error_message();
-            }
-        }
-
-        foreach($query_args as $key => $val){
-            if(empty($val) && ('0' !== $val) && (0 !== $val)){
+        foreach($query_args as $key => $val) {
+            if(empty($val) && ('0' !== $val) && (0 !== $val)) {
                 unset($query_args[$key]);
             }
         }
@@ -125,9 +123,6 @@ class GmediaProcessor_Library extends GmediaProcessor {
         if(!empty($query_args['category__in'])) {
             $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['category__in']));
             if(!empty($category_names)) {
-                foreach($category_names as $i => $name) {
-                    $category_names[$i] = $gmGallery->options['taxonomies']['gmedia_category'][$name];
-                }
                 $this->filters['filter_categories'] = array(
                     'title'  => __('Filter Category', 'grand-media'),
                     'filter' => $category_names
@@ -137,9 +132,6 @@ class GmediaProcessor_Library extends GmediaProcessor {
         if(!empty($query_args['category__not_in'])) {
             $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['category__not_in']));
             if(!empty($category_names)) {
-                foreach($category_names as $i => $name) {
-                    $category_names[$i] = $gmGallery->options['taxonomies']['gmedia_category'][$name];
-                }
                 $this->filters['exclude_categories'] = array(
                     'title'  => __('Exclude Category', 'grand-media'),
                     'filter' => $category_names
@@ -201,6 +193,17 @@ class GmediaProcessor_Library extends GmediaProcessor {
             exit;
         }
 
+        if(isset($_GET['gallery'])) {
+            $location = $this->url;
+            $gallery_id = $gmCore->_get('gallery');
+            if($gallery_id) {
+                $gallery_query = $gmDB->get_metadata('gmedia_term', $gallery_id, '_query', true);
+                $location = add_query_arg($gallery_query, $location);
+            }
+            wp_redirect($location);
+            exit;
+        }
+
         $this->query_args = $this->query_args();
 
 
@@ -235,12 +238,29 @@ class GmediaProcessor_Library extends GmediaProcessor {
                     $this->error[] = $term_id->get_error_message();
                     break;
                 }
+                $gallery_module = $gallery['module'];
+                $module_settings = array($gallery_module => array());
+                if($gmCore->is_digit($gallery_module)) {
+                    $preset = $gmDB->get_term($gallery_module);
+                    if(!empty($preset) && !is_wp_error($preset)){
+                        $gallery_module = $preset->status;
+                        $module_settings = array(
+                            $gallery_module => maybe_unserialize($preset->description)
+                        );
+                    } else {
+                        $gallery_module = $gmGallery->options['default_gmedia_module'];
+                        $module_settings = array(
+                            $gallery_module => array()
+                        );
+                    }
+                }
+                $gallery['query'] = array_merge($gallery['query'], array('order' => 'ASC', 'orderby' => 'gmedia__in'));
 
                 $gallery_meta = array(
                     '_edited'   => gmdate('Y-m-d H:i:s'),
-                    '_module'   => $gallery['module'],
-                    '_query'    => array('gmedia__in' => $gallery['query']['gmedia__in']),
-                    '_settings' => array($gallery['module'] => array())
+                    '_query'    => $gallery['query'],
+                    '_module'   => $gallery_module,
+                    '_settings' => $module_settings
                 );
                 foreach($gallery_meta as $key => $value) {
                     $gmDB->add_metadata('gmedia_term', $term_id, $key, $value);
@@ -283,47 +303,8 @@ class GmediaProcessor_Library extends GmediaProcessor {
             wp_redirect($location);
             exit;
         }
+
         if(!empty($this->selected_items)) {
-            if(isset($_POST['assign_category'])) {
-                check_admin_referer('gmedia_modal');
-                if($gmCore->caps['gmedia_terms']) {
-                    if(!$gmCore->caps['gmedia_edit_others_media']) {
-                        $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $this->selected_items));
-                        if(count($selected_items) < count($this->selected_items)) {
-                            $this->error[] = __('You are not allowed to edit others media', 'grand-media');
-                        }
-                    } else {
-                        $selected_items = $this->selected_items;
-                    }
-                    $term = $gmCore->_post('cat');
-                    if((false !== $term) && ($count = count($selected_items))) {
-                        if('0' == $term) {
-                            foreach($selected_items as $item) {
-                                $gmDB->delete_gmedia_term_relationships($item, 'gmedia_category');
-                            }
-                            $this->msg[] = sprintf(__('%d item(s) was uncategorized', 'grand-media'), $count);
-                        } else {
-                            foreach($selected_items as $item) {
-                                $result = $gmDB->set_gmedia_terms($item, $term, 'gmedia_category', $append = 0);
-                                if(is_wp_error($result)) {
-                                    $this->error[] = $result;
-                                    $count--;
-                                } elseif(!$result) {
-                                    $count--;
-                                }
-                            }
-                            if(isset($gmGallery->options['taxonomies']['gmedia_category'][$term])) {
-                                $cat_name    = $gmGallery->options['taxonomies']['gmedia_category'][$term];
-                                $this->msg[] = sprintf(__("Category `%s` assigned to %d image(s).", 'grand-media'), esc_html($cat_name), $count);
-                            } else {
-                                $this->error[] = sprintf(__("Category `%s` can't be assigned.", 'grand-media'), $term);
-                            }
-                        }
-                    }
-                } else {
-                    $this->error[] = __('You are not allowed to assign terms', 'grand-media');
-                }
-            }
             if(isset($_POST['assign_album'])) {
                 check_admin_referer('gmedia_modal');
                 if($gmCore->caps['gmedia_terms']) {
@@ -358,7 +339,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
                                 global $wpdb;
 
                                 foreach($term_ids as $term_id => $item_ids) {
-                                    $term = $gmDB->get_term($term_id, 'gmedia_album');
+                                    $term = $gmDB->get_term($term_id);
                                     if(isset($_POST['status_global'])) {
                                         $values = array();
                                         foreach($selected_items as $item) {
@@ -375,6 +356,70 @@ class GmediaProcessor_Library extends GmediaProcessor {
                                 }
                             }
                         }
+
+                        $this->selected_items = $this->clear_selected_items('library');
+                    }
+                } else {
+                    $this->error[] = __('You are not allowed to assign terms', 'grand-media');
+                }
+            }
+            if(isset($_POST['assign_category'])) {
+                check_admin_referer('gmedia_modal');
+                if($gmCore->caps['gmedia_terms']) {
+                    if(!$gmCore->caps['gmedia_edit_others_media']) {
+                        $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $this->selected_items));
+                        if(count($selected_items) < count($this->selected_items)) {
+                            $this->error[] = __('You are not allowed to edit others media', 'grand-media');
+                        }
+                    } else {
+                        $selected_items = $this->selected_items;
+                    }
+                    $term = $gmCore->_post('cat_names');
+                    $term = explode(',', $term);
+                    if(!empty($term) && ($count = count($selected_items))) {
+                        foreach($selected_items as $item) {
+                            $result = $gmDB->set_gmedia_terms($item, $term, 'gmedia_category', $append = 1);
+                            if(is_wp_error($result)) {
+                                $this->error[] = $result;
+                                $count--;
+                            } elseif(!$result) {
+                                $count--;
+                            }
+                        }
+
+                        $this->msg[] = sprintf(__("Categories assigned to %d image(s).", 'grand-media'), $count);
+
+                        $this->selected_items = $this->clear_selected_items('library');
+                    }
+                } else {
+                    $this->error[] = __('You are not allowed to assign terms', 'grand-media');
+                }
+            }
+            if(isset($_POST['unassign_category'])) {
+                check_admin_referer('gmedia_modal');
+                if(($term = $gmCore->_post('category_id')) && $gmCore->caps['gmedia_terms']) {
+                    if(!$gmCore->caps['gmedia_edit_others_media']) {
+                        $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $this->selected_items));
+                        if(count($selected_items) < count($this->selected_items)) {
+                            $this->error[] = __('You are not allowed to edit others media', 'grand-media');
+                        }
+                    } else {
+                        $selected_items = $this->selected_items;
+                    }
+                    $term = array_map('intval', $term);
+                    if(($count = count($selected_items))) {
+                        foreach($selected_items as $item) {
+                            $result = $gmDB->set_gmedia_terms($item, $term, 'gmedia_category', $append = -1);
+                            if(is_wp_error($result)) {
+                                $this->error[] = $result;
+                                $count--;
+                            } elseif(!$result) {
+                                $count--;
+                            }
+                        }
+                        $this->msg[] = sprintf(__('%d category(ies) deleted from %d item(s)', 'grand-media'), count($term), $count);
+
+                        $this->selected_items = $this->clear_selected_items('library');
                     }
                 } else {
                     $this->error[] = __('You are not allowed to assign terms', 'grand-media');
@@ -414,7 +459,9 @@ class GmediaProcessor_Library extends GmediaProcessor {
                                     $count--;
                                 }
                             }
-                            $this->msg[] = sprintf(__('Tags added to %d item(s)', 'grand-media'), count($term), $count);
+                            $this->msg[] = sprintf(__('Tags added to %d item(s)', 'grand-media'), $count);
+
+                            $this->selected_items = $this->clear_selected_items('library');
                         }
                     } else {
                         $this->error[] = __('No tags specified', 'grand-media');
@@ -444,6 +491,8 @@ class GmediaProcessor_Library extends GmediaProcessor {
                             }
                         }
                         $this->msg[] = sprintf(__('%d tag(s) deleted from %d item(s)', 'grand-media'), count($term), $count);
+
+                        $this->selected_items = $this->clear_selected_items('library');
                     }
                 } else {
                     $this->error[] = __('You are not allowed to assign terms', 'grand-media');
@@ -461,14 +510,18 @@ class GmediaProcessor_Library extends GmediaProcessor {
                         $selected_items = $this->selected_items;
                     }
                     if(($count = count($selected_items))) {
-                        $batch_data    = array();
-                        $b_filename    = $gmCore->_post('batch_filename');
-                        $b_title       = $gmCore->_post('batch_title');
-                        $b_description = $gmCore->_post('batch_description');
-                        $b_link        = $gmCore->_post('batch_link');
-                        $b_status      = $gmCore->_post('batch_status');
+                        $batch_data       = array();
+                        $b_filename       = $gmCore->_post('batch_filename');
+                        $b_title          = $gmCore->_post('batch_title');
+                        $b_description    = $gmCore->_post('batch_description');
+                        $b_link           = $gmCore->_post('batch_link');
+                        $b_status         = $gmCore->_post('batch_status');
+                        $b_comment_status = $gmCore->_post('batch_comment_status');
                         if($b_status) {
                             $batch_data['status'] = $b_status;
+                        }
+                        if($b_comment_status) {
+                            $batch_data['comment_status'] = $b_comment_status;
                         }
                         $b_author = $gmCore->_post('batch_author');
                         if($b_author && ('-1' != $b_author)) {
@@ -582,6 +635,8 @@ class GmediaProcessor_Library extends GmediaProcessor {
                             $i++;
                         }
                         $this->msg[] = sprintf(__('%d item(s) updated successfuly', 'grand-media'), $count);
+
+                        $this->selected_items = $this->clear_selected_items('library');
                     }
                 } else {
                     $this->error[] = __('You are not allowed to edit media', 'grand-media');
@@ -605,6 +660,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
                         }
                         $this->msg[] = sprintf(__('%d item(s) updated successfuly', 'grand-media'), $count);
                     }
+                    $this->selected_items = $this->clear_selected_items('library');
                 } else {
                     $this->error[] = __('You are not allowed to edit media', 'grand-media');
                 }
@@ -643,11 +699,17 @@ class GmediaProcessor_Library extends GmediaProcessor {
                         }
                         $this->selected_items = array_diff($this->selected_items, $selected_items);
                         if(empty($this->selected_items)) {
-                            setcookie("gmuser_{$user_ID}_library", '', time() - 3600);
-                            unset($_COOKIE["gmuser_{$user_ID}_library"]);
-                            $this->selected_items = array();
+                            $this->clear_selected_items('library');
                         } else {
                             setcookie("gmuser_{$user_ID}_library", implode(',', $this->selected_items));
+                        }
+                        if(!empty($this->stack_items)) {
+                            $this->stack_items = array_diff($this->stack_items, $selected_items);
+                            if(empty($this->stack_items)) {
+                                $this->clear_selected_items('library_stack');;
+                            } else {
+                                setcookie("gmuser_{$user_ID}_library_stack", implode(',', $this->stack_items));
+                            }
                         }
                     }
                 }

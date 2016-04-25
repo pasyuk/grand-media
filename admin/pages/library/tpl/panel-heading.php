@@ -91,8 +91,6 @@
                 <li class="filter_categories<?php echo isset($gmDB->filter_tax['gmedia_category'])? ' active' : ''; ?>"><a href="#libModal" data-modal="filter_categories" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Categories', 'grand-media'); ?></a></li>
                 <li class="filter_albums<?php echo isset($gmDB->filter_tax['gmedia_album'])? ' active' : ''; ?>"><a href="#libModal" data-modal="filter_albums" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Albums', 'grand-media'); ?></a></li>
                 <li class="filter_tags<?php echo isset($gmDB->filter_tax['gmedia_tag'])? ' active' : ''; ?>"><a href="#libModal" data-modal="filter_tags" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Tags', 'grand-media'); ?></a></li>
-                <li class="divider"></li>
-                <li class="custom_filters"><a href="#libModal" data-modal="custom_filter" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Custom Filters', 'grand-media'); ?></a></li>
                 <?php do_action('gmedia_filter_list'); ?>
             </ul>
         </div>
@@ -130,14 +128,14 @@
                     <a href="#libModal" data-modal="batch_edit" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Batch Edit', 'grand-media'); ?></a></li>
 
                 <li class="divider"></li>
-                <li class="<?php echo $rel_selected_show . (gm_user_can('gallery_manage')? '' : ' disabled'); ?>">
-                    <a href="#libModal" data-modal="quick_gallery" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Quick Gallery from Selected', 'grand-media'); ?></a>
-                </li>
-                <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
-                    <a href="#libModal" data-modal="assign_category" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Assign Category...', 'grand-media'); ?></a>
-                </li>
                 <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
                     <a href="#libModal" data-modal="assign_album" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Move to Album...', 'grand-media'); ?></a>
+                </li>
+                <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
+                    <a href="#libModal" data-modal="assign_category" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Assign Categories...', 'grand-media'); ?></a>
+                </li>
+                <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
+                    <a href="#libModal" data-modal="unassign_category" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Unassign Categories...', 'grand-media'); ?></a>
                 </li>
                 <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
                     <a href="#libModal" data-modal="add_tags" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Add Tags...', 'grand-media'); ?></a></li>
@@ -159,10 +157,33 @@
         </div>
 
         <?php
+        $filter_stack     = $gmCore->_req('stack');
+        $filter_stack_arg = $filter_stack? false : 'show';
+
         $filter_selected     = $gmCore->_req('filter');
         $filter_selected_arg = $filter_selected? false : 'selected';
         ?>
-        <form class="btn-group" id="gm-selected-btn" name="gm-selected-form" action="<?php echo add_query_arg(array('filter' => $filter_selected_arg), $gmedia_url); ?>" method="post">
+        <form class="btn-group" id="gm-stack-btn" name="gm-stack-form" action="<?php echo add_query_arg(array('stack' => $filter_stack_arg, 'filter' => $filter_selected), $gmedia_url); ?>" method="post">
+            <button type="submit" class="btn btn<?php echo ('show' == $filter_stack)? '-success' : '-info' ?>"><?php printf(__('%s in Stack', 'grand-media'), '<span id="gm-stack-qty">' . count($gmProcessor->stack_items) . '</span>'); ?></button>
+            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span>
+                <span class="sr-only"><?php _e('Toggle Dropdown', 'grand-media'); ?></span></button>
+            <input type="hidden" id="gm-stack" data-userid="<?php echo $user_ID; ?>" data-key="library_stack" name="stack_items" value="<?php echo implode(',', $gmProcessor->stack_items); ?>"/>
+            <ul class="dropdown-menu" role="menu">
+                <li><a id="gm-stack-show" href="#show"><?php
+                        if(!$filter_stack) {
+                            _e('Show Stack', 'grand-media');
+                        } else {
+                            _e('Show Library', 'grand-media');
+                        }
+                        ?></a></li>
+                <li><a id="gm-stack-clear" href="#clear"><?php _e('Clear Stack', 'grand-media'); ?></a></li>
+                <li class="<?php echo gm_user_can('gallery_manage')? '' : 'disabled'; ?>">
+                    <a href="#libModal" data-modal="quick_gallery_stack" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Quick Gallery from Stack', 'grand-media'); ?></a>
+                </li>
+            </ul>
+        </form>
+
+        <form class="btn-group" id="gm-selected-btn" name="gm-selected-form" action="<?php echo add_query_arg(array('stack' => $filter_stack, 'filter' => $filter_selected_arg), $gmedia_url); ?>" method="post">
             <button type="submit" class="btn btn<?php echo ('selected' == $filter_selected)? '-success' : '-info' ?>"><?php printf(__('%s selected', 'grand-media'), '<span id="gm-selected-qty">' . count($gmProcessor->selected_items) . '</span>'); ?></button>
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"><span class="caret"></span>
                 <span class="sr-only"><?php _e('Toggle Dropdown', 'grand-media'); ?></span></button>
@@ -176,6 +197,8 @@
                         }
                         ?></a></li>
                 <li><a id="gm-selected-clear" href="#clear"><?php _e('Clear selected items', 'grand-media'); ?></a></li>
+                <li><a id="gm-stack-in" href="#stack_add"><?php _e('Add selected items to Stack', 'grand-media'); ?></a></li>
+                <li><a id="gm-stack-out" href="#stack_remove"><?php _e('Remove selected items from Stack', 'grand-media'); ?></a></li>
                 <li class="<?php echo gm_user_can('gallery_manage')? '' : 'disabled'; ?>">
                     <a href="#libModal" data-modal="quick_gallery" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Quick Gallery from Selected', 'grand-media'); ?></a>
                 </li>

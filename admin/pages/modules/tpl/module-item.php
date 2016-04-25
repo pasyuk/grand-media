@@ -11,7 +11,9 @@
         <h4 class="media-heading"><?php echo $module['title']; ?></h4>
 
         <p class="version"><?php echo __('Version', 'grand-media') . ': ' . $module['version']; ?></p>
-
+        <?php if(isset($module['info'])) { ?>
+            <div class="module_info"><?php echo str_replace("\n", '<br />', (string)$module['info']); ?></div>
+        <?php } ?>
         <div class="description"><?php echo str_replace("\n", '<br />', (string)$module['description']); ?></div>
         <hr/>
         <p class="buttons">

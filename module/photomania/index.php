@@ -13,9 +13,11 @@ $module_info = array(
     'download'     => 'http://codeasily.com/download/photomania-module-zip/',
     'dependencies' => 'mousetrap'
 );
-if (isset($_GET['info'])) {
-    echo '<pre>' . print_r($module_info, true) . '</pre>';
-} elseif (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-    header("Location: {$module_info['demo']}");
-    die();
+if (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+    if (isset($_GET['info'])) {
+        echo '<pre>' . print_r($module_info, true) . '</pre>';
+    } else {
+        header("Location: {$module_info['demo']}");
+        die();
+    }
 }

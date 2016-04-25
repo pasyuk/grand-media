@@ -3,7 +3,7 @@ $module_info = array(
     'base'         => 'afflux',
     'name'         => 'afflux',
     'title'        => 'Afflux',
-    'version'      => '3.8',
+    'version'      => '3.9',
     'author'       => 'CodEasily.com',
     'description'  => 'A Free Gallery Skin that supports thumbnails size change, color change, captions and autoplay. Responsive and mobile friendly gallery.',
     'type'         => 'gallery',
@@ -14,9 +14,11 @@ $module_info = array(
     'dependencies' => 'swfobject'
 );
 
-if (isset($_GET['info'])) {
-    echo '<pre>' . print_r($module_info, true) . '</pre>';
-} elseif (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
-    header("Location: {$module_info['demo']}");
-    die();
+if (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+    if (isset($_GET['info'])) {
+        echo '<pre>' . print_r($module_info, true) . '</pre>';
+    } else {
+        header("Location: {$module_info['demo']}");
+        die();
+    }
 }

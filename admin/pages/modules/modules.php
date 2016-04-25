@@ -10,7 +10,8 @@ if(!defined('ABSPATH')) {
 
 global $gmCore, $gmProcessor, $gmGallery;
 
-$modules = gmedia_get_modules();
+$gmedia_url = $gmProcessor->url;
+$modules    = get_gmedia_modules();
 
 if(isset($modules['error'])) {
     echo $gmCore->alert('danger', $modules['error']);
@@ -31,8 +32,8 @@ if(isset($modules['error'])) {
             if(!empty($modules['in'])) {
                 foreach($modules['in'] as $module) {
                     $module['screenshot_url'] = $module['module_url'] . '/screenshot.png';
-                    $module['mclass'] = ' module-' . $module['type'] . ' module-' . $module['status'];
-                    if($module['update']){
+                    $module['mclass']         = ' module-' . $module['type'] . ' module-' . $module['status'];
+                    if($module['update']) {
                         $module['mclass'] .= ' module-update';
                     }
 
@@ -54,7 +55,7 @@ if(isset($modules['error'])) {
                 <?php
                 $out_dirpath = dirname($gmGallery->options['modules_xml']);
                 foreach($modules['out'] as $module) {
-                    $module['mclass'] = ' module-' . $module['type'] . ' module-' . $module['status'];
+                    $module['mclass']         = ' module-' . $module['type'] . ' module-' . $module['status'];
                     $module['screenshot_url'] = $out_dirpath . '/' . $module['name'] . '.png';
 
                     include(dirname(__FILE__) . '/tpl/module-item.php');

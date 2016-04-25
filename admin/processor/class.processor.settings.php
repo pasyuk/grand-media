@@ -35,8 +35,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
                 $set['endpoint'] !== $gmGallery->options['endpoint'] ||
                 $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug'] ||
                 $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug'] ||
-                $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug'] ||
-                $set['gmedia_filter_post_slug'] !== $gmGallery->options['gmedia_filter_post_slug']
+                $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']
             ) {
                 $flush_rewrite_rules = true;
             }
@@ -79,11 +78,11 @@ class GmediaProcessor_Settings extends GmediaProcessor {
                 if($roles[$capabilities['gmedia_terms']] < $roles[$capabilities['gmedia_album_manage']]) {
                     $capabilities['gmedia_album_manage'] = $capabilities['gmedia_terms'];
                 }
+                if($roles[$capabilities['gmedia_terms']] < $roles[$capabilities['gmedia_category_manage']]) {
+                    $capabilities['gmedia_category_manage'] = $capabilities['gmedia_terms'];
+                }
                 if($roles[$capabilities['gmedia_terms']] < $roles[$capabilities['gmedia_tag_manage']]) {
                     $capabilities['gmedia_tag_manage'] = $capabilities['gmedia_terms'];
-                }
-                if($roles[$capabilities['gmedia_terms']] < $roles[$capabilities['gmedia_filter_manage']]) {
-                    $capabilities['gmedia_filter_manage'] = $capabilities['gmedia_terms'];
                 }
                 if($roles[$capabilities['gmedia_terms']] < $roles[$capabilities['gmedia_terms_delete']]) {
                     $capabilities['gmedia_terms_delete'] = $capabilities['gmedia_terms'];
@@ -163,7 +162,6 @@ class GmediaProcessor_Settings extends GmediaProcessor {
             $gmGallery->options['license_key2'] = $_temp_options['license_key2'];
             // don't reset mobile app
             $gmGallery->options['site_email'] = $_temp_options['site_email'];
-            $gmGallery->options['site_category'] = $_temp_options['site_category'];
             $gmGallery->options['site_ID'] = $_temp_options['site_ID'];
             $gmGallery->options['mobile_app'] = $_temp_options['mobile_app'];
             delete_metadata('user', 0, 'gm_screen_options', '', true);

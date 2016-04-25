@@ -38,7 +38,6 @@ function gmedia_map_editor()
                 </div>
             </div>
             <div id="map" style="height:410px;"></div>
-            <script src='//maps.google.com/maps/api/js?sensor=false&v=3'></script>
         </div>
         <div class="panel-footer clearfix">
             <div class="pull-left well-sm"><?php _e('Coordinates:', 'grand-media'); ?> <span id="latlng">&ndash;</span></div>
@@ -60,62 +59,8 @@ function gmedia_map_editor()
     <script type="text/javascript" defer>
         jQuery(function ($) {
             setTimeout(function () {
-                initialize();
+                checkMapsApi();
             }, 0);
-            var latlng, map, marker, coord, coord_div = $('#latlng');
-
-            function initialize() {
-                latlng = new google.maps.LatLng(<?php echo "{$latlng['lat']}, {$latlng['lng']}"; ?>);
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: latlng,
-                    zoom: <?php echo $marker? '11' : '2'; ?>,
-                    mapTypeControl: false,
-                    streetViewControl: false,
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                });
-                var geocoder = new google.maps.Geocoder();
-
-                document.getElementById('geocode_submit').addEventListener('click', function () {
-                    geocodeAddress(geocoder, map);
-                });
-                google.maps.event.addListener(map, 'click', function (event) {
-                    placeMarker(event.latLng);
-                });
-                <?php if($marker){ echo 'placeMarker(latlng);'; } ?>
-            }
-
-            function placeMarker(location) {
-                //console.log(location);
-                if (marker) {
-                    marker.setPosition(location);
-                } else {
-                    marker = new google.maps.Marker({
-                        position: location,
-                        map: map,
-                        title: 'Set lat/lon values for this property',
-                        draggable: true
-                    });
-                    google.maps.event.addListener(marker, 'dragend', function (a) {
-                        //console.log(a);
-                        coord = a.latLng.lat().toFixed(4) + ', ' + a.latLng.lng().toFixed(4);
-                        coord_div.html(coord);
-                    });
-                }
-                coord = location.lat().toFixed(4) + ', ' + location.lng().toFixed(4);
-                coord_div.html(coord);
-            }
-
-            function geocodeAddress(geocoder, resultsMap) {
-                var address = document.getElementById('geocode_address').value;
-                geocoder.geocode({'address': address}, function (results, status) {
-                    if (status === google.maps.GeocoderStatus.OK) {
-                        resultsMap.setCenter(results[0].geometry.location);
-                        placeMarker(results[0].geometry.location);
-                    } else {
-                        alert('<?php _e('Geocode was not successful for the following reason:', 'grand-media'); ?> ' + status);
-                    }
-                });
-            }
 
             $('.gps_cancel').on('click', function () {
                 window.parent.closeModal('gmeditModal');
@@ -135,6 +80,73 @@ function gmedia_map_editor()
                 window.parent.closeModal('gmeditModal');
             });
         });
+
+        var latlng, map, marker, coord, coord_div = jQuery('#latlng');
+
+        function checkMapsApi() {
+            if (typeof window.google === 'object' && typeof window.google.maps === 'object') {
+                handleApiReady();
+            } else {
+                var script = document.createElement("script");
+                script.type = "text/javascript";
+                script.src = "//maps.google.com/maps/api/js?sensor=false&v=3&callback=handleApiReady";
+                document.body.appendChild(script);
+            }
+        }
+
+        function handleApiReady() {
+            latlng = new google.maps.LatLng(<?php echo "{$latlng['lat']}, {$latlng['lng']}"; ?>);
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: latlng,
+                zoom: <?php echo $marker? '11' : '2'; ?>,
+                mapTypeControl: false,
+                streetViewControl: false,
+                mapTypeId: google.maps.MapTypeId.ROADMAP
+            });
+            var geocoder = new google.maps.Geocoder();
+
+            document.getElementById('geocode_submit').addEventListener('click', function () {
+                geocodeAddress(geocoder, map);
+            });
+            google.maps.event.addListener(map, 'click', function (event) {
+                placeMarker(event.latLng);
+            });
+            <?php if($marker){ echo 'placeMarker(latlng);'; } ?>
+        }
+
+        function placeMarker(location) {
+            //console.log(location);
+            if (marker) {
+                marker.setPosition(location);
+            } else {
+                marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: 'Set lat/lon values for this property',
+                    draggable: true
+                });
+                google.maps.event.addListener(marker, 'dragend', function (a) {
+                    //console.log(a);
+                    coord = a.latLng.lat().toFixed(4) + ', ' + a.latLng.lng().toFixed(4);
+                    coord_div.html(coord);
+                });
+            }
+            coord = location.lat().toFixed(4) + ', ' + location.lng().toFixed(4);
+            coord_div.html(coord);
+        }
+
+        function geocodeAddress(geocoder, resultsMap) {
+            var address = document.getElementById('geocode_address').value;
+            geocoder.geocode({'address': address}, function (results, status) {
+                if (status === google.maps.GeocoderStatus.OK) {
+                    resultsMap.setCenter(results[0].geometry.location);
+                    placeMarker(results[0].geometry.location);
+                } else {
+                    alert('<?php _e('Geocode was not successful for the following reason:', 'grand-media'); ?> ' + status);
+                }
+            });
+        }
+
     </script>
     <?php
 }

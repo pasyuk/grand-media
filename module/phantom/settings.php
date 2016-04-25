@@ -1,5 +1,6 @@
 <?php
 $default_options = array(
+    'per_page'                => '0',
     'maxheight'               => '0',
     'thumbCols'               => '0',
     'thumbRows'               => '0',
@@ -52,6 +53,12 @@ $options_tree    = array(
     array(
         'label'  => 'Common Settings',
         'fields' => array(
+            'per_page'        => array(
+                'label' => 'Items per page',
+                'tag'   => 'input',
+                'attr'  => 'type="number" min="0"',
+                'text'  => 'Leave 0 to disable pagination.'
+            ),
             'maxheight'        => array(
                 'label' => 'Max-Height',
                 'tag'   => 'input',
@@ -356,7 +363,7 @@ $options_tree    = array(
                 'attr'  => 'type="number" min="0" max="100" step="5"',
                 'text'  => 'Set the transparancy for the lightbox window'
             ),
-            'commetnsBGColor'       => array(
+            'commentsBGColor'       => array(
                 'label' => 'Commetns Block BG Color',
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
@@ -366,7 +373,7 @@ $options_tree    = array(
                 'label' => 'Comments Block BG Alpha',
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" max="100" step="5"',
-                'text'  => 'Set the transparancy for the commetns block'
+                'text'  => 'Set the transparancy for the comments block'
             ),
             'socialShareEnabled'    => array(
                 'label' => 'Social Share',

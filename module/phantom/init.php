@@ -16,7 +16,7 @@ $settings    = array_merge($settings, array(
         'ajax_actions'  => array(
                 'comments' => array(
                         'action' => 'load_comments',
-                        'data'   => array()
+                        'data'   => array('post_id' => 0)
                 )
         ),
 ));
@@ -152,13 +152,14 @@ if(!empty($content)) {
 
     $cssid = "#GmediaGallery_{$gallery['term_id']}";
     $dcss  = '';
-    if(isset($settings['thumbWidth']) || isset($settings['thumbHeight'])) {
+    if(isset($settings['thumbWidth']) || isset($settings['thumbHeight']) || isset($settings['thumbWidthMobile']) || isset($settings['thumbHeightMobile'])) {
         $dcss .= "
-{$cssid} .gmPhantom_ThumbContainer {width:{$allsettings['thumbWidth']}px; height:{$allsettings['thumbHeight']}px;}";
-    }
-    if(isset($settings['thumbWidthMobile']) || isset($settings['thumbHeightMobile'])) {
-        $dcss .= "
+{$cssid} .gmPhantom_ThumbContainer {width:{$allsettings['thumbWidth']}px; height:{$allsettings['thumbHeight']}px;}
 {$cssid} .gmPhantom_MobileView .gmPhantom_ThumbContainer {width:{$allsettings['thumbWidthMobile']}px; height:{$allsettings['thumbHeightMobile']}px;}";
+    }
+    if(isset($settings['thumbPadding'])) {
+        $dcss .= "
+{$cssid} .gmPhantom_ThumbContainer {padding:{$allsettings['thumbPadding']}px;}";
     }
     if(isset($settings['thumbBG'])) {
         if('' == $settings['thumbBG']) {
@@ -173,12 +174,12 @@ if(!empty($content)) {
     if(isset($settings['thumbAlpha'])) {
         $alpha = $settings['thumbAlpha'] / 100;
         $dcss .= "
-{$cssid} .gmPhantom_ThumbContainer {opacity:{$alpha};}";
+{$cssid} .gmPhantom_ThumbContainer .gmPhantom_Thumb {opacity:{$alpha};}";
     }
     if(isset($settings['thumbAlphaHover'])) {
         $alpha = $settings['thumbAlphaHover'] / 100;
         $dcss .= "
-{$cssid} .gmPhantom_ThumbContainer {opacity:{$alpha};}";
+{$cssid} .gmPhantom_ThumbContainer:hover .gmPhantom_Thumb {opacity:{$alpha};}";
     }
     if(isset($settings['thumbBorderSize']) || isset($settings['thumbBorderColor'])) {
         if((int)$settings['thumbBorderSize']) {
@@ -241,9 +242,7 @@ if(!empty($content)) {
         }
     }
     ?>
-    <div class="gmPhantom_Container noLightbox delay"<?php if(!$is_bot) {
-        echo ' style="opacity:0.01"';
-    } ?>>
+    <div class="gmPhantom_Container noLightbox delay">
         <div class="gmPhantom_Background"></div>
         <?php
         $thumbsWrapper_class = (int)$allsettings['thumbScale']? ' gmPhantom_ThumbScale' : '';
@@ -264,6 +263,7 @@ if(!empty($content)) {
         <div class="gmPhantom_thumbsWrapper<?php echo $thumbsWrapper_class; ?>">
             <?php $i   = 0;
             $wrapper_r = $allsettings['thumbWidth'] / $allsettings['thumbHeight'];
+            $mobile_wrapper_r = $allsettings['thumbWidthMobile'] / $allsettings['thumbHeightMobile'];
             foreach($content as $item) {
                 $thumb_r = $item['thumbsize'][0] / $item['thumbsize'][1];
                 if($wrapper_r < $thumb_r) {
@@ -273,9 +273,12 @@ if(!empty($content)) {
                     $orientation = 'portrait';
                     $margin      = 'margin:-' . floor(($allsettings['thumbWidth'] / $thumb_r - $allsettings['thumbHeight']) / $allsettings['thumbHeight'] * 25) . '% 0 0 0;';
                 }
+
+                $class = '';
+                $style = 'left:50%; top:50%; transform:translate(-50%, -50%);'
                 ?>
-                <div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo(!in_array($item['type'], array('image'))? " mfp-iframe" : ''); ?>" data-ratio="<?php echo "$wrapper_r/$thumb_r"; ?>" data-no="<?php echo $i++; ?>"><?php
-                ?><a href="<?php echo $gmCore->upload['url'] . $item['src']; ?>" class="gmPhantom_Thumb"><img style="<?php echo $margin; ?>" class="<?php echo $orientation; ?>" src="<?php echo $item['thumb']; ?>" alt="<?php echo esc_attr($item['title']); ?>"/></a><?php
+                <div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo(!in_array($item['type'], array('image'))? " mfp-iframe" : ''); ?>" data-ratio="<?php echo $thumb_r; ?>" data-no="<?php echo $i++; ?>"><?php
+                ?><a href="<?php echo $gmCore->upload['url'] . $item['src']; ?>" class="gmPhantom_Thumb"><img style="<?php echo $style; ?>" src="<?php echo $item['thumb']; ?>" alt="<?php echo esc_attr($item['title']); ?>"/></a><?php
                 if(in_array($allsettings['thumbsInfo'], array('label', 'label_bottom')) && ($item['title'] != '')) {
                     if(!empty($item['link'])) {
                         $item['title'] = "<a href='{$item['link']}' target='{$item['linkTarget']}'>{$item['title']}</a>";
@@ -286,6 +289,23 @@ if(!empty($content)) {
                 } ?></div><?php
             } ?><br style="clear:both;"/>
         </div>
+
+        <?php if(isset($counts['total_pages']) && !empty($counts['total_pages']) && 1 < intval($counts['total_pages'])){ ?>
+        <div class="gmPhantom_pagination">
+            <?php
+            $params = $_GET;
+            $gmid = 'gm' . $gallery['term_id'];
+            $counts['total_pages'] = (int)$counts['total_pages'];
+            for($x = 1; $x <= $counts['total_pages']; $x++){
+                $li_class = $x == $counts['current_page']? ' gmPhantom_current_page' : '';
+                $params[$gmid]['page'] = $x;
+                $new_query_string = http_build_query($params);
+                $self = '?' . urldecode($new_query_string);
+                echo "<a class='gmPhantom_pager{$li_class}' href='{$self}'>{$x}</a>";
+            }
+            ?>
+        </div>
+        <?php } ?>
     </div>
     <?php
 } else {

@@ -65,22 +65,39 @@ class GmediaProcessor {
     }
 
     /**
-     * @param $cookie_key
+     * @param string $cookie_key
+     *
+     * @param string $post_key
      *
      * @return array
      */
-    public static function selected_items($cookie_key) {
+    public static function selected_items($cookie_key, $post_key = 'selected_items') {
 
         $selected_items = array();
         if($cookie_key) {
-            if(isset($_POST['selected_items'])) {
-                $selected_items = array_filter(explode(',', $_POST['selected_items']), 'is_numeric');
+            if(isset($_POST[$post_key])) {
+                $selected_items = array_filter(explode(',', $_POST[$post_key]), 'is_numeric');
             } elseif(isset($_COOKIE[$cookie_key])) {
                 $selected_items = array_filter(explode(',', $_COOKIE[$cookie_key]), 'is_numeric');
             }
         }
 
         return $selected_items;
+    }
+
+    /**
+     * @param string $cookie_key
+     *
+     * @return array
+     */
+    public function clear_selected_items($cookie_key) {
+        global $user_ID;
+
+        if($cookie_key) {
+            setcookie("gmuser_{$user_ID}_{$cookie_key}", '', time() - 3600);
+            unset($_COOKIE["gmuser_{$user_ID}_{$cookie_key}"]);
+        }
+        return array();
     }
 
     /**
@@ -162,7 +179,9 @@ class GmediaProcessor {
             case 'GrandMedia_AddMedia':
                 include_once($path_ . 'addmedia.php');
             break;
-            case 'GrandMedia_Terms':
+            case 'GrandMedia_Albums':
+            case 'GrandMedia_Categories':
+            case 'GrandMedia_Tags':
                 include_once($path_ . 'terms.php');
             break;
             case 'GrandMedia_Galleries':

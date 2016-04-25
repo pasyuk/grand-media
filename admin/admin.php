@@ -13,13 +13,11 @@ class GmediaAdmin {
     function __construct() {
         global $pagenow;
 
-        include_once(GMEDIA_ABSPATH . 'admin/functions.php');
-
         // Add the admin menu
         add_action('admin_menu', array(&$this, 'add_menu'));
 
         // Add the script and style files
-        add_action('admin_enqueue_scripts', array(&$this, 'load_scripts'));
+        add_action('admin_enqueue_scripts', array(&$this, 'load_scripts'), 20);
 
         add_filter('screen_settings', array(&$this, 'screen_settings'), 10, 2);
         add_filter('set-screen-option', array(&$this, 'screen_settings_save'), 11, 3);
@@ -83,12 +81,14 @@ class GmediaAdmin {
     function add_menu() {
         $gmediaURL     = plugins_url(GMEDIA_FOLDER);
         $this->pages   = array();
-        $this->pages[] = add_object_page(__('Gmedia Library', 'grand-media'), 'Gmedia Gallery', 'gmedia_library', 'GrandMedia', array(&$this, 'shell'), $gmediaURL . '/admin/assets/img/gm-icon.png');
+        $this->pages[] = add_menu_page(__('Gmedia Library', 'grand-media'), 'Gmedia Gallery', 'gmedia_library', 'GrandMedia', array(&$this, 'shell'), $gmediaURL . '/admin/assets/img/gm-icon.png', 11);
         $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Library', 'grand-media'), __('Gmedia Library', 'grand-media'), 'gmedia_library', 'GrandMedia', array(&$this, 'shell'));
         if(current_user_can('gmedia_library')) {
             $this->pages[] = add_submenu_page('GrandMedia', __('Add Media Files', 'grand-media'), __('Add/Import Files', 'grand-media'), 'gmedia_upload', 'GrandMedia_AddMedia', array(&$this, 'shell'));
-            $this->pages[] = add_submenu_page('GrandMedia', __('Albums, Tags, Filters...', 'grand-media'), __('Albums, Tags, Filters...', 'grand-media'), 'gmedia_library', 'GrandMedia_Terms', array(&$this, 'shell'));
-            $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Galleries', 'grand-media'), __('Create/Manage Galleries...', 'grand-media'), 'gmedia_gallery_manage', 'GrandMedia_Galleries', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Tags', 'grand-media'), __('Tags', 'grand-media'), 'gmedia_library', 'GrandMedia_Tags', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Categories', 'grand-media'), __('Categories', 'grand-media'), 'gmedia_library', 'GrandMedia_Categories', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Albums', 'grand-media'), __('Albums', 'grand-media'), 'gmedia_library', 'GrandMedia_Albums', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Galleries', 'grand-media'), __('Galleries', 'grand-media'), 'gmedia_gallery_manage', 'GrandMedia_Galleries', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Modules', 'grand-media'), __('Modules', 'grand-media'), 'gmedia_gallery_manage', 'GrandMedia_Modules', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Settings', 'grand-media'), __('Settings', 'grand-media'), 'manage_options', 'GrandMedia_Settings', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Mobile Application', 'grand-media'), __('Mobile Application', 'grand-media'), 'gmedia_settings', 'GrandMedia_App', array(&$this, 'shell'));
@@ -212,23 +212,28 @@ class GmediaAdmin {
             case 'GrandMedia_AddMedia':
                 include_once(dirname(__FILE__) . '/pages/addmedia/addmedia.php');
             break;
-            case 'GrandMedia_Terms':
+            case 'GrandMedia_Albums':
                 if(isset($_GET['edit_item'])) {
-                    if('gmedia_album' == $gmProcessor->taxonomy){
-                        include_once(dirname(__FILE__) . '/pages/taxonomy/edit-album.php');
-                    } elseif('gmedia_filter' == $gmProcessor->taxonomy) {
-                        include_once(dirname(__FILE__) . '/pages/taxonomy/edit-filter.php');
-                    }
+                    include_once(dirname(__FILE__) . '/pages/terms/edit-term.php');
                 } else {
-                    include_once(dirname(__FILE__) . '/pages/taxonomy/terms.php');
+                    include_once(dirname(__FILE__) . '/pages/terms/terms.php');
                 }
             break;
-            case 'GrandMedia_Galleries':
-                include_once(dirname(__FILE__) . '/galleries.php');
-                if(isset($_GET['gallery_module']) || isset($_GET['edit_gallery'])) {
-                    gmediaGalleryEdit();
+            case 'GrandMedia_Categories':
+                if(isset($_GET['edit_item'])) {
+                    include_once(dirname(__FILE__) . '/pages/terms/edit-term.php');
                 } else {
-                    gmediaGalleries();
+                    include_once(dirname(__FILE__) . '/pages/terms/terms.php');
+                }
+            break;
+            case 'GrandMedia_Tags':
+                include_once(dirname(__FILE__) . '/pages/terms/terms.php');
+            break;
+            case 'GrandMedia_Galleries':
+                if(isset($_GET['gallery_module']) || isset($_GET['edit_item'])) {
+                    include_once(dirname(__FILE__) . '/pages/galleries/edit-gallery.php');
+                } else {
+                    include_once(dirname(__FILE__) . '/pages/galleries/galleries.php');
                 }
             break;
             case 'GrandMedia_Modules':
@@ -270,7 +275,7 @@ class GmediaAdmin {
         if($gmGallery->options['isolation_mode']) {
             global $wp_scripts, $wp_styles;
             foreach($wp_scripts->registered as $handle => $wp_script) {
-                if((false !== strpos($wp_script->src, '/plugins/')) && (false === strpos($wp_script->src, GMEDIA_FOLDER))) {
+                if(((false !== strpos($wp_script->src, '/plugins/')) || (false !== strpos($wp_script->src, '/themes/'))) && (false === strpos($wp_script->src, GMEDIA_FOLDER))) {
                     if(in_array($handle, $wp_scripts->queue)) {
                         wp_dequeue_script($handle);
                     }
@@ -278,7 +283,7 @@ class GmediaAdmin {
                 }
             }
             foreach($wp_styles->registered as $handle => $wp_style) {
-                if((false !== strpos($wp_style->src, '/plugins/')) && (false === strpos($wp_style->src, GMEDIA_FOLDER))) {
+                if(((false !== strpos($wp_style->src, '/plugins/')) || (false !== strpos($wp_style->src, '/themes/'))) && (false === strpos($wp_style->src, GMEDIA_FOLDER))) {
                     if(in_array($handle, $wp_styles->queue)) {
                         wp_dequeue_style($handle);
                     }
@@ -328,17 +333,12 @@ class GmediaAdmin {
                         wp_enqueue_script('selectize');
                     }
                 break;
-                case "GrandMedia_Terms" :
-                    if(isset($_GET['edit_item'])) {
-                        if('gmedia_album' == $gmProcessor->taxonomy && $gmCore->caps['gmedia_album_manage']) {
-                            wp_enqueue_style('jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen');
-                            wp_enqueue_script('jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', array(), '1.10.2');
+                case "GrandMedia_Albums" :
+                    if(isset($_GET['edit_item']) && $gmCore->caps['gmedia_album_manage']) {
+                        wp_enqueue_style('jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen');
+                        wp_enqueue_script('jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', array(), '1.10.2');
 
-                            wp_enqueue_script('tinysort', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.tinysort.js', array('jquery'), '1.5.6');
-                        } elseif('gmedia_filter' == $gmProcessor->taxonomy && $gmCore->caps['gmedia_filter_manage']) {
-                            wp_enqueue_style('selectize');
-                            wp_enqueue_script('selectize');
-                        }
+                        wp_enqueue_script('tinysort', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.tinysort.js', array('jquery'), '1.5.6');
                     }
                 break;
                 case "GrandMedia_AddMedia" :
@@ -368,7 +368,11 @@ class GmediaAdmin {
                     // under construction
                 break;
                 case "GrandMedia_Galleries" :
-                    if($gmCore->caps['gmedia_gallery_manage'] && (isset($_GET['gallery_module']) || isset($_GET['edit_gallery']))) {
+                    if($gmCore->caps['gmedia_gallery_manage'] && (isset($_GET['gallery_module']) || isset($_GET['edit_item']))) {
+
+                        wp_enqueue_style('jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen');
+                        wp_enqueue_script('jquery-ui-resizable');
+
                         wp_enqueue_script('jquery-ui-sortable');
                         wp_enqueue_style('selectize');
                         wp_enqueue_script('selectize');
@@ -518,9 +522,8 @@ class GmediaAdmin {
 						';
                     }
                 break;
-                case 'GrandMedia_Terms' :
-                    $taxonomy = $gmCore->_get('taxonomy', 'gmedia_album');
-                    if('gmedia_album' == $taxonomy && isset($_GET['edit_item'])) {
+                case 'GrandMedia_Albums' :
+                    if(isset($_GET['edit_item'])) {
                         $settings = '
 						<div class="form-inline pull-left">
 							<div class="form-group">
@@ -528,48 +531,94 @@ class GmediaAdmin {
 							</div>
 						</div>
 						';
-                    } elseif(!in_array($taxonomy, array('gmedia_category', 'gmedia_filter'))) {
+                    } else {
                         $settings = '
-						<div class="form-inline pull-left">
-							<div class="form-group">
-								<input type="number" max="999" min="0" step="5" size="3" name="gm_screen_options[per_page_gmedia_terms]" class="form-control input-sm" style="width: 5em;" value="' . $gm_screen_options['per_page_gmedia_terms'] . '" /> <span>' . __('items per page', 'grand-media') . '</span>
-							</div>
-							<div class="form-group">
-								<select name="gm_screen_options[orderby_gmedia_terms]" class="form-control input-sm">
-									<option' . selected($gm_screen_options['orderby_gmedia_terms'], 'id', false) . ' value="id">' . __('ID', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['orderby_gmedia_terms'], 'name', false) . ' value="name">' . __('Name', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['orderby_gmedia_terms'], 'count', false) . ' value="count">' . __('Gmedia Count', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['orderby_gmedia_terms'], 'global', false) . ' value="global">' . __('Author ID (for albums only)', 'grand-media') . '</option>
-								</select> <span>' . __('order items', 'grand-media') . '</span>
-							</div>
-							<div class="form-group">
-								<select name="gm_screen_options[sortorder_gmedia_terms]" class="form-control input-sm">
-									<option' . selected($gm_screen_options['sortorder_gmedia_terms'], 'DESC', false) . ' value="DESC">' . __('DESC', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['sortorder_gmedia_terms'], 'ASC', false) . ' value="ASC">' . __('ASC', 'grand-media') . '</option>
-								</select> <span>' . __('sort order', 'grand-media') . '</span>
-							</div>
-						</div>
-						';
+                        <div class="form-inline pull-left">
+                            <div class="form-group">
+                                <input type="number" max="999" min="0" step="5" size="3" name="gm_screen_options[per_page_gmedia_album]" class="form-control input-sm" style="width: 5em;" value="' . $gm_screen_options['per_page_gmedia_album'] . '" /> <span>' . __('items per page', 'grand-media') . '</span>
+                            </div>
+                            <div class="form-group">
+                                <select name="gm_screen_options[orderby_gmedia_album]" class="form-control input-sm">
+                                    <option' . selected($gm_screen_options['orderby_gmedia_album'], 'id', false) . ' value="id">' . __('ID', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['orderby_gmedia_album'], 'name', false) . ' value="name">' . __('Name', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['orderby_gmedia_album'], 'count', false) . ' value="count">' . __('Gmedia Count', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['orderby_gmedia_album'], 'global', false) . ' value="global">' . __('Author ID', 'grand-media') . '</option>
+                                </select> <span>' . __('order items', 'grand-media') . '</span>
+                            </div>
+                            <div class="form-group">
+                                <select name="gm_screen_options[sortorder_gmedia_album]" class="form-control input-sm">
+                                    <option' . selected($gm_screen_options['sortorder_gmedia_album'], 'DESC', false) . ' value="DESC">' . __('DESC', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['sortorder_gmedia_album'], 'ASC', false) . ' value="ASC">' . __('ASC', 'grand-media') . '</option>
+                                </select> <span>' . __('sort order', 'grand-media') . '</span>
+                            </div>
+                        </div>
+                        ';
                     }
                 break;
+                case 'GrandMedia_Categories' :
+                    if(!isset($_GET['edit_item'])) {
+                        $settings = '
+                        <div class="form-inline pull-left">
+                            <div class="form-group">
+                                <input type="number" max="999" min="0" step="5" size="3" name="gm_screen_options[per_page_gmedia_category]" class="form-control input-sm" style="width: 5em;" value="' . $gm_screen_options['per_page_gmedia_category'] . '" /> <span>' . __('items per page', 'grand-media') . '</span>
+                            </div>
+                            <div class="form-group">
+                                <select name="gm_screen_options[orderby_gmedia_category]" class="form-control input-sm">
+                                    <option' . selected($gm_screen_options['orderby_gmedia_category'], 'id', false) . ' value="id">' . __('ID', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['orderby_gmedia_category'], 'name', false) . ' value="name">' . __('Name', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['orderby_gmedia_category'], 'count', false) . ' value="count">' . __('Gmedia Count', 'grand-media') . '</option>
+                                </select> <span>' . __('order items', 'grand-media') . '</span>
+                            </div>
+                            <div class="form-group">
+                                <select name="gm_screen_options[sortorder_gmedia_category]" class="form-control input-sm">
+                                    <option' . selected($gm_screen_options['sortorder_gmedia_category'], 'DESC', false) . ' value="DESC">' . __('DESC', 'grand-media') . '</option>
+                                    <option' . selected($gm_screen_options['sortorder_gmedia_category'], 'ASC', false) . ' value="ASC">' . __('ASC', 'grand-media') . '</option>
+                                </select> <span>' . __('sort order', 'grand-media') . '</span>
+                            </div>
+                        </div>
+                        ';
+                    }
+                break;
+                case 'GrandMedia_Tags' :
+                    $settings = '
+                    <div class="form-inline pull-left">
+                        <div class="form-group">
+                            <input type="number" max="999" min="0" step="5" size="3" name="gm_screen_options[per_page_gmedia_tag]" class="form-control input-sm" style="width: 5em;" value="' . $gm_screen_options['per_page_gmedia_tag'] . '" /> <span>' . __('items per page', 'grand-media') . '</span>
+                        </div>
+                        <div class="form-group">
+                            <select name="gm_screen_options[orderby_gmedia_tag]" class="form-control input-sm">
+                                <option' . selected($gm_screen_options['orderby_gmedia_tag'], 'id', false) . ' value="id">' . __('ID', 'grand-media') . '</option>
+                                <option' . selected($gm_screen_options['orderby_gmedia_tag'], 'name', false) . ' value="name">' . __('Name', 'grand-media') . '</option>
+                                <option' . selected($gm_screen_options['orderby_gmedia_tag'], 'count', false) . ' value="count">' . __('Gmedia Count', 'grand-media') . '</option>
+                            </select> <span>' . __('order items', 'grand-media') . '</span>
+                        </div>
+                        <div class="form-group">
+                            <select name="gm_screen_options[sortorder_gmedia_tag]" class="form-control input-sm">
+                                <option' . selected($gm_screen_options['sortorder_gmedia_tag'], 'DESC', false) . ' value="DESC">' . __('DESC', 'grand-media') . '</option>
+                                <option' . selected($gm_screen_options['sortorder_gmedia_tag'], 'ASC', false) . ' value="ASC">' . __('ASC', 'grand-media') . '</option>
+                            </select> <span>' . __('sort order', 'grand-media') . '</span>
+                        </div>
+                    </div>
+                    ';
+                break;
                 case 'GrandMedia_Galleries' :
-                    if(!$gmCore->_get('edit_gallery') && !$gmCore->_get('gallery_module')) {
+                    if(!$gmCore->_get('edit_item') && !$gmCore->_get('gallery_module')) {
                         $settings = '
 						<div class="form-inline pull-left">
 							<div class="form-group">
-								<input type="number" max="999" min="0" step="5" size="3" name="gm_screen_options[per_page_gmedia_galleries]" class="form-control input-sm" style="width: 5em;" value="' . $gm_screen_options['per_page_gmedia_galleries'] . '" /> <span>' . __('items per page', 'grand-media') . '</span>
+								<input type="number" max="999" min="0" step="5" size="3" name="gm_screen_options[per_page_gmedia_gallery]" class="form-control input-sm" style="width: 5em;" value="' . $gm_screen_options['per_page_gmedia_gallery'] . '" /> <span>' . __('items per page', 'grand-media') . '</span>
 							</div>
 							<div class="form-group">
-								<select name="gm_screen_options[orderby_gmedia_galleries]" class="form-control input-sm">
-									<option' . selected($gm_screen_options['orderby_gmedia_galleries'], 'id', false) . ' value="id">' . __('ID', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['orderby_gmedia_galleries'], 'name', false) . ' value="name">' . __('Name', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['orderby_gmedia_galleries'], 'global', false) . ' value="global">' . __('Author ID', 'grand-media') . '</option>
+								<select name="gm_screen_options[orderby_gmedia_gallery]" class="form-control input-sm">
+									<option' . selected($gm_screen_options['orderby_gmedia_gallery'], 'id', false) . ' value="id">' . __('ID', 'grand-media') . '</option>
+									<option' . selected($gm_screen_options['orderby_gmedia_gallery'], 'name', false) . ' value="name">' . __('Name', 'grand-media') . '</option>
+									<option' . selected($gm_screen_options['orderby_gmedia_gallery'], 'global', false) . ' value="global">' . __('Author ID', 'grand-media') . '</option>
 								</select> <span>' . __('order items', 'grand-media') . '</span>
 							</div>
 							<div class="form-group">
-								<select name="gm_screen_options[sortorder_gmedia_galleries]" class="form-control input-sm">
-									<option' . selected($gm_screen_options['sortorder_gmedia_galleries'], 'DESC', false) . ' value="DESC">' . __('DESC', 'grand-media') . '</option>
-									<option' . selected($gm_screen_options['sortorder_gmedia_galleries'], 'ASC', false) . ' value="ASC">' . __('ASC', 'grand-media') . '</option>
+								<select name="gm_screen_options[sortorder_gmedia_gallery]" class="form-control input-sm">
+									<option' . selected($gm_screen_options['sortorder_gmedia_gallery'], 'DESC', false) . ' value="DESC">' . __('DESC', 'grand-media') . '</option>
+									<option' . selected($gm_screen_options['sortorder_gmedia_gallery'], 'ASC', false) . ' value="ASC">' . __('ASC', 'grand-media') . '</option>
 								</select> <span>' . __('sort order', 'grand-media') . '</span>
 							</div>
 						</div>

@@ -55,6 +55,11 @@ class GmediaProcessor_Modules extends GmediaProcessor {
                     } elseif($wp_filesystem->errors->get_error_code()) {
                         $result = new WP_Error('fs_error', __('Filesystem error', 'flag'), $wp_filesystem->errors);
                     } else {
+                        $maybe_folder_dir = basename($_FILES['modulezip']['name'], '.zip');
+                        $maybe_folder_dir = sanitize_file_name($maybe_folder_dir);
+                        if($maybe_folder_dir && is_dir($to_folder . $maybe_folder_dir)){
+                            $gmCore->delete_folder($to_folder . $maybe_folder_dir);
+                        }
                         $result = unzip_file($to_folder . $filename, $to_folder);
                     }
                     // Once extracted, delete the package
@@ -71,12 +76,19 @@ class GmediaProcessor_Modules extends GmediaProcessor {
         }
 
         if(isset($_GET['delete_module'])) {
-            $mfold = preg_replace('/[^a-z0-9_-]+/i', '_', $_GET['delete_module']);
-            $mpath = "{$gmCore->upload['path']}/{$gmGallery->options['folder']['module']}/{$mfold}";
-            if($mfold && file_exists($mpath)) {
-                check_admin_referer('gmedia_module_delete');
-                $gmCore->delete_folder($mpath);
-                $this->msg[] = sprintf(__("The `%s` module folder was deleted", 'flag'), $mpath);
+            if($gmCore->_get('_wpnonce')) {
+                $mfold = preg_replace('/[^a-z0-9_-]+/i', '_', $_GET['delete_module']);
+                $mpath = "{$gmCore->upload['path']}/{$gmGallery->options['folder']['module']}/{$mfold}";
+                if($mfold && file_exists($mpath)) {
+                    check_admin_referer('gmedia_module_delete');
+                    $gmCore->delete_folder($mpath);
+                    $location = remove_query_arg(array('_wpnonce'));
+                    set_transient('gmedia_module_deleted', sprintf(__("The `%s` module folder was deleted", 'flag'), $mpath), 60);
+                    wp_redirect($location);
+                }
+            } elseif(false !== ($message = get_transient('gmedia_module_deleted'))) {
+                delete_transient('gmedia_module_deleted');
+                $this->msg[] = $message;
             }
         }
 

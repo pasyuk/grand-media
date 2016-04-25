@@ -11,18 +11,16 @@ add_action('gmedia_footer', 'wp_print_footer_scripts');
 
 $gmedia_share_img = array(plugins_url(GMEDIA_FOLDER) . '/assets/icons/icon_gmedia_180.png');
 
-function gmediacloud_appbaner()
-{
+function gmediacloud_appbaner(){
     global $gmedia_id, $gmedia_type;
-    if (in_array($gmedia_type, array('gallery', 'album', 'tag'))) {
+    if(in_array($gmedia_type, array('gallery', 'album', 'tag'))){
         echo '<meta name="apple-itunes-app" content="app-id=947515626, app-argument=' . add_query_arg(array('type' => $gmedia_type, 'id' => $gmedia_id), trailingslashit(home_url())) . '">';
     }
 
 }
 
-function gmediacloud_meta_generator()
-{
-    global $gmedia, $gmedia_type, $wp, $gmGallery, $gmCore, $gmedia_share_img;
+function gmediacloud_meta_generator(){
+    global $gmedia, $gmedia_type, $wp, $gmGallery, $gmCore, $gmedia_share_img, $gmDB;
     $icon_url    = plugins_url(GMEDIA_FOLDER) . '/assets/icons';
     $current_url = home_url(add_query_arg(array(), $wp->request));
     ?>
@@ -36,21 +34,20 @@ function gmediacloud_meta_generator()
     <meta property="og:title" content="<?php the_gmedia_title(); ?>"/>
     <meta property="og:description" content="<?php _e('Shared with GmediaGallery', 'grand-media'); ?>"/>
     <?php
-    if ($gmedia_type != 'single') {
-        if (did_action('gmedia_shortcode')) {
+    if($gmedia_type != 'single'){
+        if(did_action('gmedia_shortcode')){
             $og_imgs = array();
-            foreach ($gmGallery->shortcode['gmedia'] as $items) {
-                if (empty($items)) {
-                    continue;
-                }
-                $og_imgs[] = $gmCore->gm_get_media_image($items[0]->ID);
+            $query = array_merge($gmGallery->shortcode['query'], array('status' => 'publish', 'mime_type' => 'image', 'nopaging' => true, 'limit' => 3));
+            $gmedias = $gmDB->get_gmedias($query);
+            foreach($gmedias as $item){
+                $og_imgs[] = $gmCore->gm_get_media_image($item->ID);
             }
             $gmedia_share_img = array_merge($og_imgs, $gmedia_share_img);
         }
-    } else {
+    } else{
         array_unshift($gmedia_share_img, $gmCore->gm_get_media_image($gmedia->ID));
     }
-    foreach ($gmedia_share_img as $og_image) {
+    foreach($gmedia_share_img as $og_image){
         echo "<meta property=\"og:image\" content=\"{$og_image}\" />\n";
     }
     ?>
@@ -63,14 +60,13 @@ function gmediacloud_meta_generator()
     <?php
 }
 
-function gmedia_head()
-{
+function gmedia_head(){
     global $wp_styles, $wp_scripts, $gmCore;
     global $gmedia_id, $gmedia_type, $gmedia_shortcode_content;
 
     do_action('wp_enqueue_scripts');
     add_filter('show_admin_bar', '__return_false');
-    if ($gmCore->_get('iframe')) {
+    if($gmCore->_get('iframe')){
         wp_deregister_script('swfaddress');
     }
     $wp_styles->queue  = array();
@@ -88,17 +84,16 @@ function gmedia_head()
     do_action('gmedia_head');
 }
 
-function gmedia_footer()
-{
+function gmedia_footer(){
     global $gmGallery;
 
     do_action('gmedia_footer');
 
-    if (! empty($gmGallery->options['gmediacloud_footer_css'])) {
+    if(!empty($gmGallery->options['gmediacloud_footer_css'])){
         $css_code = stripslashes($gmGallery->options['gmediacloud_footer_css']);
         echo "\n<style type=\"text/css\">\n{$css_code}\n</style>\n";
     }
-    if (! empty($gmGallery->options['gmediacloud_footer_js'])) {
+    if(!empty($gmGallery->options['gmediacloud_footer_js'])){
         $js_code = stripslashes($gmGallery->options['gmediacloud_footer_js']);
         echo "\n<script type=\"text/javascript\">\n{$js_code}\n</script>\n";
     }
@@ -110,25 +105,21 @@ function gmedia_footer()
  *
  * @return string|void
  */
-function gmedia_title($sep = '|', $display = true)
-{
-    global $gmedia, $gmedia_type, $gmGallery;
+function gmedia_title($sep = '|', $display = true){
+    global $gmedia, $gmedia_type;
 
     $_title = __('GmediaGallery', 'grand-media');
-    if (is_object($gmedia) && ! is_wp_error($gmedia)) {
-        if (in_array($gmedia_type, array('gallery', 'album', 'tag', 'filter'))) {
+    if(is_object($gmedia) && !is_wp_error($gmedia)){
+        if(in_array($gmedia_type, array('gallery', 'album', 'category', 'tag'))){
             $_title = $gmedia->name;
-        } elseif ('category' == $gmedia_type) {
-            $gm_terms_all = $gmGallery->options['taxonomies']['gmedia_category'];
-            $_title       = $gm_terms_all[$gmedia->name];
-        } elseif ('single' == $gmedia_type) {
+        } elseif('single' == $gmedia_type){
             $_title = $gmedia->title;
         }
     }
 
     $title[] = $_title;
 
-    if (current_theme_supports('title-tag')) {
+    if(current_theme_supports('title-tag')){
         $title[] = get_bloginfo('name', 'display');
     }
 
@@ -143,9 +134,9 @@ function gmedia_title($sep = '|', $display = true)
     $title = apply_filters('gmedia_title', $title, $sep);
 
     // Send it out
-    if ($display) {
+    if($display){
         echo $title;
-    } else {
+    } else{
         return $title;
     }
 }
@@ -155,18 +146,14 @@ function gmedia_title($sep = '|', $display = true)
  *
  * @return mixed|string|void
  */
-function the_gmedia_title($return = false)
-{
-    global $gmedia, $gmedia_type, $gmGallery;
+function the_gmedia_title($return = false){
+    global $gmedia, $gmedia_type;
 
     $title = __('GmediaGallery', 'grand-media');
-    if (is_object($gmedia) && ! is_wp_error($gmedia)) {
-        if (in_array($gmedia_type, array('gallery', 'album', 'tag', 'filter'))) {
+    if(is_object($gmedia) && !is_wp_error($gmedia)){
+        if(in_array($gmedia_type, array('gallery', 'album', 'category', 'tag'))){
             $title = $gmedia->name;
-        } elseif ('category' == $gmedia_type) {
-            $gm_terms_all = $gmGallery->options['taxonomies']['gmedia_category'];
-            $title        = $gm_terms_all[$gmedia->name];
-        } elseif ('single' == $gmedia_type) {
+        } elseif('single' == $gmedia_type){
             $title = $gmedia->title;
         }
     }
@@ -179,9 +166,9 @@ function the_gmedia_title($return = false)
      */
     $title = apply_filters('the_gmedia_title', $title);
 
-    if ($return) {
+    if($return){
         return $title;
-    } else {
+    } else{
         echo $title;
     }
 }
@@ -191,44 +178,38 @@ function the_gmedia_title($return = false)
  *
  * @return array
  */
-function gmedia_body_class($classes)
-{
+function gmedia_body_class($classes){
     global $gmedia_type;
     $classes = array_merge($classes, array('gmedia-template', "gmedia-template-{$gmedia_type}"));
-    if (wp_is_mobile()) {
+    if(wp_is_mobile()){
         $classes[] = 'is_mobile';
     }
     $classes = apply_filters('gmedia_body_class', $classes);
 
-    return (array)$classes;
+    return (array) $classes;
 }
 
 add_filter('body_class', 'gmedia_body_class');
 
-function get_gmedia_header()
-{
-    global $gmedia_module, $gmedia_id, $gmedia_type, $gmCore;
+function get_gmedia_header(){
+    global $gmedia_module, $gmCore;
     $module = $gmCore->get_module_path($gmedia_module);
-    if (file_exists($module['path'] . '/template/head.php')) {
+    if(file_exists($module['path'] . '/template/head.php')){
         /** @noinspection PhpIncludeInspection */
         include_once($module['path'] . '/template/head.php');
-    } else {
-        if ('single' == $gmedia_type) {
-            add_filter('show_admin_bar', '__return_false');
-        }
+    } else{
         /** @noinspection PhpIncludeInspection */
         include_once(GMEDIA_ABSPATH . 'template/head.php');
     }
 }
 
-function get_gmedia_footer()
-{
-    global $gmedia_module, $gmedia_id, $gmedia_type, $gmCore;
+function get_gmedia_footer(){
+    global $gmedia_module, $gmCore;
     $module = $gmCore->get_module_path($gmedia_module);
-    if (file_exists($module['path'] . '/template/foot.php')) {
+    if(file_exists($module['path'] . '/template/foot.php')){
         /** @noinspection PhpIncludeInspection */
         include_once($module['path'] . '/template/foot.php');
-    } else {
+    } else{
         /** @noinspection PhpIncludeInspection */
         include_once(GMEDIA_ABSPATH . 'template/foot.php');
     }
@@ -238,26 +219,15 @@ function get_gmedia_footer()
  * @param $gmedia_id
  * @param $gmedia_type
  *
- * @param null $gmedia_module
- * @param null $gmedia_module_preset
+ * @param null $set
  *
  * @return string
  */
-function get_the_gmedia_content($gmedia_id, $gmedia_type, $gmedia_module = null, $gmedia_module_preset = null)
-{
-    global $user_ID, $gmCore;
-
-    if (! $gmedia_module) {
-        global $gmedia_module;
-    }
-    if (! $gmedia_module_preset) {
-        global $gmedia_module_preset;
-    }
-
+function get_the_gmedia_content($gmedia_id, $gmedia_type, $set = null){
     $content = '';
-    if (in_array($gmedia_type, array('gallery', 'album', 'tag', 'category', 'filter'))) {
+    if(in_array($gmedia_type, array('gallery', 'album', 'tag', 'category'))){
         $atts    = array(
-            'id' => $gmedia_id, 'set_module' => ($user_ID ? $gmCore->_get('set_module', $gmedia_module) : $gmedia_module), 'preset' => ($user_ID ? $gmCore->_get('preset', $gmedia_module_preset) : $gmedia_module_preset), '_tax' => $gmedia_type
+            'id'  => $gmedia_id
         );
         $content = gmedia_shortcode($atts);
         do_action('gmedia_enqueue_scripts');
@@ -266,21 +236,19 @@ function get_the_gmedia_content($gmedia_id, $gmedia_type, $gmedia_module = null,
     return $content;
 }
 
-function the_gmedia_content()
-{
+function the_gmedia_content(){
     global $gmedia_shortcode_content;
     echo $gmedia_shortcode_content;
 }
 
-function gmediacloud_social_sharing()
-{
+function gmediacloud_social_sharing(){
     global $gmGallery;
 
-    $gmediacloud_socialbuttons = isset($gmGallery->options['gmediacloud_socialbuttons']) ? intval($gmGallery->options['gmediacloud_socialbuttons']) : 1;
-    if (0 == $gmediacloud_socialbuttons) {
+    $gmediacloud_socialbuttons = isset($gmGallery->options['gmediacloud_socialbuttons'])? intval($gmGallery->options['gmediacloud_socialbuttons']) : 1;
+    if(0 == $gmediacloud_socialbuttons){
         return;
     }
-    if (apply_filters('gmediacloud_social_sharing', wp_is_mobile())) {
+    if(apply_filters('gmediacloud_social_sharing', wp_is_mobile())){
         return;
     }
 
@@ -292,19 +260,65 @@ function gmediacloud_social_sharing()
     $image = urlencode($gmedia_share_img[0]);
     ?>
     <style>
-        @import url('//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css') all;
-        .gmedia-socialsharebuttons { float:right; margin-right:30px; margin-top:2px; }
+        /*@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css') all;*/
+        /*.fa span { display:none; }*/
+        .gmedia-socialsharebuttons {
+            float: right;
+            margin-right: 30px;
+            margin-top: 2px;
+        }
+
         .share-btn,
-        .share-btn:visited { display:inline-block; color:#ffffff; border:none; padding:2px 7px; min-width:2.1em; opacity:0.9; box-shadow:0 2px 0 0 rgba(0, 0, 0, 0.2); outline:none; text-align:center; box-sizing:border-box; }
-        .share-btn:hover { color:#eeeeee; }
-        .share-btn:active { position:relative; top:2px; box-shadow:none; color:#e2e2e2; outline:none; }
-        .fa span { display:none; }
-        .share-btn.facebook { background:#3B5998; }
-        .share-btn.twitter { background:#55acee; }
-        .share-btn.google-plus { background:#dd4b39; }
-        .share-btn.pinterest-p { background:#cb2027; }
-        .share-btn.vk { background:#2a6db4; }
-        .share-btn.email { background:#444444; }
+        .share-btn:visited {
+            display: inline-block;
+            color: #ffffff;
+            border: none;
+            padding: 2px 7px;
+            min-width: 2.1em;
+            opacity: 0.9;
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2);
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+
+        .share-btn:hover {
+            color: #eeeeee;
+            text-decoration: none;
+        }
+
+        .share-btn:active {
+            position: relative;
+            top: 2px;
+            box-shadow: none;
+            color: #e2e2e2;
+            outline: none;
+        }
+
+        .share-btn.facebook {
+            background: #3B5998;
+        }
+
+        .share-btn.twitter {
+            background: #55acee;
+        }
+
+        .share-btn.google-plus {
+            background: #dd4b39;
+        }
+
+        .share-btn.pinterest-p {
+            background: #cb2027;
+        }
+
+        .share-btn.vk {
+            background: #2a6db4;
+        }
+
+        .share-btn.email {
+            background: #444444;
+        }
     </style>
     <div class="gmedia-socialsharebuttons">
         <!-- Facebook -->
@@ -336,57 +350,238 @@ function gmediacloud_social_sharing()
     <?php
 }
 
-function gmedia_default_template_styles()
-{ ?>
+function gmedia_default_template_styles(){ ?>
     <style type="text/css" media="screen">
-        * { box-sizing:border-box; }
-        body.gmedia-template { font-family:"Arial", "Verdana", serif; font-size:13px; }
-        .gmedia-template-wrapper { display:-webkit-box; display:-moz-box; display:-ms-flexbox; display:-webkit-flex; display:flex; -webkit-flex-flow:column; flex-flow:column; position:absolute; left:0; top:0; right:0; bottom:0; }
-        header { position:relative; min-height:30px; background-color:#0f0f0f; color:#f1f1f1; padding:5px 0 3px 30px; font-family:"Arial", "Verdana", serif; z-index:10; }
-        header.has-description { padding-right:30px; }
-        .gmedia-header-title { display:inline-block; font-size:16px; vertical-align:bottom; margin-top:2px; }
-        .gmedia-header-description { position:absolute; top:100%; left:0; right:0; font-size:13px; overflow:visible; background-color:#0f0f0f; padding:10px 30px; border-bottom:1px solid #444444; }
-        .gmedia-header-description { display:none; }
-        .gmedia-header-description-button { position:absolute; top:5px; right:15px; width:18px; height:20px; background-image:url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yOTMuNzUxLDQ1NS44NjhjLTIwLjE4MSwyMC4xNzktNTMuMTY1LDE5LjkxMy03My42NzMtMC41OTVsMCwwYy0yMC41MDgtMjAuNTA4LTIwLjc3My01My40OTMtMC41OTQtNzMuNjcyICBsMTg5Ljk5OS0xOTBjMjAuMTc4LTIwLjE3OCw1My4xNjQtMTkuOTEzLDczLjY3MiwwLjU5NWwwLDBjMjAuNTA4LDIwLjUwOSwyMC43NzIsNTMuNDkyLDAuNTk1LDczLjY3MUwyOTMuNzUxLDQ1NS44Njh6Ii8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjIwLjI0OSw0NTUuODY4YzIwLjE4LDIwLjE3OSw1My4xNjQsMTkuOTEzLDczLjY3Mi0wLjU5NWwwLDBjMjAuNTA5LTIwLjUwOCwyMC43NzQtNTMuNDkzLDAuNTk2LTczLjY3MiAgbC0xOTAtMTkwYy0yMC4xNzgtMjAuMTc4LTUzLjE2NC0xOS45MTMtNzMuNjcxLDAuNTk1bDAsMGMtMjAuNTA4LDIwLjUwOS0yMC43NzIsNTMuNDkyLTAuNTk1LDczLjY3MUwyMjAuMjQ5LDQ1NS44Njh6Ii8+DQo8L3N2Zz4=); background-size:contain; cursor:pointer; }
-        .gmedia-menu { float:right; margin:0 30px 0 0; padding:0; }
-        .gmedia-menu .gmedia-menu-items { margin-right:30px; float:right; margin-top:2px; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body.gmedia-template {
+            font-family: "Arial", "Verdana", serif;
+            font-size: 13px;
+        }
+
+        .gmedia-template-wrapper {
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-flow: column;
+            flex-flow: column;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        header {
+            position: relative;
+            min-height: 30px;
+            background-color: #0f0f0f;
+            color: #f1f1f1;
+            padding: 5px 0 3px 30px;
+            font-family: "Arial", "Verdana", serif;
+            z-index: 10;
+        }
+
+        header.has-description {
+            padding-right: 30px;
+        }
+
+        .gmedia-header-title {
+            display: inline-block;
+            font-size: 16px;
+            vertical-align: bottom;
+            margin-top: 2px;
+        }
+
+        .gmedia-header-description {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            font-size: 13px;
+            overflow: visible;
+            background-color: #0f0f0f;
+            padding: 10px 30px;
+            border-bottom: 1px solid #444444;
+        }
+
+        .gmedia-header-description {
+            display: none;
+        }
+
+        .gmedia-header-description-button {
+            position: absolute;
+            top: 5px;
+            right: 15px;
+            width: 18px;
+            height: 20px;
+            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNTEycHgiIGhlaWdodD0iNTEycHgiIHZpZXdCb3g9IjAgMCA1MTIgNTEyIiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCA1MTIgNTEyIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik0yOTMuNzUxLDQ1NS44NjhjLTIwLjE4MSwyMC4xNzktNTMuMTY1LDE5LjkxMy03My42NzMtMC41OTVsMCwwYy0yMC41MDgtMjAuNTA4LTIwLjc3My01My40OTMtMC41OTQtNzMuNjcyICBsMTg5Ljk5OS0xOTBjMjAuMTc4LTIwLjE3OCw1My4xNjQtMTkuOTEzLDczLjY3MiwwLjU5NWwwLDBjMjAuNTA4LDIwLjUwOSwyMC43NzIsNTMuNDkyLDAuNTk1LDczLjY3MUwyOTMuNzUxLDQ1NS44Njh6Ii8+DQo8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMjIwLjI0OSw0NTUuODY4YzIwLjE4LDIwLjE3OSw1My4xNjQsMTkuOTEzLDczLjY3Mi0wLjU5NWwwLDBjMjAuNTA5LTIwLjUwOCwyMC43NzQtNTMuNDkzLDAuNTk2LTczLjY3MiAgbC0xOTAtMTkwYy0yMC4xNzgtMjAuMTc4LTUzLjE2NC0xOS45MTMtNzMuNjcxLDAuNTk1bDAsMGMtMjAuNTA4LDIwLjUwOS0yMC43NzIsNTMuNDkyLTAuNTk1LDczLjY3MUwyMjAuMjQ5LDQ1NS44Njh6Ii8+DQo8L3N2Zz4=);
+            background-size: contain;
+            cursor: pointer;
+        }
+
+        .gmedia-menu {
+            float: right;
+            margin: 0 30px 0 0;
+            padding: 0;
+        }
+
+        .gmedia-menu .gmedia-menu-items {
+            margin-right: 30px;
+            float: right;
+            margin-top: 2px;
+        }
+
         .gmedia-menu .gmedia-menu-items a,
-        .gmedia-menu .gmedia-menu-items a:visited { display:inline-block; color:#ffffff; background:#444444; border:none; padding:2px 7px; min-width:2.1em; opacity:0.9; box-shadow:0 2px 0 0 rgba(0, 0, 0, 0.2); outline:none; text-align:center; box-sizing:border-box; text-decoration:none; }
-        .gmedia-menu .gmedia-menu-items a i span { font-style:normal; }
-        .gmedia-menu .gmedia-menu-items a:hover { color:#eeeeee; }
-        .gmedia-menu .gmedia-menu-items a:active { position:relative; top:2px; box-shadow:none; color:#e2e2e2; outline:none; }
-        .gmedia-flex-box { -webkit-box-flex:1; -moz-box-flex:1; -webkit-flex:1; -ms-flex:1; flex:1; position:relative; }
-        .gmedia-main-wrapper { overflow:auto; position:absolute; left:0; right:0; top:0; bottom:0; }
-        body.admin-bar .gmedia-template-wrapper { top:32px; }
-        .gmedia-main-wrapper .gmedia_gallery { width:100%; height:100%; text-align:center; }
-        body.is_mobile .gmedia-main-wrapper .gmedia_gallery { height:auto; }
-        .gmedia-main-wrapper .gmedia_gallery > div { margin-left:auto; margin-right:auto; text-align:left; }
-        .gmedia-main-wrapper .gmedia_gallery.is_mobile { height:auto; min-height:100%; }
-        .gmedia-main-wrapper object { width:100% !important; height:100% !important; display:block; }
-        a { color:#2e6286; text-decoration:underline; }
-        a:hover, a:active, a:visited { color:#2e6286; text-decoration:none; }
-        body.gmedia-template-single { background-color:#bbbbbb; }
-        .single-view { max-width:1280px; min-width:320px; padding:10px 10px 20px; margin:0 auto; }
-        .single-view img { max-width:100%; height:auto; }
-        .single-title { font-size:18px; font-weight:bold; }
-        .type-download .single-title { font-size:18px; }
-        .image-description { text-align:left }
-        .gmedia-no-files { text-align:center; font-size:16px; padding:30px 10px; }
-        .gmediaShortcodeError { text-align:left; font-size:14px; padding:30px 10px; }
-        @media screen and ( max-width:782px ) {
-            body.admin-bar .gmedia-template-wrapper { top:46px; }
+        .gmedia-menu .gmedia-menu-items a:visited {
+            display: inline-block;
+            color: #ffffff;
+            background: #444444;
+            border: none;
+            padding: 2px 7px;
+            min-width: 2.1em;
+            opacity: 0.9;
+            box-shadow: 0 2px 0 0 rgba(0, 0, 0, 0.2);
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+            text-decoration: none;
+        }
+
+        .gmedia-menu .gmedia-menu-items a i span {
+            font-style: normal;
+        }
+
+        .gmedia-menu .gmedia-menu-items a:hover {
+            color: #eeeeee;
+        }
+
+        .gmedia-menu .gmedia-menu-items a:active {
+            position: relative;
+            top: 2px;
+            box-shadow: none;
+            color: #e2e2e2;
+            outline: none;
+        }
+
+        .gmedia-flex-box {
+            -webkit-box-flex: 1;
+            -moz-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+            position: relative;
+        }
+
+        .gmedia-main-wrapper {
+            overflow: auto;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+        }
+
+        body.admin-bar .gmedia-template-wrapper {
+            top: 32px;
+        }
+
+        .gmedia-main-wrapper .gmedia_gallery {
+            width: 100%;
+            height: 100%;
+            text-align: center;
+        }
+
+        body.is_mobile .gmedia-main-wrapper .gmedia_gallery {
+            height: auto;
+        }
+
+        .gmedia-main-wrapper .gmedia_gallery > div {
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+
+        .gmedia-main-wrapper .gmedia_gallery.is_mobile {
+            height: auto;
+            min-height: 100%;
+        }
+
+        .gmedia-main-wrapper object {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+
+        a {
+            color: #2e6286;
+            text-decoration: underline;
+        }
+
+        a:hover, a:active, a:visited {
+            color: #2e6286;
+            text-decoration: none;
+        }
+
+        body.gmedia-template-single {
+            background-color: #bbbbbb;
+        }
+
+        .single-view {
+            max-width: 1280px;
+            min-width: 320px;
+            padding: 10px 10px 20px;
+            margin: 0 auto;
+        }
+
+        .single-view img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .single-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .type-download .single-title {
+            font-size: 18px;
+        }
+
+        .image-description {
+            text-align: left
+        }
+
+        .gmedia-no-files {
+            text-align: center;
+            font-size: 16px;
+            padding: 30px 10px;
+        }
+
+        .gmediaShortcodeError {
+            text-align: left;
+            font-size: 14px;
+            padding: 30px 10px;
+        }
+
+        @media screen and ( max-width: 782px ) {
+            body.admin-bar .gmedia-template-wrapper {
+                top: 46px;
+            }
         }
     </style>
 <?php }
 
-function gmedia_video_head_scripts()
-{
+function gmedia_video_head_scripts(){
     wp_enqueue_style('mediaelement');
     wp_enqueue_script('mediaelement');
 }
 
-function gmedia_video_foot_scripts()
-{ ?>
+function gmedia_video_foot_scripts(){ ?>
     <script type="text/javascript">
         jQuery(function ($) {
             var video = $("video");
