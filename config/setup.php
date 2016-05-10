@@ -19,12 +19,15 @@ function gmedia_default_options() {
 
     $gm['gmedia_post_slug']              = 'gmedia';
     $gm['gmedia_exclude_from_search']    = '0';
+    $gm['gmedia_has_archive']            = '1';
     $gm['default_gmedia_comment_status'] = 'open'; // can be 'closed', 'open'
 
     $gm['gmedia_album_post_slug']           = 'gmedia-album';
+    $gm['gmedia_album_has_archive']         = '1';
     $gm['gmedia_album_exclude_from_search'] = '0';
 
     $gm['gmedia_gallery_post_slug']           = 'gmedia-gallery';
+    $gm['gmedia_gallery_has_archive']         = '0';
     $gm['gmedia_gallery_exclude_from_search'] = '0';
 
     $gm['default_gmedia_term_comment_status'] = 'closed'; // can be 'closed', 'open'

@@ -202,6 +202,9 @@ function gmedit_save() {
 
                 if(-1 != $current_limit && $memoryNeeded > $current_limit_int) {
                     $newLimit = $current_limit_int / $MB + ceil(($memoryNeeded - $current_limit_int) / $MB);
+                    if($newLimit < 256){
+                        $newLimit = 256;
+                    }
                     @ini_set('memory_limit', $newLimit . 'M');
                 }
             }
@@ -362,6 +365,9 @@ function gmedit_restore() {
 
                 if(-1 != $current_limit && $memoryNeeded > $current_limit_int) {
                     $newLimit = $current_limit_int / $MB + ceil(($memoryNeeded - $current_limit_int) / $MB);
+                    if($newLimit < 256){
+                        $newLimit = 256;
+                    }
                     @ini_set('memory_limit', $newLimit . 'M');
                 }
             }

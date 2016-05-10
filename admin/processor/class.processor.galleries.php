@@ -149,11 +149,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
                     '_settings' => array($term['module'] => $module_settings)
                 );
                 foreach($gallery_meta as $key => $value) {
-                    if($edit_gallery) {
-                        $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);
-                    } else {
-                        $gmDB->add_metadata('gmedia_term', $term_id, $key, $value);
-                    }
+                    $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);
                 }
                 if($edit_gallery) {
                     $this->msg[] = sprintf(__('Gallery #%d successfuly saved', 'grand-media'), $term_id);

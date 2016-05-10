@@ -263,7 +263,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
                     '_settings' => $module_settings
                 );
                 foreach($gallery_meta as $key => $value) {
-                    $gmDB->add_metadata('gmedia_term', $term_id, $key, $value);
+                    $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);
                 }
                 $this->msg[] = sprintf(__('Gallery "%s" successfuly saved. Shortcode: [gmedia id=%d]', 'grand-media'), esc_attr($gallery['name']), $term_id);
             } while(0);

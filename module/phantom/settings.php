@@ -364,7 +364,7 @@ $options_tree    = array(
                 'text'  => 'Set the transparancy for the lightbox window'
             ),
             'commentsBGColor'       => array(
-                'label' => 'Commetns Block BG Color',
+                'label' => 'Comments Block BG Color',
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => 'Set the background color for the comments block'

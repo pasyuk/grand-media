@@ -78,6 +78,13 @@ function gmedia_upgrade_progress_panel() {
 function gmedia_do_update() {
     global $wpdb;
 
+    if(isset($_GET['reset_update_process'])){
+        delete_transient('gmediaHeavyJob');
+        delete_transient('gmediaUpgrade');
+        delete_transient('gmediaUpgradeSteps');
+        sleep(1);
+    }
+
     $info = get_transient('gmediaHeavyJob');
 
     @ignore_user_abort(true);
@@ -523,6 +530,9 @@ function gmedia_images_update($files) {
 
                     if(-1 != $current_limit && $memoryNeeded > $current_limit_int) {
                         $newLimit = $current_limit_int / $MB + ceil(($memoryNeeded - $current_limit_int) / $MB);
+                        if($newLimit < 256){
+                            $newLimit = 256;
+                        }
                         @ini_set('memory_limit', $newLimit . 'M');
                     }
                 }

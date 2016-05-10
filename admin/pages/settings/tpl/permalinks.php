@@ -18,6 +18,12 @@
     </div>
     <div class="form-group">
         <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[gmedia_has_archive]" value="0"/>
+            <label><input type="checkbox" name="set[gmedia_has_archive]" value="1" <?php checked($gmGallery->options['gmedia_has_archive'], '1'); ?> /> <?php _e('Allow Gmedia Posts Archive page', 'grand-media'); ?> </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
             <input type="hidden" name="set[gmedia_exclude_from_search]" value="0"/>
             <label><input type="checkbox" name="set[gmedia_exclude_from_search]" value="1" <?php checked($gmGallery->options['gmedia_exclude_from_search'], '1'); ?> /> <?php _e('Exclude Gmedia Library Items from WordPress search results on the Frontend', 'grand-media'); ?> </label>
         </div>
@@ -42,6 +48,12 @@
     </div>
     <div class="form-group">
         <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[gmedia_album_has_archive]" value="0"/>
+            <label><input type="checkbox" name="set[gmedia_album_has_archive]" value="1" <?php checked($gmGallery->options['gmedia_album_has_archive'], '1'); ?> /> <?php _e('Allow Gmedia Albums Archive page', 'grand-media'); ?> </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
             <input type="hidden" name="set[gmedia_album_exclude_from_search]" value="0"/>
             <label><input type="checkbox" name="set[gmedia_album_exclude_from_search]" value="1" <?php checked($gmGallery->options['gmedia_album_exclude_from_search'], '1'); ?> /> <?php _e('Exclude Gmedia Albums from WordPress search results on the Frontend', 'grand-media'); ?> </label>
         </div>
@@ -54,6 +66,12 @@
         <input type="text" name="set[gmedia_gallery_post_slug]" value="<?php echo $gmGallery->options['gmedia_gallery_post_slug']; ?>" class="form-control input-sm"/>
 
         <p class="help-block"><?php _e('Base for gmedia gallery post url.', 'grand-media'); ?></p>
+    </div>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[gmedia_gallery_has_archive]" value="0"/>
+            <label><input type="checkbox" name="set[gmedia_gallery_has_archive]" value="1" <?php checked($gmGallery->options['gmedia_gallery_has_archive'], '1'); ?> /> <?php _e('Allow Gmedia Galleries Archive page', 'grand-media'); ?> </label>
+        </div>
     </div>
     <div class="form-group">
         <div class="checkbox" style="margin:0;">

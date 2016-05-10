@@ -252,13 +252,14 @@ function gmedia_ios_app_library_data(
         }
         //$default_args = array('fields' => 'name=>all');
         $default_args = array();
-        if(isset($args['per_page'])) {
-            $args['number'] = $args['per_page'];
+        $_args = $args;
+        if(isset($_args['per_page'])) {
+            $_args['number'] = $_args['per_page'];
         }
-        $args              = array_merge($default_args, $args);
-        $gmediaTerms       = $gmDB->get_terms('gmedia_category', $args);
+        $_args              = array_merge($default_args, $_args);
+        $gmediaTerms       = $gmDB->get_terms('gmedia_category', $_args);
         $props             = array(
-            'per_page'     => $args['number'],
+            'per_page'     => $_args['number'],
             'total_pages'  => $gmDB->pages,
             'current_page' => $gmDB->openPage,
             'items_count'  => $gmDB->resultPerPage,
@@ -282,6 +283,7 @@ function gmedia_ios_app_library_data(
     }
     if(in_array('gmedia_album', $data)) {
         $default_args = array();
+        $_args = $args;
         if(2 == $logic) {
             $default_args['orderby'] = 'ID';
             $default_args['order']   = 'DESC';
@@ -303,14 +305,14 @@ function gmedia_ios_app_library_data(
             $cap          = 0;
             $default_args = array('status' => 'publish');
         }
-        if(isset($args['per_page'])) {
-            $args['number'] = $args['per_page'];
+        if(isset($_args['per_page'])) {
+            $_args['number'] = $_args['per_page'];
         }
-        $args = array_merge($default_args, $args);
+        $_args = array_merge($default_args, $_args);
 
-        $gmediaTerms = $gmDB->get_terms('gmedia_album', $args);
+        $gmediaTerms = $gmDB->get_terms('gmedia_album', $_args);
         $props       = array(
-            'per_page'     => $args['number'],
+            'per_page'     => $_args['number'],
             'total_pages'  => $gmDB->pages,
             'current_page' => $gmDB->openPage,
             'items_count'  => $gmDB->resultPerPage,
@@ -330,6 +332,7 @@ function gmedia_ios_app_library_data(
     }
     if(in_array('gmedia_tag', $data)) {
         $default_args = array();
+        $_args = $args;
         if($user_ID) {
             if(current_user_can('gmedia_terms_delete') && current_user_can('gmedia_delete_others_media')) {
                 $cap = 4;
@@ -341,13 +344,13 @@ function gmedia_ios_app_library_data(
         } else {
             $cap = 0;
         }
-        if(isset($args['per_page'])) {
-            $args['number'] = $args['per_page'];
+        if(isset($_args['per_page'])) {
+            $_args['number'] = $_args['per_page'];
         }
-        $args        = array_merge($default_args, $args);
-        $gmediaTerms = $gmDB->get_terms('gmedia_tag', $args);
+        $_args        = array_merge($default_args, $_args);
+        $gmediaTerms = $gmDB->get_terms('gmedia_tag', $_args);
         $props       = array(
-            'per_page'     => $args['number'],
+            'per_page'     => $_args['number'],
             'total_pages'  => $gmDB->pages,
             'current_page' => $gmDB->openPage,
             'items_count'  => $gmDB->resultPerPage,
@@ -430,8 +433,12 @@ function gmedia_ios_app_term_data_extend(&$term, $share_link_base, $logic = 0, $
 
     $term_meta = $gmDB->get_metadata('gmedia_term', $term->term_id);
     foreach($term_meta as $key => $value) {
-        if(is_array($value) && 1 === count($value)) {
-            $term_meta[$key] = $value[0];
+        if(is_array($value)) {
+            if(is_protected_meta($key, 'gmedia_term')) {
+                $term_meta[$key] = $value[0];
+            } elseif(1 === count($value)) {
+                $term_meta[$key] = $value[0];
+            }
         }
     }
     $term_meta            = array_merge($default_meta, $term_meta);
@@ -929,11 +936,24 @@ function gmedia_ios_app_processor($action, $data, $filter = true) {
             $_data['fields']   = 'ids';
             $all_gmedias_ids   = $gmDB->get_gmedias($_data);
             $gmedias           = $gmDB->get_gmedias($data);
+            $properties = array_merge($req_terms, array(
+                'request'      => isset($data['request'])? $data['request'] : null,
+                'total_pages'  => $gmDB->pages,
+                'current_page' => $gmDB->openPage,
+                'items_count'  => $gmDB->resultPerPage,
+                'total_count'  => $gmDB->totalResult,
+                'count'        => count($all_gmedias_ids)
+            ));
             foreach($gmedias as $i => $item) {
 
                 //if((!$logged_in && 'publish' != $item->status) || (!$is_admin && ('draft' == $item->status) && ((int)$user_ID != (int)$item->author))) {
-                if(!$is_admin && ('draft' == $item->status) && ((int)$user_ID != (int)$item->author)) {
+                if(
+                    (!$is_admin || ($is_admin && !current_user_can('gmedia_edit_others_media'))) &&
+                    (('draft' == $item->status) && ((int)$user_ID != (int)$item->author))
+                ) {
                     unset($gmedias[$i]);
+                    $properties['total_count']--;
+                    $properties['items_count']--;
                     continue;
                 }
 
@@ -1043,14 +1063,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true) {
                 }
             }
             $out = array_merge($filter, array(
-                'properties' => array_merge($req_terms, array(
-                    'request'      => isset($data['request'])? $data['request'] : null,
-                    'total_pages'  => $gmDB->pages,
-                    'current_page' => $gmDB->openPage,
-                    'items_count'  => $gmDB->resultPerPage,
-                    'total_count'  => $gmDB->totalResult,
-                    'count'        => count($all_gmedias_ids)
-                )),
+                'properties' => $properties,
                 'data'       => array_values($gmedias)
             ));
         break;
@@ -1155,11 +1168,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true) {
                         $term_meta['_order'] = $term['order'];
                     }
                     foreach($term_meta as $key => $value) {
-                        if($edit_term) {
-                            $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);
-                        } else {
-                            $gmDB->add_metadata('gmedia_term', $term_id, $key, $value);
-                        }
+                        $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);
                     }
 
                     $alert[] = sprintf(__('Album `%s` successfuly saved', 'grand-media'), $term['name']);

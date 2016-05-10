@@ -62,12 +62,6 @@ foreach($terms as $term) {
             $img_size           = getimagesize($thumb);
             $_metadata['thumb'] = array_slice($img_size, 0, 2);
         }
-        if($item->post_id) {
-            $cc = wp_count_comments($item->post_id);
-            $cc = $cc->approved;
-        } else {
-            $cc = 0;
-        }
 
         $content[$i] = array(
                 'id'         => $item->ID,
@@ -79,15 +73,27 @@ foreach($terms as $term) {
                 'thumb'      => $thumb,
                 'title'      => $item->title,
                 'text'       => str_replace(array("\r\n", "\r", "\n"), '', wpautop($item->description)),
-                'cc'         => $cc,
-                'views'      => empty($meta['views'][0])? 0 : (int)$meta['views'][0],
-                'likes'      => empty($meta['likes'][0])? 0 : (int)$meta['likes'][0],
                 'link'       => $item->link,
                 'linkTarget' => $link_target,
                 'date'       => $item->date,
                 'websize'    => array_values($_metadata['web']),
                 'thumbsize'  => array_values($_metadata['thumb'])
         );
+
+        if(!empty($allsettings['viewsEnabled']) || !empty($allsettings['likesEnabled'])) {
+            $content[$i]['views'] = empty($meta['views'][0])? 0 : (int)$meta['views'][0];
+            if(!empty($allsettings['likesEnabled'])){
+                $content[$i]['likes'] = empty($meta['likes'][0])? 0 : (int)$meta['likes'][0];
+            }
+        }
+        if(!empty($allsettings['commentsEnabled'])) {
+            if($item->post_id) {
+                $cc = wp_count_comments($item->post_id);
+                $content[$i]['cc'] = $cc->approved;
+            } else {
+                $content[$i]['cc'] = 0;
+            }
+        }
 
         if($allsettings['share_post_link']) {
             $content[$i]['post_link'] = get_permalink($item->post_id);

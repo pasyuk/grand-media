@@ -246,7 +246,7 @@ function gmedia_shortcode($atts, $content = ''){
     do_action('gmedia_shortcode');
 
     if(isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'){
-        do_action('gmedia_footer_scripts');
+        do_action('gmedia_enqueue_scripts');
     }
 
     return $out;

@@ -8,7 +8,7 @@ Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files (from creator of Flagallery plugin)
+Gmedia Gallery - powerful media library plugin with comments support for creating beautiful galleries and managing files (from creator of Flagallery plugin)
 
 == Description ==
 
@@ -134,6 +134,13 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= 1.8.26 =
+* Enable/disable archive page option in Settings for gmedia library, albums, galleries.
+* Fixes for iOS app
+
+= 1.8.25 =
+* Fixed: Compatibility with Ajax themes
 
 = 1.8.24 =
 * Fixed: Screen Settings on pages

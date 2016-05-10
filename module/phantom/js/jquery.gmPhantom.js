@@ -1,6 +1,6 @@
 /*
  * Title                   : gmPhantom
- * Version                 : 3.4
+ * Version                 : 3.5
  * Copyright               : 2013-2015 CodEasily.com
  * Website                 : http://www.codeasily.com
  */
@@ -252,20 +252,26 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                     item.gm_link = Links[no];
                                     item.gm_link_target = LinksTarget[no];
 
-                                    item.views = ViewsCount[no];
-                                    item.likes = LikesCount[no];
-
-                                    if(!Storage[item.gm_id]){
-                                        Storage[item.gm_id] = {}
-                                    }
-                                    if (Storage[item.gm_id].status) {
-                                        item.viewed  = true;
-                                        if ('liked' == Storage[item.gm_id].status) {
-                                            item.liked = true;
-                                        } else {
-                                            item.liked = false;
+                                    if(opt.viewsEnabled || opt.likesEnabled) {
+                                        item.views = ViewsCount[no];
+                                        if(opt.likesEnabled) {
+                                            item.likes = LikesCount[no];
+                                        }
+                                        if(!Storage[item.gm_id]){
+                                            Storage[item.gm_id] = {}
+                                        }
+                                        if (Storage[item.gm_id].status) {
+                                            item.viewed  = true;
+                                            if(opt.likesEnabled) {
+                                                if('liked' == Storage[item.gm_id].status) {
+                                                    item.liked = true;
+                                                } else {
+                                                    item.liked = false;
+                                                }
+                                            }
                                         }
                                     }
+
                                     if(typeof(magItems[item.index]) == 'undefined') {
                                         magItems[item.index] = item;
                                     }
@@ -364,23 +370,26 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                     if(opt.socialShareEnabled) {
                                         methods.initSocialShare(magItems[this.currItem.index].no, this);
                                     }
-                                    if(opt.viewsEnabled) {
-                                        methods.initViews(magItems[this.currItem.index].no, this);
-                                    }
-                                    if(opt.likesEnabled) {
-                                        methods.initLikes(magItems[this.currItem.index].no, this);
+                                    if(opt.viewsEnabled || opt.likesEnabled) {
+                                        var self = this;
+                                        timeout = setTimeout(function() {
+                                            methods.viewLike(self.currItem);
+                                        }, 1000);
+
+                                        if(opt.viewsEnabled) {
+                                            methods.initViews(magItems[this.currItem.index].no, this);
+                                        }
+                                        if(opt.likesEnabled) {
+                                            methods.initLikes(magItems[this.currItem.index].no, this);
+                                            if (Storage[magItems[this.currItem.index].gm_id] && Storage[magItems[this.currItem.index].gm_id].status && 'liked' == Storage[magItems[this.currItem.index].gm_id].status) {
+                                                this.wrap.addClass('phantom-gmedia-liked');
+                                            } else {
+                                                this.wrap.removeClass('phantom-gmedia-liked');
+                                            }
+                                        }
                                     }
                                     if(opt.commentsEnabled) {
                                         methods.initComments(magItems[this.currItem.index].no, this);
-                                    }
-                                    var self = this;
-                                    timeout = setTimeout(function () {
-                                        methods.viewLike(self.currItem);
-                                    }, 1000);
-                                    if (Storage[magItems[this.currItem.index].gm_id] && Storage[magItems[this.currItem.index].gm_id].status && 'liked' == Storage[magItems[this.currItem.index].gm_id].status) {
-                                        this.wrap.addClass('phantom-gmedia-liked');
-                                    } else {
-                                        this.wrap.removeClass('phantom-gmedia-liked');
                                     }
                                 },
                                 updateStatus: function(data) {
@@ -663,8 +672,10 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         }
                         if (Storage[id].status) {
                             item.viewed  = true;
-                            if ('liked' == Storage[id].status) {
-                                item.liked = true;
+                            if(opt.likesEnabled) {
+                                if('liked' == Storage[id].status) {
+                                    item.liked = true;
+                                }
                             }
                         }
                         if (!item.viewed) {
@@ -685,7 +696,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                 });
                             }
                         }
-                        if (like && !item.liked) {
+                        if (opt.likesEnabled && like && !item.liked) {
                             item.liked = true;
                             item.likes += 1;
                             LikesCount[item.no] = item.likes;
