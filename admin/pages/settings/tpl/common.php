@@ -1,8 +1,14 @@
 <?php
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Common Settings
  *
  * @var $gmGallery
+ * @var $gmDB
  */
 ?>
 <fieldset id="gmedia_settings_other" class="tab-pane">
@@ -92,9 +98,24 @@
     <div class="form-group">
         <label><?php _e('Choose default module', 'grand-media') ?>:</label>
         <select class="form-control input-sm" name="set[default_gmedia_module]">
-            <?php foreach($gmedia_modules['in'] as $mfold => $module){
-                $selected = selected($gmGallery->options['default_gmedia_module'], esc_attr($mfold), false);
-                echo '<option ' . $selected . ' value="' . esc_attr($mfold) . '">' . $module['title'] . '</option>';
+            <?php foreach($gmedia_modules['in'] as $mfold => $module) {
+                echo '<optgroup label="' . esc_attr($module['title']) . '">';
+                $presets           = $gmDB->get_terms('gmedia_module', array('status' => $mfold));
+                $selected          = selected($gmGallery->options['default_gmedia_module'], esc_attr($mfold), false);
+                $option            = array();
+                $option[] = '<option ' . $selected . ' value="' . esc_attr($mfold) . '">' . $module['title'] . ' - ' . __('Default Settings') . '</option>';
+                foreach($presets as $preset) {
+                    $selected = selected($gmGallery->options['default_gmedia_module'], $preset->term_id, false);
+                    $by_author =  ' [' . get_the_author_meta('display_name', $preset->global) .']';
+                    if('[' . $mfold . ']' === $preset->name) {
+                        $option[] = '<option ' . $selected . ' value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . __('Default Settings') . '</option>';
+                    } else {
+                        $preset_name = str_replace('[' . $mfold . '] ', '', $preset->name);
+                        $option[] = '<option ' . $selected . ' value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . $preset_name . '</option>';
+                    }
+                }
+                echo implode('', $option);
+                echo '</optgroup>';
             } ?>
         </select>
 

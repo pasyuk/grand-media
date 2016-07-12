@@ -1,4 +1,8 @@
-<?php
+<?php // don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Panel heading for term
  *
@@ -25,7 +29,9 @@ $taxterm    = str_replace('gmedia_', '', $gmedia_term_taxonomy);
                     <li><a href="<?php echo add_query_arg(array('page' => 'GrandMedia', $taxkey => $term->term_id), admin_url('admin.php')); ?>"><?php _e('Show in Gmedia Library', 'grand-media'); ?></a></li>
                 </ul>
             </div>
+            <div class="term-shortcode pull-left"><input type="text" title="<?php _e('Shortcode'); ?>" class="form-control pull-left" value="<?php echo "[gm {$taxterm}={$term_id}]"; ?>" readonly /><div class="input-buffer"></div></div>
         <?php } ?>
     </div>
 
+    <div class="spinner"></div>
 </div>

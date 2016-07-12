@@ -1,4 +1,9 @@
 <?php
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * @var $gmCore
  * @var $gmProcessor
@@ -26,6 +31,8 @@
         </div>
 
         <?php echo $gmedia_pager; ?>
+
+        <div class="spinner"></div>
 
     </div>
     <div class="btn-toolbar pull-left" style="margin-bottom:7px;">
@@ -127,7 +134,7 @@
                 <li class="<?php echo $rel_selected_show . (gm_user_can('edit_media')? '' : ' disabled'); ?>">
                     <a href="#libModal" data-modal="batch_edit" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Batch Edit', 'grand-media'); ?></a></li>
 
-                <li class="divider"></li>
+                <li class="divider <?php echo $rel_selected_show; ?>"></li>
                 <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
                     <a href="#libModal" data-modal="assign_album" data-action="gmedia_get_modal" class="gmedia-modal"><?php _e('Move to Album...', 'grand-media'); ?></a>
                 </li>
@@ -151,8 +158,15 @@
                     <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('update_meta' => 'selected'), array()), 'gmedia_update_meta') ?>" class="gmedia-update"><?php _e('Update Metadata in Database', 'grand-media'); ?></a>
                 </li>
 
+                <li class="divider"></li>
+                <li class="">
+                    <a href="<?php echo gm_get_admin_url(array('gmedia__in' => 'duplicates'), array()); ?>"><?php _e('Show Duplicates in Library', 'grand-media'); ?></a>
+                </li>
+
+                <li class="divider <?php echo $rel_selected_hide; ?>"></li>
                 <li class="dropdown-header <?php echo $rel_selected_hide; ?>"><span><?php _e("Select items to see more actions", "grand-media"); ?></span></li>
                 <?php do_action('gmedia_action_list'); ?>
+
             </ul>
         </div>
 

@@ -1,4 +1,9 @@
 <?php
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Panel heading for term
  *
@@ -25,7 +30,7 @@
             </div>
         <?php } ?>
         <?php if($term_id) { ?>
-            <input type="text" title="<?php _e('Shortcode'); ?>" class="form-control pull-left" style="margin-left:20px; width:10em;" value="[gmedia id=<?php echo $term_id; ?>]" readonly />
+            <div class="term-shortcode pull-left"><input type="text" title="<?php _e('Shortcode'); ?>" class="form-control pull-left" value="<?php echo "[gmedia id={$term_id}]"; ?>" readonly /><div class="input-buffer"></div></div>
         <?php } ?>
     </div>
 
@@ -41,4 +46,5 @@
         <?php } ?>
     </div>
 
+    <div class="spinner"></div>
 </div>

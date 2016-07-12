@@ -54,6 +54,7 @@ function grandWPMedia() {
                 </button>
             </form>
             <?php echo $gmDB->query_pager(); ?>
+            <div class="spinner"></div>
 
             <div class="btn-toolbar pull-left">
                 <div class="btn-group gm-checkgroup" id="cb_global-btn">

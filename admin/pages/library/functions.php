@@ -31,8 +31,10 @@ function gmedia_item_actions($item) {
         }
         $actions['show'] = '<a href="' . $gmCore->gm_get_media_image($item, 'web') . '" data-target="#previewModal" data-width="' . $item->msize['width'] . '" data-height="' . $item->msize['height'] . '" class="preview-modal" title="' . esc_attr($item->title) . '">' . __('Show', 'grand-media') . '</a>';
 
-    } elseif(in_array($item->ext, array('mp4', 'mp3', 'mpeg', 'webm', 'ogg', 'wave', 'wav'))) {
+    } elseif(in_array($item->ext, array('mp4', 'mpeg', 'webm'))) {
         $actions['show'] = '<a href="' . $item->url . '" data-target="#previewModal" data-width="' . $item->msize['width'] . '" data-height="' . $item->msize['height'] . '" class="preview-modal" title="' . esc_attr($item->title) . '">' . __('Play', 'grand-media') . '</a>';
+    } else {
+        $actions['show'] = '<a href="' . $item->url . '" title="' . esc_attr($item->title) . '" download="' . $item->gmuid . '">' . __('Download', 'grand-media') . '</a>';
     }
     $metainfo = $gmCore->metadata_text($item->ID);
     if($metainfo) {
@@ -65,11 +67,11 @@ function gmedia_item_more_data(&$item) {
     $item->url  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder'][$type[0]] . '/' . $item->gmuid;
     $item->path = $gmCore->upload['path'] . '/' . $gmGallery->options['folder'][$type[0]] . '/' . $item->gmuid;
 
-    if(function_exists('exif_imagetype')) {
-        $item->editor = (('image' == $type[0]) && in_array(exif_imagetype($item->path), array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)))? true : false;
-    } else {
+//    if(function_exists('exif_imagetype')) {
+//        $item->editor = (('image' == $type[0]) && in_array(exif_imagetype($item->path), array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)))? true : false;
+//    } else {
         $item->editor = (('image' == $type[0]) && in_array($type[1], array('jpeg', 'png', 'gif')))? true : false;
-    }
+//    }
     $item->gps = '';
     if($item->editor) {
         $item->url_original  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
@@ -124,5 +126,34 @@ function gmedia_alert_message() {
         </div>
         <?php
     }
+}
+
+/**
+ * @param $item
+ *
+ * @return string
+ */
+function gmedia_waveform_player($item) {
+    global $gmDB;
+    $peaks = $gmDB->get_metadata('gmedia', $item->ID, '_peaks', true);
+    if($peaks) {
+        $peaks = json_decode( $peaks );
+        while(900 < count($peaks)){
+            $peaks = array_map('reset', array_chunk($peaks, 2));
+        }
+        $peaks = json_encode($peaks);
+    } else {
+        $peaks = '';
+    }
+    $content = '
+                <div class="gm-waveform-player" data-id="' . $item->ID . '" data-file="' . $item->url . '" data-peaks="' . $peaks . '">
+                    <div id="ws' . $item->ID . '"></div>' .
+                    ($peaks? '' : ('<button type="button" class="btn btn-sm btn-info gm-waveform">' . __('Create & Save WaveForm', 'grand-media') . '</button>')) .
+                    '<button type="button" class="btn btn-sm btn-info gm-play" style="display:none;">' . __('Play', 'grand-media') . '</button>
+                    <button type="button" class="btn btn-sm btn-info gm-pause" style="display:none;">' . __('Pause', 'grand-media') . '</button>
+                    <span style="float:none;" class="spinner"></span>
+                </div>';
+
+    return $content;
 }
 

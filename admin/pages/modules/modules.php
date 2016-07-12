@@ -8,7 +8,7 @@ if(!defined('ABSPATH')) {
     die('-1');
 }
 
-global $gmCore, $gmProcessor, $gmGallery;
+global $gmCore, $gmProcessor, $gmGallery, $gmDB;
 
 $gmedia_url = $gmProcessor->url;
 $modules    = get_gmedia_modules();
@@ -63,7 +63,9 @@ if(isset($modules['error'])) {
                 } ?>
             </div>
         </div>
-    <?php } ?>
+    <?php }
+    wp_nonce_field('GmediaGallery');
+    ?>
 </div>
 
 <?php if($gmCore->caps['gmedia_module_manage']) {

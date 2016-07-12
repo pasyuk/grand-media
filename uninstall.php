@@ -35,9 +35,11 @@ function gmedia_uninstall() {
     /** @var $wpdb wpdb */
     global $wpdb, $gmCore, $gmDB;
 
-    $gmCore->app_service('app_uninstallplugin');
-
     $options = get_option('gmediaOptions');
+    if((int)$options['mobile_app']) {
+        $gmCore->app_service('app_uninstallplugin');
+    }
+
     $upload  = $gmCore->gm_upload_dir(false);
 
     if(!$options){

@@ -1,3 +1,8 @@
+<?php // don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+?>
 <div class="modal fade gmedia-modal" id="shareModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">

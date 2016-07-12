@@ -45,9 +45,9 @@ $gmedia_filter = gmedia_gallery_query_data($term->meta['_query']);
  * @var $module_path
  */
 if($term->module['name']) {
-    $presets = $gmDB->get_terms('gmedia_module', array('global' => $user_ID, 'status' => $term->module['name']));
+    $presets = $gmDB->get_terms('gmedia_module', array('status' => $term->module['name']));
     foreach($presets as $i => $preset) {
-        if('[' . $term->module['name'] . ']' == $preset->name) {
+        if('[' . $term->module['name'] . ']' == $preset->name && $user_ID == $preset->global) {
             $default_preset            = maybe_unserialize($preset->description);
             $default_preset['term_id'] = $preset->term_id;
             $default_preset['name']    = $preset->name;
@@ -79,13 +79,13 @@ if($term->module['name']) {
                 $default_options = $gmCore->array_replace_recursive($default_options, $default_preset);
             }
         } else {
-            $alert[] = sprintf(__('Module `%s` is broken. Choose another module from the list and save settings'), $module_name);
+            $alert[] = sprintf(__('Module `%s` is broken. Choose another module from the list.'), $module_name);
         }
     } else {
-        $alert[] = sprintf(__('Can\'t get module with name `%s`. Choose module from the list and save settings'), $module_name);
+        $alert[] = sprintf(__('Can\'t get module with name `%s`. Choose module from the list.'), $module_name);
     }
 } else {
-    $alert[] = sprintf(__('Module is not selected for this gallery. Choose module from the list and save settings'), $module_name);
+    $alert[] = sprintf(__('Module is not selected for this gallery. Choose module from the list.'), $module_name);
 }
 
 if (! empty($alert)) {

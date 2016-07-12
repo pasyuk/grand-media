@@ -1,13 +1,13 @@
-<?php
+<?php // don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Sort Gmedia in Album
  *
  * @var $term
  */
-if(!$term->count) {
-    return;
-}
-
 global $gmDB, $gmCore;
 
 $_orderby   = isset($term->meta['_orderby'][0])? $term->meta['_orderby'][0] : '';
@@ -30,8 +30,8 @@ $pager_html = $gmDB->query_pager();
 ?>
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
-        <h4 style="margin:7px 0;" class="pull-left"><?php _e('Sort Album'); ?></h4>
-
+        <h4 style="margin:7px 40px 7px 0;" class="pull-left"><?php _e('Sort Album'); ?></h4>
+        <a class="btn btn-default" href="<?php echo add_query_arg(array('page' => 'GrandMedia', 'album__in' => $term->term_id), admin_url('admin.php')); ?>"><?php _e('Open in Gmedia Library', 'grand-media'); ?></a>
         <?php echo $pager_html; ?>
 
     </div>
@@ -115,6 +115,7 @@ $pager_html = $gmDB->query_pager();
                 //revert: true,
                 stop: function(event, ui) {
                     $('#gmedia_term_orderby').val('custom');
+                    $('#gmedia_term_order').val('ASC');
                     var cur_order, prev_order, next_order;
                     var self = ui.item,
                             prev_item = self.prev(),
@@ -153,6 +154,7 @@ $pager_html = $gmDB->query_pager();
 
             $('input', items).on('change', function() {
                 $('#gmedia_term_orderby').val('custom');
+                $('#gmedia_term_order').val('ASC');
                 sortdiv.css({height: sortdiv.height()});
                 var items = $('.gm-img-thumbnail', sortdiv);
 

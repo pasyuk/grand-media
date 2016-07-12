@@ -233,20 +233,10 @@ function gmedia_add_media_galleries() {
 
     <div class="panel panel-default" id="gmedia-container">
         <div class="panel-heading clearfix">
-            <form class="form-inline gmedia-search-form" role="search" method="get">
-                <div class="form-group">
-                    <?php foreach($_GET as $key => $value) {
-                        if(in_array($key, array('chromeless', 'post_id', 'tab', 'orderby', 'order', 'number', 'global'))) {
-                            ?>
-                            <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
-                            <?php
-                        }
-                    } ?>
-                    <input id="gmedia-search" class="form-control input-sm" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php echo $gmCore->_get('s', ''); ?>"/>
-                </div>
-                <button type="submit" class="btn btn-default input-sm"><span class="glyphicon glyphicon-search"></span></button>
-            </form>
-            <?php echo $gmDB->query_pager(); ?>
+            <?php include(GMEDIA_ABSPATH . 'admin/tpl/search-form.php'); ?>
+            <div class="pull-right">
+                <?php echo $gmDB->query_pager(); ?>
+            </div>
 
             <div class="btn-group" style="margin-right:20px;">
                 <a class="btn btn-primary" target="_blank" href="<?php echo add_query_arg(array('page' => 'GrandMedia_Modules'), admin_url('admin.php')); ?>"><?php _e('Create New Gallery', 'grand-media'); ?></a>
@@ -491,28 +481,18 @@ function gmedia_add_media_terms() {
 
     <div class="panel panel-default">
         <div class="panel-heading clearfix">
-            <form class="form-inline gmedia-search-form" role="search" method="get">
-                <div class="form-group">
-                    <?php foreach($_GET as $key => $value) {
-                        if(in_array($key, array('chromeless', 'post_id', 'tab', 'orderby', 'order', 'number', 'global'))) {
-                            ?>
-                            <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
-                            <?php
-                        }
-                    } ?>
-                    <input id="gmedia-search" class="form-control input-sm" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php echo $gmCore->_get('s', ''); ?>"/>
-                </div>
-                <button type="submit" class="btn btn-default input-sm"><span class="glyphicon glyphicon-search"></span></button>
-            </form>
-            <?php echo $gmDB->query_pager(); ?>
+            <?php include(GMEDIA_ABSPATH . 'admin/tpl/search-form.php'); ?>
+            <div class="pull-right">
+                <?php echo $gmDB->query_pager(); ?>
+            </div>
 
             <div class="btn-group" style="margin-right:20px;">
                 <a class="btn btn<?php echo ('gmedia_album' == $taxonomy)? "-primary active" : '-default'; ?>"
                    href="<?php echo add_query_arg(array('term' => 'gmedia_album'), $url); ?>"><?php _e('Albums', 'grand-media'); ?></a>
-                <a class="btn btn<?php echo ('gmedia_tag' == $taxonomy)? "-primary active" : '-default'; ?>"
-                   href="<?php echo add_query_arg(array('term' => 'gmedia_tag'), $url); ?>"><?php _e('Tags', 'grand-media'); ?></a>
                 <a class="btn btn<?php echo ('gmedia_category' == $taxonomy)? "-primary active" : '-default'; ?>"
                    href="<?php echo add_query_arg(array('term' => 'gmedia_category'), $url); ?>"><?php _e('Categories', 'grand-media'); ?></a>
+                <a class="btn btn<?php echo ('gmedia_tag' == $taxonomy)? "-primary active" : '-default'; ?>"
+                   href="<?php echo add_query_arg(array('term' => 'gmedia_tag'), $url); ?>"><?php _e('Tags', 'grand-media'); ?></a>
             </div>
 
         </div>
@@ -648,6 +628,7 @@ function gmedia_add_media_terms() {
                                                         'custom'   => __('user defined', 'grand-media'),
                                                         'ID'       => __('by ID', 'grand-media'),
                                                         'title'    => __('by title', 'grand-media'),
+                                                        'gmuid'    => __('by filename', 'grand-media'),
                                                         'date'     => __('by date', 'grand-media'),
                                                         'modified' => __('by last modified date', 'grand-media'),
                                                         'rand'     => __('Random', 'grand-media')
@@ -672,9 +653,9 @@ function gmedia_add_media_terms() {
                                             <?php } ?>
                                         </p>
                                     </div>
-                                    <?php if(!empty($item->description)) { ?>
+                                    <?php /*if(!empty($item->description)) { ?>
                                         <div class="term-description"><?php echo esc_html(nl2br($item->description)); ?></div>
-                                    <?php } ?>
+                                    <?php }*/ ?>
                                 </div>
                                 <?php
                             }
@@ -692,25 +673,30 @@ function gmedia_add_media_terms() {
                     <form method="post" id="gmedia-form" role="form">
                         <div class="media-upload-form-container">
                             <div class="form-group">
-                                <label><?php _e('Choose module/preset', 'grand-media'); ?></label>
+                                <label><?php _e('Overwrite Module/Preset', 'grand-media'); ?></label>
                                 <select class="form-control input-sm" id="module_preset" name="module_preset">
-                                    <option value=""><?php _e('Default module in Settings', 'grand-media'); ?></option>
-                                    <?php foreach($gmedia_modules['in'] as $mfold => $module) {
+                                    <option value=""><?php _e('Do not overwrite', 'grand-media'); ?></option>
+                                    <?php
+                                    foreach($gmedia_modules['in'] as $mfold => $module) {
                                         echo '<optgroup label="' . esc_attr($module['title']) . '">';
-                                        $presets           = $gmDB->get_terms('gmedia_module', array('global' => $user_ID, 'status' => $mfold));
+                                        $presets           = $gmDB->get_terms('gmedia_module', array('status' => $mfold));
                                         $option            = array();
-                                        $option['default'] = '<option value="' . esc_attr($mfold) . '">' . '[' . $mfold . '] ' . __('Default Settings') . '</option>';
+                                        $option[] = '<option value="' . esc_attr($mfold) . '">' . $module['title'] . ' - ' . __('Default Settings') . '</option>';
                                         foreach($presets as $preset) {
-                                            if('[' . $mfold . ']' == $preset->name) {
-                                                $option['default'] = '<option value="' . $preset->term_id . '">' . '[' . $mfold . '] ' . __('Default Settings') . '</option>';
+                                            $by_author =  ' [' . get_the_author_meta('display_name', $preset->global) .']';
+                                            if('[' . $mfold . ']' === $preset->name) {
+                                                $option[] = '<option value="' . $preset->term_id . '">' . $module['title'] . $by_author  . ' - ' . __('Default Settings'). '</option>';
                                             } else {
-                                                $option[] = '<option value="' . $preset->term_id . '">' . $preset->name . '</option>';
+                                                $preset_name = str_replace('[' . $mfold . '] ', '', $preset->name);
+                                                $option[] = '<option value="' . $preset->term_id . '">' . $module['title'] . $by_author  . ' - ' . $preset_name . '</option>';
                                             }
                                         }
                                         echo implode('', $option);
                                         echo '</optgroup>';
-                                    } ?>
+                                    }
+                                    ?>
                                 </select>
+                                <p class="help-block"><?php _e('Overwrite Module/Preset of chosen term via shortcode parameters. Create Presets on Modules page or while edit/create some galleries.', 'grand-media'); ?></p>
                             </div>
                             <div id="media-upload-form-container"></div>
                         </div>
@@ -786,21 +772,10 @@ function gmedia_add_media_library() {
 
     <div class="panel panel-default" id="gmedia-container">
         <div class="panel-heading clearfix">
-            <form class="form-inline gmedia-search-form" role="search">
-                <div class="form-group">
-                    <?php foreach($_GET as $key => $value) {
-                        if(in_array($key, array('chromeless', 'post_id', 'tab', 'mime_type', 'tag_id', 'tag__in', 'cat', 'category__in', 'alb', 'album__in'))) {
-                            ?>
-                            <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
-                            <?php
-                        }
-                    } ?>
-                    <input id="gmedia-search" class="form-control input-sm" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php echo $gmCore->_get('s', ''); ?>"/>
-                </div>
-                <button type="submit" class="btn btn-default input-sm"><span class="glyphicon glyphicon-search"></span></button>
-            </form>
-            <?php echo $gmDB->query_pager(); ?>
-
+            <?php include(GMEDIA_ABSPATH . 'admin/tpl/search-form.php'); ?>
+            <div class="pull-right">
+                <?php echo $gmDB->query_pager(); ?>
+            </div>
         </div>
         <div class="panel-body" id="gm-list-table">
             <div class="row">

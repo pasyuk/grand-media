@@ -1,4 +1,8 @@
 <?php
+if ( preg_match( '#' . basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) . '#', $_SERVER['PHP_SELF'] ) ) {
+	die( 'You are not allowed to call this page directly.' );
+}
+
 /**
  * Bootstrap file for getting the ABSPATH constant to wp-load.php
  * This is requried when a plugin requires access not via the admin screen.

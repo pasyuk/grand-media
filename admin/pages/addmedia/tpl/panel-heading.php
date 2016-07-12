@@ -1,4 +1,9 @@
 <?php
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * @var $url
  * @var $import
@@ -32,4 +37,5 @@ $extra_tools = (defined('GMEDIA_IFRAME') && GMEDIA_IFRAME)? false : true;
         </div>
         <div style="padding: 2px 10px;"><?php echo $msg; ?></div>
     </div>
+    <div class="spinner"></div>
 </div>

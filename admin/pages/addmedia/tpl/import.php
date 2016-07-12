@@ -58,8 +58,10 @@ $import_tab = array();
                 </div>
                 <div class="tab-footer">
                     <div class="checkbox pull-left">
-                        <label><input type="checkbox" name="delete_source" value="1"/> <?php _e('delete source files after importing', 'grand-media') ?>
-                        </label></div>
+                        <div><label><input type="checkbox" name="delete_source" value="1"/> <?php _e('delete source files after importing', 'grand-media') ?></label></div>
+                        <div><label><input type="checkbox" name="skip_exists" value="skip"> <?php _e('Skip if file with the same name already exists in Gmedia Library', 'grand-media'); ?></label></div>
+                        <div class="help-block"><?php _e('Note: duplicates will be skipped in any way (checked by file hash)') ?></div>
+                    </div>
                     <button class="pull-right btn btn-info gmedia-import" type="button" name="import-folder" value="true"><?php _e('Import folder', 'grand-media'); ?></button>
                 </div>
                 <script type="text/javascript">
@@ -99,6 +101,10 @@ $import_tab = array();
                             </div>
                         </div>
                         <div class="tab-footer">
+                            <div class="checkbox pull-left">
+                                <label><input type="checkbox" name="skip_exists" value="skip"> <?php _e('Skip if file with the same name already exists in Gmedia Library', 'grand-media'); ?></label>
+                                <div class="help-block"><?php _e('Note: duplicates will be skipped in any way (checked by file hash)') ?></div>
+                            </div>
                             <button class="pull-right btn btn-info gmedia-import" type="button" name="import-flagallery" value="true"><?php _e('Import', 'grand-media'); ?></button>
                         </div>
                     <?php } else { ?>
@@ -128,6 +134,10 @@ $import_tab = array();
                             </div>
                         </div>
                         <div class="tab-footer">
+                            <div class="checkbox pull-left">
+                                <label><input type="checkbox" name="skip_exists" value="skip"> <?php _e('Skip if file with the same name already exists in Gmedia Library', 'grand-media'); ?></label>
+                                <div class="help-block"><?php _e('Note: duplicates will be skipped in any way (checked by file hash)') ?></div>
+                            </div>
                             <button class="pull-right btn btn-info gmedia-import" type="button" name="import-nextgen" value="true"><?php _e('Import', 'grand-media'); ?></button>
                         </div>
                     <?php } else { ?>

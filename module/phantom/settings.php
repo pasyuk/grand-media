@@ -1,6 +1,5 @@
 <?php
 $default_options = array(
-    'per_page'                => '0',
     'maxheight'               => '0',
     'thumbCols'               => '0',
     'thumbRows'               => '0',
@@ -53,12 +52,6 @@ $options_tree    = array(
     array(
         'label'  => 'Common Settings',
         'fields' => array(
-            'per_page'        => array(
-                'label' => 'Items per page',
-                'tag'   => 'input',
-                'attr'  => 'type="number" min="0"',
-                'text'  => 'Leave 0 to disable pagination.'
-            ),
             'maxheight'        => array(
                 'label' => 'Max-Height',
                 'tag'   => 'input',

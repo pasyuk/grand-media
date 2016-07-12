@@ -43,7 +43,7 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
                 foreach($gmedia_query as &$item) {
                     gmedia_item_more_data($item);
 
-                    $item->classes = array();
+                    $item->classes = array('gmedia-' . $item->type . '-item');
                     if('publish' != $item->status) {
                         if('private' == $item->status) {
                             $item->classes[] = 'list-group-item-info';
@@ -69,7 +69,7 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
                 foreach($gmedia_query as &$item) {
                     gmedia_item_more_data($item);
 
-                    $item->classes = array();
+                    $item->classes = array('gmedia-' . $item->type . '-item');
                     if('publish' != $item->status) {
                         if('private' == $item->status) {
                             $item->classes[] = 'list-group-item-info';
@@ -129,6 +129,7 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
 include(GMEDIA_ABSPATH . 'admin/tpl/modal-share.php');
 
 if($gmProcessor->edit_mode) {
+    $customfield_meta_type = 'gmedia';
     include(GMEDIA_ABSPATH . 'admin/tpl/modal-customfield.php');
 } ?>
 

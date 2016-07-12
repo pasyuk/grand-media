@@ -1,4 +1,8 @@
-<?php
+<?php // don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Update Gmedia plugin
  */
@@ -96,7 +100,6 @@ function gmedia_do_update() {
 
     // add charset & collate like wp core
     $charset_collate = '';
-
     if($wpdb->has_cap('collation')) {
         if(!empty($wpdb->charset)) {
             $charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
@@ -105,12 +108,14 @@ function gmedia_do_update() {
             $charset_collate .= " COLLATE $wpdb->collate";
         }
     }
+    $charset_collate .= ' ROW_FORMAT=DYNAMIC';
 
     $gmedia                    = $wpdb->prefix . 'gmedia';
     $gmedia_term               = $wpdb->prefix . 'gmedia_term';
     $gmedia_term_relationships = $wpdb->prefix . 'gmedia_term_relationships';
 
-    $sql = "
+    $sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+    $sql .= "
 	CREATE TABLE {$gmedia} (
 		ID BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		author BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
@@ -840,6 +845,14 @@ function gmedia_quite_update() {
                 }
             }
         }
+        if(version_compare($current_version, '1.8.55', '<')) {
+            $wpdb->query( "CREATE INDEX `_hash` ON {$wpdb->prefix}gmedia_meta ( meta_value(32) );" );
+
+            $ajax_operations = get_option('gmedia_ajax_long_operations', array());
+            $ajax_operations[] = 'gmedia_hash_files';
+            $ajax_operations = array_unique($ajax_operations);
+            update_option('gmedia_ajax_long_operations', $ajax_operations);
+        }
 
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/afflux');
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/jq-mplayer');
@@ -849,6 +862,8 @@ function gmedia_quite_update() {
 
         update_option("gmediaVersion", GMEDIA_VERSION);
 
-        $gmCore->app_service('app_updatecron');
+        if((int)$gmGallery->options['mobile_app']) {
+            $gmCore->app_service('app_updatecron');
+        }
     }
 }

@@ -1,4 +1,7 @@
 <?php
+if(!defined('ABSPATH')) {
+	exit;
+} // Exit if accessed directly
 
 /**
  * PHP Class for Wordpress SEO plugin

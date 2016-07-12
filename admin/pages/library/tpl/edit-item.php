@@ -1,4 +1,9 @@
 <?php
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Edit Gmedia Item
  */
@@ -19,6 +24,10 @@
             <?php $media_action_links = gmedia_item_actions($item);
             unset($media_action_links['edit_data']);
             echo implode(' | ', $media_action_links);
+
+            if('audio' == $item->type) {
+                echo gmedia_waveform_player($item);
+            }
             ?>
         </div>
     </div>

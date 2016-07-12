@@ -4,6 +4,7 @@ $default_options = array(
     'rating'       => '1',
     'autoplay'     => '0',
     'buttonText'   => 'Download',
+    'downloadTrack'=> '0',
     'tracksToShow' => '5',
     'moreText'     => 'View More...',
     'customCSS'    => ''
@@ -22,7 +23,7 @@ $options_tree    = array(
                 'label' => 'Rating',
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => 'Allow visitors to rate tracks'
+                'text'  => 'Allow visitors to rate tracks.'
             ),
             'autoplay'     => array(
                 'label' => 'Autoplay',
@@ -34,7 +35,13 @@ $options_tree    = array(
                 'label' => 'Link Button Text',
                 'tag'   => 'input',
                 'attr'  => 'type="text"',
-                'text'  => 'If gmedia link field is not empty than button with this text will show near track (ex: Open, Buy, Download)'
+                'text'  => 'If gmedia link field is not empty than button with this text will show near track (ex: Open, Buy, Download).'
+            ),
+            'downloadTrack'   => array(
+                'label' => 'Link to File',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => 'If gmedia link field is empty than Link Button will download original file.'
             ),
             'tracksToShow' => array(
                 'label' => '# of Tracks to Show',

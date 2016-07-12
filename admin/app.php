@@ -39,6 +39,7 @@ function gmediaApp() {
                 </div>
                 <button type="button" name="gmedia_application_activate" data-action="app_activate" class="gmapp_activate btn btn-primary<?php echo $btn_state . ($mobile_app? ' hidden' : ''); ?>"><?php _e('Enable GmediaService', 'grand-media'); ?></button>
             </div>
+            <div class="spinner"></div>
             <?php
             wp_nonce_field('GmediaService');
             ?>

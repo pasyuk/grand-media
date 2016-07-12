@@ -1,4 +1,8 @@
-<?php
+<?php // don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Panel heading for terms
  *
@@ -20,6 +24,7 @@
 
         <?php echo $gmedia_terms_pager; ?>
 
+        <div class="spinner"></div>
     </div>
 
     <div class="btn-toolbar pull-left" style="margin-bottom:7px;">

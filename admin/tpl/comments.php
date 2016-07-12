@@ -2,6 +2,9 @@
 /**
  * Gmedia Comments
  */
+if(!defined('ABSPATH')) {
+    exit;
+} // Exit if accessed directly
 
 require_once(ABSPATH . 'wp-admin/includes/meta-boxes.php');
 

@@ -1,4 +1,9 @@
 <?php
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Gmedia Item for List View in Library
  *
@@ -18,6 +23,11 @@
             </label>
             <label class="gm-stack"><input title="<?php _e('Add to Stack', 'grand-media'); ?>" name="stack[]" type="checkbox"<?php echo $item->in_stack? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
         </div>
+        <?php
+        if('audio' == $item->type) {
+            echo gmedia_waveform_player($item);
+        }
+        ?>
     </div>
     <div class="col-sm-8">
         <div class="row" style="margin:0;">

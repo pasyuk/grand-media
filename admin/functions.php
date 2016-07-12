@@ -127,3 +127,67 @@ function get_gmedia_modules($including_remote = true) {
 
     return $modules;
 }
+
+/**
+ * @param array $query
+ *
+ * @return array
+ */
+function gmedia_gallery_query_data($query = array()) {
+	$filter_data = array(
+		'author__in'         => array()
+		, 'author__not_in'   => array()
+		, 'category__and'    => array() // use category id. Display posts that are tagged with all listed categories in array
+		, 'category__in'     => array() // use category id. Same as 'cat', but does not accept negative values
+		, 'category__not_in' => array() // use category id. Exclude multiple categories
+		, 'album__in'        => array() // use album id. Same as 'alb'
+		, 'album__not_in'    => array() // use album id. Exclude multiple albums
+		, 'tag__and'         => array() // use tag ids. Display posts that are tagged with all listed tags in array
+		, 'tag__in'          => array() // use tag ids. To display posts from either tags listed in array. Same as 'tag'
+		, 'tag__not_in'      => array() // use tag ids. Display posts that do not have any of the listed tag ids
+		, 'terms_relation'   => ''      //  allows you to describe the boolean relationship between the taxonomy queries. Possible values are 'OR', 'AND'. Default 'AND'
+		, 'gmedia__in'       => array() // use gmedia ids. Specify posts to retrieve
+		, 'gmedia__not_in'   => array() // use gmedia ids. Specify post NOT to retrieve
+		, 'mime_type'        => array() // mime types
+
+		, 'limit'            => '' // (int) - set limit
+		, 'page'             => '' // (int) - set limit
+		, 'per_page'         => '' // (int) - set limit
+		, 'order'            => '' // Designates the ascending or descending order of the 'orderby' parameter. Defaults to 'DESC'
+		, 'orderby'          => '' // Sort retrieved posts by parameter. Defaults to 'ID'
+		, 'year'             => '' // (int) - 4 digit year
+		, 'monthnum'         => '' // (int) - Month number (from 1 to 12)
+		, 'day'              => '' // (int) - Day of the month (from 1 to 31)
+
+		, 'meta_query'       => array(
+			array(
+				'key'     => '',
+				'value'   => '',
+				'compare' => '',
+				'type'    => ''
+			)
+		)
+		, 's'                => '' // (string) - search string or terms separated by comma
+		, 'exact'            => false // Search exactly string if 'exact' parameter set to true
+
+	);
+
+	$filter_data = wp_parse_args($query, $filter_data);
+
+	$query_args = (array) gmedia_array_filter_recursive($filter_data);
+
+	return array(
+		'query_data' => $filter_data,
+		'query_args' => $query_args
+	);
+}
+
+function gmedia_array_filter_recursive($input) {
+	foreach($input as &$value) {
+		if(is_array($value)) {
+			$value = gmedia_array_filter_recursive($value);
+		}
+	}
+
+	return array_filter($input);
+}

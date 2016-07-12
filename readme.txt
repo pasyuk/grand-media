@@ -36,7 +36,8 @@ Gmedia Gallery is the result of hundreds of hours of working to bring you the ul
 
 See demo of Gmedia Gallery Modules:
 
-*   [PhotoMania Module (GmediaCloud demo)](http://codeasily.com/portfolio-item/gmedia-photomania/) is a new free amazing responsive gallery with thumbs panel and other details for each image like author, caption, download button, link button, like button. Can be in full window and full screen mode.
+*   [PhotoTravlr Module](http://codeasily.com/portfolio/gmedia-gallery-modules/gmedia-phototravlr/) is amazing responsive gallery with terms support (tags, albums, categories) and details for each image like author, caption, download button, link button, like button, EXIF info, location map. Can be in full window and full screen mode.
+*   [PhotoMania Module (GmediaCloud demo)](http://codeasily.com/portfolio-item/gmedia-photomania/) - free responsive gallery with thumbs panel and other details for each image like author, caption, download button, link button, like button. Can be in full window and full screen mode.
 *   [Mosaic Module](http://codeasily.com/portfolio-item/gmedia-mosaic/) is an image gallery with masonry layout built on jQuery. Responsive gallery with built in prettyPhoto lightbox for big images.
 *   [RealSlider Module](http://codeasily.com/portfolio-item/gmedia-realslider/) is an image/video gallery slider module built on jQuery. RealSlider module is responsive and touch friendly gallery with 50+ options for customization.
 *   [Phantom Module](http://codeasily.com/portfolio-item/gmedia-phantom/) is the Wall/Grid Gallery with social sharing - you can easily change thumbnail sizes, colors, navigation, borders, add stylish labels to thumbnails ... and much more. PhotoSwipe like theme on touch devices.. only better.
@@ -121,19 +122,65 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 == Screenshots ==
 
-1. Admin Area - Gmedia Library Edit Mode
-2. Admin Area - Create Gallery with Afflux Module
-3. Admin Area - Add shortcode to Post - Gmedia MetaBox
-4. Admin Area - Upload images to Gmedia Library
-5. Admin Area - Import galleries from Flagallery plugin
-6. Admin Area - Process of import galleries from Flagallery plugin
-7. Admin Area - Gmedia Library
-8. Admin Area - Gmedia Library Filters
+1. iOS App - Home page
+2. iOS App - Album View
+3. iOS App - Image Edit
+4. iOS App - List of Albums
+5. Admin Area - Gmedia Library Edit Mode
+6. Admin Area - Create Gallery with Afflux Module
+7. Admin Area - Add shortcode to Post - Gmedia MetaBox
+8. Admin Area - Upload images to Gmedia Library
+9. Admin Area - Import galleries from Flagallery plugin
+10. Admin Area - Process of import galleries from Flagallery plugin
+11. Admin Area - Gmedia Library
+12. Admin Area - Gmedia Library Filters
 
 == Changelog ==
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= 1.8.58 =
+* Added: Waveform for music files
+* Added: Waveform player in admin
+* Added: Spinner on item edit
+* Added: Clean cache of all major cache plugins when do some actions in Gmedia Gallery plugin
+* Fixed: Database creation on some servers
+
+= 1.8.57 =
+* Updated: Compatibility with latest iOS application version
+* Fixed: Notice in Music Player
+
+= 1.8.56 =
+* Fixed: Apply preset for gallery
+* Updated Music Player module
+
+= 1.8.55 =
+* Added: Show Duplicates in Gmedia Library
+* Added: Prevent duplicates been import
+* Added: Open in Gmedia Library button to Edit Album/Category page
+* Added: Login by email in iOS app
+* Fixes and Improvements
+
+= 1.8.51 =
+* New: PhotoTravlr module on Modules page
+* Fixed: delete presets on Modules page
+
+= 1.8.50 =
+* Added: Page for creating Presets
+* New: Modules page now shows also available presets for each module
+* New: You can set global Module/Preset for terms
+* New: You can set Module/Preset individual for each album or category
+* Added: Tips for creating gallery's Query Args.
+* Added: Shortcode preview for each term
+* Bug Fixes & Improvements
+
+= 1.8.27 =
+* Added Open Graph Meta Image for Gmedia Posts
+* Added more info about item on Gmedia Post page (exif, map, terms)
+* Added 'style' parameter to shortcode, so user can add inline styles for gallery container
+* Added 'class' parameter for shortcode, so user can add own classes to gallery container
+* Fixes & improvements
 
 = 1.8.26 =
 * Enable/disable archive page option in Settings for gmedia library, albums, galleries.

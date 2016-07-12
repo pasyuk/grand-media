@@ -263,15 +263,35 @@ class gmediaPermalinks {
             //$query = array_merge($query, $new_query);
             $query = $new_query;
         }
-        if(isset($query['album__in'])){
-            $alb_ids = wp_parse_id_list($query['album__in']);
-            if(1 == count($alb_ids)) {
-                $album_meta        = $gmDB->get_metadata('gmedia_term', $alb_ids[0]);
-                $album_query_order = array(
-                    'orderby' => !empty($album_meta['_orderby'][0])? $album_meta['_orderby'][0] : $gmGallery->options['in_album_orderby'],
-                    'order'   => !empty($album_meta['_order'][0])? $album_meta['_order'][0] : $gmGallery->options['in_album_order']
+        if(empty($query['orderby']) && empty($query['order'])) {
+            if(isset($query['tag__in']) && (!isset($query['category__in']) && !isset($query['album__in']))) {
+                $term_query_order = array(
+                    'orderby' => $gmGallery->options['in_tag_orderby'],
+                    'order'   => $gmGallery->options['in_tag_order']
                 );
-                $query = array_merge($album_query_order, $query);
+                $query             = array_merge($term_query_order, $query);
+            }
+            if(isset($query['category__in']) && !isset($query['album__in'])) {
+                $cat_ids = wp_parse_id_list($query['category__in']);
+                if(1 == count($cat_ids)) {
+                    $cat_meta         = $gmDB->get_metadata('gmedia_term', $cat_ids[0]);
+                    $term_query_order = array(
+                        'orderby' => !empty($cat_meta['_orderby'][0])? $cat_meta['_orderby'][0] : $gmGallery->options['in_category_orderby'],
+                        'order'   => !empty($cat_meta['_order'][0])? $cat_meta['_order'][0] : $gmGallery->options['in_category_order']
+                    );
+                    $query             = array_merge($term_query_order, $query);
+                }
+            }
+            if(isset($query['album__in'])) {
+                $alb_ids = wp_parse_id_list($query['album__in']);
+                if(1 == count($alb_ids)) {
+                    $album_meta       = $gmDB->get_metadata('gmedia_term', $alb_ids[0]);
+                    $term_query_order = array(
+                        'orderby' => !empty($album_meta['_orderby'][0])? $album_meta['_orderby'][0] : $gmGallery->options['in_album_orderby'],
+                        'order'   => !empty($album_meta['_order'][0])? $album_meta['_order'][0] : $gmGallery->options['in_album_order']
+                    );
+                    $query             = array_merge($term_query_order, $query);
+                }
             }
         }
 

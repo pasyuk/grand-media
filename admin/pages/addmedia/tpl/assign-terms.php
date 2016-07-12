@@ -5,6 +5,11 @@
  * @var $gmDB
  */
 
+// don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 if(gm_user_can('terms')) { ?>
     <div class="form-group">
         <?php

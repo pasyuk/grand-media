@@ -33,7 +33,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
      * @return array
      */
     public function query_args() {
-        global $gmCore, $gmDB;
+        global $gmCore, $gmDB, $user_ID;
 
         $args['mime_type']        = $gmCore->_get('mime_type');
         $args['status']           = $gmCore->_get('status');
@@ -54,6 +54,16 @@ class GmediaProcessor_Library extends GmediaProcessor {
         $args['s']                = $gmCore->_get('s');
         $args['orderby']          = $gmCore->_get('orderby', $this->user_options['orderby_gmedia']);
         $args['order']            = $gmCore->_get('order', $this->user_options['sortorder_gmedia']);
+
+        if('duplicates' === $args['gmedia__in']) {
+	        $duplicates = $gmDB->get_duplicates();
+	        $args['gmedia__in'] = $duplicates['duplicate_ids'];
+	        $args['orderby'] = 'gmedia__in';
+
+	        setcookie("gmuser_{$user_ID}_library", implode(',', $duplicates['duplicate_select']));
+	        $_COOKIE["gmuser_{$user_ID}_library"] = implode(',', $duplicates['duplicate_select']);
+	        $this->selected_items = $duplicates['duplicate_select'];
+        }
 
         if($args['s'] && ('#' == substr($args['s'], 0, 1))) {
             $args['gmedia__in'] = substr($args['s'], 1);
@@ -238,29 +248,14 @@ class GmediaProcessor_Library extends GmediaProcessor {
                     $this->error[] = $term_id->get_error_message();
                     break;
                 }
-                $gallery_module = $gallery['module'];
-                $module_settings = array($gallery_module => array());
-                if($gmCore->is_digit($gallery_module)) {
-                    $preset = $gmDB->get_term($gallery_module);
-                    if(!empty($preset) && !is_wp_error($preset)){
-                        $gallery_module = $preset->status;
-                        $module_settings = array(
-                            $gallery_module => maybe_unserialize($preset->description)
-                        );
-                    } else {
-                        $gallery_module = $gmGallery->options['default_gmedia_module'];
-                        $module_settings = array(
-                            $gallery_module => array()
-                        );
-                    }
-                }
+	            $getModulePreset = $gmCore->getModulePreset($gallery['module']);
                 $gallery['query'] = array_merge($gallery['query'], array('order' => 'ASC', 'orderby' => 'gmedia__in'));
 
                 $gallery_meta = array(
                     '_edited'   => gmdate('Y-m-d H:i:s'),
                     '_query'    => $gallery['query'],
-                    '_module'   => $gallery_module,
-                    '_settings' => $module_settings
+                    '_module'   => $getModulePreset['module'],
+                    '_settings' => $getModulePreset['settings']
                 );
                 foreach($gallery_meta as $key => $value) {
                     $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);

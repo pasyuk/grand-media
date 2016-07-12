@@ -1,4 +1,8 @@
-<?php
+<?php // don't load directly
+if(!defined('ABSPATH')) {
+    die('-1');
+}
+
 /**
  * Preview Gmedia in Category
  *
@@ -30,7 +34,8 @@ $pager_html = $gmDB->query_pager();
 ?>
 <div class="panel panel-default">
     <div class="panel-heading clearfix">
-        <h4 style="margin:7px 0;" class="pull-left"><?php _e('Category Preview'); ?></h4>
+        <h4 style="margin:7px 40px 7px 0;" class="pull-left"><?php _e('Category Preview'); ?></h4>
+        <a class="btn btn-default" href="<?php echo add_query_arg(array('page' => 'GrandMedia', 'category__in' => $term->term_id), admin_url('admin.php')); ?>"><?php _e('Open in Gmedia Library', 'grand-media'); ?></a>
         <?php echo $pager_html; ?></div>
     <div class="panel-body">
         <div class="termItems clearfix" id="termItems">
