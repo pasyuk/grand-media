@@ -89,7 +89,7 @@ function gmedia_map_editor()
             } else {
                 var script = document.createElement("script");
                 script.type = "text/javascript";
-                script.src = "//maps.google.com/maps/api/js?sensor=false&v=3&callback=handleApiReady";
+                script.src = "//maps.google.com/maps/api/js?key=AIzaSyBMiF6nlG5O1tE81Q-35_dckOwW4ypMRuk&callback=handleApiReady";
                 document.body.appendChild(script);
             }
         }

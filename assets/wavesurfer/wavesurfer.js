@@ -199,7 +199,10 @@ var WaveSurfer = {
 
         if (!paused) {
             this.backend.pause();
-            this.backend.play();
+            var be = this.backend;
+            setTimeout(function(){
+                be.play();
+            }, 200);
         }
         this.params.scrollParent = oldScrollParent;
         this.fireEvent('seek', progress);
@@ -335,7 +338,7 @@ var WaveSurfer = {
      * Loads audio and re-renders the waveform.
      */
     load: function (url, peaks) {
-        this.empty();
+        //this.empty();
 
         switch (this.params.backend) {
             case 'WebAudio': return this.loadBuffer(url, peaks);
@@ -679,8 +682,6 @@ WaveSurfer.Observer = {
 
 /* Make the main WaveSurfer object an observer */
 WaveSurfer.util.extend(WaveSurfer, WaveSurfer.Observer);
-
-'use strict';
 
 WaveSurfer.WebAudio = {
     scriptBufferSize: 256,
@@ -1107,8 +1108,6 @@ WaveSurfer.WebAudio.state.finished = {
 
 WaveSurfer.util.extend(WaveSurfer.WebAudio, WaveSurfer.Observer);
 
-'use strict';
-
 WaveSurfer.MediaElement = Object.create(WaveSurfer.WebAudio);
 
 WaveSurfer.util.extend(WaveSurfer.MediaElement, {
@@ -1325,8 +1324,6 @@ WaveSurfer.util.extend(WaveSurfer.MediaElement, {
 //For backwards compatibility
 WaveSurfer.AudioElement = WaveSurfer.MediaElement;
 
-'use strict';
-
 WaveSurfer.Drawer = {
     init: function (container, params) {
         this.container = container;
@@ -1542,8 +1539,6 @@ WaveSurfer.Drawer = {
 
 WaveSurfer.util.extend(WaveSurfer.Drawer, WaveSurfer.Observer);
 
-'use strict';
-
 WaveSurfer.Drawer.Canvas = Object.create(WaveSurfer.Drawer);
 
 WaveSurfer.util.extend(WaveSurfer.Drawer.Canvas, {
@@ -1743,8 +1738,6 @@ WaveSurfer.util.extend(WaveSurfer.Drawer.Canvas, {
         this.style(this.progressWave, { width: pos + 'px' });
     }
 });
-
-'use strict';
 
 WaveSurfer.Drawer.MultiCanvas = Object.create(WaveSurfer.Drawer);
 
@@ -2059,8 +2052,6 @@ WaveSurfer.util.extend(WaveSurfer.Drawer.MultiCanvas, {
         this.style(this.progressWave, { width: pos + 'px' });
     }
 });
-
-'use strict';
 
 /* Init from HTML */
 (function () {

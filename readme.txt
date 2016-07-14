@@ -140,6 +140,12 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= 1.8.59 =
+* Fixed: Modules install not worked
+* Fixed: Google Maps not worked on some servers
+* Changed: Hide Presets for not installed modules
+* Improved: wavesurfer.js script
+
 = 1.8.58 =
 * Added: Waveform for music files
 * Added: Waveform player in admin

@@ -1219,7 +1219,7 @@ add_action( 'wp_ajax_gmedia_module_install', 'gmedia_module_install' );
 function gmedia_module_install() {
     global $gmCore, $gmGallery;
 
-    check_ajax_referer( 'GmediaModule' );
+    check_ajax_referer( 'GmediaGallery' );
     if ( ! current_user_can( 'gmedia_module_manage' ) ) {
         echo $gmCore->alert( 'danger', __( 'You are not allowed to install modules' ) );
         die();
@@ -2313,6 +2313,7 @@ function gmedia_hash_files() {
 }
 
 add_action( 'wp_ajax_gmedia_save_waveform', 'gmedia_save_waveform' );
+add_action( 'wp_ajax_nopriv_gmedia_save_waveform', 'gmedia_save_waveform' );
 function gmedia_save_waveform() {
     global $gmCore, $gmDB;
 
@@ -2321,6 +2322,12 @@ function gmedia_save_waveform() {
     $id = $gmCore->_post('id');
     $peaks = $gmCore->_post('peaks');
     if($id && $peaks) {
+        $peaks_arr = json_decode($peaks);
+        $peaks_arr = array_filter($peaks_arr, 'is_numeric');
+        if(3600 !== count($peaks_arr)){
+            wp_send_json_error(array('peaks_cnt' => count($peaks_arr)));
+        }
+
         $gmDB->update_metadata('gmedia', $id, '_peaks', $peaks);
         wp_send_json_success( array( 'peaks' => $peaks ) );
     } else {
