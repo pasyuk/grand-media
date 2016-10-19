@@ -183,7 +183,7 @@ class gmediaPermalinks {
             define('GMEDIACLOUD_PAGE', true);
 
             /** @noinspection PhpIncludeInspection */
-            require_once(GMEDIA_ABSPATH . "/load-template.php");
+            require_once(GMEDIA_ABSPATH . "load-template.php");
 
             exit();
 
@@ -200,7 +200,7 @@ class gmediaPermalinks {
             $wp_query->is_search  = false;
             $wp_query->is_home    = false;
 
-            $template = GMEDIA_ABSPATH . "/app/access.php";
+            $template = GMEDIA_ABSPATH . "app/access.php";
 
             load_template($template, false);
             exit();

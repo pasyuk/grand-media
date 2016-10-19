@@ -43,7 +43,7 @@ $post = get_post($post_id);
             __('Open in new tab'));
     if($gmedia_id) { ?>
         <span class="thumbnail">
-            <?php gmedia_item_thumbnail($gmedia); ?>
+            <?php echo gmedia_item_thumbnail($gmedia); ?>
         </span>
     <?php } ?>
     <h4><?php echo $post->post_title; ?></h4>

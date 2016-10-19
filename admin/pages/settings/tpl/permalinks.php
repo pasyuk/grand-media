@@ -113,10 +113,10 @@ if(!defined('ABSPATH')) {
     </div>
     <div class="form-group">
         <label><?php _e('Additional JS code for GmediaCloud Page', 'grand-media') ?>:</label>
-        <textarea name="set[gmediacloud_footer_js]" rows="4" cols="20" class="form-control input-sm"><?php echo esc_html(stripslashes($gmGallery->options['gmediacloud_footer_js'])); ?></textarea>
+        <textarea name="set[gmediacloud_footer_js]" rows="4" cols="20" class="form-control input-sm"><?php echo esc_textarea(stripslashes($gmGallery->options['gmediacloud_footer_js'])); ?></textarea>
     </div>
     <div class="form-group">
         <label><?php _e('Additional CSS code for GmediaCloud Page', 'grand-media') ?>:</label>
-        <textarea name="set[gmediacloud_footer_css]" rows="4" cols="20" class="form-control input-sm"><?php echo esc_html(stripslashes($gmGallery->options['gmediacloud_footer_css'])); ?></textarea>
+        <textarea name="set[gmediacloud_footer_css]" rows="4" cols="20" class="form-control input-sm"><?php echo esc_textarea(stripslashes($gmGallery->options['gmediacloud_footer_css'])); ?></textarea>
     </div>
 </fieldset>

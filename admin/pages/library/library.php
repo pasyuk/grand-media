@@ -8,20 +8,53 @@ if(!defined('ABSPATH')) {
     die('-1');
 }
 
-global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor;
+global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor, $gmProcessorLibrary;
 
+$panel_class   = array();
 $gmedia_url          = $gmProcessor->url;
 $gmedia_user_options = $gmProcessor->user_options;
 
-$gmedia_query = $gmDB->get_gmedias($gmProcessor->query_args);
+$_get_filter = $gmCore->_get('filter');
+if($_get_filter && ($_get_filter != 'selected')){
+    $gmProcessorLibrary->query_args['mime_type'] = $_get_filter;
+}
+
+$gmedia_query = $gmDB->get_gmedias($gmProcessorLibrary->query_args);
+
+$gmedia_filter = $gmDB->filter;
+$resultPerPage = $gmDB->resultPerPage;
+$openPage = $gmDB->openPage;
+$perPages = $gmDB->perPages;
+$idx0 = $perPages * ($openPage - 1);
+
+if($_get_filter && ($_get_filter != 'selected')){
+    unset($gmDB->filter['mime_type']);
+    unset($gmedia_filter['mime_type']);
+}
+if($gmProcessor->edit_term){
+    $taxin = "{$gmProcessor->taxterm}__in";
+    if(isset($gmedia_filter[$taxin]) && $gmedia_filter[$taxin] == $gmProcessorLibrary->query_args[$taxin]){
+        unset($gmDB->filter[$taxin]);
+        unset($gmedia_filter[$taxin]);
+    }
+    $gmProcessorLibrary->dbfilter = $gmedia_filter;
+}
+
 $gmedia_count = $gmDB->count_gmedia();
 $gmedia_pager = $gmDB->query_pager();
 
-$panel_class   = array();
+$display_mode_gmedia = $gmProcessor->display_mode;
+
 $panel_class[] = 'panel-fixed-header';
-$panel_class[] = "display-as-{$gmProcessor->user_options['display_mode_gmedia']}";
+$panel_class[] = "display-as-{$display_mode_gmedia}";
 if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
     $panel_class[] = 'invert-ratio';
+}
+if(!empty($gmedia_filter)) {
+    $panel_class[] = 'gmedia-filtered';
+}
+if($gmProcessorLibrary->mode) {
+    $panel_class[] = "mode__{$gmProcessorLibrary->mode}";
 }
 
 ?>
@@ -33,13 +66,13 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
     <?php include(dirname(__FILE__) . '/tpl/panel-heading.php'); ?>
 
     <div class="panel-body"></div>
-    <div class="list-group clearfix" id="gm-list-table">
+    <div class="list-group clearfix" id="gm-list-table" data-idx0="<?php echo $idx0 + 1; ?>">
         <?php
         if(count($gmedia_query)) {
 
             gmedia_alert_message();
 
-            if(!$gmProcessor->edit_mode) {
+            if(!($gmProcessor->mode == 'edit')) {
                 foreach($gmedia_query as &$item) {
                     gmedia_item_more_data($item);
 
@@ -52,18 +85,20 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
                         }
                     }
                     $item->selected = in_array($item->ID, (array)$gmProcessor->selected_items);
-                    if($item->selected){
+                    if($item->selected && ($gmProcessor->mode != 'select_single')){
                         $item->classes[] = 'gm-selected';
                     }
                     $item->in_stack = in_array($item->ID, (array)$gmProcessor->stack_items);
 
-                    include(dirname(__FILE__) . '/tpl/' . $gmedia_user_options['display_mode_gmedia'] . '-item.php');
+                    include(dirname(__FILE__) . "/tpl/{$display_mode_gmedia}-item.php");
                 }
             } elseif(gm_user_can('edit_media')) {
                 $gm_category_terms  = $gmDB->get_terms('gmedia_category', array('fields' => 'names'));
+                $gm_tag_terms  = $gmDB->get_terms('gmedia_tag', array('fields' => 'names'));
                 ?>
                 <script type="text/javascript">
                     var gmedia_categories = <?php echo json_encode($gm_category_terms); ?>;
+                    var gmedia_tags = <?php echo json_encode($gm_tag_terms); ?>;
                 </script>
                 <?php
                 foreach($gmedia_query as &$item) {
@@ -117,7 +152,10 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <div class="btn-toolbar pull-right" style="margin-top:-4px;">
+                    <button type="button" class="btn btn-primary"><?php _e('Submit', 'grand-media'); ?></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
+                </div>
                 <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body"></div>
@@ -128,7 +166,7 @@ if($gmProcessor->user_options['grid_cell_fit_gmedia']) {
 <?php
 include(GMEDIA_ABSPATH . 'admin/tpl/modal-share.php');
 
-if($gmProcessor->edit_mode) {
+if($gmProcessor->mode == 'edit') {
     $customfield_meta_type = 'gmedia';
     include(GMEDIA_ABSPATH . 'admin/tpl/modal-customfield.php');
 } ?>

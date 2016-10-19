@@ -39,7 +39,7 @@ if(!defined('ABSPATH')) {
                         ?>
                         <div data-href="<?php echo add_query_arg(array('gallery_module' => $module_name), $gmedia_url); ?>" class="choose-module media<?php echo $mclass; ?>">
                             <a href="<?php echo add_query_arg(array('gallery_module' => $module_name), $gmedia_url); ?>" class="thumbnail pull-left">
-                                <img class="media-object" src="<?php echo $module_url . '/screenshot.png'; ?>" alt="<?php echo esc_attr($module_info['title']); ?>" width="160" height="120"/>
+                                <img class="media-object" src="<?php echo $module_url . '/screenshot.png'; ?>" alt="<?php esc_attr_e($module_info['title']); ?>" width="160" height="120"/>
                             </a>
 
                             <div class="media-body" style="margin-left:180px;">

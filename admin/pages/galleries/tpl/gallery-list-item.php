@@ -12,8 +12,7 @@ if(!defined('ABSPATH')) {
  */
 ?>
 <div class="cb_list-item list-group-item gallery-list-item <?php echo implode(' ', $item->classes); ?>" id="list-item-<?php echo $item->term_id; ?>" data-id="<?php echo $item->term_id; ?>" data-type="<?php echo $item->module['name']; ?>">
-    <div class="row cb_term-object">
-        <div class="term_id">#<?php echo $item->term_id; ?></div>
+    <div class="row cb_object">
         <div class="col-xs-7">
             <label class="cb_media-object cb_media-object-gallery">
                 <input name="doaction[]" type="checkbox"<?php echo $item->selected ? ' checked="checked"' : ''; ?> data-type="<?php echo $item->module['name']; ?>" value="<?php echo $item->term_id; ?>"/>
@@ -22,7 +21,7 @@ if(!defined('ABSPATH')) {
             <div class="media-info-body" style="margin-left:35px;">
                 <p class="media-title">
                     <?php if($item->allow_edit) { ?>
-                        <a class="term_name" href="<?php echo add_query_arg(array('edit_item' => $item->term_id), $gmedia_url); ?>"><?php echo esc_html($item->name); ?></a>
+                        <a class="term_name" href="<?php echo add_query_arg(array('edit_term' => $item->term_id), $gmedia_url); ?>"><?php echo esc_html($item->name); ?></a>
                     <?php } else { ?>
                         <span class="term_name"><?php echo esc_html($item->name); ?></span>
                     <?php } ?>
@@ -51,8 +50,7 @@ if(!defined('ABSPATH')) {
                     <span class="bg-danger text-center"><?php _e('Module broken. Reinstall module', 'grand-media') ?></span>
                 <?php } ?>
                 <br><span class="label label-default"><?php _e('Last Edited', 'grand-media'); ?>:</span> <?php echo $item->meta['_edited']; ?>
-                <br><span class="label label-default"><?php _e('Status', 'grand-media'); ?>:</span> <?php echo $item->status; ?>
-                <br><span class="label label-default"><?php _e('Source', 'grand-media'); ?>:</span> <?php echo !empty($item->meta['_query'])? str_replace(',"', ', "', json_encode($item->meta['_query'])) : ''; ?>
+                <br><span class="label label-default"><?php _e('Query Args.', 'grand-media'); ?>:</span> <?php echo !empty($item->meta['_query'])? str_replace(',"', ', "', json_encode($item->meta['_query'])) : ''; ?>
                 <?php
                 /*
                 $gallery_tabs = reset($term_meta['_query']);

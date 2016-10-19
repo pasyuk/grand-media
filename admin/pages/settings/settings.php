@@ -11,7 +11,8 @@ if(!defined('ABSPATH')) {
 
 global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor;
 
-$url = add_query_arg(array('page' => $gmProcessor->page), admin_url('admin.php'));
+$url = $gmProcessor->url;
+$pk  = isset($gmGallery->options['purchase_key'])? $gmGallery->options['purchase_key'] : '';
 $lk  = isset($gmGallery->options['license_key'])? $gmGallery->options['license_key'] : '';
 ?>
 

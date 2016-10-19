@@ -67,7 +67,7 @@ $params = array();
 $gallery_link_default = add_query_arg( array( 'page' => 'GrandMedia', 'gmediablank' => 'module_preview', 'module' => $term->module['name'], 'preset' => $term->term_id, 'query' => $gmedia_filter['query_args'] ), admin_url( 'admin.php' ) );
 
 /** @noinspection PhpIncludeInspection */
-include_once( GMEDIA_ABSPATH . '/inc/module.options.php' );
+include_once( GMEDIA_ABSPATH . 'inc/module.options.php' );
 
 do_action( 'gmedia_module_preset_before_panel' );
 ?>

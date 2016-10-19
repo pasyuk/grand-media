@@ -5,6 +5,7 @@
  */
 class GmediaProcessor_AddMedia extends GmediaProcessor {
 
+    private static $me = null;
     public $url;
     public $import = false;
 
@@ -17,7 +18,7 @@ class GmediaProcessor_AddMedia extends GmediaProcessor {
         global $gmCore;
 
         $this->import = $gmCore->_get('import', false, true);
-        $this->url    = add_query_arg(array('page' => $this->page, 'import' => $this->import), admin_url('admin.php'));
+        $this->url    = add_query_arg(array('import' => $this->import), $this->url);
 
     }
 
@@ -30,7 +31,14 @@ class GmediaProcessor_AddMedia extends GmediaProcessor {
 
     }
 
+    public static function getMe() {
+        if ( self::$me == null ) {
+            self::$me = new GmediaProcessor_AddMedia();
+        }
+
+        return self::$me;
+    }
 }
 
-global $gmProcessor;
-$gmProcessor = new GmediaProcessor_AddMedia();
+global $gmProcessorAddMedia;
+$gmProcessorAddMedia = GmediaProcessor_AddMedia::getMe();

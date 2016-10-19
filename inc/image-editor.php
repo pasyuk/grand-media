@@ -27,12 +27,12 @@ function gmedia_image_editor()
                 <?php wp_nonce_field('gmedit-save'); ?>
             </div>
 
-            <div class="gmedit-tool-button gmedit-rotate left" data-toggle="tooltip" title="<?php _e('Rotate Counterclockwise', 'grand-media'); ?>"></div>
-            <div class="gmedit-tool-button gmedit-rotate right" data-toggle="tooltip" title="<?php _e('Rotate Clockwise', 'grand-media'); ?>"></div>
-            <div class="gmedit-tool-button gmedit-tool flip_hor" data-toggle="tooltip" data-tool="flip_hor" data-value="0" title="<?php _e('Flip Horizontal', 'grand-media'); ?>"></div>
-            <div class="gmedit-tool-button gmedit-tool flip_ver" data-toggle="tooltip" data-tool="flip_ver" data-value="0" title="<?php _e('Flip Vertical', 'grand-media'); ?>"></div>
-            <div class="gmedit-tool-button gmedit-tool greyscale" data-toggle="tooltip" data-tool="greyscale" data-value="0" title="<?php _e('Greyscale', 'grand-media'); ?>"></div>
-            <div class="gmedit-tool-button gmedit-tool invert" data-toggle="tooltip" data-tool="invert" data-value="0" title="<?php _e('Invert', 'grand-media'); ?>"></div>
+            <div class="gmedit-tool-button gmedit-rotate left" title="<?php _e('Rotate Counterclockwise', 'grand-media'); ?>"></div>
+            <div class="gmedit-tool-button gmedit-rotate right" title="<?php _e('Rotate Clockwise', 'grand-media'); ?>"></div>
+            <div class="gmedit-tool-button gmedit-tool flip_hor" data-tool="flip_hor" data-value="0" title="<?php _e('Flip Horizontal', 'grand-media'); ?>"></div>
+            <div class="gmedit-tool-button gmedit-tool flip_ver" data-tool="flip_ver" data-value="0" title="<?php _e('Flip Vertical', 'grand-media'); ?>"></div>
+            <div class="gmedit-tool-button gmedit-tool greyscale" data-tool="greyscale" data-value="0" title="<?php _e('Greyscale', 'grand-media'); ?>"></div>
+            <div class="gmedit-tool-button gmedit-tool invert" data-tool="invert" data-value="0" title="<?php _e('Invert', 'grand-media'); ?>"></div>
 
         </div>
         <div class="panel-body">
@@ -188,7 +188,6 @@ function gmedia_image_editor()
             $(window).on('resize', function () {
                 div_frame();
             });
-            $('.gmedit-tool-button').tooltip({placement: 'bottom'});
 
             var gmeditSave = function (a, b) {
                 var btn = $('#gmedit-save');

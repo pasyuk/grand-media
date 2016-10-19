@@ -87,8 +87,8 @@ if (! empty($content)) {
                     foreach ($cat['data'] as $item) {
                         $orientation = (1 < $item['thumbsize'][0] / $item['thumbsize'][1]) ? 'landscape' : 'portrait';
                         ?><div class="gmcatimage gm_<?php echo $i; ?>" id="gmid_<?php echo $item['pid']; ?>"><?php
-                        ?><a class="photoswipe" href="<?php echo $settings['libraryUrl'] . $item['filename']; ?>" title="<?php echo esc_attr($item['alttext']); ?>" rel="<?php echo $cat['gid']; ?>" data-id="<?php echo $item['pid']; ?>" data-width="<?php echo $item['websize'][0]; ?>" data-height="<?php echo $item['websize'][1]; ?>" data-date="<?php echo $item['date']; ?>"><?php
-                        ?><img class="<?php echo $orientation; ?>" src="<?php echo $settings['libraryUrl'] . $item['thumb']; ?>" alt="<?php echo esc_attr($item['alttext']); ?>" /><?php
+                        ?><a class="photoswipe" href="<?php echo $settings['libraryUrl'] . $item['filename']; ?>" title="<?php esc_attr_e($item['alttext']); ?>" rel="<?php echo $cat['gid']; ?>" data-id="<?php echo $item['pid']; ?>" data-width="<?php echo $item['websize'][0]; ?>" data-height="<?php echo $item['websize'][1]; ?>" data-date="<?php echo $item['date']; ?>"><?php
+                        ?><img class="<?php echo $orientation; ?>" src="<?php echo $settings['libraryUrl'] . $item['thumb']; ?>" alt="<?php esc_attr_e($item['alttext']); ?>" /><?php
                         //$views = (intval($item['views']) < 10000) ? $item['views'] : round($item['views']/1000, 1).'k';
                         //$likes = (intval($item['likes']) < 10000) ? $item['likes'] : round($item['likes']/1000, 1).'k';
                         //echo '<span class="gmcatimage_counters"><i>'.$views.'</i><b>'.$likes.'</b></span>';

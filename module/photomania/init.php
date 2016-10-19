@@ -73,12 +73,13 @@ foreach ($terms as $term) {
         $link        = empty($allsettings['show_link_button']) ? '' : $item->link;
         $description = empty($allsettings['show_description']) ? '' : str_replace(array("\r\n", "\r", "\n"), '', wpautop($item->description));
 
-
+        $alttext     = !empty($meta['_image_alt'][0])? $meta['_image_alt'][0] : $item->title;
         $content['data'][$item->ID] = array(
             'id'          => $item->ID,
             'type'        => $type,
             'file'        => $item->gmuid,
             'title'       => $item->title,
+            'alt'         => $alttext,
             'description' => $description,
             'download'    => $download,
             'link'        => $link,
@@ -114,9 +115,9 @@ if (! empty($content['data'])) {
             $orientation = 'portrait';
         }
         $slides[]        = '
-		<div class="swiper-slide" id="gmpm_ID_' . $item['id'] . '"><span class="gmpm_va"></span>' . '<img data-src="' . $web . '" alt="' . esc_attr($item['title']) . '" data-protect="' . $item['author']['name'] . '" class="gmpm_the_photo swiper-lazy">' . '<div class="swiper-lazy-preloader swiper-lazy-preloader-black"></div>' . '</div>';
+		<div class="swiper-slide" id="gmpm_ID_' . $item['id'] . '"><span class="gmpm_va"></span>' . '<img data-src="' . $web . '" alt="' . esc_attr($item['alt']) . '" data-protect="' . $item['author']['name'] . '" class="gmpm_the_photo swiper-lazy">' . '<div class="swiper-lazy-preloader swiper-lazy-preloader-black"></div>' . '</div>';
         $slides_thumbs[] = '
-		<div class="swiper-slide gmpm_photo" data-photo-id="' . $item['id'] . '">' . '<img data-src="' . $thumb . '" alt="" class="gmpm_photo swiper-lazy ' . $orientation . '">' . '<span class="swiper-lazy-preloader swiper-lazy-preloader-black"></span>' . '</div>';
+		<div class="swiper-slide gmpm_photo" data-photo-id="' . $item['id'] . '">' . '<img data-src="' . $thumb . '" alt="' . esc_attr($item['alt']) . '" class="gmpm_photo swiper-lazy ' . $orientation . '">' . '<span class="swiper-lazy-preloader swiper-lazy-preloader-black"></span>' . '</div>';
     }
     $content['data'] = array_values($content['data']);
 
@@ -183,7 +184,7 @@ if (! empty($content['data'])) {
                     </div>
                     <?php if (! empty($allsettings['show_download_button'])) { ?>
                         <div class="gmpm_big_button_wrap">
-                            <a class="gmpm_big_button gmpm_download_button" href="<?php echo $content['data'][$iSlide]['download']; ?>" download="<?php echo esc_attr($content['data'][$iSlide]['file']); ?>">
+                            <a class="gmpm_big_button gmpm_download_button" href="<?php echo $content['data'][$iSlide]['download']; ?>" download="<?php esc_attr_e($content['data'][$iSlide]['file']); ?>">
                                 <span class="gmpm_icon"></span>
                                 <span class="gmpm_label"><?php echo $allsettings['download_button_text']; ?></span>
                             </a>

@@ -1,12 +1,11 @@
 <?php
 // don't load directly
-if(!defined('ABSPATH')) {
+if(!defined('ABSPATH')){
     die('-1');
 }
 
 /**
  * Common Settings
- *
  * @var $gmGallery
  * @var $gmDB
  */
@@ -98,20 +97,26 @@ if(!defined('ABSPATH')) {
     <div class="form-group">
         <label><?php _e('Choose default module', 'grand-media') ?>:</label>
         <select class="form-control input-sm" name="set[default_gmedia_module]">
-            <?php foreach($gmedia_modules['in'] as $mfold => $module) {
+            <?php foreach($gmedia_modules['in'] as $mfold => $module){
                 echo '<optgroup label="' . esc_attr($module['title']) . '">';
-                $presets           = $gmDB->get_terms('gmedia_module', array('status' => $mfold));
-                $selected          = selected($gmGallery->options['default_gmedia_module'], esc_attr($mfold), false);
-                $option            = array();
+                $presets  = $gmDB->get_terms('gmedia_module', array('status' => $mfold));
+                $selected = selected($gmGallery->options['default_gmedia_module'], esc_attr($mfold), false);
+                $option   = array();
                 $option[] = '<option ' . $selected . ' value="' . esc_attr($mfold) . '">' . $module['title'] . ' - ' . __('Default Settings') . '</option>';
-                foreach($presets as $preset) {
-                    $selected = selected($gmGallery->options['default_gmedia_module'], $preset->term_id, false);
-                    $by_author =  ' [' . get_the_author_meta('display_name', $preset->global) .']';
-                    if('[' . $mfold . ']' === $preset->name) {
+                foreach($presets as $preset){
+                    if(!(int)$preset->global && '[' . $mfold . ']' === $preset->name){
+                        continue;
+                    }
+                    $selected  = selected($gmGallery->options['default_gmedia_module'], $preset->term_id, false);
+                    $by_author = '';
+                    if((int)$preset->global){
+                        $by_author = ' [' . get_the_author_meta('display_name', $preset->global) . ']';
+                    }
+                    if('[' . $mfold . ']' === $preset->name){
                         $option[] = '<option ' . $selected . ' value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . __('Default Settings') . '</option>';
-                    } else {
+                    } else{
                         $preset_name = str_replace('[' . $mfold . '] ', '', $preset->name);
-                        $option[] = '<option ' . $selected . ' value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . $preset_name . '</option>';
+                        $option[]    = '<option ' . $selected . ' value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . $preset_name . '</option>';
                     }
                 }
                 echo implode('', $option);
@@ -150,11 +155,10 @@ if(!defined('ABSPATH')) {
         </div>
     </div>
     <?php
-    $allowed_post_types = (array) $gmGallery->options['gmedia_post_types_support'];
-    $args               = array(
-        'public'   => true,
-        'show_ui'  => true,
-        '_builtin' => false
+    $allowed_post_types = (array)$gmGallery->options['gmedia_post_types_support'];
+    $args               = array('public'   => true,
+                                'show_ui'  => true,
+                                '_builtin' => false
     );
     $output             = 'objects'; // names or objects, note names is the default
     $operator           = 'and'; // 'and' or 'or'

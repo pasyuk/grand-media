@@ -1,5 +1,5 @@
 <?php
-if(preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
+if(preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])){
     die('You are not allowed to call this page directly.');
 }
 
@@ -7,8 +7,7 @@ if(preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#'
  * @title  Add action/filter for the upload tab
  */
 
-if(current_user_can('gmedia_library')) {
-    add_filter('media_buttons_context', 'gmedia_media_buttons_context', 4);
+if(current_user_can('gmedia_library')){
     add_filter('media_upload_tabs', 'gmedia_upload_tabs');
     add_action('media_upload_gmedia_library', 'media_upload_gmedia');
     add_action('media_upload_gmedia_terms', 'media_upload_gmedia');
@@ -17,70 +16,55 @@ if(current_user_can('gmedia_library')) {
 
 
 /**
- * @param $context
- *
- * @return string
- */
-function gmedia_media_buttons_context($context) {
-    $button = '
-	<div style="display:inline-block;">
-	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url(GMEDIA_FOLDER . '/admin/assets/img/gm-icon.png') . ') no-repeat top left;"></span> ' . __('Gmedia', 'grand-media') . '</a>
-	</div>';
-
-    return $context . $button;
-}
-
-/**
  * @param $tabs
  *
  * @return array
  */
-function gmedia_upload_tabs($tabs) {
+function gmedia_upload_tabs($tabs){
 
-    $newtab = array(
-            'gmedia_library'   => __('Gmedia Library', 'grand-media'),
-            'gmedia_terms'     => __('Gmedia Collections', 'grand-media'),
-            'gmedia_galleries' => __('Gmedia Galleries', 'grand-media')
+    $newtab = array('gmedia_library'   => __('Gmedia Library', 'grand-media'),
+                    'gmedia_terms'     => __('Gmedia Collections', 'grand-media'),
+                    'gmedia_galleries' => __('Gmedia Galleries', 'grand-media')
     );
 
-    if(is_array($tabs)) {
+    if(is_array($tabs)){
         return array_merge($tabs, $newtab);
     }
 
     return $newtab;
 }
 
-function media_upload_gmedia() {
+function media_upload_gmedia(){
     global $gmCore, $gmDB;
 
     add_action('admin_enqueue_scripts', 'gmedia_add_media_popup_enqueue_scripts');
 
     $action = $gmCore->_get('action');
-    if(did_action('media_upload_gmedia_galleries')) {
+    if(did_action('media_upload_gmedia_galleries')){
         wp_iframe('gmedia_add_media_galleries');
-    } elseif(did_action('media_upload_gmedia_terms')) {
+    } elseif(did_action('media_upload_gmedia_terms')){
         wp_iframe('gmedia_add_media_terms');
-    } elseif(did_action('media_upload_gmedia_library')) {
-        if(('upload' == $action) && current_user_can('gmedia_upload')) {
+    } elseif(did_action('media_upload_gmedia_library')){
+        if(('upload' == $action) && current_user_can('gmedia_upload')){
             wp_iframe('gmedia_add_media_upload');
-        } else {
+        } else{
             wp_iframe('gmedia_add_media_library');
         }
     }
 
     // Generate TinyMCE HTML output
-    if(isset($_POST['gmedia_library_insert'])) {
+    if(isset($_POST['gmedia_library_insert'])){
 
         $id = $gmCore->_post('ID', 0);
 
-        if(($gmedia = $gmDB->get_gmedia($id))) {
+        if(($gmedia = $gmDB->get_gmedia($id))){
 
             $meta = $gmDB->get_metadata('gmedia', $gmedia->ID, '_metadata', true);
 
             $size    = $gmCore->_post('size', 'web');
             $src     = $gmCore->gm_get_media_image($gmedia, $size);
-            $width   = $meta[$size]['width'];
-            $height  = $meta[$size]['height'];
+            $width   = $meta[ $size ]['width'];
+            $height  = $meta[ $size ]['height'];
             $title   = esc_attr($gmCore->_post('title', ''));
             $align   = esc_attr($gmCore->_post('align', 'none'));
             $link    = trim(esc_attr($gmCore->_post('link', '')));
@@ -88,10 +72,10 @@ function media_upload_gmedia() {
 
             $html = "<img src='{$src}' width='{$width}' height='{$height}' alt='{$title}' title='{$title}' id='gmedia-image-{$id}' class='gmedia-singlepic align{$align}' />";
 
-            if($link) {
+            if($link){
                 $html = "<a href='{$link}'>{$html}</a>";
             }
-            if($caption) {
+            if($caption){
                 $html = image_add_caption($html, false, $caption, $title, $align, $src, $size, $title);
             }
 
@@ -107,7 +91,7 @@ function media_upload_gmedia() {
             media_send_to_editor($html);
         }
     }
-    if(isset($_POST['gmedia_gallery_insert'])) {
+    if(isset($_POST['gmedia_gallery_insert'])){
         $sc = $gmCore->_post('shortcode');
         ?>
         <script type="text/javascript">
@@ -120,22 +104,22 @@ function media_upload_gmedia() {
         // Return it to TinyMCE
         media_send_to_editor($sc);
     }
-    if(isset($_POST['gmedia_term_insert'])) {
+    if(isset($_POST['gmedia_term_insert'])){
         $module_preset = $gmCore->_post('module_preset');
         $module        = '';
         $preset        = '';
-        if(!empty($module_preset)) {
-            if($gmCore->is_digit($module_preset)) {
+        if(!empty($module_preset)){
+            if($gmCore->is_digit($module_preset)){
                 $module_preset = $gmDB->get_term((int)$module_preset);
                 $module        = ' module=' . $module_preset->status;
                 $preset        = ' preset=' . $module_preset->term_id;
-            } else {
+            } else{
                 $module = ' module=' . $module_preset;
             }
         }
         $tax     = $gmCore->_post('taxonomy');
         $term_id = $gmCore->_post('term_id');
-        if($tax && $term_id) {
+        if($tax && $term_id){
             $tax = str_replace('gmedia_', '', $tax);
             $sc  = "[gm {$tax}={$term_id}{$module}{$preset}]";
             ?>
@@ -153,7 +137,7 @@ function media_upload_gmedia() {
 
 }
 
-function gmedia_add_media_popup_enqueue_scripts() {
+function gmedia_add_media_popup_enqueue_scripts(){
     global $gmCore;
 
     wp_dequeue_script('imgareaselect');
@@ -171,8 +155,8 @@ function gmedia_add_media_popup_enqueue_scripts() {
     wp_enqueue_script('grand-media');
 
     $action = $gmCore->_get('action');
-    if(did_action('media_upload_gmedia_library') && ('upload' == $action) && current_user_can('gmedia_upload')) {
-        if(current_user_can('gmedia_terms')) {
+    if(did_action('media_upload_gmedia_library') && ('upload' == $action) && current_user_can('gmedia_upload')){
+        if(current_user_can('gmedia_terms')){
             wp_enqueue_style('selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.bootstrap3.css', array('gmedia-bootstrap'), '0.8.5', 'screen');
             wp_enqueue_script('selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.min.js', array('jquery'), '0.8.5');
         }
@@ -187,14 +171,14 @@ function gmedia_add_media_popup_enqueue_scripts() {
 
 }
 
-function gmedia_add_media_galleries() {
+function gmedia_add_media_galleries(){
 
     global $user_ID, $gmCore, $gmDB, $gmGallery;
 
     $post_id = intval($gmCore->_get('post_id'));
 
     $gm_screen_options = get_user_meta($user_ID, 'gm_screen_options', true);
-    if(!is_array($gm_screen_options)) {
+    if(!is_array($gm_screen_options)){
         $gm_screen_options = array();
     }
     $gm_screen_options = array_merge($gmGallery->options['gm_screen_options'], $gm_screen_options);
@@ -202,28 +186,27 @@ function gmedia_add_media_galleries() {
     $order             = !empty($gm_screen_options['sortorder_gmedia_gallery'])? $gm_screen_options['sortorder_gmedia_gallery'] : 'ASC';
     $per_page          = !empty($gm_screen_options['per_page_gmedia_gallery'])? $gm_screen_options['per_page_gmedia_gallery'] : 30;
 
-    $args           = array(
-            'orderby'    => $gmCore->_get('orderby', $orderby),
-            'order'      => $gmCore->_get('order', $order),
-            'search'     => $gmCore->_get('s', ''),
-            'number'     => $gmCore->_get('number', $per_page),
-            'hide_empty' => 0,
-            'page'       => $gmCore->_get('pager', 1),
-            'status'     => array('publish', 'private')
+    $args           = array('orderby'    => $gmCore->_get('orderby', $orderby),
+                            'order'      => $gmCore->_get('order', $order),
+                            'search'     => $gmCore->_get('s', ''),
+                            'number'     => $gmCore->_get('number', $per_page),
+                            'hide_empty' => 0,
+                            'page'       => $gmCore->_get('pager', 1),
+                            'status'     => array('publish', 'private')
     );
     $args['offset'] = ($args['page'] - 1) * $args['number'];
 
 
-    if(current_user_can('gmedia_show_others_media')) {
+    if(current_user_can('gmedia_show_others_media')){
         $args['global'] = $gmCore->_get('author', '');
-    } else {
+    } else{
         $args['global'] = array($user_ID);
     }
 
     $taxonomy    = 'gmedia_gallery';
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
-    if(is_wp_error($gmediaTerms)) {
+    if(is_wp_error($gmediaTerms)){
         $alert       = $gmCore->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
@@ -253,9 +236,9 @@ function gmedia_add_media_galleries() {
                 <div class="col-xs-7 col-md-9" style="padding: 0">
                     <div class="list-group">
                         <?php
-                        if(count($gmediaTerms)) {
+                        if(count($gmediaTerms)){
                             $lib_url = add_query_arg(array('page' => 'GrandMedia'), admin_url('admin.php'));
-                            foreach($gmediaTerms as $term) {
+                            foreach($gmediaTerms as $term){
 
                                 $term_meta = $gmDB->get_metadata('gmedia_term', $term->term_id);
                                 $term_meta = array_map('reset', $term_meta);
@@ -263,16 +246,16 @@ function gmedia_add_media_galleries() {
 
                                 $module      = $gmCore->get_module_path($term_meta['_module']);
                                 $module_info = array('type' => '&#8212;');
-                                if(file_exists($module['path'] . '/index.php')) {
+                                if(file_exists($module['path'] . '/index.php')){
                                     $broken = false;
                                     /** @noinspection PhpIncludeInspection */
                                     include($module['path'] . '/index.php');
-                                } else {
+                                } else{
                                     $broken = true;
                                 }
 
                                 $list_row_class = '';
-                                if('private' == $term->status) {
+                                if('private' == $term->status){
                                     $list_row_class = ' list-group-item-info';
                                 }
                                 ?>
@@ -297,10 +280,10 @@ function gmedia_add_media_galleries() {
 
                                     <p class="media-meta clear hidden">
 										<span class="clearfix">
-											<span class="media-object pull-left" style="width:77px;margin-right:5px;">
-												<?php if(!$broken) { ?>
-                                                    <span class="thumbnail"><img src="<?php echo $module['url'] . '/screenshot.png'; ?>" alt="<?php echo esc_attr($term->name); ?>"/></span>
-                                                <?php } else { ?>
+											<span class="media-object pull-left" style="width:85px;margin-right:5px;">
+												<?php if(!$broken){ ?>
+                                                    <span class="thumbnail"><img src="<?php echo $module['url'] . '/screenshot.png'; ?>" alt="<?php esc_attr_e($term->name); ?>"/></span>
+                                                <?php } else{ ?>
                                                     <span class="bg-danger text-center"><?php _e('Module broken. Reinstall module', 'grand-media') ?></span>
                                                 <?php } ?>
 											</span>
@@ -309,52 +292,13 @@ function gmedia_add_media_galleries() {
                                             <br><span class="label label-default"><?php _e('Status', 'grand-media'); ?>:</span> <?php echo $term->status; ?>
 										</span>
                                         <span class="label label-default"><?php _e('Last Edited', 'grand-media'); ?>:</span> <?php echo $term_meta['_edited']; ?>
-                                        <br><span class="label label-default"><?php _e('Source', 'grand-media'); ?>:</span>
-                                        <?php
-                                        $gallery_tabs = reset($term_meta['_query']);
-                                        $tax_tabs     = key($term_meta['_query']);
-                                        if('gmedia__in' == $tax_tabs) {
-                                            _e('Selected Gmedia', 'grand-media');
-                                            if(!(((int)$term->global != $user_ID) && !current_user_can('gmedia_show_others_media'))) {
-                                                $gmedia_ids = wp_parse_id_list($gallery_tabs[0]);
-                                                $gal_source = sprintf('<a class="selected__in" target="_blank" href="%s">' . __('Show %d items in Gmedia Library', 'grand-media') . '</a>', esc_url(add_query_arg(array('gmedia__in' => implode(',', $gmedia_ids)), $lib_url)), count($gmedia_ids));
-                                                echo " ($gal_source)";
-                                            }
-                                        } else {
-                                            $tabs         = $gmDB->get_terms($tax_tabs, array('include' => $gallery_tabs));
-                                            $terms_source = array();
-                                            if('gmedia_category' == $tax_tabs) {
-                                                _e('Categories', 'grand-media');
-                                                foreach($tabs as $t) {
-                                                    $terms_source[] = sprintf('<a class="gm_category" target="_blank" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => $t->term_id), $lib_url)), esc_html($t->name));
-                                                }
-                                            } elseif('gmedia_album' == $tax_tabs) {
-                                                _e('Albums', 'grand-media');
-                                                foreach($tabs as $t) {
-                                                    $terms_source[] = sprintf('<a class="gm_album" target="_blank" href="%s">%s</a>', esc_url(add_query_arg(array('alb' => $t->term_id), $lib_url)), esc_html($t->name));
-                                                }
-                                            } elseif('gmedia_tag' == $tax_tabs) {
-                                                _e('Tags', 'grand-media');
-                                                foreach($tabs as $t) {
-                                                    $terms_source[] = sprintf('<a class="gm_tag" target="_blank" href="%s">%s</a>', esc_url(add_query_arg(array('tag_id' => $t->term_id), $lib_url)), esc_html($t->name));
-                                                }
-                                            }
-                                            if(!empty($terms_source)) {
-                                                $terms_source = join(', ', $terms_source);
-                                                if(((int)$term->global != $user_ID) && !current_user_can('gmedia_show_others_media')) {
-                                                    $terms_source = strip_tags($terms_source);
-                                                }
-                                                echo " ({$terms_source})";
-                                            }
-                                        }
-                                        ?>
+                                        <br><span class="label label-default"><?php _e('Query Args.', 'grand-media'); ?>:</span> <?php echo !empty($term_meta['_query'])? str_replace(',"', ', "', json_encode($term_meta['_query'])) : ''; ?>
                                     </p>
-                                    <?php if(current_user_can('gmedia_gallery_manage')) {
-                                        if(!(((int)$term->global != $user_ID) && !current_user_can('gmedia_edit_others_media'))) {
+                                    <?php if(current_user_can('gmedia_gallery_manage')){
+                                        if(!(((int)$term->global != $user_ID) && !current_user_can('gmedia_edit_others_media'))){
                                             ?>
-                                            <p class="media-meta hidden"><a target="_blank" href="<?php echo add_query_arg(array(
-                                                                                                                                   'page'      => 'GrandMedia_Galleries',
-                                                                                                                                   'edit_item' => $term->term_id
+                                            <p class="media-meta hidden"><a target="_blank" href="<?php echo add_query_arg(array('page'      => 'GrandMedia_Galleries',
+                                                                                                                                 'edit_term' => $term->term_id
                                                                                                                            ), admin_url('admin.php')); ?>"><?php _e('Edit gallery', 'grand-media'); ?></a></p>
                                             <?php
                                         }
@@ -363,7 +307,7 @@ function gmedia_add_media_galleries() {
                                 </div>
                                 <?php
                             }
-                        } else {
+                        } else{
                             ?>
                             <div class="list-group-item">
                                 <div class="well well-lg text-center">
@@ -416,7 +360,7 @@ function gmedia_add_media_galleries() {
     <?php
 }
 
-function gmedia_add_media_terms() {
+function gmedia_add_media_terms(){
 
     global $user_ID, $gmCore, $gmDB, $gmGallery;
 
@@ -425,12 +369,12 @@ function gmedia_add_media_terms() {
     $url = add_query_arg(array('post_id' => $post_id, 'tab' => 'gmedia_terms', 'chromeless' => true), admin_url('media-upload.php'));
 
     $taxonomy = $gmCore->_get('term', 'gmedia_album');
-    if(!in_array($taxonomy, array('gmedia_album', 'gmedia_tag', 'gmedia_category'))) {
+    if(!in_array($taxonomy, array('gmedia_album', 'gmedia_tag', 'gmedia_category'))){
         $taxonomy = 'gmedia_album';
     }
 
     $gm_screen_options = get_user_meta($user_ID, 'gm_screen_options', true);
-    if(!is_array($gm_screen_options)) {
+    if(!is_array($gm_screen_options)){
         $gm_screen_options = array();
     }
     $gm_screen_options = array_merge($gmGallery->options['gm_screen_options'], $gm_screen_options);
@@ -439,31 +383,30 @@ function gmedia_add_media_terms() {
     $per_page          = !empty($gm_screen_options["per_page_{$taxonomy}"])? $gm_screen_options["per_page_{$taxonomy}"] : 30;
     $search_string     = $gmCore->_get('s', '');
 
-    $args           = array(
-            'orderby'    => $gmCore->_get('orderby', $orderby),
-            'order'      => $gmCore->_get('order', $order),
-            'search'     => $search_string,
-            'number'     => $gmCore->_get('number', $per_page),
-            'hide_empty' => $gmCore->_get('hide_empty', 0),
-            'page'       => $gmCore->_get('pager', 1)
+    $args           = array('orderby'    => $gmCore->_get('orderby', $orderby),
+                            'order'      => $gmCore->_get('order', $order),
+                            'search'     => $search_string,
+                            'number'     => $gmCore->_get('number', $per_page),
+                            'hide_empty' => $gmCore->_get('hide_empty', 0),
+                            'page'       => $gmCore->_get('pager', 1)
     );
     $args['offset'] = ($args['page'] - 1) * $args['number'];
 
-    switch($taxonomy) {
+    switch($taxonomy){
         case 'gmedia_album':
             $args['status'] = array('publish', 'private');
             $args['global'] = $gmCore->_get('author', $gmCore->caps['gmedia_edit_others_media']? '' : array(0, $user_ID));
-            if(!$gmCore->caps['gmedia_show_others_media']) {
+            if(!$gmCore->caps['gmedia_show_others_media']){
                 $args['global'] = wp_parse_id_list($args['global']);
                 $args['global'] = array_intersect(array(0, $user_ID), $args['global']);
-                if(empty($args['global'])) {
+                if(empty($args['global'])){
                     $args['global'] = array(0, $user_ID);
                 }
             }
         break;
         case 'gmedia_category':
         case 'gmedia_tag':
-            if('global' == $args['orderby']) {
+            if('global' == $args['orderby']){
                 $args['orderby'] = 'id';
             }
         break;
@@ -471,7 +414,7 @@ function gmedia_add_media_terms() {
 
     $gmediaTerms = $gmDB->get_terms($taxonomy, $args);
     $alert       = '';
-    if(is_wp_error($gmediaTerms)) {
+    if(is_wp_error($gmediaTerms)){
         $alert       = $gmCore->alert('danger', $gmediaTerms->get_error_message());
         $gmediaTerms = array();
     }
@@ -502,100 +445,119 @@ function gmedia_add_media_terms() {
                 <div class="col-xs-7 col-md-9" style="padding: 0">
                     <div class="list-group" id="gm-list-table" style="margin-bottom:4px;">
                         <?php
-                        if(count($gmediaTerms)) {
+                        if(count($gmediaTerms)){
                             $author     = $gmCore->caps['gmedia_show_others_media']? 0 : $user_ID;
                             $allow_edit = $gmCore->caps['gmedia_edit_others_media'];
-                            foreach($gmediaTerms as $item) {
+                            foreach($gmediaTerms as $item){
                                 $author_name    = $owner = '';
                                 $list_row_class = $row_class = '';
                                 $termItems      = array();
                                 $per_page       = 10;
                                 $item_name      = $item->name;
-                                if('gmedia_album' == $taxonomy) {
-                                    if($item->global) {
+                                if('gmedia_album' == $taxonomy){
+                                    if($item->global){
                                         $owner = get_the_author_meta('display_name', $item->global);
                                         $author_name .= sprintf(__('by %s', 'grand-media'), $owner);
-                                        if($item->global == $user_ID) {
+                                        if($item->global == $user_ID){
                                             $row_class .= ' current_user';
                                             $allow_edit = $gmCore->caps['gmedia_album_manage'];
-                                        } else {
+                                        } else{
                                             $row_class .= ' other_user';
                                             $allow_edit = $gmCore->caps['gmedia_edit_others_media'];
                                         }
-                                    } else {
+                                    } else{
                                         $owner = '&#8212;';
                                         $author_name .= '(' . __('shared', 'grand-media') . ')';
                                         $row_class .= ' shared';
                                         $allow_edit = $gmCore->caps['gmedia_edit_others_media'];
                                     }
-                                    if('publish' != $item->status) {
+                                    if('publish' != $item->status){
                                         $author_name .= ' [' . $item->status . ']';
-                                        if('private' == $item->status) {
+                                        if('private' == $item->status){
                                             $list_row_class = ' list-group-item-info';
-                                        } elseif('draft' == $item->status) {
+                                        } elseif('draft' == $item->status){
                                             //$list_row_class = ' list-group-item-warning';
                                             continue;
                                         }
                                     }
                                 }
-                                if($item->count) {
-                                    if('gmedia_album' == $taxonomy) {
+                                if($item->count){
+                                    if('gmedia_album' == $taxonomy){
                                         $term_meta = $gmDB->get_metadata('gmedia_term', $item->term_id);
                                         $term_meta = array_map('reset', $term_meta);
-                                        $term_meta = array_merge(array('_orderby' => 'ID', '_order' => 'DESC'), $term_meta);
-                                        $args      = array(
-                                                'no_found_rows' => true,
-                                                'per_page'      => $per_page,
-                                                'album__in'     => array($item->term_id),
-                                                'author'        => $author,
-                                                'orderby'       => $term_meta['_orderby'],
-                                                'order'         => $term_meta['_order']
+                                        $term_meta = array_merge(array('_orderby' => $gmGallery->options['in_album_orderby'], '_order' => $gmGallery->options['in_album_order']), $term_meta);
+                                        $args      = array('no_found_rows' => true,
+                                                           'per_page'      => $per_page,
+                                                           'album__in'     => array($item->term_id),
+                                                           'author'        => $author,
+                                                           'orderby'       => $term_meta['_orderby'],
+                                                           'order'         => $term_meta['_order']
                                         );
-                                    } elseif('gmedia_tag' == $taxonomy) {
-                                        $args = array(
-                                                'no_found_rows' => true,
-                                                'per_page'      => $per_page,
-                                                'tag_id'        => $item->term_id,
-                                                'author'        => $author,
-                                                'orderby'       => $gmGallery->options['in_tag_orderby'],
-                                                'order'         => $gmGallery->options['in_tag_order']
+                                    } elseif('gmedia_category' == $taxonomy){
+                                        $term_meta = $gmDB->get_metadata('gmedia_term', $item->term_id);
+                                        $term_meta = array_map('reset', $term_meta);
+                                        $term_meta = array_merge(array('_orderby' => $gmGallery->options['in_category_orderby'], '_order' => $gmGallery->options['in_category_order']), $term_meta);
+                                        $args      = array('no_found_rows' => true,
+                                                           'per_page'      => $per_page,
+                                                           'category__in'  => $item->term_id,
+                                                           'author'        => $author,
+                                                           'orderby'       => $term_meta['_orderby'],
+                                                           'order'         => $term_meta['_order']
                                         );
-                                    } elseif('gmedia_category' == $taxonomy) {
-                                        $args = array(
-                                                'no_found_rows' => true,
-                                                'per_page'      => $per_page,
-                                                'category__in'  => $item->term_id,
-                                                'author'        => $author,
-                                                'orderby'       => $gmGallery->options['in_category_orderby'],
-                                                'order'         => $gmGallery->options['in_category_order']
+                                    } elseif('gmedia_tag' == $taxonomy){
+                                        $args = array('no_found_rows' => true,
+                                                      'per_page'      => $per_page,
+                                                      'tag_id'        => $item->term_id,
+                                                      'author'        => $author,
+                                                      'orderby'       => $gmGallery->options['in_tag_orderby'],
+                                                      'order'         => $gmGallery->options['in_tag_order']
                                         );
                                     }
                                     $termItems = $gmDB->get_gmedias($args);
                                 }
+                                if('gmedia_tag' != $taxonomy){
+                                    $_module_preset = isset($term_meta['_module_preset'][0])? $term_meta['_module_preset'][0] : $gmGallery->options['default_gmedia_module'];
+                                } else{
+                                    $_module_preset = $gmGallery->options['default_gmedia_module'];
+                                }
+                                $by_author = '';
+                                $preset_name = __('Default Settings');
+                                if($gmCore->is_digit($_module_preset)){
+                                    $preset    = $gmDB->get_term($_module_preset);
+                                    $mfold = $preset->status;
+                                    if((int)$preset->global){
+                                        $by_author = ' [' . get_the_author_meta('display_name', $preset->global) . ']';
+                                    }
+                                    if('[' . $mfold . ']' !== $preset->name){
+                                        $preset_name   = str_replace('[' . $mfold . '] ', '', $preset->name);
+                                    }
+                                } else {
+                                    $mfold = $_module_preset;
+                                }
+                                $module_preset = $gmedia_modules['in'][ $mfold ]['title'] . $by_author . ' - ' . $preset_name;
                                 ?>
                                 <div class="list-group-item term-list-item d-row<?php echo $list_row_class; ?>">
                                     <div class="row<?php echo $row_class; ?>">
-                                        <div class="term_id">#<?php echo $item->term_id; ?></div>
                                         <div class="col-xs-5 term-label">
                                             <div class="no-checkbox">
-                                                <strong class="term_name"><?php echo esc_html($item_name); ?></strong>
+                                                <span class="term_name"><?php echo esc_html($item_name); ?></span>
                                                 <span class="term_info_author"><?php echo $author_name; ?></span>
                                                 <span class="badge pull-right"><?php echo $item->count; ?></span>
                                             </div>
                                         </div>
                                         <div class="col-xs-7">
                                             <div class="term-images">
-                                                <?php if(!empty($termItems)) {
-                                                    foreach($termItems as $i) {
+                                                <?php if(!empty($termItems)){
+                                                    foreach($termItems as $i){
                                                         ?>
-                                                        <img style="z-index:<?php echo $per_page--; ?>;"
+                                                        <img style="z-index:<?php echo $per_page --; ?>;"
                                                              src="<?php echo $gmCore->gm_get_media_image($i, 'thumb', false); ?>"
                                                              alt="<?php echo $i->ID; ?>"
-                                                             title="<?php echo esc_attr($i->title); ?>"/>
+                                                             title="<?php esc_attr_e($i->title); ?>"/>
                                                         <?php
                                                     }
                                                 }
-                                                if(count($termItems) < $item->count) {
+                                                if(count($termItems) < $item->count){
                                                     echo '...';
                                                 }
                                                 ?>
@@ -607,49 +569,51 @@ function gmedia_add_media_terms() {
                                         $term_meta = $gmDB->get_metadata('gmedia_term', $item->term_id);
                                         $term_meta = array_map('reset', $term_meta);
                                         $term_meta = array_merge(array('_orderby' => 'ID', '_order' => 'DESC'), $term_meta);
-                                        $tax_name  = array(
-                                                'gmedia_album'    => __('Album', 'grand-media'),
-                                                'gmedia_tag'      => __('Tag', 'grand-media'),
-                                                'gmedia_category' => __('Category', 'grand-media')
+                                        $tax_name  = array('gmedia_album'    => __('Album', 'grand-media'),
+                                                           'gmedia_tag'      => __('Tag', 'grand-media'),
+                                                           'gmedia_category' => __('Category', 'grand-media')
                                         );
-                                        $lib_arg   = array(
-                                                'gmedia_album'    => 'alb',
-                                                'gmedia_tag'      => 'tag_id',
-                                                'gmedia_category' => 'cat'
+                                        $lib_arg   = array('gmedia_album'    => 'album__in',
+                                                           'gmedia_tag'      => 'tag__in',
+                                                           'gmedia_category' => 'category__in'
                                         );
                                         ?>
                                         <input type="hidden" name="taxonomy" value="<?php echo $taxonomy; ?>"/>
                                         <input type="hidden" name="term_id" value="<?php echo $item->term_id; ?>"/>
 
-                                        <p><strong><?php echo $tax_name[$taxonomy]; ?>:</strong> <?php echo esc_html($item_name); ?>
+                                        <p><strong><?php echo $tax_name[ $taxonomy ]; ?>:</strong> <?php echo esc_html($item_name); ?>
                                             <br/><strong><?php _e('ID', 'grand-media'); ?>:</strong> <?php echo $item->term_id; ?>
-                                            <?php if('gmedia_album' == $taxonomy) {
-                                                $orderby = array(
-                                                        'custom'   => __('user defined', 'grand-media'),
-                                                        'ID'       => __('by ID', 'grand-media'),
-                                                        'title'    => __('by title', 'grand-media'),
-                                                        'gmuid'    => __('by filename', 'grand-media'),
-                                                        'date'     => __('by date', 'grand-media'),
-                                                        'modified' => __('by last modified date', 'grand-media'),
-                                                        'rand'     => __('Random', 'grand-media')
+                                            <?php if('gmedia_tag' != $taxonomy){
+                                                $orderby = array('custom'   => __('user defined', 'grand-media'),
+                                                                 'ID'       => __('by ID', 'grand-media'),
+                                                                 'title'    => __('by title', 'grand-media'),
+                                                                 'gmuid'    => __('by filename', 'grand-media'),
+                                                                 'date'     => __('by date', 'grand-media'),
+                                                                 'modified' => __('by last modified date', 'grand-media'),
+                                                                 'rand'     => __('Random', 'grand-media')
                                                 ); ?>
-                                                <br/><strong><?php _e('Order', 'grand-media'); ?>:</strong> <?php echo $orderby[$term_meta['_orderby']]; ?>
+                                                <br/><strong><?php _e('Order', 'grand-media'); ?>:</strong> <?php echo $orderby[ $term_meta['_orderby'] ]; ?>
                                                 <br/><strong><?php _e('Sort order', 'grand-media'); ?>:</strong> <?php echo $term_meta['_order']; ?>
-                                                <br/><strong><?php _e('Status', 'grand-media'); ?>:</strong> <?php echo $item->status; ?>
+                                                <?php if('gmedia_album' == $taxonomy){ ?>
+                                                    <br/><strong><?php _e('Status', 'grand-media'); ?>:</strong> <?php echo $item->status; ?>
                                                 <br/><strong><?php _e('Author', 'grand-media'); ?>:</strong> <?php echo $owner; ?>
+                                                <?php } ?>
                                             <?php } ?>
+                                            <br/><strong><?php _e('Module/Preset', 'grand-media'); ?>:</strong> <?php echo $module_preset; ?>
                                         </p>
 
                                         <p>
-                                            <a href="<?php echo add_query_arg(array(
-                                                                                      'page'              => 'GrandMedia',
-                                                                                      $lib_arg[$taxonomy] => $item->term_id
-                                                                              ), admin_url('admin.php')); ?>" target="_blank"><?php _e('Open in Gmedia Library', 'grand-media'); ?></a>
-                                            <?php if(('gmedia_album' == $taxonomy) && $allow_edit) { ?>
-                                                &nbsp; | &nbsp; <a href="<?php echo add_query_arg(array(
-                                                                                                          'page'      => 'GrandMedia_Albums',
-                                                                                                          'edit_item' => $item->term_id
+                                            <a href="<?php echo add_query_arg(array('page'                => 'GrandMedia',
+                                                                                    $lib_arg[ $taxonomy ] => $item->term_id
+                                                                              ), admin_url('admin.php')); ?>" target="_blank"><?php _e('View in Gmedia Library', 'grand-media'); ?></a>
+                                            <?php if(('gmedia_album' == $taxonomy) && $allow_edit){ ?>
+                                                &nbsp; | &nbsp; <a href="<?php echo add_query_arg(array('page'      => 'GrandMedia_Albums',
+                                                                                                        'edit_term' => $item->term_id
                                                                                                   ), admin_url('admin.php')); ?>" target="_blank"><?php _e('Edit Album', 'grand-media'); ?></a>
+                                            <?php } elseif(('gmedia_category' == $taxonomy) && $allow_edit){ ?>
+                                                &nbsp; | &nbsp; <a href="<?php echo add_query_arg(array('page'      => 'GrandMedia_Categories',
+                                                                                                        'edit_term' => $item->term_id
+                                                                                                  ), admin_url('admin.php')); ?>" target="_blank"><?php _e('Edit Category', 'grand-media'); ?></a>
                                             <?php } ?>
                                         </p>
                                     </div>
@@ -659,7 +623,7 @@ function gmedia_add_media_terms() {
                                 </div>
                                 <?php
                             }
-                        } else {
+                        } else{
                             ?>
                             <div class="list-group-item">
                                 <div class="well well-lg text-center">
@@ -677,18 +641,24 @@ function gmedia_add_media_terms() {
                                 <select class="form-control input-sm" id="module_preset" name="module_preset">
                                     <option value=""><?php _e('Do not overwrite', 'grand-media'); ?></option>
                                     <?php
-                                    foreach($gmedia_modules['in'] as $mfold => $module) {
+                                    foreach($gmedia_modules['in'] as $mfold => $module){
                                         echo '<optgroup label="' . esc_attr($module['title']) . '">';
-                                        $presets           = $gmDB->get_terms('gmedia_module', array('status' => $mfold));
-                                        $option            = array();
+                                        $presets  = $gmDB->get_terms('gmedia_module', array('status' => $mfold));
+                                        $option   = array();
                                         $option[] = '<option value="' . esc_attr($mfold) . '">' . $module['title'] . ' - ' . __('Default Settings') . '</option>';
-                                        foreach($presets as $preset) {
-                                            $by_author =  ' [' . get_the_author_meta('display_name', $preset->global) .']';
-                                            if('[' . $mfold . ']' === $preset->name) {
-                                                $option[] = '<option value="' . $preset->term_id . '">' . $module['title'] . $by_author  . ' - ' . __('Default Settings'). '</option>';
-                                            } else {
+                                        foreach($presets as $preset){
+                                            if(!(int)$preset->global && '[' . $mfold . ']' === $preset->name){
+                                                continue;
+                                            }
+                                            $by_author = '';
+                                            if((int)$preset->global){
+                                                $by_author = ' [' . get_the_author_meta('display_name', $preset->global) . ']';
+                                            }
+                                            if('[' . $mfold . ']' === $preset->name){
+                                                $option[] = '<option value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . __('Default Settings') . '</option>';
+                                            } else{
                                                 $preset_name = str_replace('[' . $mfold . '] ', '', $preset->name);
-                                                $option[] = '<option value="' . $preset->term_id . '">' . $module['title'] . $by_author  . ' - ' . $preset_name . '</option>';
+                                                $option[]    = '<option value="' . $preset->term_id . '">' . $module['title'] . $by_author . ' - ' . $preset_name . '</option>';
                                             }
                                         }
                                         echo implode('', $option);
@@ -739,7 +709,7 @@ function gmedia_add_media_terms() {
 }
 
 
-function gmedia_add_media_library() {
+function gmedia_add_media_library(){
 
     global $user_ID, $gmCore, $gmDB, $gmGallery;
 
@@ -751,19 +721,18 @@ function gmedia_add_media_library() {
 
     $post_id = intval($gmCore->_get('post_id'));
 
-    if(current_user_can('gmedia_show_others_media')) {
+    if(current_user_can('gmedia_show_others_media')){
         $author = 0;
-    } else {
+    } else{
         $author = $user_ID;
     }
-    $args        = array(
-            'mime_type' => $gmCore->_get('mime_type', 'image/*'),
-            'author'    => $author,
-            'orderby'   => 'ID',
-            'order'     => 'DESC',
-            'per_page'  => 50,
-            'page'      => $gmCore->_get('pager', 1),
-            's'         => $gmCore->_get('s', null)
+    $args        = array('mime_type' => $gmCore->_get('mime_type', 'image/*'),
+                         'author'    => $author,
+                         'orderby'   => 'ID',
+                         'order'     => 'DESC',
+                         'per_page'  => 50,
+                         'page'      => $gmCore->_get('pager', 1),
+                         's'         => $gmCore->_get('s', null)
     );
     $gmediaQuery = $gmDB->get_gmedias($args);
 
@@ -781,8 +750,8 @@ function gmedia_add_media_library() {
             <div class="row">
                 <div class="col-xs-7 col-md-9" style="text-align:justify;white-space:normal;">
                     <?php
-                    if(count($gmediaQuery)) {
-                        foreach($gmediaQuery as $item) {
+                    if(count($gmediaQuery)){
+                        foreach($gmediaQuery as $item){
                             $meta = $gmDB->get_metadata('gmedia', $item->ID);
                             $type = explode('/', $item->mime_type);
 
@@ -812,7 +781,7 @@ function gmedia_add_media_library() {
 
                                     <div class="form-group">
                                         <label><?php _e('Title', 'grand-media'); ?></label>
-                                        <input name="title" type="text" class="form-control input-sm" placeholder="<?php _e('Title', 'grand-media'); ?>" value="<?php echo esc_attr($item->title); ?>">
+                                        <input name="title" type="text" class="form-control input-sm" placeholder="<?php _e('Title', 'grand-media'); ?>" value="<?php esc_attr_e($item->title); ?>">
                                     </div>
                                     <div class="form-group">
                                         <label><?php _e('Link To', 'grand-media'); ?></label>
@@ -827,11 +796,11 @@ function gmedia_add_media_library() {
                                     </div>
                                     <div class="form-group">
                                         <label><?php _e('Description', 'grand-media'); ?></label>
-                                        <textarea name="description" class="form-control input-sm" rows="4" cols="10"><?php echo esc_html($item->description); ?></textarea>
+                                        <textarea name="description" class="form-control input-sm" rows="4" cols="10"><?php echo esc_textarea($item->description); ?></textarea>
                                     </div>
                                     <?php //if($is_webimage){
                                     ?>
-                                    <?php if('image' == $type[0]) {
+                                    <?php if('image' == $type[0]){
                                         //$_metadata = maybe_unserialize($meta['_metadata'][0]);
                                         $_metadata = $meta['_metadata'][0];
                                         ?>
@@ -859,12 +828,12 @@ function gmedia_add_media_library() {
                             </form>
                             <?php
                         }
-                    } else {
+                    } else{
                         ?>
                         <div class="list-group-item">
                             <div class="well well-lg text-center">
                                 <h4><?php _e('No items to show.', 'grand-media'); ?></h4>
-                                <?php if($gmCore->caps['gmedia_upload']) { ?>
+                                <?php if($gmCore->caps['gmedia_upload']){ ?>
                                     <p>
                                         <a target="_blank" href="<?php echo admin_url('admin.php?page=GrandMedia_AddMedia') ?>" class="btn btn-success"><span class="glyphicon glyphicon-plus"></span> <?php _e('Add Media', 'grand-media'); ?>
                                         </a></p>
@@ -880,7 +849,7 @@ function gmedia_add_media_library() {
                             <input type="hidden" name="post_id" id="post_id" value="<?php echo $post_id; ?>"/>
                             <?php wp_nonce_field('media-form'); ?>
                             <button type="submit" id="media-upload-form-submit" disabled class="btn btn-primary pull-right" name="gmedia_library_insert"><?php _e('Insert into post', 'grand-media'); ?></button>
-                            <?php if($post_id && current_theme_supports('post-thumbnails', get_post_type($post_id))) { ?>
+                            <?php if($post_id && current_theme_supports('post-thumbnails', get_post_type($post_id))){ ?>
                                 <a id="gmedia-post-thumbnail" class="btn disabled" href="javascript:void(0);"><?php _e('Use as featured image', 'grand-media'); ?></a>
                             <?php } ?>
                         </div>
@@ -951,19 +920,20 @@ function gmedia_add_media_library() {
     <?php
 }
 
-function gmedia_add_media_upload() {
+function gmedia_add_media_upload(){
 
     global $gmCore, $gmDB, $gmProcessor, $user_ID;
 
-    if(!current_user_can('gmedia_upload')) {
+    if(!current_user_can('gmedia_upload')){
         _e('You do not have permissions to upload media', 'grand-media');
 
         return;
     }
 
-    $maxupsize    = wp_max_upload_size();
-    $maxupsize    = floor($maxupsize * 0.99);
-    $maxupsize_mb = floor($maxupsize / 1024 / 1024);
+    $maxupsize       = wp_max_upload_size();
+    $maxupsize_mb    = floor($maxupsize / 1024 / 1024);
+    $maxchunksize    = floor($maxupsize * 0.9);
+    $maxchunksize_mb = floor($maxupsize_mb * 0.9);
 
     $gm_screen_options = $gmProcessor->user_options;
 
@@ -977,14 +947,13 @@ function gmedia_add_media_upload() {
                     $mime_types = get_allowed_mime_types($user_ID);
                     $type_ext   = array();
                     $filters    = array();
-                    foreach($mime_types as $ext => $mime) {
-                        $type              = strtok($mime, '/');
-                        $type_ext[$type][] = $ext;
+                    foreach($mime_types as $ext => $mime){
+                        $type                = strtok($mime, '/');
+                        $type_ext[ $type ][] = $ext;
                     }
-                    foreach($type_ext as $filter => $ext) {
-                        $filters[] = array(
-                                'title'      => $filter,
-                                'extensions' => str_replace('|', ',', implode(',', $ext))
+                    foreach($type_ext as $filter => $ext){
+                        $filters[] = array('title'      => $filter,
+                                           'extensions' => str_replace('|', ',', implode(',', $ext))
                         );
                     }
                     ?>
@@ -1006,7 +975,7 @@ function gmedia_add_media_upload() {
                                 multipart_params: {action: 'gmedia_upload_handler', _ajax_nonce: '<?php echo wp_create_nonce('GmediaUpload'); ?>', params: ''},
                                 <?php if('true' == $gm_screen_options['uploader_chunking'] && ('html4' != $gm_screen_options['uploader_runtime'])){ ?>
                                 max_file_size: '2000Mb',
-                                chunk_size: 200000<?php //echo min($maxupsize, $gm_screen_options['uploader_chunk_size']*1024*1024); ?>,
+                                chunk_size: <?php echo min($maxchunksize, $gm_screen_options['uploader_chunk_size']*1024*1024); ?>,
                                 <?php } else{ ?>
                                 max_file_size: <?php echo $maxupsize; ?>,
                                 <?php } ?>
@@ -1065,7 +1034,7 @@ function gmedia_add_media_upload() {
                             });
                             uploader.bind('UploadComplete', function(up, files) {
                                 console.log('[UploadComplete]', files);
-                                $('<div></div>').addClass('alert alert-success alert-dismissable').html(closebtn + "<?php echo esc_attr(__('Upload finished', 'grand-media')); ?>").appendTo('#gmedia-msg-panel');
+                                $('<div></div>').addClass('alert alert-success alert-dismissable').html(closebtn + "<?php esc_attr_e(__('Upload finished', 'grand-media')); ?>").appendTo('#gmedia-msg-panel');
                                 $('#total-progress-info .progress-bar').css('width', '0').attr('aria-valuenow', '0');
                             });
 
@@ -1075,12 +1044,12 @@ function gmedia_add_media_upload() {
                 <div class="col-md-4 col-md-pull-8" id="uploader_multipart_params">
                     <div id="gmedia-msg-panel"></div>
                     <br/>
-                    <?php if('false' == $gm_screen_options['uploader_chunking'] || ('html4' == $gm_screen_options['uploader_runtime'])) { ?>
+                    <?php if('false' == $gm_screen_options['uploader_chunking'] || ('html4' == $gm_screen_options['uploader_runtime'])){ ?>
                         <p class="clearfix text-right"><span class="label label-default"><?php echo __('Maximum file size', 'grand-media') . ": {$maxupsize_mb}Mb"; ?></span></p>
-                    <?php } else { ?>
+                    <?php } else{ ?>
                         <p class="clearfix text-right hidden">
                             <span class="label label-default"><?php echo __('Maximum $_POST size', 'grand-media') . ": {$maxupsize_mb}Mb"; ?></span>
-                            <span class="label label-default"><?php echo __('Chunk size', 'grand-media') . ': ' . min($maxupsize_mb, $gm_screen_options['uploader_chunk_size']) . 'Mb'; ?></span>
+                            <span class="label label-default"><?php echo __('Chunk size', 'grand-media') . ': ' . min($maxchunksize_mb, $gm_screen_options['uploader_chunk_size']) . 'Mb'; ?></span>
                         </p>
                     <?php } ?>
 
@@ -1104,15 +1073,15 @@ function gmedia_add_media_upload() {
 
                     <hr/>
 
-                    <?php if($gmCore->caps['gmedia_terms']) { ?>
+                    <?php if($gmCore->caps['gmedia_terms']){ ?>
                         <div class="form-group">
                             <?php
                             $term_type = 'gmedia_album';
                             $gm_terms  = $gmDB->get_terms($term_type, array('global' => array(0, $user_ID), 'orderby' => 'global_desc_name'));
 
                             $terms_album = '';
-                            if(count($gm_terms)) {
-                                foreach($gm_terms as $term) {
+                            if(count($gm_terms)){
+                                foreach($gm_terms as $term){
                                     $terms_album .= '<option value="' . esc_attr($term->term_id) . '">' . esc_html($term->name) . ($term->global? '' : __(' (shared)', 'grand-media')) . ('publish' == $term->status? '' : " [{$term->status}]") . '</option>' . "\n";
                                 }
                             }
@@ -1174,7 +1143,7 @@ function gmedia_add_media_upload() {
                                     <?php } ?>
                                     delimiter: ',',
                                     maxItems: null,
-                                    openOnFocus: false,
+                                    openOnFocus: true,
                                     persist: false,
                                     options: cat_items,
                                     labelField: 'item',
@@ -1201,7 +1170,7 @@ function gmedia_add_media_upload() {
                                     <?php } ?>
                                     delimiter: ',',
                                     maxItems: null,
-                                    openOnFocus: false,
+                                    openOnFocus: true,
                                     persist: false,
                                     options: tag_items,
                                     labelField: 'item',

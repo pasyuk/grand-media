@@ -1,44 +1,47 @@
 <?php
 
-function gmedia_term_item_thumbnails( $term_item, $qty = 7 ) {
+function gmedia_term_item_thumbnails($term_item, $qty = 7){
     global $gmCore, $gmDB, $gmGallery;
     ?>
     <div class="term-images">
         <?php
-        if ( $term_item->count ) {
-            $term__in = str_replace( 'gmedia_', '', $term_item->taxonomy ) . '__in';
-            switch ( $term_item->taxonomy ) {
-                case 'gmedia_tag':
-                    $orderby = $gmGallery->options['in_tag_orderby'];
-                    $order   = $gmGallery->options['in_tag_order'];
+        if($term_item->count){
+            $term__in = str_replace('gmedia_', '', $term_item->taxonomy) . '__in';
+            switch($term_item->taxonomy){
+                case 'gmedia_album':
+                    $orderby = $gmGallery->options['in_album_orderby'];
+                    $order   = $gmGallery->options['in_album_order'];
                 break;
                 case 'gmedia_category':
                     $orderby = $gmGallery->options['in_category_orderby'];
                     $order   = $gmGallery->options['in_category_order'];
+                break;
+                case 'gmedia_tag':
+                    $orderby = $gmGallery->options['in_tag_orderby'];
+                    $order   = $gmGallery->options['in_tag_order'];
                 break;
                 default:
                     $orderby = 'ID';
                     $order   = 'DESC';
                 break;
             }
-            $args = array(
-                    'no_found_rows' => true,
-                    'per_page'      => $qty,
-                    $term__in       => array( $term_item->term_id ),
-                    'author'        => gm_user_can( 'show_others_media' ) ? 0 : get_current_user_id(),
-                    'orderby'       => isset( $term_item->meta['_orderby'][0] ) ? $term_item->meta['_orderby'][0] : $orderby,
-                    'order'         => isset( $term_item->meta['_order'][0] ) ? $term_item->meta['_order'][0] : $order
+            $args = array('no_found_rows' => true,
+                          'per_page'      => $qty,
+                          $term__in       => array($term_item->term_id),
+                          'author'        => gm_user_can('show_others_media')? 0 : get_current_user_id(),
+                          'orderby'       => isset($term_item->meta['_orderby'][0])? $term_item->meta['_orderby'][0] : $orderby,
+                          'order'         => isset($term_item->meta['_order'][0])? $term_item->meta['_order'][0] : $order
             );
 
-            $gmedias = $gmDB->get_gmedias( $args );
-            if ( ! empty( $gmedias ) ) {
-                foreach ( $gmedias as $gmedia_item ) {
+            $gmedias = $gmDB->get_gmedias($args);
+            if(!empty($gmedias)){
+                foreach($gmedias as $gmedia_item){
                     ?>
-                    <img style="z-index:<?php echo $qty --; ?>;" src="<?php echo $gmCore->gm_get_media_image( $gmedia_item, 'thumb', false ); ?>" alt="<?php echo $gmedia_item->ID; ?>" title="<?php echo esc_attr( $gmedia_item->title ); ?>"/>
+                    <img style="z-index:<?php echo $qty --; ?>;" src="<?php echo $gmCore->gm_get_media_image($gmedia_item, 'thumb', false); ?>" alt="<?php echo $gmedia_item->ID; ?>" title="<?php esc_attr_e($gmedia_item->title); ?>"/>
                     <?php
                 }
             }
-            if ( count( $gmedias ) < $term_item->count ) {
+            if(count($gmedias) < $term_item->count){
                 echo '...';
             }
         }
@@ -47,87 +50,62 @@ function gmedia_term_item_thumbnails( $term_item, $qty = 7 ) {
     <?php
 }
 
-function gmedia_term_item_actions( $item ) {
+function gmedia_term_item_actions($item){
     global $gmCore, $gmProcessor;
 
-    $taxterm = str_replace( 'gmedia_', '', $item->taxonomy );
+    $taxterm = $gmProcessor->taxterm;
     $actions = array();
 
-    $actions['shortcode'] = '<div class="term-shortcode"><input type="text" readonly value="[gm ' . $taxterm . '=' . $item->term_id . ']"><div class="input-buffer"></div></div>';
+    //$actions['shortcode'] = '<div class="term-shortcode"><input type="text" readonly value="[gm ' . $taxterm . '=' . $item->term_id . ']"><div class="input-buffer"></div></div>';
 
-    $filter_href  = $gmCore->get_admin_url( array( 'page' => 'GrandMedia', "{$taxterm}__in" => $item->term_id ), array(), true );
+    $filter_href  = $gmCore->get_admin_url(array('page' => 'GrandMedia', "{$taxterm}__in" => $item->term_id), array(), true);
     $filter_class = 'gm_filter_in_lib';
     $count        = '';
-    if ( in_array( $item->taxonomy, array( 'gmedia_album', 'gmedia_tag', 'gmedia_category' ) ) ) {
+    if(in_array($item->taxonomy, array('gmedia_album', 'gmedia_tag', 'gmedia_category'))){
         $count = '<span class="gm_term_count">' . $item->count . '</span>';
-        if ( ! $item->count ) {
+        if(!$item->count){
             $filter_class .= ' action-inactive';
         }
     }
-    $actions['filter'] = '<a title="' . __( 'Filter in Gmedia Library', 'grand-media' ) . '" href="' . $filter_href . '" class="' . $filter_class . '">' . $count . '<span class="glyphicon glyphicon-filter"></span></a>';
+    $actions['filter'] = '<a title="' . __('Filter in Gmedia Library', 'grand-media') . '" href="' . $filter_href . '" class="' . $filter_class . '">' . $count . '<span class="glyphicon glyphicon-filter"></span></a>';
 
-    $cloud_link = $gmCore->gmcloudlink( $item->term_id, $taxterm );
-    if ( ! empty( $item->meta['_post_ID'][0] ) ) {
-        $post_link = get_permalink( $item->meta['_post_ID'][0] );
-    } else {
-        $post_link = '';
-    }
     $share_icon = '<span class="glyphicon glyphicon-share"></span>';
-    if ( 'draft' !== $item->status ) {
-        $actions['share'] = '<a target="_blank" data-target="#shareModal" data-share="' . $item->term_id . '" class="share-modal" title="' . __( 'Share', 'grand-media' ) . '" data-gmediacloud="' . $cloud_link . '" href="' . $post_link . '">' . $share_icon . '</a>';
-    } else {
-        $actions['share'] = "<span class='action-inactive'>$share_icon</span>";
-    }
-
-    if ( 'gmedia_tag' != $item->taxonomy ) {
-        $edit_icon = '<span class="glyphicon glyphicon-edit"></span>';
-        if ( $item->allow_edit ) {
-            $actions['edit'] = '<a title="' . __( 'Edit', 'grand-media' ) . '" href="' . add_query_arg( array( "edit_item" => $item->term_id ), $gmProcessor->url ) . '">' . $edit_icon . '</a>';
-        } else {
-            $actions['edit'] = "<span class='action-inactive'>$edit_icon</span>";
-        }
+    if('draft' !== $item->status){
+        $actions['share'] = '<a target="_blank" data-target="#shareModal" data-share="' . $item->term_id . '" class="text-warning share-modal" title="' . __('Share', 'grand-media') . '" data-gmediacloud="' . $item->cloud_link . '" href="' . $item->post_link . '">' . $share_icon . ' ' . __('Share', 'grand-media') . '</a>';
+    } else{
+        $actions['share'] = '<span class="action-inactive">' . $share_icon . ' ' . __('Share', 'grand-media') . '</span>';
     }
 
     $trash_icon = '<span class="glyphicon glyphicon-trash"></span>';
-    if ( $item->allow_delete ) {
-        $actions['delete'] = '<a class="trash-icon" title="' . __( 'Delete', 'grand-media' ) . '" href="' . wp_nonce_url( add_query_arg( array( 'delete' => $item->term_id ), $gmProcessor->url ), 'gmedia_delete' ) . '" data-confirm="' . __( "You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media" ) . '">' . $trash_icon . '</a>';
-    } else {
+    if($item->allow_delete){
+        $actions['delete'] = '<a class="trash-icon" title="' . __('Delete', 'grand-media') . '" href="' . wp_nonce_url(add_query_arg(array('do_gmedia_terms' => 'delete', 'ids' => $item->term_id), $gmProcessor->url), 'gmedia_delete') . '" data-confirm="' . __("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media") . '">' . $trash_icon . '</a>';
+    } else{
         $actions['delete'] = "<span class='action-inactive'>$trash_icon</span>";
     }
 
-    /*if(gm_user_can("{$item->taxonomy}_manage")) {
-        if((int)$item->global === get_current_user_id() || gm_user_can('edit_others_media')) {
-            $action['edit'] = '<a title="' . __('Edit', 'grand-media') . '" href="' . add_query_arg(array("edit_item" => $item->term_id), $gmProcessor->url) . '">' . $edit_icon . '</a>';
-
-            if(gm_user_can('terms_delete')) {
-                $action['delete'] = '<a class="trash-icon" title="' . __('Delete', 'grand-media') . '" href="' . wp_nonce_url(add_query_arg(array('delete' => $item->term_id), $gmProcessor->url), 'gmedia_delete') . '" data-confirm="' . __("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media") . '">' . $trash_icon . '</a>';
-            }
-        }
-    }*/
-
-
-    return apply_filters( 'gmedia_term_item_actions', $actions );
+    return apply_filters('gmedia_term_item_actions', $actions);
 }
 
 
-function gmedia_term_item_more_data( &$item ) {
-    global $gmDB;
+function gmedia_term_item_more_data(&$item){
+    global $gmDB, $gmCore;
 
-    $meta       = $gmDB->get_metadata( 'gmedia_term', $item->term_id );
+    $meta       = $gmDB->get_metadata('gmedia_term', $item->term_id);
     $item->meta = $meta;
 
-    if ( $item->global ) {
-        $item->author_name = get_the_author_meta( 'display_name', $item->global );
-    } else {
+    if($item->global){
+        $item->author_name = get_the_author_meta('display_name', $item->global);
+    } else{
         $item->author_name = false;
     }
 
-    if ( 'gmedia_album' == $item->taxonomy ) {
-        $post_id       = isset( $meta['_post_ID'][0] ) ? (int) $meta['_post_ID'][0] : 0;
+    $item->taxterm = str_replace('gmedia_', '', $item->taxonomy);
+    if('gmedia_album' == $item->taxonomy){
+        $post_id       = isset($meta['_post_ID'][0])? (int)$meta['_post_ID'][0] : 0;
         $item->post_id = $post_id;
-        if ( $post_id ) {
-            $post_item = get_post( $post_id );
-            if ( $post_item ) {
+        if($post_id){
+            $post_item = get_post($post_id);
+            if($post_item){
                 $item->slug           = $post_item->post_name;
                 $item->post_password  = $post_item->post_password;
                 $item->comment_count  = $post_item->comment_count;
@@ -136,37 +114,108 @@ function gmedia_term_item_more_data( &$item ) {
         }
     }
 
+    $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);
+    if(!empty($item->meta['_post_ID'][0])){
+        $item->post_link = get_permalink($item->meta['_post_ID'][0]);
+    } else{
+        $item->post_link = '';
+    }
 
-    $item = apply_filters( 'gmedia_term_item_more_data', $item );
+    if(is_user_logged_in()){
+        $allow_terms_delete = gm_user_can('terms_delete');
+        if($item->global){
+            if((int)$item->global === get_current_user_id()){
+                $item->allow_edit   = gm_user_can("{$item->taxterm}_manage");
+                $item->allow_delete = $allow_terms_delete;
+            } else{
+                $item->allow_edit   = gm_user_can('edit_others_media');
+                $item->allow_delete = ($item->allow_edit && $allow_terms_delete);
+            }
+        } else{
+            $item->allow_edit   = gm_user_can('edit_others_media');
+            $item->allow_delete = ($item->allow_edit && $allow_terms_delete);
+        }
+    } else {
+        $item->allow_edit   = false;
+        $item->allow_delete = false;
+    }
+
+    $item = apply_filters('gmedia_term_item_more_data', $item);
 }
 
-function gmedia_terms_create_album_tpl() {
-    include( dirname( __FILE__ ) . '/tpl/album-create-item.php' );
+function gmedia_terms_create_album_tpl(){
+    include(dirname(__FILE__) . '/tpl/album-create-item.php');
 }
 
-function gmedia_terms_create_category_tpl() {
-    include( dirname( __FILE__ ) . '/tpl/category-create-item.php' );
+function gmedia_terms_create_category_tpl(){
+    include(dirname(__FILE__) . '/tpl/category-create-item.php');
 }
 
-function gmedia_terms_create_tag_tpl() {
-    include( dirname( __FILE__ ) . '/tpl/tag-create-item.php' );
+function gmedia_terms_create_tag_tpl(){
+    include(dirname(__FILE__) . '/tpl/tag-create-item.php');
 }
 
-function gmedia_terms_create_alert_tpl() {
-    include( dirname( __FILE__ ) . '/tpl/terms-create-alert.php' );
+function gmedia_terms_create_alert_tpl(){
+    include(dirname(__FILE__) . '/tpl/terms-create-alert.php');
 }
 
-add_action( 'gmedia_term_album_after_panel', 'gmedia_term_album_after_panel' );
-function gmedia_term_album_after_panel( $term ) {
-    include( dirname( __FILE__ ) . '/tpl/album-sort-gmedia.php' );
+add_action('gmedia_term_album_after_panel', 'gmedia_term_album_after_panel');
+function gmedia_term_album_after_panel($term){
+    global $gmCore, $gmProcessor, $gmProcessorLibrary;
+
+    $taxin                                            = "{$gmProcessor->taxterm}__in";
+    $gmProcessorLibrary->query_args['terms_relation'] = 'AND';
+    if(!empty($gmProcessorLibrary->query_args[ $taxin ])){
+        $gmProcessorLibrary->query_args["{$gmProcessor->taxterm}__and"] = wp_parse_id_list(array_merge($gmProcessorLibrary->query_args[ $taxin ], array($term->term_id)));
+        unset($gmProcessorLibrary->query_args[ $taxin ]);
+    } else{
+        $gmProcessorLibrary->query_args[ $taxin ] = array((int)$term->term_id);
+    }
+    $gmProcessorLibrary->display_mode = 'grid';
+
+    $gmProcessor = $gmProcessorLibrary;
+
+    $atts = 'class="gmedia_term__in"';
+    if(isset($term->meta['_orderby'][0]) && ('custom' == $term->meta['_orderby'][0])){
+        $atts .= ' id="gm-sortable" data-term_id="' . $term->term_id . '" data-action="gmedia_term_sortorder" data-_wpnonce="' . wp_create_nonce('GmediaTerms') . '"';
+        add_action('before_gmedia_filter_message', 'before_gmedia_filter_message');
+    }
+    echo "<div {$atts}>";
+    echo $gmCore->alert('success', $gmProcessor->msg);
+    echo $gmCore->alert('danger', $gmProcessor->error);
+    include(GMEDIA_ABSPATH . 'admin/pages/library/library.php');
+    echo '</div>';
 }
 
-add_action( 'gmedia_term_category_after_panel', 'gmedia_term_category_after_panel' );
-function gmedia_term_category_after_panel( $term ) {
-    include( dirname( __FILE__ ) . '/tpl/category-preview-gmedia.php' );
+function before_gmedia_filter_message(){
+    global $gmProcessorLibrary;
+    if(empty($gmProcessorLibrary->dbfilter)){
+        echo '<div class="custom-message alert alert-info">' . __("You can drag'n'drop items below to reorder. Order saves automatically after you drop the item. Also you can set order position number manually when edit item.", 'grand-media') . '</div>';
+    } else{
+        echo '<div class="custom-message alert alert-warning">' . __("Drag'n'drop functionality disabled. Reset filters to enable drag'n'drop.", 'grand-media') . '</div>';
+    }
 }
 
-add_action( 'gmedia_term_filter_after_panel', 'gmedia_term_filter_after_panel' );
-function gmedia_term_filter_after_panel( $term ) {
-    include( dirname( __FILE__ ) . '/tpl/filter-preview-query.php' );
+add_action('gmedia_term_category_after_panel', 'gmedia_term_category_after_panel');
+function gmedia_term_category_after_panel($term){
+    global $gmCore, $gmProcessor, $gmProcessorLibrary;
+
+    $taxin                                            = "{$gmProcessor->taxterm}__in";
+    $gmProcessorLibrary->query_args['terms_relation'] = 'AND';
+    if(!empty($gmProcessorLibrary->query_args[ $taxin ])){
+        $gmProcessorLibrary->query_args["{$gmProcessor->taxterm}__and"] = wp_parse_id_list(array_merge($gmProcessorLibrary->query_args[ $taxin ], array($term->term_id)));
+        unset($gmProcessorLibrary->query_args[ $taxin ]);
+    } else{
+        $gmProcessorLibrary->query_args[ $taxin ] = array((int)$term->term_id);
+    }
+    $gmProcessorLibrary->display_mode = 'grid';
+
+    $gmProcessor = $gmProcessorLibrary;
+
+    $atts = 'class="gmedia_term__in"';
+    echo "<div {$atts}>";
+    echo $gmCore->alert('success', $gmProcessor->msg);
+    echo $gmCore->alert('danger', $gmProcessor->error);
+    include(GMEDIA_ABSPATH . 'admin/pages/library/library.php');
+    echo '</div>';
 }

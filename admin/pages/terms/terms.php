@@ -29,7 +29,7 @@ $gmedia_terms_pager = $gmDB->query_pager();
 
         <form class="list-group <?php echo $gmedia_term_taxonomy; ?>" id="gm-list-table" style="margin-bottom:4px;">
             <?php
-            $taxterm = str_replace('gmedia_', '', $gmedia_term_taxonomy);
+            $taxterm = $gmProcessor->taxterm;
             if(count($gmedia_terms)) {
                 foreach($gmedia_terms as &$item) {
                     gmedia_term_item_more_data($item);
@@ -46,20 +46,6 @@ $gmedia_terms_pager = $gmDB->query_pager();
                     $item->selected    = in_array($item->term_id, (array)$gmProcessor->selected_items);
                     if($item->selected) {
                         $item->classes[] = 'gm-selected';
-                    }
-
-                    $allow_terms_delete = gm_user_can('terms_delete');
-                    if($item->global) {
-                        if((int)$item->global === get_current_user_id()) {
-                            $item->allow_edit   = gm_user_can("{$taxterm}_manage");
-                            $item->allow_delete = $allow_terms_delete;
-                        } else {
-                            $item->allow_edit   = gm_user_can('edit_others_media');
-                            $item->allow_delete = ($item->allow_edit && $allow_terms_delete);
-                        }
-                    } else {
-                        $item->allow_edit   = gm_user_can('edit_others_media');
-                        $item->allow_delete = ($item->allow_edit && $allow_terms_delete);
                     }
 
                     include(dirname(__FILE__) . "/tpl/{$taxterm}-list-item.php");

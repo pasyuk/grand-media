@@ -19,7 +19,7 @@ if(!defined('ABSPATH')) {
                         </span>
                         <input type="text" class="form-control" readonly="readonly" value="" />
                         <span class="input-group-btn">
-                            <a target="_blank" class="btn btn-default" href=""><span class="glyphicon glyphicon-new-window"></span></a>
+                            <a target="_blank" class="btn btn-default" href="" title="<?php _e('Open in new Tab', 'grand-media') ?>"><span class="glyphicon glyphicon-new-window"></span></a>
                         </span>
                     </div>
                 </div>
@@ -31,7 +31,7 @@ if(!defined('ABSPATH')) {
                         </span>
                         <input type="text" class="form-control" readonly="readonly" value="" />
                         <span class="input-group-btn">
-                            <a target="_blank" class="btn btn-default" href=""><span class="glyphicon glyphicon-new-window"></span></a>
+                            <a target="_blank" class="btn btn-default" href="" title="<?php _e('Open in new Tab', 'grand-media') ?>"><span class="glyphicon glyphicon-new-window"></span></a>
                         </span>
                     </div>
                 </div>

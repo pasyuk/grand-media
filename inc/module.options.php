@@ -85,7 +85,7 @@ function gmedia_gallery_options_formgroup($args) {
         ?>
         <div class="form-group" id="div_<?php echo $id; ?>">
             <label><?php echo $field['label']; ?></label>
-            <input <?php echo $field['attr']; ?> id="<?php echo $id; ?>" class="form-control input-sm" name="<?php echo $name; ?>" value="<?php echo esc_attr($value); ?>" data-value="<?php echo $default; ?>" placeholder="<?php echo $default; ?>"/>
+            <input <?php echo $field['attr']; ?> id="<?php echo $id; ?>" class="form-control input-sm" name="<?php echo $name; ?>" value="<?php esc_attr_e($value); ?>" data-value="<?php echo $default; ?>" placeholder="<?php echo $default; ?>"/>
             <?php if(!empty($field['text'])) {
                 echo "<p class='help-block'>{$field['text']}</p>";
             } ?>
@@ -106,7 +106,7 @@ function gmedia_gallery_options_formgroup($args) {
             <label><?php echo $field['label']; ?></label>
             <select <?php echo $field['attr']; ?> id="<?php echo $id; ?>" class="form-control input-sm" name="<?php echo $name; ?>" data-value="<?php echo $default; ?>">
                 <?php foreach($field['choices'] as $choice) { ?>
-                    <option value="<?php echo esc_attr($choice['value']); ?>" <?php echo selected($value, $choice['value']); ?>><?php echo $choice['label']; ?></option>
+                    <option value="<?php esc_attr_e($choice['value']); ?>" <?php echo selected($value, $choice['value']); ?>><?php echo $choice['label']; ?></option>
                 <?php } ?>
             </select>
             <?php if(!empty($field['text'])) {
@@ -116,7 +116,7 @@ function gmedia_gallery_options_formgroup($args) {
     <?php } elseif('textarea' == $field['tag']) { ?>
         <div class="form-group" id="div_<?php echo $id; ?>">
             <label><?php echo $field['label']; ?></label>
-            <textarea <?php echo $field['attr']; ?> id="<?php echo $id; ?>" class="form-control input-sm" name="<?php echo $name; ?>"><?php echo esc_html($value); ?></textarea>
+            <textarea <?php echo $field['attr']; ?> id="<?php echo $id; ?>" class="form-control input-sm" name="<?php echo $name; ?>"><?php echo esc_textarea($value); ?></textarea>
             <?php if(!empty($field['text'])) {
                 echo "<p class='help-block'>{$field['text']}</p>";
             } ?>

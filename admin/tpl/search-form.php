@@ -1,5 +1,5 @@
 <?php // don't load directly
-if(!defined('ABSPATH')) {
+if(!defined('ABSPATH')){
     die('-1');
 }
 
@@ -10,14 +10,19 @@ global $gmCore;
 ?>
 <form class="form-inline gmedia-search-form" role="search" method="get">
     <div class="form-group">
-        <?php foreach($_GET as $key => $value) {
-            if(in_array($key, array('page', 'edit_mode', 'author', 'global', 'mime_type', 'tag_id', 'tag__in', 'cat', 'category__in', 'alb', 'album__in', 'term', 'chromeless', 'post_id', 'tab', 'orderby', 'order', 'number'))) {
+        <?php foreach($_GET as $key => $value){
+            if(!in_array($key, array('doing_wp_cron', '_wpnonce', 'do_gmedia', 'did_gmedia', 'do_gmedia_terms', 'did_gmedia_terms', 'ids', 's'))){
+                if(is_array($value)){
+                    $value = implode(',', $value);
+                }
                 ?>
-                <input type="hidden" name="<?php echo $key; ?>" value="<?php echo $value; ?>"/>
+                <input type="hidden" name="<?php esc_attr_e($key); ?>" value="<?php esc_attr_e($value); ?>"/>
                 <?php
             }
-        } ?>
-        <input id="gmedia-search" class="form-control input-xs" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php echo $gmCore->_get('s', ''); ?>"/>
+        }
+        $gm_search_string = $gmCore->_get('s', '');
+        ?>
+        <input id="gmedia-search" class="form-control input-xs" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php esc_attr_e($gm_search_string); ?>"/>
     </div>
     <button type="submit" class="btn btn-default input-xs"><span class="glyphicon glyphicon-search"></span></button>
 </form>

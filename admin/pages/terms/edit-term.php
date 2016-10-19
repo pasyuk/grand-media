@@ -10,11 +10,11 @@ if(!defined('ABSPATH')) {
 
 global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor;
 
-$term_id              = $gmCore->_get('edit_item');
-$gmedia_url           = add_query_arg(array('edit_item' => $term_id), $gmProcessor->url);
+$term_id              = $gmCore->_get('edit_term');
+$gmedia_url           = add_query_arg(array('edit_term' => $term_id), $gmProcessor->url);
 $gmedia_user_options  = $gmProcessor->user_options;
 $gmedia_term_taxonomy = $gmProcessor->taxonomy;
-$taxterm = str_replace('gmedia_', '', $gmedia_term_taxonomy);
+$taxterm = $gmProcessor->taxterm;
 
 if(!gm_user_can("{$taxterm}_manage")) {
     die('-1');
@@ -31,7 +31,7 @@ gmedia_term_item_more_data($term);
 do_action('gmedia_term_before_panel');
 ?>
 
-<div class="panel panel-default">
+<div class="panel panel-default panel-fixed-header">
 
     <?php
     include(dirname(__FILE__) . '/tpl/term-panel-heading.php');

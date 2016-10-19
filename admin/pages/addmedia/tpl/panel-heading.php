@@ -8,15 +8,15 @@ if(!defined('ABSPATH')) {
  * @var $url
  * @var $import
  */
-$extra_tools = (defined('GMEDIA_IFRAME') && GMEDIA_IFRAME)? false : true;
+$extra_tools = ($gmProcessor->gmediablank || (defined('GMEDIA_IFRAME') && GMEDIA_IFRAME))? false : true;
 ?>
 <div class="panel-heading clearfix">
     <?php if($extra_tools) { ?>
-        <div class="btn-toolbar pull-left">
+        <div class="btn-toolbar pull-left" style="white-space:nowrap;">
             <div class="btn-group">
-                <a class="btn btn<?php echo !$import? '-primary active' : '-default'; ?>" href="<?php echo $url; ?>"><?php _e('Upload Files', 'grand-media'); ?></a>
+                <a class="btn btn<?php echo !$import? '-primary active' : '-default'; ?>" href="<?php echo gm_get_admin_url(array(), array('import'), $url); ?>"><?php _e('Upload Files', 'grand-media'); ?></a>
                 <?php if(gm_user_can('import')) { ?>
-                    <a class="btn btn<?php echo $import? '-primary active' : '-default'; ?>" href="<?php echo gm_get_admin_url(array('import' => 1), null, $url); ?>"><?php _e('Import', 'grand-media'); ?></a>
+                    <a class="btn btn<?php echo $import? '-primary active' : '-default'; ?>" href="<?php echo gm_get_admin_url(array('import' => 1), array(), $url); ?>"><?php _e('Import', 'grand-media'); ?></a>
                 <?php } ?>
             </div>
             <?php if($import && gm_user_can('import')) { ?>

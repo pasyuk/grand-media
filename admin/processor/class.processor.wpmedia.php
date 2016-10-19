@@ -5,6 +5,7 @@
  */
 class GmediaProcessor_WordpressLibrary extends GmediaProcessor {
 
+    private static $me = null;
     public static $cookie_key = false;
     public $selected_items = array();
 
@@ -16,7 +17,7 @@ class GmediaProcessor_WordpressLibrary extends GmediaProcessor {
 
         global $user_ID;
 
-        self::$cookie_key = "gmuser_{$user_ID}_wpmedia";
+        self::$cookie_key = "gmedia_library:wpmedia";
         $this->selected_items = parent::selected_items(self::$cookie_key);
 
     }
@@ -30,7 +31,14 @@ class GmediaProcessor_WordpressLibrary extends GmediaProcessor {
 
     }
 
+    public static function getMe() {
+        if ( self::$me == null ) {
+            self::$me = new GmediaProcessor_WordpressLibrary();
+        }
+
+        return self::$me;
+    }
 }
 
-global $gmProcessor;
-$gmProcessor = new GmediaProcessor_WordpressLibrary();
+global $gmProcessorWPMedia;
+$gmProcessorWPMedia = GmediaProcessor_WordpressLibrary::getMe();

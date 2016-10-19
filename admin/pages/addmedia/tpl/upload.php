@@ -8,19 +8,20 @@
  */
 
 // don't load directly
-if(!defined('ABSPATH')) {
-    die('-1');
+if ( ! defined( 'ABSPATH' ) ) {
+    die( '-1' );
 }
 
-if(!gm_user_can('upload')) {
-    _e('You do not have permissions to upload media', 'grand-media');
+if ( ! gm_user_can( 'upload' ) ) {
+    _e( 'You do not have permissions to upload media', 'grand-media' );
 
     return;
 }
 
 $maxupsize    = wp_max_upload_size();
-$maxupsize    = floor($maxupsize * 0.99);
-$maxupsize_mb = floor($maxupsize / 1024 / 1024);
+$maxupsize_mb = floor( $maxupsize / 1024 / 1024 );
+$maxchunksize = floor( $maxupsize * 0.9 );
+$maxchunksize_mb = floor( $maxupsize_mb * 0.9 );
 
 $screen_options = $gmProcessor->user_options;
 
@@ -30,52 +31,52 @@ $gm_terms = array();
 <form class="row" id="gmUpload" name="upload_form" method="POST" accept-charset="utf-8" onsubmit="return false;">
     <div class="col-md-4" id="uploader_multipart_params">
         <br/>
-        <?php if('false' == $screen_options['uploader_chunking'] || ('html4' == $screen_options['uploader_runtime'])) { ?>
-            <p class="clearfix text-right"><span class="label label-default"><?php echo __('Maximum file size', 'grand-media') . ": {$maxupsize_mb}Mb"; ?></span></p>
+        <?php if ( 'false' == $screen_options['uploader_chunking'] || ( 'html4' == $screen_options['uploader_runtime'] ) ) { ?>
+            <p class="clearfix text-right"><span class="label label-default"><?php echo __( 'Maximum file size', 'grand-media' ) . ": {$maxupsize_mb}Mb"; ?></span></p>
         <?php } else { ?>
             <p class="clearfix text-right hidden">
-                <span class="label label-default"><?php echo __('Maximum $_POST size', 'grand-media') . ": {$maxupsize_mb}Mb"; ?></span>
-                <span class="label label-default"><?php echo __('Chunk size', 'grand-media') . ': ' . min($maxupsize_mb, $screen_options['uploader_chunk_size']) . 'Mb'; ?></span>
+                <span class="label label-default"><?php echo __( 'Maximum $_POST size', 'grand-media' ) . ": {$maxupsize_mb}Mb"; ?></span>
+                <span class="label label-default"><?php echo __( 'Chunk size', 'grand-media' ) . ': ' . min( $maxchunksize_mb, $screen_options['uploader_chunk_size'] ) . 'Mb'; ?></span>
             </p>
         <?php } ?>
 
         <div class="form-group">
-            <label><?php _e('Title', 'grand-media'); ?></label>
+            <label><?php _e( 'Title', 'grand-media' ); ?></label>
             <select name="set_title" class="form-control input-sm">
-                <option value="exif"><?php _e('EXIF or File Name', 'grand-media'); ?></option>
-                <option value="filename"><?php _e('File Name', 'grand-media'); ?></option>
-                <option value="empty"><?php _e('Empty', 'grand-media'); ?></option>
+                <option value="exif"><?php _e( 'EXIF or File Name', 'grand-media' ); ?></option>
+                <option value="filename"><?php _e( 'File Name', 'grand-media' ); ?></option>
+                <option value="empty"><?php _e( 'Empty', 'grand-media' ); ?></option>
             </select>
         </div>
         <div class="form-group">
-            <label><?php _e('Status', 'grand-media'); ?></label>
+            <label><?php _e( 'Status', 'grand-media' ); ?></label>
             <select name="set_status" class="form-control input-sm">
-                <option value="inherit"><?php _e('Same as Album or Public', 'grand-media'); ?></option>
-                <option value="publish"><?php _e('Public', 'grand-media'); ?></option>
-                <option value="private"><?php _e('Private', 'grand-media'); ?></option>
-                <option value="draft"><?php _e('Draft', 'grand-media'); ?></option>
+                <option value="inherit"><?php _e( 'Same as Album or Public', 'grand-media' ); ?></option>
+                <option value="publish"><?php _e( 'Public', 'grand-media' ); ?></option>
+                <option value="private"><?php _e( 'Private', 'grand-media' ); ?></option>
+                <option value="draft"><?php _e( 'Draft', 'grand-media' ); ?></option>
             </select>
         </div>
 
         <hr/>
 
-        <?php include(dirname(__FILE__) . '/assign-terms.php'); ?>
+        <?php include( dirname( __FILE__ ) . '/assign-terms.php' ); ?>
 
     </div>
     <div class="col-md-8" id="pluploadUploader">
-        <p><?php _e("You browser doesn't have Flash or HTML5 support. Check also if page have no JavaScript errors.", 'grand-media'); ?></p>
+        <p><?php _e( "You browser doesn't have Flash or HTML5 support. Check also if page have no JavaScript errors.", 'grand-media' ); ?></p>
         <?php
-        $mime_types = get_allowed_mime_types($user_ID);
+        $mime_types = get_allowed_mime_types( $user_ID );
         $type_ext   = array();
         $filters    = array();
-        foreach($mime_types as $ext => $mime) {
-            $type              = strtok($mime, '/');
-            $type_ext[$type][] = $ext;
+        foreach ( $mime_types as $ext => $mime ) {
+            $type                = strtok( $mime, '/' );
+            $type_ext[ $type ][] = $ext;
         }
-        foreach($type_ext as $filter => $ext) {
+        foreach ( $type_ext as $filter => $ext ) {
             $filters[] = array(
                     'title'      => $filter,
-                    'extensions' => str_replace('|', ',', implode(',', $ext))
+                    'extensions' => str_replace( '|', ',', implode( ',', $ext ) )
             );
         }
         ?>
@@ -87,7 +88,7 @@ $gm_terms = array();
                     <?php if('auto' != $screen_options['uploader_runtime']){ ?>
                     runtimes: '<?php echo $screen_options['uploader_runtime']; ?>',
                     <?php } ?>
-                    url: '<?php echo admin_url( 'admin-ajax.php' ); ?>',
+                    url: '<?php echo $gmCore->punyencode(admin_url( 'admin-ajax.php' )); ?>',
                     <?php if(('true' == $screen_options['uploader_urlstream_upload']) && ('html4' != $screen_options['uploader_runtime'])){ ?>
                     urlstream_upload: true,
                     multipart: false,
@@ -97,7 +98,7 @@ $gm_terms = array();
                     multipart_params: {action: 'gmedia_upload_handler', _ajax_nonce: '<?php echo wp_create_nonce('GmediaUpload'); ?>', params: ''},
                     <?php if('true' == $screen_options['uploader_chunking'] && ('html4' != $screen_options['uploader_runtime'])){ ?>
                     max_file_size: '2000Mb',
-                    chunk_size: 200000<?php //echo min($maxupsize, $screen_options['uploader_chunk_size']*1024*1024); ?>,
+                    chunk_size: <?php echo min($maxchunksize, $screen_options['uploader_chunk_size']*1024*1024); ?>,
                     <?php } else{ ?>
                     max_file_size: <?php echo $maxupsize; ?>,
                     <?php } ?>
@@ -112,8 +113,8 @@ $gm_terms = array();
                         active: 'thumbs'
                     },
                     filters: <?php echo json_encode($filters); ?>,
-                    flash_swf_url: '<?php echo $gmCore->gmedia_url; ?>/assets/plupload/Moxie.swf',
-                    silverlight_xap_url: '<?php echo $gmCore->gmedia_url; ?>/assets/plupload/Moxie.xap'
+                    flash_swf_url: '<?php echo $gmCore->punyencode($gmCore->gmedia_url); ?>/assets/plupload/Moxie.swf',
+                    silverlight_xap_url: '<?php echo $gmCore->punyencode($gmCore->gmedia_url); ?>/assets/plupload/Moxie.xap'
 
                 });
                 var closebtn = '<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>';

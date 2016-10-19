@@ -15,13 +15,13 @@ if(!defined('ABSPATH')) {
     <div class="gmedia_id">#<?php echo $item->ID; ?></div>
     <div class="col-sm-4" style="max-width:340px;">
         <div class="thumbwrap">
-            <label class="cb_media-object">
-                <input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" class="hidden" value="<?php echo $item->ID; ?>"/>
-                <span data-target="<?php echo $item->url; ?>" class="thumbnail">
-                    <?php gmedia_item_thumbnail($item); ?>
+            <div class="cb_media-object">
+                <span data-clicktarget="gmdataedit<?php echo $item->ID; ?>" class="thumbnail">
+                    <?php echo gmedia_item_thumbnail($item); ?>
                 </span>
-            </label>
-            <label class="gm-stack"><input title="<?php _e('Add to Stack', 'grand-media'); ?>" name="stack[]" type="checkbox"<?php echo $item->in_stack? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
+            </div>
+            <label class="gm-item-check"><input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
+            <label class="gm-stack hidden"><input name="stack[]" type="checkbox"<?php echo $item->in_stack? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
         </div>
         <?php
         if('audio' == $item->type) {
@@ -43,11 +43,11 @@ if(!defined('ABSPATH')) {
                     if($item->album) {
                         $terms_album = array();
                         foreach($item->album as $c) {
-                            $terms_album[] = sprintf('<a class="album" href="%s">%s</a>', esc_url(add_query_arg(array('alb' => $c->term_id), $gmedia_url)), esc_html($c->name));
+                            $terms_album[] = sprintf('<a class="album" href="%s">%s</a>', esc_url(add_query_arg(array('album__in' => $c->term_id), $gmedia_url)), esc_html($c->name));
                         }
                         $terms_album = join(', ', $terms_album);
                     } else {
-                        $terms_album = sprintf('<a class="album" href="%s">%s</a>', esc_url(add_query_arg(array('alb' => 0), $gmedia_url)), '&#8212;');
+                        $terms_album = sprintf('<a class="album" href="%s">%s</a>', esc_url(add_query_arg(array('album__in' => 0), $gmedia_url)), '&#8212;');
                     }
                     echo $terms_album;
                     ?>
@@ -56,11 +56,11 @@ if(!defined('ABSPATH')) {
                     if($item->categories) {
                         $terms_category = array();
                         foreach($item->categories as $c) {
-                            $terms_category[] = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => $c->term_id), $gmedia_url)), esc_html($c->name));
+                            $terms_category[] = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('category__in' => $c->term_id), $gmedia_url)), esc_html($c->name));
                         }
                         $terms_category = join(', ', $terms_category);
                     } else {
-                        $terms_category = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('cat' => 0), $gmedia_url)), __('Uncategorized', 'grand-media'));
+                        $terms_category = sprintf('<a class="category" href="%s">%s</a>', esc_url(add_query_arg(array('category__in' => 0), $gmedia_url)), __('Uncategorized', 'grand-media'));
                     }
                     echo $terms_category;
                     ?>
@@ -69,7 +69,7 @@ if(!defined('ABSPATH')) {
                     if($item->tags) {
                         $terms_tag = array();
                         foreach($item->tags as $c) {
-                            $terms_tag[] = sprintf('<a class="tag" href="%s">%s</a>', esc_url(add_query_arg(array('tag_id' => $c->term_id), $gmedia_url)), esc_html($c->name));
+                            $terms_tag[] = sprintf('<a class="tag" href="%s">%s</a>', esc_url(add_query_arg(array('tag__in' => $c->term_id), $gmedia_url)), esc_html($c->name));
                         }
                         $terms_tag = join(', ', $terms_tag);
                     } else {
@@ -80,7 +80,7 @@ if(!defined('ABSPATH')) {
                 </p>
             </div>
             <div class="col-lg-6">
-                <div class="media-meta" style="margin:0 0 10px 0;">
+                <div class="media-meta gmedia-actions" style="margin:0 0 10px 0;">
                     <?php $media_action_links = gmedia_item_actions($item);
                     echo implode(' | ', $media_action_links);
                     ?>
@@ -88,7 +88,7 @@ if(!defined('ABSPATH')) {
                 <?php if(isset($item->post_id)) { ?>
                 <p class="media-meta">
                     <span class="label label-default"><?php _e('Comments', 'grand-media'); ?>:</span>
-                    <a href="<?php echo admin_url("admin.php?page=GrandMedia&gmediablank=comments&gmedia_id={$item->ID}"); ?>" data-target="#previewModal" data-width="900" data-height="500" class="preview-modal gmpost-com-count" title="<?php esc_attr_e('Comments', 'grand-media'); ?>">
+                    <a href="<?php echo add_query_arg(array('page' => 'GrandMedia', 'gmediablank' => 'comments', 'gmedia_id' => $item->ID), $gmProcessor->url); ?>" data-target="#previewModal" data-width="900" data-height="500" class="preview-modal gmpost-com-count" title="<?php esc_attr_e('Comments', 'grand-media'); ?>">
                         <b class="comment-count"><?php echo $item->comment_count; ?></b>
                         <span class="glyphicon glyphicon-comment"></span>
                     </a>

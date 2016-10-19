@@ -59,7 +59,7 @@ global $user_ID, $gmDB, $gmCore
 
 						<div class="row">
 							<div class="col-xs-8">
-								<input id="query_album__" name="album__in" data-include="album__in" data-exclude="album__not_in" class="form-control input-sm" value="<?php echo implode(',', $query_gmedia_albums) ?>" placeholder="<?php echo esc_attr(__('Any Album...', 'grand-media')); ?>"/>
+								<input id="query_album__" name="album__in" data-include="album__in" data-exclude="album__not_in" class="form-control input-sm" value="<?php echo implode(',', $query_gmedia_albums) ?>" placeholder="<?php esc_attr_e(__('Any Album...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<div class="checkbox"><label><input class="query_switch" data-target="query_album__" type="checkbox"<?php echo (empty($query_data['album__in']) && !empty($query_data['album__not_in']))? ' checked="checked"' : ''; ?> /> <?php _e('Exclude selected Albums', 'grand-media'); ?></label></div>
@@ -81,15 +81,15 @@ global $user_ID, $gmDB, $gmCore
 						<div class="row">
 							<div class="col-xs-4">
 								<label><?php _e('[IN] Categories', 'grand-media'); ?></label>
-								<input name="category__in" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__in'])); ?>" placeholder="<?php echo esc_attr(__('Either of chosen Categories...', 'grand-media')); ?>"/>
+								<input name="category__in" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__in'])); ?>" placeholder="<?php esc_attr_e(__('Either of chosen Categories...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[AND] Categories', 'grand-media'); ?></label>
-								<input name="category__and" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__and'])); ?>" placeholder="<?php echo esc_attr(__('Have all chosen Categories...', 'grand-media')); ?>"/>
+								<input name="category__and" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__and'])); ?>" placeholder="<?php esc_attr_e(__('Have all chosen Categories...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[NOT IN] Categories', 'grand-media'); ?></label>
-								<input name="category__not_in" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__not_in'])); ?>" placeholder="<?php echo esc_attr(__('Exclude Categories...', 'grand-media')); ?>"/>
+								<input name="category__not_in" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__not_in'])); ?>" placeholder="<?php esc_attr_e(__('Exclude Categories...', 'grand-media')); ?>"/>
 							</div>
 						</div>
 					</div>
@@ -102,15 +102,15 @@ global $user_ID, $gmDB, $gmCore
 						<div class="row">
 							<div class="col-xs-4">
 								<label><?php _e('[IN] Tags', 'grand-media'); ?> </label>
-								<input name="tag__in" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__in'])); ?>" placeholder="<?php echo esc_attr(__('Either of chosen Tags...', 'grand-media')); ?>"/>
+								<input name="tag__in" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__in'])); ?>" placeholder="<?php esc_attr_e(__('Either of chosen Tags...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[AND] Tags', 'grand-media'); ?> </label>
-								<input name="tag__and" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__and'])); ?>" placeholder="<?php echo esc_attr(__('Have all chosen Tags...', 'grand-media')); ?>"/>
+								<input name="tag__and" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__and'])); ?>" placeholder="<?php esc_attr_e(__('Have all chosen Tags...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[NOT IN] Tags', 'grand-media'); ?> </label>
-								<input name="tag__not_in" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__not_in'])); ?>" placeholder="<?php echo esc_attr(__('Exclude Tags...', 'grand-media')); ?>"/>
+								<input name="tag__not_in" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__not_in'])); ?>" placeholder="<?php esc_attr_e(__('Exclude Tags...', 'grand-media')); ?>"/>
 							</div>
 						</div>
 					</div>
@@ -160,7 +160,7 @@ global $user_ID, $gmDB, $gmCore
 								$query_gmedia_items = $query_data['gmedia__not_in'];
 							}
 							?>
-							<textarea id="query_gmedia__" name="gmedia__in" data-include="gmedia__in" data-exclude="gmedia__not_in" rows="1" class="form-control input-sm" style="resize:vertical;" placeholder="<?php echo esc_attr(__('Gmedia IDs...', 'grand-media')); ?>"><?php echo implode(',', wp_parse_id_list($query_gmedia_items)); ?></textarea>
+							<textarea id="query_gmedia__" name="gmedia__in" data-include="gmedia__in" data-exclude="gmedia__not_in" rows="1" class="form-control input-sm" style="resize:vertical;" placeholder="<?php esc_attr_e(__('Gmedia IDs...', 'grand-media')); ?>"><?php echo implode(',', wp_parse_id_list($query_gmedia_items)); ?></textarea>
 						</div>
 						<div class="col-xs-4">
 							<div class="checkbox"><label><input class="query_switch" data-target="query_gmedia__" type="checkbox"<?php echo (empty($query_data['gmedia__in']) && !empty($query_data['gmedia__not_in']))? ' checked="checked"' : ''; ?> /> <?php _e('Exclude selected Items', 'grand-media'); ?></label></div>
@@ -180,8 +180,9 @@ global $user_ID, $gmDB, $gmCore
 								array('value' => 'text', 'text' => 'Text'),
 								array('value' => 'application', 'text' => 'Application'),
 							);
+                            $mime_type_val = is_array($query_data['mime_type'])? implode(',', $query_data['mime_type']) : str_replace(', ', ',', $query_data['mime_type']);
 							?>
-							<input name="mime_type" class="form-control input-sm gmedia-combobox" data-options='<?php echo json_encode($mime_types); ?>' value="<?php echo implode(',', $query_data['mime_type']); ?>" placeholder="<?php esc_attr_e(__('All types...', 'grand-media')); ?>"/>
+							<input name="mime_type" class="form-control input-sm gmedia-combobox" data-options='<?php echo json_encode($mime_types); ?>' value="<?php esc_attr_e($mime_type_val); ?>" placeholder="<?php esc_attr_e(__('All types...', 'grand-media')); ?>"/>
 						</div>
 						<div class="col-xs-4">
 							<label><?php _e('Authors', 'grand-media'); ?></label>
@@ -472,8 +473,8 @@ global $user_ID, $gmDB, $gmCore
 					$('#use_lib_selected').on('click', function() {
 						var field = $('#query_gmedia__');
 						var valData = field.val().split(',');
-						var storedData = getStorage('gmuser_<?php echo $user_ID; ?>_');
-						storedData = storedData.get('library').split(',');
+						var storedData = getStorage();
+						storedData = storedData.get('library').split('.');
 						valData = $.grep(valData, function(e) {
 							return e;
 						});

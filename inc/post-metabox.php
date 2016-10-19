@@ -19,6 +19,7 @@ function gmedia_add_meta_box( $page, $context ) {
     $gm_post_types = apply_filters( 'gmedia-post-types', $gmedia_post_types );
 
     if ( function_exists( 'add_meta_box' ) && ! empty( $gm_post_types ) && in_array( $page, $gm_post_types ) && 'side' === $context ) {
+        add_filter('media_buttons_context', 'gmedia_media_buttons_context', 4);
         add_action( 'admin_enqueue_scripts', 'gmedia_meta_box_load_scripts', 20 );
         //add_meta_box('gmedia-MetaBox', __('Gmedia Gallery MetaBox', 'grand-media'), 'gmedia_post_metabox', $page, 'side', 'low');
         add_action( 'admin_footer', 'gmedia_post_modal_tpl' );
@@ -28,6 +29,20 @@ function gmedia_add_meta_box( $page, $context ) {
 }
 
 add_action( 'do_meta_boxes', 'gmedia_add_meta_box', 20, 2 );
+
+/**
+ * @param $context
+ *
+ * @return string
+ */
+function gmedia_media_buttons_context($context){
+    $button = '
+	<div style="display:inline-block;">
+	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url(GMEDIA_FOLDER . '/admin/assets/img/gm-icon.png') . ') no-repeat top left;"></span> ' . __('Gmedia', 'grand-media') . '</a>
+	</div>';
+
+    return $context . $button;
+}
 
 /**
  * @param $hook
@@ -176,7 +191,7 @@ function gmedia_post_metabox() {
                                         </div>
                                     </div>
                                     <div class="gmedia-selector"></div>
-                                    <a href="<?php echo admin_url( "admin.php?page=GrandMedia_Galleries&amp;edit_item=" . $item->term_id ); ?>"
+                                    <a href="<?php echo admin_url( "admin.php?page=GrandMedia_Galleries&amp;edit_term=" . $item->term_id ); ?>"
                                        title="Edit Gallery #<?php echo $item->term_id; ?> in New Window" target="_blank" class="gmedia-gallery-gear"><?php _e( 'edit', 'grand-media' ); ?></a>
                                 </li>
                                 <?php

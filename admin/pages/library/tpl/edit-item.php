@@ -1,6 +1,6 @@
 <?php
 // don't load directly
-if(!defined('ABSPATH')) {
+if(!defined('ABSPATH')){
     die('-1');
 }
 
@@ -12,83 +12,86 @@ if(!defined('ABSPATH')) {
     <div class="col-sm-4" style="max-width:340px;">
         <input name="ID" type="hidden" value="<?php echo $item->ID; ?>"/>
         <div class="thumbwrap">
-            <label class="cb_media-object">
-                <input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" class="hidden edit-gmedia-ignore" value="<?php echo $item->ID; ?>"/>
-                <span data-target="<?php echo $item->url; ?>" class="thumbnail">
-                    <?php gmedia_item_thumbnail($item); ?>
+            <div class="cb_media-object">
+                <span data-clicktarget="gmimageedit<?php echo $item->ID; ?>" class="thumbnail gmedia-cover-image">
+                    <?php echo gmedia_item_thumbnail($item); ?>
                 </span>
-            </label>
-            <label class="gm-stack"><input title="<?php _e('Add to Stack', 'grand-media'); ?>" name="stack[]" type="checkbox"<?php echo $item->in_stack? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
+            </div>
+            <label class="gm-item-check"><input name="doaction[]" type="checkbox"<?php echo $item->selected? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
+            <label class="gm-stack hidden"><input name="stack[]" type="checkbox"<?php echo $item->in_stack? ' checked="checked"' : ''; ?> data-type="<?php echo $item->type; ?>" value="<?php echo $item->ID; ?>"/></label>
         </div>
         <div class="gmedia-actions">
             <?php $media_action_links = gmedia_item_actions($item);
             unset($media_action_links['edit_data']);
             echo implode(' | ', $media_action_links);
-
-            if('audio' == $item->type) {
-                echo gmedia_waveform_player($item);
-            }
             ?>
         </div>
+        <?php
+        if('audio' == $item->type){
+            echo gmedia_waveform_player($item);
+        }
+        ?>
     </div>
     <div class="col-sm-8">
         <div class="row">
             <div class="form-group col-lg-6">
                 <label><?php _e('Title', 'grand-media'); ?></label>
-                <input name="title" type="text" class="form-control input-sm" placeholder="<?php _e('Title', 'grand-media'); ?>" value="<?php echo esc_attr($item->title); ?>">
+                <input name="title" type="text" class="form-control input-sm" placeholder="<?php _e('Title', 'grand-media'); ?>" value="<?php esc_attr_e($item->title); ?>">
             </div>
             <div class="form-group col-lg-6">
                 <label><?php _e('Link URL', 'grand-media'); ?></label>
-                <input name="link" type="text" class="form-control input-sm" value="<?php echo $item->link; ?>"/>
+                <div class="input-group">
+                    <input name="link" type="text" class="form-control input-sm gmedia-custom-link-field" id="gmlink<?php echo $item->ID; ?>" value="<?php echo $item->link; ?>"/>
+                    <span class="input-group-btn"><button type="button" class="btn btn-sm btn-primary gmedia-custom-link" data-target="gmlink<?php echo $item->ID; ?>" title="<?php _e('Link to existing WP content', 'grand-media'); ?>"><span class="glyphicon glyphicon-link"></span></button></span>
+                </div>
             </div>
         </div>
         <div class="row">
             <div class="form-group col-lg-6">
                 <label><?php _e('Description', 'grand-media'); ?></label>
-                <?php if('false' == $gmedia_user_options['library_edit_quicktags']) {
-                    echo "<textarea id='gm{$item->ID}_description' class='form-control input-sm' name='description' cols='20' rows='4' style='height:174px'>" . esc_html($item->description) . '</textarea>';
-                } else {
-                    wp_editor(esc_html($item->description), "gm{$item->ID}_description", array(
-                            'editor_class'  => 'form-control input-sm',
-                            'editor_height' => 140,
-                            'wpautop'       => false,
-                            'media_buttons' => false,
-                            'textarea_name' => 'description',
-                            'textarea_rows' => '4',
-                            'tinymce'       => false,
-                            'quicktags'     => array('buttons' => apply_filters('gmedia_editor_quicktags', 'strong,em,link,ul,li,close'))
+                <?php if(('false' != $gmedia_user_options['library_edit_quicktags']) || ($gmProcessor->gmediablank && (1 == $resultPerPage))){
+                    wp_editor(esc_textarea($item->description), "gm{$item->ID}_description", array('editor_class'  => 'form-control input-sm',
+                                                                                               'editor_height' => 140,
+                                                                                               'wpautop'       => false,
+                                                                                               'media_buttons' => false,
+                                                                                               'textarea_name' => 'description',
+                                                                                               'textarea_rows' => '4',
+                                                                                               'tinymce'       => false,
+                                                                                               'quicktags'     => array('buttons' => apply_filters('gmedia_editor_quicktags', 'strong,em,link,ul,li,close'))
                     ));
+                } else{
+                    echo "<textarea id='gm{$item->ID}_description' class='form-control input-sm' name='description' cols='20' rows='4' style='height:174px'>" . esc_textarea($item->description) . '</textarea>';
                 } ?>
             </div>
             <div class="col-lg-6">
-                <?php if(gm_user_can('terms')) { ?>
+                <?php if(gm_user_can('terms')){ ?>
                     <?php
                     $alb_id    = empty($item->album)? 0 : reset($item->album)->term_id;
                     $term_type = 'gmedia_album';
                     $args      = array();
-                    if(!gm_user_can('edit_others_media')) {
+                    if(!gm_user_can('edit_others_media')){
                         $args = array('global' => array(0, $user_ID), 'orderby' => 'global_desc_name');
                     }
                     $gm_terms = $gmDB->get_terms($term_type, $args);
 
                     $terms_album  = '';
                     $album_status = 'none';
-                    if(count($gm_terms)) {
-                        foreach($gm_terms as $term) {
+                    if(count($gm_terms)){
+                        foreach($gm_terms as $term){
                             $author_name = '';
-                            if($term->global) {
-                                if(gm_user_can('edit_others_media')) {
+                            if($term->global){
+                                if(gm_user_can('edit_others_media')){
                                     $author_name .= ' &nbsp; ' . sprintf(__('by %s', 'grand-media'), get_the_author_meta('display_name', $term->global));
                                 }
-                            } else {
+                            } else{
                                 $author_name .= ' &nbsp; (' . __('shared', 'grand-media') . ')';
                             }
-                            if('publish' != $term->status) {
+                            if('publish' != $term->status){
                                 $author_name .= ' [' . $term->status . ']';
                             }
 
                             $selected_option = '';
-                            if($alb_id == $term->term_id) {
+                            if($alb_id == $term->term_id){
                                 $selected_option = ' selected="selected"';
                                 $album_status    = $term->status;
                             }
@@ -98,6 +101,7 @@ if(!defined('ABSPATH')) {
                     ?>
                     <div class="form-group status-album bg-status-<?php echo $album_status; ?>">
                         <label><?php _e('Album ', 'grand-media'); ?></label>
+                        <input type="text" class="gm-order-input" name="gmedia_album_order" title="<?php _e('Sort order (custom) in the chosen Album', 'grand-media'); ?>" value="<?php echo $alb_id? reset($item->album)->gmedia_order : '0'; ?>" <?php echo $alb_id? '' : 'disabled' ?>/>
                         <select name="terms[gmedia_album]" data-create="<?php echo gm_user_can('album_manage')? 'true' : 'false'; ?>" class="combobox_gmedia_album form-control input-sm" placeholder="<?php _e('Album Name...', 'grand-media'); ?>">
                             <option<?php echo $alb_id? '' : ' selected="selected"'; ?> value=""></option>
                             <?php echo $terms_album; ?>
@@ -105,13 +109,13 @@ if(!defined('ABSPATH')) {
                     </div>
 
                     <?php
-                    if(!empty($item->categories)) {
+                    if(!empty($item->categories)){
                         $terms_category = array();
-                        foreach($item->categories as $c) {
+                        foreach($item->categories as $c){
                             $terms_category[] = esc_html($c->name);
                         }
                         $terms_category = join(',', $terms_category);
-                    } else {
+                    } else{
                         $terms_category = '';
                     }
                     ?>
@@ -121,27 +125,35 @@ if(!defined('ABSPATH')) {
                     </div>
 
                     <?php
-                    if(!empty($item->tags)) {
+                    if(!empty($item->tags)){
                         $terms_tag = array();
-                        foreach($item->tags as $c) {
+                        foreach($item->tags as $c){
                             $terms_tag[] = esc_html($c->name);
                         }
-                        $terms_tag = join(', ', $terms_tag);
-                    } else {
+                        $terms_tag = join(',', $terms_tag);
+                    } else{
                         $terms_tag = '';
                     }
                     ?>
                     <div class="form-group">
                         <label><?php _e('Tags ', 'grand-media'); ?></label>
-                        <textarea name="terms[gmedia_tag]" class="gmedia_tags_input form-control input-sm" rows="1" cols="50"><?php echo $terms_tag; ?></textarea>
+                        <input name="terms[gmedia_tag]" data-create="<?php echo gm_user_can('tag_manage')? 'true' : 'false'; ?>" class="combobox_gmedia_tag form-control input-sm" value="<?php echo $terms_tag; ?>"/>
                     </div>
                 <?php } ?>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-6">
+                <?php if('image' == $item->type){ ?>
+                    <div class="form-group">
+                        <label><?php _e('Alternative Text', 'grand-media'); ?></label>
+                        <input type="text" class="form-control input-sm" name="meta[_image_alt]" value="<?php echo isset($item->meta['_image_alt'][0])? esc_attr($item->meta['_image_alt'][0]) : ''; ?>" placeholder="<?php _e('if empty, same as Title', 'grand-media'); ?>"/>
+                    </div>
+                <?php } ?>
                 <div class="form-group">
-                    <label><?php _e('Filename', 'grand-media'); ?> <small>(ext: .<?php echo $item->ext; ?>)</small></label>
+                    <label><?php _e('Filename', 'grand-media'); ?>
+                        <small style="white-space:nowrap;">(ext: .<?php echo $item->ext; ?>)</small>
+                    </label>
                     <input name="filename" type="text" class="form-control input-sm gmedia-filename" <?php echo (!gm_user_can('delete_others_media') && ((int)$item->author !== $user_ID))? 'readonly' : ''; ?> value="<?php echo pathinfo($item->gmuid, PATHINFO_FILENAME); ?>"/>
                 </div>
                 <div class="form-group">
@@ -162,54 +174,61 @@ if(!defined('ABSPATH')) {
                     </select>
                 </div>
                 <?php if(!empty($item->post_id)){ ?>
-                <div class="form-group">
-                    <a href="<?php echo admin_url("admin.php?page=GrandMedia&gmediablank=comments&gmedia_id={$item->ID}"); ?>" data-target="#previewModal" data-width="900" data-height="500" class="preview-modal gmpost-com-count pull-right" title="<?php esc_attr_e('Comments', 'grand-media'); ?>">
-                        <b class="comment-count"><?php echo $item->comment_count; ?></b>
-                        <span class="glyphicon glyphicon-comment"></span>
-                    </a>
-                    <label><?php _e('Comment Status', 'grand-media'); ?></label>
-                    <select name="comment_status" class="form-control input-sm">
-                        <option <?php selected($item->comment_status, 'open'); ?> value="open"><?php _e('Open', 'grand-media'); ?></option>
-                        <option <?php selected($item->comment_status, 'closed'); ?> value="closed"><?php _e('Closed', 'grand-media'); ?></option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <a href="<?php echo add_query_arg(array('page' => 'GrandMedia', 'gmediablank' => 'comments', 'gmedia_id' => $item->ID), $gmProcessor->url); ?>" data-target="#previewModal" data-width="900" data-height="500" class="preview-modal gmpost-com-count pull-right" title="<?php esc_attr_e('Comments', 'grand-media'); ?>">
+                            <b class="comment-count"><?php echo $item->comment_count; ?></b>
+                            <span class="glyphicon glyphicon-comment"></span>
+                        </a>
+                        <label><?php _e('Comment Status', 'grand-media'); ?></label>
+                        <select name="comment_status" class="form-control input-sm">
+                            <option <?php selected($item->comment_status, 'open'); ?> value="open"><?php _e('Open', 'grand-media'); ?></option>
+                            <option <?php selected($item->comment_status, 'closed'); ?> value="closed"><?php _e('Closed', 'grand-media'); ?></option>
+                        </select>
+                    </div>
                 <?php } ?>
             </div>
             <div class="col-lg-6">
                 <div class="form-group">
                     <label><?php _e('Author', 'grand-media'); ?></label>
                     <?php $user_ids = gm_user_can('delete_others_media')? $gmCore->get_editable_user_ids() : false;
-                    if($user_ids) {
-                        if(!in_array($user_ID, $user_ids)) {
+                    if($user_ids){
+                        if(!in_array($user_ID, $user_ids)){
                             array_push($user_ids, $user_ID);
                         }
-                        wp_dropdown_users(array(
-                                                  'include'          => $user_ids,
-                                                  'include_selected' => true,
-                                                  'name'             => 'author',
-                                                  'selected'         => $item->author,
-                                                  'class'            => 'form-control',
-                                                  'multi'            => true
+                        wp_dropdown_users(array('include'          => $user_ids,
+                                                'include_selected' => true,
+                                                'name'             => 'author',
+                                                'selected'         => $item->author,
+                                                'class'            => 'form-control',
+                                                'multi'            => true
                                           ));
-                    } else {
+                    } else{
                         echo '<input type="hidden" name="author" value="' . $item->author . '"/>';
                         echo '<div>' . get_the_author_meta('display_name', $item->author) . '</div>';
                     }
                     ?>
                 </div>
-                <?php if(('image' != $item->type)) { ?>
+                <?php if('image' != $item->type){ ?>
                     <div class="form-group">
-                        <label><?php _e('Custom Cover', 'grand-media'); echo ' <small>('.__('media image ID', 'grand-media').')</small>'; ?></label>
-                        <input name="meta[_cover]" type="text" class="form-control input-sm gmedia-cover" value="<?php echo isset($item->meta['_cover'][0])? $item->meta['_cover'][0] : ''; ?>" placeholder="<?php _e('Gmedia ID or Image URL', 'grand-media'); ?>"/>
+                        <label><?php _e('Custom Cover', 'grand-media');
+                            echo ' <small>(' . __('media image ID', 'grand-media') . ')</small>'; ?></label>
+                        <div class="input-group">
+                            <input type="text" class="form-control input-sm gmedia-cover-id" name="meta[_cover]" value="<?php echo isset($item->meta['_cover'][0])? $item->meta['_cover'][0] : ''; ?>" placeholder="<?php _e('Gmedia Image ID', 'grand-media'); ?>"/>
+                            <span class="input-group-btn"><a href="<?php echo $gmCore->get_admin_url(array('page'        => 'GrandMedia',
+                                                                                                           'mode'        => 'select_single',
+                                                                                                           'gmediablank' => 'library',
+                                                                                                           'filter'      => 'image'
+                                                                                                     ), array(), true); ?>" class="btn btn-sm btn-primary preview-modal" data-target="#previewModal" data-width="1200" data-height="500" data-cls="select_gmedia_image" title="<?php _e('Choose Cover Image', 'grand-media'); ?>"><span class="glyphicon glyphicon-picture"></span></a></span>
+                        </div>
                     </div>
                 <?php } ?>
-                <?php if(('image' == $item->type) || ('video' == $item->type)) { ?>
+                <?php if(('image' == $item->type) || ('video' == $item->type)){ ?>
                     <div class="form-group">
                         <label><?php _e('GPS Location', 'grand-media'); ?></label>
 
                         <div class="input-group input-group-sm">
                             <input name="meta[_gps]" type="text" class="form-control input-sm gps_map_coordinates" value="<?php echo $item->gps; ?>" placeholder="<?php _e('Latitude, Longtitude', 'grand-media'); ?>" autocomplete="off"/>
-								            <span class="input-group-btn"><a href="<?php echo admin_url("admin.php?page=GrandMedia&gmediablank=map_editor&id={$item->ID}"); ?>" class="btn btn-primary gmedit-modal" data-target="#gmeditModal">
+								            <span class="input-group-btn"><a href="<?php echo add_query_arg(array('page' => 'GrandMedia', 'gmediablank' => 'map_editor', 'id' => $item->ID), $gmProcessor->url); ?>" class="btn btn-primary gmedit-modal" data-target="#gmeditModal">
                                                     <span class="glyphicon glyphicon-map-marker"></span></a></span>
                         </div>
                     </div>
@@ -217,7 +236,7 @@ if(!defined('ABSPATH')) {
                 <p class="media-meta">
                     <span class="label label-default"><?php _e('ID', 'grand-media') ?>:</span> <strong><?php echo $item->ID; ?></strong>
                     <br/><span class="label label-default"><?php _e('Type', 'grand-media'); ?>:</span> <?php echo $item->mime_type; ?>
-                    <?php if(('image' == $item->type) && !empty($item->meta['_metadata'])) { ?>
+                    <?php if(('image' == $item->type) && !empty($item->meta['_metadata'])){ ?>
                         <br/><span class="label label-default"><?php _e('Dimensions', 'grand-media'); ?>:</span>
                         <a href="<?php echo $item->url_original; ?>"
                            data-target="#previewModal"
@@ -238,10 +257,10 @@ if(!defined('ABSPATH')) {
                            class="preview-modal"
                            title="<?php _e('Thumbnail', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['thumb']['width'] . '×' . $item->meta['_metadata'][0]['thumb']['height']; ?></a>
                         <br/><span class="label label-default"><?php _e('File Size', 'grand-media') ?>:</span> <?php echo $gmCore->filesize($item->path_original) . ', ' . $gmCore->filesize($item->path) . ', ' . $gmCore->filesize($item->path_thumb); ?>
-                    <?php } else { ?>
+                    <?php } else{ ?>
                         <br/><span class="label label-default"><?php _e('File Size', 'grand-media') ?>:</span> <?php echo $gmCore->filesize($item->path); ?>
                     <?php } ?>
-                    <?php if(!empty($item->meta['_created_timestamp'][0])) { ?>
+                    <?php if(!empty($item->meta['_created_timestamp'][0])){ ?>
                         <br/><span class="label label-default"><?php _e('Created', 'grand-media') ?>:</span> <?php echo date('Y-m-d H:i:s ', $item->meta['_created_timestamp'][0]); ?>
                     <?php } ?>
                     <br/><span class="label label-default"><?php _e('Uploaded', 'grand-media') ?>:</span> <?php echo $item->date; ?>
