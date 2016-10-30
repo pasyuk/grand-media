@@ -40,7 +40,7 @@ if(!defined('ABSPATH')) {
         <label><?php _e('Show Others Media in Library', 'grand-media') ?>:</label>
         <select name="capability[gmedia_show_others_media]" class="form-control input-sm"><?php wp_dropdown_roles($gmDB->get_role('gmedia_show_others_media')); ?></select>
 
-        <p class="help-block"><?php _e('Who can see files uploaded by other users', 'grand-media'); ?></p>
+        <p class="help-block"><?php _e('Who can see files uploaded by other users. Also this setting allows to see private media when user logged in.', 'grand-media'); ?></p>
     </div>
     <div class="form-group">
         <label><?php _e('Edit Media', 'grand-media') ?>:</label>

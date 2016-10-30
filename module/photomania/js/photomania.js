@@ -15,7 +15,7 @@
 
     // Create the defaults once
     var pluginName = "photomanialite",
-        pluginVersion = "1.2";
+        pluginVersion = "1.3";
 
     // The actual plugin constructor
     function Plugin(element, options, content) {

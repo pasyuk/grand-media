@@ -363,7 +363,6 @@ function gmedia_raw_shortcode($atts, $content = ''){
         $shortcode_atts .= " {$key}='{$value}'";
     }
     if(!$noraw){
-        //return "[raw]".gmedia_shortcode($atts, $content)."[/raw]";
         return "[raw][gmedia{$shortcode_atts}]{$content}[/gmedia][/raw]";
     } else{
         return "[gmedia{$shortcode_atts}]{$content}[/gmedia]";

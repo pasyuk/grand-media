@@ -34,6 +34,8 @@ class GmediaCore{
         add_action('edited_gmedia_term', array(&$this, 'clear_cache'));
         add_action('deleted_gmedia_term', array(&$this, 'clear_cache'));
 //        add_action( 'gmedia_clean_object_term_cache', array( &$this, 'clear_cache' ) );
+
+        add_filter('get_the_gmedia_terms', array(&$this, 'get_the_gmedia_terms'), 10, 3);
     }
 
     function user_capabilities(){
@@ -389,7 +391,10 @@ class GmediaCore{
         $fileinfo['basename_original'] = $pathinfo['filename'] . '.' . $fileinfo['extension'];
         $fileinfo['filename']          = $pathinfo['filename'] . $suffix;
         $fileinfo['basename']          = $fileinfo['filename'] . '.' . $fileinfo['extension'];
-        $fileinfo['title']             = ucwords(str_replace('_', ' ', esc_sql($title)));
+        $fileinfo['title']             = str_replace('_', ' ', esc_sql($title));
+        if((int)$gmGallery->options['name2title_capitalize']){
+            $fileinfo['title'] = mb_convert_case($fileinfo['title'], MB_CASE_TITLE, 'UTF-8');
+        }
         $fileinfo['mime_type']         = (empty($filetype['type']))? 'application/' . $fileinfo['extension'] : $filetype['type'];
         list($dirname) = explode('/', $fileinfo['mime_type']);
         $fileinfo['dirname']           = $dirname;
@@ -3559,6 +3564,40 @@ class GmediaCore{
                 $wp_fastest_cache->deleteCache();
             }
         }
+    }
+
+    /**
+     * Filter the gmedia terms (private and draft) for frontend and admin panel
+     *
+     * @param $terms
+     * @param $gmedia_id
+     * @param $taxonomy
+     */
+    function get_the_gmedia_terms($terms, $gmedia_id, $taxonomy){
+        if('gmedia_album' === $taxonomy){
+            if(!is_user_logged_in()){
+                foreach($terms as $key => $term){
+                    if('publish' !== $term->status){
+                        unset($terms[ $key ]);
+                    }
+                }
+            } else {
+                global $user_ID;
+                foreach($terms as $key => $term){
+                    if('draft' === $term->status){
+                        if(!is_admin() || ($user_ID != $term->global && !gm_user_can('edit_others_media'))){
+                            unset($terms[ $key ]);
+                        }
+                    } elseif('private' === $term->status){
+                        if($user_ID != $term->global && !gm_user_can('show_others_media')){
+                            unset($terms[ $key ]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return $terms;
     }
 
     /**

@@ -92,68 +92,6 @@ function gmedia_item_actions($item){
 }
 
 
-function gmedia_item_more_data(&$item){
-    global $gmDB, $gmCore, $gmGallery;
-
-    $meta     = $gmDB->get_metadata('gmedia', $item->ID);
-    $metadata = isset($meta['_metadata'][0])? $meta['_metadata'][0] : array();
-
-    $item->meta = $meta;
-
-    $type       = explode('/', $item->mime_type);
-    $item->type = $type[0];
-    $item->ext  = pathinfo($item->gmuid, PATHINFO_EXTENSION);
-
-    $item->url  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder'][ $type[0] ] . '/' . $item->gmuid;
-    $item->path = $gmCore->upload['path'] . '/' . $gmGallery->options['folder'][ $type[0] ] . '/' . $item->gmuid;
-
-//    if(function_exists('exif_imagetype')) {
-//        $item->editor = (('image' == $type[0]) && in_array(exif_imagetype($item->path), array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG)))? true : false;
-//    } else {
-    $item->editor = (('image' == $type[0]) && in_array($type[1], array('jpeg', 'png', 'gif')))? true : false;
-//    }
-    $item->gps = '';
-    if($item->editor){
-        $item->url_original  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
-        $item->url_thumb     = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_thumb'] . '/' . $item->gmuid;
-        $item->path_original = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
-        $item->path_thumb    = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_thumb'] . '/' . $item->gmuid;
-        if(!empty($metadata['image_meta']['GPS'])){
-            $item->gps = implode(', ', $metadata['image_meta']['GPS']);
-        }
-    }
-    if(!empty($meta['_gps'][0])){
-        $item->gps = implode(', ', $meta['_gps'][0]);
-    }
-
-    $item->msize['width']  = isset($metadata['web']['width'])? $metadata['web']['width'] : (isset($metadata['width'])? $metadata['width'] : '640');
-    $item->msize['height'] = isset($metadata['web']['height'])? $metadata['web']['height'] : (isset($metadata['height'])? $metadata['height'] : '200');
-
-    $item->thumb_ratio = 1;
-    if(isset($metadata['thumb']['width']) && isset($metadata['thumb']['height'])){
-        $item->thumb_ratio = $metadata['thumb']['width'] / $metadata['thumb']['height'];
-    }
-    if(isset($item->meta['_cover'][0]) && !empty($item->meta['_cover'][0])){
-        $cover_metadata = $gmDB->get_metadata('gmedia', $item->meta['_cover'][0], '_metadata', true);
-        if(isset($cover_metadata['thumb']['width']) && isset($cover_metadata['thumb']['height'])){
-            $item->thumb_ratio = $cover_metadata['thumb']['width'] / $cover_metadata['thumb']['height'];
-        }
-    }
-
-    $item->tags = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_tag');
-    if($item->tags){
-        usort($item->tags, 'gmterms_usort');
-    }
-    $item->album      = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_album');
-    $item->categories = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category');
-
-    $item = apply_filters('gmedia_item_more_data', $item);
-}
-
-function gmterms_usort($a, $b){
-    return $a->term_order - $b->term_order;
-}
-
 function gmedia_filter_message(){
     global $gmProcessor;
     do_action('before_gmedia_filter_message');

@@ -6,6 +6,7 @@
 class GmediaDB{
 
     var $query; // User passed query
+    var $sql_query; // User passed query
     var $filter = array(); // is there filter for get_gmedias()
     var $filter_tax = array(); // is there filter by taxonomy for get_gmedias()
     var $resultLimited = 0; // Total records for limited query (with offset)
@@ -150,7 +151,8 @@ class GmediaDB{
             $offset = ($this->openPage - 1) * $limit;
             $lim    = " LIMIT {$offset}, {$limit}";
         }
-        $this->query       = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->posts LEFT JOIN $wpdb->postmeta ON($wpdb->posts.ID = $wpdb->postmeta.post_id) WHERE post_type = 'attachment' {$and} {$search} GROUP BY ID {$ord} {$lim}");
+        $this->sql_query   = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->posts LEFT JOIN $wpdb->postmeta ON($wpdb->posts.ID = $wpdb->postmeta.post_id) WHERE post_type = 'attachment' {$and} {$search} GROUP BY ID {$ord} {$lim}";
+        $this->query       = $wpdb->get_results($this->sql_query);
         $this->totalResult = (int)$wpdb->get_var("SELECT FOUND_ROWS()");
         if((1 > $limit) || (0 == $this->totalResult)){
             $limit       = $this->totalResult;
@@ -165,7 +167,8 @@ class GmediaDB{
                 $offset = ($this->openPage - 1) * $limit;
                 $lim    = " LIMIT {$offset}, {$limit}";
             }
-            $this->query = $wpdb->get_results("SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->posts LEFT JOIN $wpdb->postmeta ON($wpdb->posts.ID = $wpdb->postmeta.post_id) WHERE post_type = 'attachment' {$and} {$search} GROUP BY ID {$ord} {$lim}");
+            $this->sql_query = "SELECT SQL_CALC_FOUND_ROWS * FROM $wpdb->posts LEFT JOIN $wpdb->postmeta ON($wpdb->posts.ID = $wpdb->postmeta.post_id) WHERE post_type = 'attachment' {$and} {$search} GROUP BY ID {$ord} {$lim}";
+            $this->query = $wpdb->get_results($this->sql_query);
         }
         $this->resultPerPage = count($this->query);
 
@@ -968,8 +971,8 @@ class GmediaDB{
             default:
                 $fields = "{$wpdb->prefix}gmedia.*";
                 $fields .= ", wp.ID as post_id, wp.post_name, wp.post_password, wp.comment_status, wp.comment_count";
-                $join .= " LEFT JOIN {$wpdb->posts} AS wp ON ({$wpdb->prefix}gmedia.post_id = wp.ID)";
         }
+        $join .= " LEFT JOIN {$wpdb->posts} AS wp ON ({$wpdb->prefix}gmedia.post_id = wp.ID)";
 
         // If a month is specified in the querystring, load that month
         if($q['m']){
@@ -1494,19 +1497,24 @@ class GmediaDB{
         if(empty($q['orderby']) || ('none' == $q['orderby'])){
             $orderby = "{$wpdb->prefix}gmedia.ID " . $q['order'];
         } else{
-            // Used to filter values TODO make orderby comment count
-            $allowed_keys = array('ID', 'author', 'date', 'title', 'filename', 'gmuid', 'modified', 'mime_type', 'gmedia__in', 'rand');
+            // Used to filter values
+            $allowed_keys = array('ID', 'author', 'date', 'title', 'filename', 'gmuid', 'modified', 'mime_type', 'gmedia__in', 'rand', 'comment_count');
             if($album['order'] && !empty($album['alias'])){
                 $allowed_keys[] = 'custom';
+            }
+            $q['orderby'] = urldecode($q['orderby']);
+            $q['orderby'] = addslashes_gpc($q['orderby']);
+            if(in_array($q['orderby'], array('_created_timestamp', 'views', 'likes', '_size'))){
+                $q['meta_key'] = $q['orderby'];
+                $q['orderby'] = 'meta_value_num';
+                $join .= " LEFT JOIN {$wpdb->prefix}gmedia_meta ON ({$wpdb->prefix}gmedia.ID = {$wpdb->prefix}gmedia_meta.gmedia_id AND " . $wpdb->prepare("{$wpdb->prefix}gmedia_meta.meta_key = %s", $q['meta_key']) . ")";
             }
             if(!empty($q['meta_key'])){
                 $allowed_keys[] = $q['meta_key'];
                 $allowed_keys[] = 'meta_value';
                 $allowed_keys[] = 'meta_value_num';
             }
-            $q['orderby'] = urldecode($q['orderby']);
-            $q['orderby'] = addslashes_gpc($q['orderby']);
-            if(in_array($q['orderby'], array('title', 'date', 'modified'))){
+            if(in_array($q['orderby'], array('title', 'date', 'modified', 'comment_count', 'meta_value', 'meta_value_num'))){
                 $q['orderby'] .= ' ID';
             }
 
@@ -1540,6 +1548,9 @@ class GmediaDB{
                     break;
                     case 'custom':
                         $orderby = "{$album['alias']}.gmedia_order {$q['order']}, {$wpdb->prefix}gmedia.ID";
+                    break;
+                    case 'comment_count':
+                        $orderby = "wp.comment_count";
                     break;
                     default:
                         $orderby = "{$wpdb->prefix}gmedia." . $orderby;
@@ -1600,18 +1611,18 @@ class GmediaDB{
             $found_rows = 'SQL_CALC_FOUND_ROWS';
         }
 
-        $request = " SELECT $found_rows $fields FROM {$wpdb->prefix}gmedia $join WHERE 1=1 $where $whichauthor $whichmimetype $groupby $orderby $limits";
+        $this->sql_query = "SELECT $found_rows $fields FROM {$wpdb->prefix}gmedia $join WHERE 1=1 $where $whichauthor $whichmimetype $groupby $orderby $limits";
 
         $clauses       = compact('join', 'where', 'whichauthor', 'whichmimetype', 'groupby', 'orderby', 'limits');
         $this->clauses = $clauses;
 
         if('ids' == $q['fields']){
-            $gmedias = $wpdb->get_col($request);
+            $gmedias = $wpdb->get_col($this->sql_query);
 
             return $gmedias;
         }
 
-        $gmedias = $wpdb->get_results($request);
+        $gmedias = $wpdb->get_results($this->sql_query);
 
         if('post_ids' == $q['fields']){
 
@@ -2811,6 +2822,8 @@ class GmediaDB{
             $orderby = "ORDER BY t.global DESC, t.name $order";
         } else if('global_asc_name' == $_orderby){
             $orderby = "ORDER BY t.global ASC, t.name $order";
+        } else if('rand' == $_orderby){
+            $orderby = 'ORDER BY RAND()';
         } else if('none' == $_orderby){
             $orderby = '';
         } elseif(empty($_orderby) || 'id' == $_orderby){
@@ -2945,17 +2958,17 @@ class GmediaDB{
         }
 
         $where_where = $where_ . $where;
-        $query       = "SELECT $found_rows $fields FROM {$wpdb->prefix}gmedia_term AS t $join WHERE $where_where $orderby $limits";
+        $this->sql_query       = "SELECT $found_rows $fields FROM {$wpdb->prefix}gmedia_term AS t $join WHERE $where_where $orderby $limits";
 
         $fields = $_fields;
 
         if('count' == $fields){
-            $term_count = $wpdb->get_var($query);
+            $term_count = $wpdb->get_var($this->sql_query);
 
             return $term_count;
         }
 
-        $terms = $wpdb->get_results($query);
+        $terms = $wpdb->get_results($this->sql_query);
 
         $this->openPage      = $page;
         $this->resultPerPage = count($terms);

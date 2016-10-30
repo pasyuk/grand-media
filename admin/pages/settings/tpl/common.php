@@ -28,6 +28,7 @@ if(!defined('ABSPATH')){
                 <option value="gmuid" <?php selected($gmGallery->options['in_tag_orderby'], 'gmuid'); ?>><?php _e('by filename', 'grand-media'); ?></option>
                 <option value="date" <?php selected($gmGallery->options['in_tag_orderby'], 'date'); ?>><?php _e('by date', 'grand-media'); ?></option>
                 <option value="modified" <?php selected($gmGallery->options['in_tag_orderby'], 'modified'); ?>><?php _e('by last modified date', 'grand-media'); ?></option>
+                <option value="comment_count" <?php selected($gmGallery->options['in_tag_orderby'], 'comment_count'); ?>><?php _e('by comment count', 'grand-media'); ?></option>
                 <option value="rand" <?php selected($gmGallery->options['in_tag_orderby'], 'rand'); ?>><?php _e('Random', 'grand-media'); ?></option>
             </select>
         </div>
@@ -49,6 +50,7 @@ if(!defined('ABSPATH')){
                     <option value="gmuid" <?php selected($gmGallery->options['in_category_orderby'], 'gmuid'); ?>><?php _e('by filename', 'grand-media'); ?></option>
                     <option value="date" <?php selected($gmGallery->options['in_category_orderby'], 'date'); ?>><?php _e('by date', 'grand-media'); ?></option>
                     <option value="modified" <?php selected($gmGallery->options['in_category_orderby'], 'modified'); ?>><?php _e('by last modified date', 'grand-media'); ?></option>
+                    <option value="comment_count" <?php selected($gmGallery->options['in_category_orderby'], 'comment_count'); ?>><?php _e('by comment count', 'grand-media'); ?></option>
                     <option value="rand" <?php selected($gmGallery->options['in_category_orderby'], 'rand'); ?>><?php _e('Random', 'grand-media'); ?></option>
                 </select>
             </div>
@@ -72,6 +74,7 @@ if(!defined('ABSPATH')){
                     <option value="gmuid" <?php selected($gmGallery->options['in_album_orderby'], 'gmuid'); ?>><?php _e('by filename', 'grand-media'); ?></option>
                     <option value="date" <?php selected($gmGallery->options['in_album_orderby'], 'date'); ?>><?php _e('by date', 'grand-media'); ?></option>
                     <option value="modified" <?php selected($gmGallery->options['in_album_orderby'], 'modified'); ?>><?php _e('by last modified date', 'grand-media'); ?></option>
+                    <option value="comment_count" <?php selected($gmGallery->options['in_album_orderby'], 'comment_count'); ?>><?php _e('by comment count', 'grand-media'); ?></option>
                     <option value="rand" <?php selected($gmGallery->options['in_album_orderby'], 'rand'); ?>><?php _e('Random', 'grand-media'); ?></option>
                 </select>
             </div>
@@ -125,6 +128,14 @@ if(!defined('ABSPATH')){
         </select>
 
         <p class="help-block"><?php _e('Chosen module will be used for terms pages.', 'grand-media'); ?></p>
+    </div>
+    <div class="form-group">
+        <label><?php _e('When set title from filename', 'grand-media') ?>:</label>
+
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[name2title_capitalize]" value="0"/>
+            <label><input type="checkbox" name="set[name2title_capitalize]" value="1" <?php checked($gmGallery->options['name2title_capitalize'], '1'); ?> /> <?php _e('Make the first letter of each word capitalized (Title Case)', 'grand-media'); ?> </label>
+        </div>
     </div>
     <div class="form-group">
         <label><?php _e('Forbid other plugins to load their JS and CSS on Gmedia admin pages', 'grand-media') ?>:</label>

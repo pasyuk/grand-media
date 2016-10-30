@@ -314,10 +314,15 @@ global $user_ID, $gmDB, $gmCore
 								<option <?php selected($query_data['orderby'], 'id'); ?> value=""><?php _e('ID', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'title'); ?> value="title"><?php _e('Title', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'gmuid'); ?> value="gmuid"><?php _e('Filename', 'grand-media'); ?></option>
+                                <option <?php selected($query_data['orderby'], 'author'); ?> value="author"><?php _e('Author', 'grand-media'); ?></option>
+                                <option <?php selected($query_data['orderby'], 'gmedia__in'); ?> value="gmedia__in"><?php _e('Selected Order', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'date'); ?> value="date"><?php _e('Date', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'modified'); ?> value="modified"><?php _e('Modified Date', 'grand-media'); ?></option>
-								<option <?php selected($query_data['orderby'], 'author'); ?> value="author"><?php _e('Author', 'grand-media'); ?></option>
-								<option <?php selected($query_data['orderby'], 'gmedia__in'); ?> value="gmedia__in"><?php _e('Selected Order', 'grand-media'); ?></option>
+								<option <?php selected($query_data['orderby'], '_created_timestamp'); ?> value="_created_timestamp"><?php _e('Created Timestamp', 'grand-media'); ?></option>
+                                <option <?php selected($query_data['orderby'], 'comment_count'); ?> value="comment_count"><?php _e('Comment Count', 'grand-media'); ?></option>
+								<option <?php selected($query_data['orderby'], 'views'); ?> value="views"><?php _e('Views Count', 'grand-media'); ?></option>
+								<option <?php selected($query_data['orderby'], 'likes'); ?> value="likes"><?php _e('Likes Count', 'grand-media'); ?></option>
+								<option <?php selected($query_data['orderby'], '_size'); ?> value="_size"><?php _e('File Size', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'meta_value'); ?> value="meta_value"><?php _e('Custom Field Value', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'meta_value_num'); ?> value="meta_value_num"><?php _e('Custom Field Value (Numeric)', 'grand-media'); ?></option>
 								<option <?php selected($query_data['orderby'], 'rand'); ?> value="rand"><?php _e('Random', 'grand-media'); ?></option>

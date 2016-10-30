@@ -9,7 +9,7 @@ if(!defined('ABSPATH')){
  */
 ?>
 <div class="cb_list-item gm-item-cell col-xs-6 col-sm-4 col-md-3 col-lg-2 <?php echo implode(' ', $item->classes); ?>" id="list-item-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-type="<?php echo $item->type; ?>">
-    <div class="thumbnail <?php echo ($item->thumb_ratio >= 1)? 'landscape' : 'portrait'; ?>">
+    <div class="thumbnail <?php echo ($item->img_ratio >= 1)? 'landscape' : 'portrait'; ?>">
         <div class="cb_media-object">
             <span<?php echo in_array($gmProcessor->mode, array('select_single', 'select_multiple'))? '' : ' data-clicktarget="gmdataedit' . $item->ID . '"'; ?> class="centered">
                 <?php echo gmedia_item_thumbnail($item); ?>

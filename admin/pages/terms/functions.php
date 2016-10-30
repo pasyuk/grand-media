@@ -86,63 +86,6 @@ function gmedia_term_item_actions($item){
     return apply_filters('gmedia_term_item_actions', $actions);
 }
 
-
-function gmedia_term_item_more_data(&$item){
-    global $gmDB, $gmCore;
-
-    $meta       = $gmDB->get_metadata('gmedia_term', $item->term_id);
-    $item->meta = $meta;
-
-    if($item->global){
-        $item->author_name = get_the_author_meta('display_name', $item->global);
-    } else{
-        $item->author_name = false;
-    }
-
-    $item->taxterm = str_replace('gmedia_', '', $item->taxonomy);
-    if('gmedia_album' == $item->taxonomy){
-        $post_id       = isset($meta['_post_ID'][0])? (int)$meta['_post_ID'][0] : 0;
-        $item->post_id = $post_id;
-        if($post_id){
-            $post_item = get_post($post_id);
-            if($post_item){
-                $item->slug           = $post_item->post_name;
-                $item->post_password  = $post_item->post_password;
-                $item->comment_count  = $post_item->comment_count;
-                $item->comment_status = $post_item->comment_status;
-            }
-        }
-    }
-
-    $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);
-    if(!empty($item->meta['_post_ID'][0])){
-        $item->post_link = get_permalink($item->meta['_post_ID'][0]);
-    } else{
-        $item->post_link = '';
-    }
-
-    if(is_user_logged_in()){
-        $allow_terms_delete = gm_user_can('terms_delete');
-        if($item->global){
-            if((int)$item->global === get_current_user_id()){
-                $item->allow_edit   = gm_user_can("{$item->taxterm}_manage");
-                $item->allow_delete = $allow_terms_delete;
-            } else{
-                $item->allow_edit   = gm_user_can('edit_others_media');
-                $item->allow_delete = ($item->allow_edit && $allow_terms_delete);
-            }
-        } else{
-            $item->allow_edit   = gm_user_can('edit_others_media');
-            $item->allow_delete = ($item->allow_edit && $allow_terms_delete);
-        }
-    } else {
-        $item->allow_edit   = false;
-        $item->allow_delete = false;
-    }
-
-    $item = apply_filters('gmedia_term_item_more_data', $item);
-}
-
 function gmedia_terms_create_album_tpl(){
     include(dirname(__FILE__) . '/tpl/album-create-item.php');
 }

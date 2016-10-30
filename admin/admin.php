@@ -20,6 +20,7 @@ class GmediaAdmin{
 
         // Add the script and style files
         add_action('admin_enqueue_scripts', array(&$this, 'load_scripts'), 20);
+        add_action('admin_print_scripts-widgets.php', array(&$this, 'gmedia_widget_scripts'));
 
         add_filter('screen_settings', array(&$this, 'screen_settings'), 10, 2);
         add_filter('set-screen-option', array(&$this, 'screen_settings_save'), 11, 3);
@@ -353,7 +354,6 @@ class GmediaAdmin{
      */
     function load_scripts($hook){
         global $gmCore, $gmProcessor, $gmGallery;
-
         // no need to go on if it's not a plugin page
         if('admin.php' != $hook && strpos($gmCore->_get('page'), 'GrandMedia') === false){
             return;
@@ -497,6 +497,10 @@ class GmediaAdmin{
 
     }
 
+    function gmedia_widget_scripts(){
+
+    }
+
     function screen_help(){
         $screen    = get_current_screen();
         $screen_id = explode('page_', $screen->id, 2);
@@ -571,10 +575,15 @@ class GmediaAdmin{
 								<option' . selected($gm_screen_options['orderby_gmedia'], 'ID', false) . ' value="ID">' . __('ID', 'grand-media') . '</option>
 								<option' . selected($gm_screen_options['orderby_gmedia'], 'title', false) . ' value="title">' . __('Title', 'grand-media') . '</option>
 								<option' . selected($gm_screen_options['orderby_gmedia'], 'gmuid', false) . ' value="gmuid">' . __('Filename', 'grand-media') . '</option>
-								<option' . selected($gm_screen_options['orderby_gmedia'], 'date', false) . ' value="date">' . __('Date', 'grand-media') . '</option>
-								<option' . selected($gm_screen_options['orderby_gmedia'], 'modified', false) . ' value="modified">' . __('Last Modified', 'grand-media') . '</option>
 								<option' . selected($gm_screen_options['orderby_gmedia'], 'mime_type', false) . ' value="mime_type">' . __('MIME Type', 'grand-media') . '</option>
 								<option' . selected($gm_screen_options['orderby_gmedia'], 'author', false) . ' value="author">' . __('Author', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], 'date', false) . ' value="date">' . __('Date', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], 'modified', false) . ' value="modified">' . __('Last Modified', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], '_created_timestamp', false) . ' value="_created_timestamp">' . __('Created Timestamp', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], 'comment_count', false) . ' value="comment_count">' . __('Comment Count', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], 'views', false) . ' value="views">' . __('Views Count', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], 'likes', false) . ' value="likes">' . __('Likes Count', 'grand-media') . '</option>
+								<option' . selected($gm_screen_options['orderby_gmedia'], '_size', false) . ' value="_size">' . __('File Size', 'grand-media') . '</option>
 							</select> <span>' . __('order items', 'grand-media') . '</span>
 						</div>
 						<div class="form-group">

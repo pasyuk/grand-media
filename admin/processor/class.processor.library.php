@@ -96,7 +96,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
         $args['order']            = $gmCore->_get('order', $order);
 
         if('duplicates' === $args['gmedia__in']){
-            $duplicates         = $gmDB->get_duplicates();
+            $duplicates = $gmDB->get_duplicates();
             if(!empty($duplicates['duplicate_ids'])){
                 $args['gmedia__in'] = $duplicates['duplicate_ids'];
                 $args['orderby']    = 'gmedia__in';
@@ -104,7 +104,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 setcookie(self::$cookie_key, implode('.', $duplicates['duplicate_select']));
                 $_COOKIE[ self::$cookie_key ] = implode('.', $duplicates['duplicate_select']);
                 $this->selected_items         = $duplicates['duplicate_select'];
-            } else {
+            } else{
                 unset($args['gmedia__in']);
                 $this->msg[] = __('No duplicates in Gmedia Library', 'grand-media');
             }
@@ -631,7 +631,9 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                     $filename_vars = array('{filename}' => $gmuid['filename'], '{id}' => $gmedia['ID']);
                                     if(preg_match_all('/{index[:]?(\d+)?}/', $filename_custom, $matches_all)){
                                         foreach($matches_all[0] as $key => $matches){
+                                            $strlen                    = strlen($matches_all[1][ $key ]);
                                             $index                     = intval($matches_all[1][ $key ]) + $i;
+                                            $index                     = sprintf("%0{$strlen}", $index);
                                             $filename_vars[ $matches ] = $index;
                                         }
                                     }
@@ -664,7 +666,10 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                 break;
                                 case 'filename':
                                     $title               = pathinfo($gmedia['gmuid'], PATHINFO_FILENAME);
-                                    $batch_data['title'] = ucwords(str_replace('_', ' ', $title));
+                                    $batch_data['title'] = str_replace('_', ' ', $title);
+                                    if($gmGallery->options['name2title_capitalize']){
+                                        $batch_data['title'] = mb_convert_case($batch_data['title'], MB_CASE_TITLE, 'UTF-8');
+                                    }
                                 break;
                                 case 'custom':
                                     $title_custom = $gmCore->_post('batch_title_custom');

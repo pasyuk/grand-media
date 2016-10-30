@@ -38,6 +38,7 @@ function gmedia_default_options(){
 
     $gm['uninstall_dropdata'] = 'none'; // can be 'all', 'none', 'db'
 
+    $gm['name2title_capitalize'] = '1';
     $gm['in_tag_orderby']        = 'ID';
     $gm['in_tag_order']          = 'DESC';
     $gm['in_category_orderby']   = 'ID';
@@ -47,7 +48,7 @@ function gmedia_default_options(){
     $gm['in_album_status']       = 'publish';
     $gm['default_gmedia_module'] = 'phantom';
 
-    $gm['isolation_mode'] = '0';
+    $gm['isolation_mode'] = '1';
     $gm['shortcode_raw']  = '0';
     $gm['debug_mode']     = WP_DEBUG? '1' : '';
 

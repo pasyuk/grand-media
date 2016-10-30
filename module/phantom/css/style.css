@@ -503,6 +503,7 @@ img.mfp-img--comments-div {
   transform:translateY(-100%) translateZ(0);
 }
 .mfp-comments-count,
+.mfp-views-count,
 .mfp-likes-count {
   font-size:0.7em;
 }

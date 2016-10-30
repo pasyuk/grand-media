@@ -43,6 +43,11 @@ $gmedia_url = $gmProcessor->url;
                             <option value="gmuid" <?php selected($gmGallery->options['in_album_orderby'], 'gmuid'); ?>><?php _e('by filename', 'grand-media'); ?></option>
                             <option value="date" <?php selected($gmGallery->options['in_album_orderby'], 'date'); ?>><?php _e('by date', 'grand-media'); ?></option>
                             <option value="modified" <?php selected($gmGallery->options['in_album_orderby'], 'modified'); ?>><?php _e('by last modified date', 'grand-media'); ?></option>
+                            <option value="_created_timestamp" <?php selected($gmGallery->options['in_album_orderby'], '_created_timestamp'); ?>><?php _e('by created timestamp', 'grand-media'); ?></option>
+                            <option value="comment_count" <?php selected($gmGallery->options['in_album_orderby'], 'comment_count'); ?>><?php _e('by comment count', 'grand-media'); ?></option>
+                            <option value="views" <?php selected($gmGallery->options['in_album_orderby'], 'views'); ?>><?php _e('by views', 'grand-media'); ?></option>
+                            <option value="likes" <?php selected($gmGallery->options['in_album_orderby'], 'likes'); ?>><?php _e('by likes', 'grand-media'); ?></option>
+                            <option value="_size" <?php selected($gmGallery->options['in_album_orderby'], '_size'); ?>><?php _e('by file size', 'grand-media'); ?></option>
                             <option value="rand" <?php selected($gmGallery->options['in_album_orderby'], 'rand'); ?>><?php _e('Random', 'grand-media'); ?></option>
                         </select>
                     </div>

@@ -29,8 +29,8 @@ add_filter('comments_template', 'gmedia_comments_template');
         });
     </script>
     <style type="text/css">
-        html, body { padding:0; background:transparent none; min-width:0; overflow-y:auto; }
-        #gmediacomments { line-height:120%; padding:10px 0; margin:0; }
+        html, body { padding:0; background:transparent none; min-width:0; overflow-y:auto; box-sizing:border-box; min-height:0; height:auto !important; width:auto !important; }
+        #gmediacomments { line-height:120%; padding:10px 0; margin:0; box-sizing:inherit; }
         #gmediacomments ol.gmediacommentlist { list-style:none; padding:0; margin:0; }
         #gmediacomments li { padding:0 0 0 32px; margin:0 0 15px; list-style:none; font-size:14px; line-height:120%; }
         #gmediacomments .comment-author { display:inline-block; margin:0; padding:0; }

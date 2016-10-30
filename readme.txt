@@ -146,6 +146,19 @@ Gmedia Gallery - is Grand Media Gallery (photo gallery, image gallery, music gal
 = Modules Updated =
 * Go to Gmedia Gallery Modules page and update installed premium modules to latest versions
 
+= Gmedia Gallery v1.8.91 =
+* Added: Widget for Gmedia Galleries
+* Added: Show Albums on Menu page
+* Added: Order By: "comment count", "created date", "views", "likes", "file size"
+* Added: In "Batch Edit" renaming files with {index:0001} now keep leading zeroes
+* Added: Option to disable "Title Case" for titles converted from filenames
+* Fixed: Save Filename to Title when non English letters
+* Fixed: Do not show non-published albums for images on the front-end
+* Fixed: Gallery comments popup template for some themes
+* Updated: Phantom gallery module to support gallery pagination, terms
+* Updated: Other gallery modules
+* Fixes and improvements
+
 = Gmedia Gallery v1.8.90 =
 * Added: Alt Text field for image
 * Added: Editor quick tag buttons for items description fields

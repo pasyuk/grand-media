@@ -3,7 +3,7 @@ $module_info = array(
     'base'         => 'photomania',
     'name'         => 'photomania',
     'title'        => 'PhotoMania',
-    'version'      => '1.2',
+    'version'      => '1.3',
     'author'       => 'CodEasily.com',
     'description'  => 'Responsive Gallery based on jQuery with keyboard control, displaying thumbs, author, title and optional description, download, link button, like button, full window and full screen mode',
     'type'         => 'gallery',
@@ -11,7 +11,7 @@ $module_info = array(
     'price'        => '0',
     'demo'         => 'http://codeasily.com/portfolio-item/gmedia-photomania/',
     'download'     => 'http://codeasily.com/download/photomania-module-zip/',
-    'dependencies' => 'mousetrap'
+    'dependencies' => 'swiper,mousetrap'
 );
 if (preg_match('#' . basename(dirname(__FILE__)) . '/' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])) {
     if (isset($_GET['info'])) {

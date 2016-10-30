@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.8.90
+ * Version: 1.8.91
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.6
@@ -42,7 +42,7 @@ if(!class_exists('Gmedia')){
      */
     class Gmedia{
 
-        var $version = '1.8.90';
+        var $version = '1.8.91';
         var $dbversion = '1.8.0';
         var $minium_WP = '3.6';
         var $options = '';
@@ -103,6 +103,9 @@ if(!class_exists('Gmedia')){
 
             add_action('init', array(&$this, 'gmedia_post_type'), 0);
 
+            // register widget
+            add_action('widgets_init', array(&$this, 'register_gmedia_widget'));
+
             add_action('gmedia_app_cronjob', array(&$this, 'gmedia_app_cronjob'));
 
             //Add some message on the plugins page
@@ -124,6 +127,7 @@ if(!class_exists('Gmedia')){
             $this->upgrade();
 
             require_once(dirname(__FILE__) . '/inc/hashids.php');
+            require_once(dirname(__FILE__) . '/inc/functions.php');
             require_once(dirname(__FILE__) . '/inc/shortcodes.php');
 
             // Load the admin panel or the frontend functions
@@ -331,8 +335,8 @@ if(!class_exists('Gmedia')){
                                                                                'plugin_dirurl' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.90', 'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.8.90');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.8.91', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.8.91');
             wp_localize_script('grand-media', 'grandMedia', array('error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                                                                   'download' => __('downloading...', 'grand-media'),
                                                                   'wait'     => __('Working. Wait please.', 'grand-media'),
@@ -366,6 +370,13 @@ if(!class_exists('Gmedia')){
 
             if(!wp_script_is('wavesurfer', 'registered')){
                 wp_register_script('wavesurfer', $gmCore->gmedia_url . '/assets/wavesurfer/wavesurfer.min.js', array('jquery'), '1.1.5', true);
+            }
+
+            if(!wp_script_is('swiper', 'registered') || version_compare($wp_scripts->registered['swiper']->ver, '3.4.0', '<')){
+                wp_deregister_style('swiper');
+                wp_deregister_script('swiper');
+                wp_register_style('swiper', $gmCore->gmedia_url . '/assets/swiper/swiper.min.css', array(), '3.4.0', 'screen');
+                wp_register_script('swiper', $gmCore->gmedia_url . '/assets/swiper/swiper.jquery.min.js', array('jquery'), '3.4.0', true);
             }
 
             if(!wp_script_is('magnific-popup', 'registered') || version_compare($wp_scripts->registered['magnific-popup']->ver, '1.0.2', '<')){
@@ -612,7 +623,7 @@ if(!class_exists('Gmedia')){
             );
             register_taxonomy('gmedia_tag', array('gmedia'), $args);
 
-            add_filter( 'wp_link_query_args', array($this, 'exclude_gmedia_from_link_query') );
+            add_filter('wp_link_query_args', array($this, 'exclude_gmedia_from_link_query'));
         }
 
         /**
@@ -656,14 +667,19 @@ if(!class_exists('Gmedia')){
             return $link;
         }
 
+        function register_gmedia_widget(){
+            require_once(dirname(__FILE__) . '/inc/widget.php');
+            register_widget('GrandMedia_Widget');
+        }
+
         /**
          * @param $query
          *
          * @return mixed
          */
-        function exclude_gmedia_from_link_query( $query ){
-            if(($key = array_search('gmedia', $query['post_type'])) !== false) {
-                unset($query['post_type'][$key]);
+        function exclude_gmedia_from_link_query($query){
+            if(($key = array_search('gmedia', $query['post_type'])) !== false){
+                unset($query['post_type'][ $key ]);
             }
 
             return $query;
