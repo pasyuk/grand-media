@@ -51,13 +51,13 @@ if(!defined('ABSPATH')){
                 <label><?php _e('Description', 'grand-media'); ?></label>
                 <?php if(('false' != $gmedia_user_options['library_edit_quicktags']) || ($gmProcessor->gmediablank && (1 == $resultPerPage))){
                     wp_editor(esc_textarea($item->description), "gm{$item->ID}_description", array('editor_class'  => 'form-control input-sm',
-                                                                                               'editor_height' => 140,
-                                                                                               'wpautop'       => false,
-                                                                                               'media_buttons' => false,
-                                                                                               'textarea_name' => 'description',
-                                                                                               'textarea_rows' => '4',
-                                                                                               'tinymce'       => false,
-                                                                                               'quicktags'     => array('buttons' => apply_filters('gmedia_editor_quicktags', 'strong,em,link,ul,li,close'))
+                                                                                                   'editor_height' => 140,
+                                                                                                   'wpautop'       => false,
+                                                                                                   'media_buttons' => false,
+                                                                                                   'textarea_name' => 'description',
+                                                                                                   'textarea_rows' => '4',
+                                                                                                   'tinymce'       => false,
+                                                                                                   'quicktags'     => array('buttons' => apply_filters('gmedia_editor_quicktags', 'strong,em,link,ul,li,close'))
                     ));
                 } else{
                     echo "<textarea id='gm{$item->ID}_description' class='form-control input-sm' name='description' cols='20' rows='4' style='height:174px'>" . esc_textarea($item->description) . '</textarea>';
@@ -238,12 +238,18 @@ if(!defined('ABSPATH')){
                     <br/><span class="label label-default"><?php _e('Type', 'grand-media'); ?>:</span> <?php echo $item->mime_type; ?>
                     <?php if(('image' == $item->type) && !empty($item->meta['_metadata'])){ ?>
                         <br/><span class="label label-default"><?php _e('Dimensions', 'grand-media'); ?>:</span>
-                        <a href="<?php echo $item->url_original; ?>"
-                           data-target="#previewModal"
-                           data-width="<?php echo $item->meta['_metadata'][0]['original']['width']; ?>"
-                           data-height="<?php echo $item->meta['_metadata'][0]['original']['height']; ?>"
-                           class="preview-modal"
-                           title="<?php _e('Original', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['original']['width'] . '×' . $item->meta['_metadata'][0]['original']['height']; ?></a>,
+                        <?php
+                        $is_file_original = (bool) $item->path_original;
+                        if($is_file_original){ ?>
+                            <a href="<?php echo $item->url_original; ?>"
+                               data-target="#previewModal"
+                               data-width="<?php echo $item->meta['_metadata'][0]['original']['width']; ?>"
+                               data-height="<?php echo $item->meta['_metadata'][0]['original']['height']; ?>"
+                               class="preview-modal"
+                               title="<?php _e('Original', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['original']['width'] . '×' . $item->meta['_metadata'][0]['original']['height']; ?></a>,
+                        <?php } else{ ?>
+                            <span title="<?php _e('Original', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['original']['width'] . '×' . $item->meta['_metadata'][0]['original']['height']; ?></span>,
+                        <?php } ?>
                         <a href="<?php echo $item->url; ?>"
                            data-target="#previewModal"
                            data-width="<?php echo $item->meta['_metadata'][0]['web']['width']; ?>"
@@ -256,7 +262,9 @@ if(!defined('ABSPATH')){
                            data-height="<?php echo $item->meta['_metadata'][0]['thumb']['height']; ?>"
                            class="preview-modal"
                            title="<?php _e('Thumbnail', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['thumb']['width'] . '×' . $item->meta['_metadata'][0]['thumb']['height']; ?></a>
-                        <br/><span class="label label-default"><?php _e('File Size', 'grand-media') ?>:</span> <?php echo $gmCore->filesize($item->path_original) . ', ' . $gmCore->filesize($item->path) . ', ' . $gmCore->filesize($item->path_thumb); ?>
+                        <br/><span class="label label-default"><?php _e('File Size', 'grand-media') ?>:</span> <?php
+                        echo ($is_file_original? $gmCore->filesize($item->path_original) : '&#8212;') . ', ';
+                        echo $gmCore->filesize($item->path) . ', ' . $gmCore->filesize($item->path_thumb); ?>
                     <?php } else{ ?>
                         <br/><span class="label label-default"><?php _e('File Size', 'grand-media') ?>:</span> <?php echo $gmCore->filesize($item->path); ?>
                     <?php } ?>

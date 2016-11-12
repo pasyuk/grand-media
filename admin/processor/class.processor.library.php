@@ -633,7 +633,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                         foreach($matches_all[0] as $key => $matches){
                                             $strlen                    = strlen($matches_all[1][ $key ]);
                                             $index                     = intval($matches_all[1][ $key ]) + $i;
-                                            $index                     = sprintf("%0{$strlen}", $index);
+                                            $index                     = sprintf("%0{$strlen}d", $index);
                                             $filename_vars[ $matches ] = $index;
                                         }
                                     }
@@ -648,7 +648,9 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                                 require_once(ABSPATH . 'wp-admin/includes/image.php');
 
                                                 if(file_is_displayable_image($fileinfo['dirpath'] . '/' . $gmedia['gmuid'])){
-                                                    @rename($fileinfo['dirpath_original'] . '/' . $gmedia['gmuid'], $fileinfo['filepath_original']);
+                                                    if(is_file($fileinfo['dirpath_original'] . '/' . $gmedia['gmuid'])){
+                                                        @rename($fileinfo['dirpath_original'] . '/' . $gmedia['gmuid'], $fileinfo['filepath_original']);
+                                                    }
                                                     @rename($fileinfo['dirpath_thumb'] . '/' . $gmedia['gmuid'], $fileinfo['filepath_thumb']);
                                                 }
                                             }
@@ -709,7 +711,8 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                 break;
                                 case 'self':
                                     $fileinfo           = $gmCore->fileinfo($gmedia['gmuid'], false);
-                                    $batch_data['link'] = $fileinfo['fileurl_original'];
+                                    $fileurl            = is_file($fileinfo['filepath_original'])? $fileinfo['fileurl_original'] : $fileinfo['fileurl'];
+                                    $batch_data['link'] = $fileurl;
                                 break;
                                 case 'custom':
                                     $link_custom = $gmCore->_post('batch_link_custom');

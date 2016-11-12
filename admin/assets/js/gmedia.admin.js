@@ -1087,7 +1087,7 @@ var GmediaFunction = {
 
             if(postlink) {
                 jQuery('.sharelink_post', modal_div).show();
-                jQuery('.sharelink_post input', modal_div).val(postlink);
+                jQuery('.sharelink_post input[type="text"]', modal_div).val(postlink);
                 jQuery('.sharelink_post a', modal_div).attr('href', postlink);
             } else {
                 jQuery('.sharelink_post', modal_div).hide();
@@ -1096,7 +1096,7 @@ var GmediaFunction = {
             }
             if(cloudlink) {
                 jQuery('.sharelink_page', modal_div).show();
-                jQuery('.sharelink_page input', modal_div).val(cloudlink);
+                jQuery('.sharelink_page input[type="text"]', modal_div).val(cloudlink);
                 jQuery('.sharelink_page a', modal_div).attr('href', cloudlink);
                 if(cloudlink_checked) {
                     jQuery('.sharelink_page input[type="radio"]', modal_div).prop('checked', true);
@@ -1268,7 +1268,7 @@ var GmediaFunction = {
             });
             e.preventDefault();
         });
-        gmedia_DOM.on('click', '.linkblock [data-href]', function() {
+        jQuery(document).on('click.gmedia', '.linkblock [data-href]', function() {
             window.location.href = jQuery(this).data('href');
         });
 
@@ -1296,9 +1296,21 @@ var GmediaFunction = {
             var post_data = {
                 action: 'gmedia_module_install', download: jQuery(this).attr('href'), module: module, _wpnonce: jQuery('#_wpnonce').val()
             };
-            var pathname = window.location.href;
+            var pathname = window.location.href + '&time=' + jQuery.now();
             jQuery.post(ajaxurl, post_data, function(data, status, xhr) {
-                jQuery('#gmedia_modules').load(pathname + ' #gmedia_modules > *').before(data);
+                setTimeout(function(){
+                    jQuery('#gmedia_modules').load(pathname + ' #gmedia_modules_wrapper', function(){
+                        setTimeout(function(){
+                            var update_count = jQuery('#gmedia_modules').find('#gmedia_modules_wrapper').attr('data-update');
+                            if(parseInt(update_count)){
+                                jQuery('.gm-module-count').html(update_count);
+                            } else {
+                                jQuery('.gm-module-count').remove();
+                            }
+                        }, 1);
+                    });
+                }, 1);
+                jQuery('#gmedia_modules').before(data);
                 jQuery('body').removeClass('gmedia-busy');
             });
         });

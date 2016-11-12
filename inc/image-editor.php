@@ -3,21 +3,18 @@
  * @title  Image Editor
  */
 
-function gmedia_image_editor()
-{
+function gmedia_image_editor(){
     global $gmCore, $gmDB;
-    $gmid = $gmCore->_get('id');
-    //$gmedia = $gmDB->get_gmedia($gmid);
-    $gmedia_src          = $gmCore->gm_get_media_image($gmid, 'web');
-    $gmedia_original_src = $gmCore->gm_get_media_image($gmid, 'original');
-    $gmedia_thumb_src    = $gmCore->gm_get_media_image($gmid, 'thumb');
-    $is_modified         = (int)$gmDB->get_metadata('gmedia', $gmid, '_modified', true);
+    $gmid   = $gmCore->_get('id');
+    $gmedia = $gmDB->get_gmedia($gmid);
+    gmedia_item_more_data($gmedia);
+    $is_modified = !empty($gmedia->meta['_modified'][0]);
     ?>
 
     <div class="panel panel-default" id="gmedit">
         <div class="panel-heading clearfix">
             <div class="btn-toolbar pull-right">
-                <?php if ($is_modified) { ?>
+                <?php if($gmedia->path_original && $is_modified){ ?>
                     <button type="button" id="gmedit-restore" name="gmedit_restore" class="btn btn-warning pull-left" data-confirm="<?php _e('Do you really want restore original image?') ?>"><?php _e('Restore Original', 'grand-media'); ?></button>
                 <?php } ?>
                 <div class="btn-group pull-left">
@@ -168,13 +165,13 @@ function gmedia_image_editor()
     </div>
     <!--suppress JSUnresolvedVariable -->
     <script type="text/javascript">
-        jQuery(function ($) {
+        jQuery(function($) {
 
             var sources = {
-                web_thumb: '<?php echo $gmedia_src; ?>',
-                web: '<?php echo $gmedia_src; ?>',
-                thumb: '<?php echo $gmedia_thumb_src; ?>',
-                original: '<?php echo $gmedia_original_src; ?>'
+                web_thumb: '<?php echo $gmedia->url_web; ?>',
+                web: '<?php echo $gmedia->url_web; ?>',
+                thumb: '<?php echo $gmedia->url_thumb; ?>',
+                original: '<?php echo $gmedia->url_original; ?>'
             };
             var gmid = <?php echo $gmid; ?>;
             var preinit_dom = '<canvas id="gmedit-canvas"></canvas>';
@@ -185,27 +182,27 @@ function gmedia_image_editor()
             }
 
             div_frame();
-            $(window).on('resize', function () {
+            $(window).on('resize', function() {
                 div_frame();
             });
 
-            var gmeditSave = function (a, b) {
+            var gmeditSave = function(a, b) {
                 var btn = $('#gmedit-save');
                 btn.text(btn.data('loading-text')).prop('disabled', true);
                 var post_data = {
                     action: 'gmedit_save', id: gmid, image: a, applyto: $('#applyto').val(), _wpnonce: $('#_wpnonce').val()
                 };
-                $.post(ajaxurl, post_data).always(function (c) {
-                    if (c.msg && !c.error) {
+                $.post(ajaxurl, post_data).always(function(c) {
+                    if(c.msg && !c.error) {
                         var parent_doc = window.parent.document;
                         $('#list-item-' + gmid, parent_doc)
-                            .find('.gmedia-thumb').attr('src', '<?php echo $gmedia_thumb_src; ?>?' + (new Date).valueOf())
-                            .end().find('.modified').text(c.modified);
+                                .find('.gmedia-thumb').attr('src', '<?php echo $gmedia->url_thumb; ?>?' + (new Date).valueOf())
+                                .end().find('.modified').text(c.modified);
                         $('#gmedia-panel', parent_doc).before(c.msg);
                         window.parent.closeModal('gmeditModal');
                     } else {
                         btn.text(btn.data('reset-text')).prop('disabled', false);
-                        if (c.error) {
+                        if(c.error) {
                             $('#media-edit-form-container .alert-box').html(c.error).show();
                         } else {
                             $('#media-edit-form-container .alert-box').text(c).show();
@@ -216,23 +213,23 @@ function gmedia_image_editor()
 
             gmedit_init(sources[editsrc] + "?" + (new Date).valueOf(), "#gmedit", {save: gmeditSave});
 
-            $("body").on("change", "#applyto", function () {
+            $("body").on("change", "#applyto", function() {
                 editsrc = $(this).val();
                 $('#gmedit-canvas-cont').html(preinit_dom);
                 gmedit.resetFilters();
                 gmedit.init("#gmedit-canvas", sources[editsrc] + "?" + (new Date).valueOf());
-            }).on("click", "#gmedit-restore", function () {
+            }).on("click", "#gmedit-restore", function() {
                 var btn = $('#gmedit-save');
                 btn.text(btn.data('loading-text')).prop('disabled', true);
                 var post_data = {
                     action: 'gmedit_restore', id: gmid, _wpnonce: $('#_wpnonce').val()
                 };
-                $.post(ajaxurl, post_data).always(function (c) {
-                    if (c.msg && !c.error) {
+                $.post(ajaxurl, post_data).always(function(c) {
+                    if(c.msg && !c.error) {
                         var parent_doc = window.parent.document;
                         $('#list-item-' + gmid, parent_doc)
-                            .find('.gmedia-thumb').attr('src', '<?php echo $gmedia_thumb_src; ?>?' + (new Date).valueOf())
-                            .end().find('.modified').text(c.modified);
+                                .find('.gmedia-thumb').attr('src', '<?php echo $gmedia->url_thumb; ?>?' + (new Date).valueOf())
+                                .end().find('.modified').text(c.modified);
                         $('#gmedia-panel', parent_doc).before(c.msg);
                         $('#gmedit-canvas-cont').html(preinit_dom);
                         gmedit.resetFilters();
@@ -241,7 +238,7 @@ function gmedia_image_editor()
                         $('#media-edit-form-container .alert-box').html(c.msg).show();
                         $("#gmedit-restore").remove();
                     } else {
-                        if (c.error) {
+                        if(c.error) {
                             $('#media-edit-form-container .alert-box').html(c.error).show();
                         } else {
                             $('#media-edit-form-container .alert-box').text(c).show();

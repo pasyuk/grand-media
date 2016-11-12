@@ -60,7 +60,7 @@ function gmedia_module_preset_more_data(&$item){
     $item->module = $gmCore->get_module_path($item->status);
 
     $module_info = array('type' => '&#8212;');
-    if(file_exists($item->module['path'] . '/index.php')){
+    if(is_file($item->module['path'] . '/index.php')){
         include($item->module['path'] . '/index.php');
 
         $item->module['info'] = $module_info;

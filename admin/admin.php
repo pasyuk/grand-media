@@ -126,9 +126,18 @@ class GmediaAdmin{
 
     // integrate the menu
     function add_menu(){
+
+        $count = '';
+        if(current_user_can('gmedia_module_manage')){
+            global $gmGallery;
+            if($gmGallery->options['modules_update']){
+                $count = " <span class='update-plugins count-{$gmGallery->options['modules_update']}'><span class='plugin-count gm-module-count'>" . $gmGallery->options['modules_update'] . "</span></span>";
+            }
+        }
+
         $gmediaURL     = plugins_url(GMEDIA_FOLDER);
         $this->pages   = array();
-        $this->pages[] = add_menu_page(__('Gmedia Library', 'grand-media'), 'Gmedia Gallery', 'gmedia_library', 'GrandMedia', array(&$this, 'shell'), $gmediaURL . '/admin/assets/img/gm-icon.png', 11);
+        $this->pages[] = add_menu_page(__('Gmedia Library', 'grand-media'), "Gmedia{$count}", 'gmedia_library', 'GrandMedia', array(&$this, 'shell'), 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjAgMjAiIHhtbDpzcGFjZT0icHJlc2VydmUiPiAgPGltYWdlIGlkPSJpbWFnZTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeD0iMCIgeT0iMCIKICAgIHhsaW5rOmhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQlFBQUFBVUNBTUFBQUM2ViswL0FBQUFCR2RCVFVFQUFMR1BDL3hoQlFBQUFDQmpTRkpOCkFBQjZKZ0FBZ0lRQUFQb0FBQUNBNkFBQWRUQUFBT3BnQUFBNm1BQUFGM0NjdWxFOEFBQUJrbEJNVkVVeFpua3haM2d4WjNoQ2RJTnUKbEtBK2NZQnBrSjJRcmJhb3Y4YTV5OUdadEx5UnJyZG1qcHMzYTN4WmhKS0txYktPckxXcndjaW52c1dWc2JxM3l0Q1hzcnRWZ1k5UwpmNDZndWNGN25hZzdibjVFZFlWeGxxS01xclN3eGN1aHVzS2Z1TUMrejlSMm1xWTZibjZ1dzhyNy9QekYxTm0weU03dDh2UHo5dmVGCnBhL2Y1K3BiaHBSSWVJZCtvS3FOcTdTZHQ3OWhpcGN5YUhuSDF0clMzdUZIZDRiSzJOMzUrL3YzK2ZxOXp0UmFoWk5QZll5Qm9xeUMKbzYwOGIzOUdkb1poaTVoT2ZJdnE3L0dwdjhiLy8vLzIrUG45L2YzQjBkWkFjb0tZczd3emFIbSt6OVZxa1oxWGc1SFQzK0xZNHVaNgpuYWh3bGFGRGRJVFAzT0JLZVloTWU0bnc5UFhoNmV2eDlmYkwyZDFUZ0k1em1LTXphWHJUM3VLWXM3dlAyOS9WNE9PY3RyN2c2T3VVCnNMbE5mSXU0eTlEbzd2QkZkb1YzbTZibTdlODViWDNJMXR1RHBLN1EzT0JZaEpHUHJMWEMwdGVsdmNSSmVZamI1ZWpOMnQ1eWw2S1cKc3JyYjVPZUFvYXhqakpuZTUrbDJtcVhFMDlpSHByQnRrNTl5bDZOOG5xazRiSDNXNGVUVTMrUFIzZUdxd01jY1RNSnpBQUFBQW5SUwpUbE51MlhMaTRXRUFBQUFCWWt0SFJFVDV0SmpCQUFBQUNYQklXWE1BQUFzVEFBQUxFd0VBbXB3WUFBQUFCM1JKVFVVSDRBc0NDRGNJCmw0WXhCZ0FBQVIxSlJFRlVHTk5qWUdCa1FnT01ESmhpSUZFNGs1bUZGY2FFQzdLeGMzQnljZlB3SWd2eWNmRUxDQW9KYzRxSThvdEIKQmNVRkpDU2xtS1JsWklYbDVCVVVsVUNDeWlxcWF1b2FtbHJhT3N4TXVucjZCb1pBUVNOakUxTW1Kak56QzBzQkt5WW1hMTBiUHFDZwpyWWFkdllLRG81T3ppNnVidTRlOHA1QVhVTkJiMGNmWHo5OHVJRkNDS1VneE9NUk9DR2hScUdaWU9MTmRSR1JVZ0FFVGsxU0VYMVEwCkUwTk1ySGRjZklKVVlwSzdiRExRMHBUVXRIUW1ob3pNTEgzVGhPd2MzY3pjUExEelRMU1lHUElMbUR3S2k0cExtRXFUSWQ3Z0tHUmkKWUF1elk3SXJpeXV2cUlTSVNWVlZBeTJxQ2ErdERtU3BxMk1KckZkcXlNbjN5MjRFQ25weEp6UWxOUHZGeHBxMDVBWUh4N2Z5SW9VUwpNc0FleU5paUF3Q3FwalN3RnBqcGxnQUFBQ1YwUlZoMFpHRjBaVHBqY21WaGRHVUFNakF4TmkweE1TMHdNbFF3T0RvMU5Ub3dPQzB3Ck56b3dNSWl4dXBvQUFBQWxkRVZZZEdSaGRHVTZiVzlrYVdaNUFESXdNVFl0TVRFdE1ESlVNRGc2TlRVNk1EZ3RNRGM2TURENTdBSW0KQUFBQUFFbEZUa1N1UW1DQyIgLz4KPC9zdmc+Cg==', 11);
         $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Library', 'grand-media'), __('Gmedia Library', 'grand-media'), 'gmedia_library', 'GrandMedia', array(&$this, 'shell'));
         if(current_user_can('gmedia_library')){
             $this->pages[] = add_submenu_page('GrandMedia', __('Add Media Files', 'grand-media'), __('Add/Import Files', 'grand-media'), 'gmedia_upload', 'GrandMedia_AddMedia', array(&$this, 'shell'));
@@ -239,14 +248,20 @@ class GmediaAdmin{
             $content['sideLinks'] .= "\n" . '<a class="list-group-item list-group-item-premium" target="_blank" href="http://codeasily.com/product/one-site-license/">' . __('Get Gmedia Premium', 'grand-media') . '</a></li><li>';
         }
         foreach($submenu['GrandMedia'] as $menuKey => $menuItem){
-            if($submenu['GrandMedia'][ $menuKey ][2] == $gmProcessor->page){
+            if($menuItem[2] == $gmProcessor->page){
                 $iscur                 = ' active';
-                $content['grandTitle'] = $submenu['GrandMedia'][ $menuKey ][3];
+                $content['grandTitle'] = $menuItem[3];
             } else{
                 $iscur = '';
             }
+            $menuData = '';
+            if($menuItem[2] == 'GrandMedia_Modules' && gm_user_can('module_manage')){
+                if($gmGallery->options['modules_update']){
+                    $menuData = '<span class="badge badge-error pull-right gm-module-count" title="' . __('Module Updates') . '">' . $gmGallery->options['modules_update'] . '</span>';
+                }
+            }
 
-            $content['sideLinks'] .= "\n" . '<a class="list-group-item' . $iscur . '" href="' . admin_url('admin.php?page=' . $submenu['GrandMedia'][ $menuKey ][2]) . '">' . $submenu['GrandMedia'][ $menuKey ][0] . '</a>';
+            $content['sideLinks'] .= "\n" . '<a class="list-group-item' . $iscur . '" href="' . admin_url('admin.php?page=' . $menuItem[2]) . '">' . $menuItem[0] . $menuData . '</a>';
         }
         $content['sideLinks'] .= '
 				</li></ul>

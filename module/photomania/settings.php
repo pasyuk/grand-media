@@ -1,9 +1,9 @@
 <?php
 $default_options = array(
-    'description_title'       => 'Description',
     'base_gallery_width'      => '800',
     'base_gallery_height'     => '500',
     'gallery_min_height'      => '230',
+    'scale_mode'              => 'fit',
     'initial_slide'           => '0',
     'slideshow_autoplay'      => '0',
     'slideshow_delay'         => '7000',
@@ -11,14 +11,20 @@ $default_options = array(
     'gallery_maximized'       => '0',
     'gallery_focus_maximized' => '0',
     'keyboard_help'           => '1',
+    'show_comments'           => '1',
     'show_download_button'    => '1',
-    'download_button_text'    => 'Download',
     'show_link_button'        => '1',
-    'link_button_text'        => 'Open Link',
     'link_button_target'      => '_self',
     'show_description'        => '1',
     'show_author_avatar'      => '1',
+    'show_share_button'       => '1',
     'show_like_button'        => '1',
+    'link_color'              => '0099e5',
+    'link_color_hover'        => '02adea',
+    'download_button_text'    => 'Download',
+    'link_button_text'        => 'Open Link',
+    'comments_button_text'    => 'Discuss',
+    'description_title'       => 'Description',
     'customCSS'               => ''
 );
 $options_tree    = array(
@@ -49,6 +55,22 @@ $options_tree    = array(
                 'attr'  => '',
                 'text'  => 'Change slider height on change slide to best fit image in it'
             ),
+            'scale_mode'           => array(
+                'label'   => 'Image Scale Mode',
+                'tag'     => 'select',
+                'attr'    => '',
+                'text'    => 'Default value: Fit. Note \'Fill\' - can work inproperly on IE browser',
+                'choices' => array(
+                    array(
+                        'label' => 'Fit',
+                        'value' => 'fit'
+                    ),
+                    array(
+                        'label' => 'Fill',
+                        'value' => 'fill'
+                    )
+                )
+            ),
             'initial_slide'        => array(
                 'label' => 'Initial Slide',
                 'tag'   => 'input',
@@ -73,29 +95,23 @@ $options_tree    = array(
                 'attr'  => 'data-watch="change"',
                 'text'  => 'Download original file or if custom field with name "download" specified for the item then its value will be used.'
             ),
-            'download_button_text' => array(
-                'label' => 'Download Button Name',
-                'tag'   => 'input',
-                'attr'  => 'type="text" data-show_download_button="is:1"',
-                'text'  => ''
-            ),
             'show_link_button'     => array(
                 'label' => 'Show Link Button',
                 'tag'   => 'checkbox',
                 'attr'  => 'data-watch="change"',
                 'text'  => 'Uses link field from the item'
             ),
-            'link_button_text'     => array(
-                'label' => 'Link Button Name',
-                'tag'   => 'input',
-                'attr'  => 'type="text" data-show_link_button="is:1"',
-                'text'  => ''
-            ),
             'link_button_target'   => array(
-                'label' => 'Link Button Name',
+                'label' => 'Link Button Target',
                 'tag'   => 'input',
                 'attr'  => 'type="text" placeholder="_self" data-show_link_button="is:1"',
                 'text'  => '"_self" to open links in same window; "_blank" to open in new tab.'
+            ),
+            'show_comments'     => array(
+                'label' => 'Show Comments',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => ''
             ),
             'show_description'     => array(
                 'label' => 'Show Slide Description',
@@ -103,14 +119,14 @@ $options_tree    = array(
                 'attr'  => 'data-watch="change"',
                 'text'  => ''
             ),
-            'description_title'    => array(
-                'label' => 'Slide Description Title',
-                'tag'   => 'input',
-                'attr'  => 'type="text" data-show_description="is:1"',
-                'text'  => ''
-            ),
             'show_author_avatar'   => array(
                 'label' => 'Show Author Avatar',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => ''
+            ),
+            'show_share_button'    => array(
+                'label' => 'Show Share Button',
                 'tag'   => 'checkbox',
                 'attr'  => '',
                 'text'  => ''
@@ -121,7 +137,52 @@ $options_tree    = array(
                 'attr'  => '',
                 'text'  => ''
             )
-
+        )
+    ),
+    array(
+        'label'  => 'Colors',
+        'fields' => array(
+            'link_color'            => array(
+                'label' => 'Links and Buttons Color',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color"',
+                'text'  => ''
+            ),
+            'link_color_hover'      => array(
+                'label' => 'Links and Buttons Color on Hover',
+                'tag'   => 'input',
+                'attr'  => 'type="text" data-type="color"',
+                'text'  => ''
+            )
+        )
+    ),
+    array(
+        'label'  => 'Translate Strings',
+        'fields' => array(
+            'download_button_text' => array(
+                'label' => 'Download Button Name',
+                'tag'   => 'input',
+                'attr'  => 'type="text"',
+                'text'  => ''
+            ),
+            'link_button_text'     => array(
+                'label' => 'Link Button Name',
+                'tag'   => 'input',
+                'attr'  => 'type="text"',
+                'text'  => ''
+            ),
+            'comments_button_text' => array(
+                'label' => 'Comments Button Name',
+                'tag'   => 'input',
+                'attr'  => 'type="text"',
+                'text'  => ''
+            ),
+            'description_title'    => array(
+                'label' => 'Slide Description Title',
+                'tag'   => 'input',
+                'attr'  => 'type="text"',
+                'text'  => ''
+            ),
         )
     ),
     array(

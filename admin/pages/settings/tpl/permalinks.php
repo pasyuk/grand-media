@@ -84,6 +84,21 @@ if(!defined('ABSPATH')) {
             <label><input type="checkbox" name="set[gmedia_gallery_exclude_from_search]" value="1" <?php checked($gmGallery->options['gmedia_gallery_exclude_from_search'], '1'); ?> /> <?php _e('Exclude Gmedia Galleries from WordPress search results on the Frontend', 'grand-media'); ?> </label>
         </div>
     </div>
+
+    <hr />
+    <h4><?php _e('Gmedia Tags & Categories', 'grand-media'); ?></h4>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_term_related_gmedia]" value="0"/>
+            <label><input type="checkbox" name="set[wp_term_related_gmedia]" value="1" <?php checked($gmGallery->options['wp_term_related_gmedia'], '1'); ?> /> <?php _e('Show Related Media from Gmedia library for Wordpress native tags & categories', 'grand-media'); ?> </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_post_related_gmedia]" value="0"/>
+            <label><input type="checkbox" name="set[wp_post_related_gmedia]" value="1" <?php checked($gmGallery->options['wp_post_related_gmedia'], '1'); ?> /> <?php _e('Show Related Media from Gmedia library for Wordpress Posts based on tags', 'grand-media'); ?> </label>
+        </div>
+    </div>
 </fieldset>
 
 <fieldset id="gmedia_settings_cloud" class="tab-pane">

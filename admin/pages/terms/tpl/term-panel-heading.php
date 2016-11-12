@@ -12,7 +12,9 @@ if(!defined('ABSPATH')){
  * @var $gmCore
  */
 $taxterm = $gmProcessor->taxterm;
-$referer = remove_query_arg(array('edit_term'), wp_get_referer());
+$curpage = $gmCore->_get('page', 'GrandMedia');
+$refurl = strpos(wp_get_referer(), "page={$curpage}")? wp_get_referer() : $gmProcessor->url;
+$referer = remove_query_arg(array('edit_term'), $refurl);
 ?>
 <div class="panel-heading-fake"></div>
 <div class="panel-heading clearfix">

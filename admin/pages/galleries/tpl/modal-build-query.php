@@ -16,7 +16,10 @@ global $user_ID, $gmDB, $gmCore
 	<div class="modal-dialog" style="width:700px;">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <div class="pull-right" style="margin-top:-4px;">
+                    <button type="button" class="btn btn-primary buildquerysubmit"><?php _e('Build Query', 'grand-media'); ?></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
+                </div>
 				<h4 class="modal-title"><?php _e('Query Parameters'); ?></h4>
 			</div>
 			<div class="modal-body">

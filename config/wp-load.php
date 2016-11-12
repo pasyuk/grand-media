@@ -24,13 +24,13 @@ if (! defined('WP_LOAD_PATH')) {
     preg_match('|^(.*?/)(wp-content)/|i', str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']), $_m);
     $classic_root = $_m[1];
 
-    if ($path && file_exists($path . 'wp-load.php')) {
+    if ($path && is_file($path . 'wp-load.php')) {
         define('WP_LOAD_PATH', $path);
-    } elseif (file_exists($classic_root . 'wp-load.php')) {
+    } elseif (is_file($classic_root . 'wp-load.php')) {
         define('WP_LOAD_PATH', $classic_root);
     } else {
         $classic_root = dirname(dirname(dirname(dirname(dirname(str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME'])))))) . '/';
-        if (file_exists($classic_root . 'wp-load.php')) {
+        if (is_file($classic_root . 'wp-load.php')) {
             define('WP_LOAD_PATH', $classic_root);
         } else {
             exit("Could not find wp-load.php");

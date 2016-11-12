@@ -891,15 +891,21 @@ a.edit_tag_save.btn {
   padding:4px;
   margin-right:10px
 }
-.media.module-gallery {
+#gmedia_modules .media {
   border-bottom: 1px solid #444444;
   padding-bottom:15px;
   margin-bottom:30px;
 }
-.media.module-gallery:last-child {
+#gmedia_modules .media:last-child {
   border-bottom: none;
   padding-bottom:0;
   margin-bottom:0;
+}
+#chooseModuleModal .choose-module {
+  border-bottom: 1px solid #444444;
+}
+#chooseModuleModal .choose-module:last-child {
+  border-bottom: none;
 }
 .presetlist a { }
 .gm-preset-id {
@@ -1335,6 +1341,17 @@ div#wp-link-wrap label {
   border-color:#dddddd #dddddd #dddddd transparent;
   *border-left-color:#ffffff;
 }
+/* custom badge colors */
+.badge-error {background-color: #b94a48;}
+.badge-error:hover {background-color: #953b39;}
+.badge-warning {background-color: #f89406;}
+.badge-warning:hover {background-color: #c67605;}
+.badge-success {background-color: #468847;}
+.badge-success:hover {background-color: #356635; }
+.badge-info {background-color: #3a87ad;}
+.badge-info:hover {background-color: #2d6987;}
+.badge-inverse {background-color: #333333;}
+.badge-inverse:hover {background-color: #1a1a1a;}
 /* custom *-xs size for form elements */
 input[type="date"].input-xs,
 input[type="time"].input-xs,

@@ -13,7 +13,7 @@ if(!defined('ABSPATH')) {
         <form class="modal-content" method="post" enctype="multipart/form-data" action="<?php echo $gmedia_url; ?>">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><?php _e('Install a plugin in .zip format'); ?></h4>
+                <h4 class="modal-title"><?php _e('Install a module in .zip format'); ?></h4>
             </div>
             <div class="modal-body">
                 <p class="install-help"><?php _e('If you have a module in a .zip format, you may install it by uploading it here.'); ?></p>

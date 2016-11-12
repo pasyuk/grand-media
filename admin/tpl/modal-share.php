@@ -8,7 +8,7 @@ if(!defined('ABSPATH')) {
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title"><?php _e('GmediaCloud Page'); ?></h4>
+                <h4 class="modal-title"><?php _e('Gmedia Share'); ?></h4>
             </div>
             <form class="modal-body" method="post" id="shareForm">
                 <div class="form-group sharelink_post">

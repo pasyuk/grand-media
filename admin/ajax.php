@@ -33,7 +33,9 @@ function gmedia_update_data(){
             $fileinfo = $gmCore->fileinfo($gmedia['filename'] . '.' . $gmuid['extension']);
             if(false !== $fileinfo){
                 if('image' == $fileinfo['dirname'] && file_is_displayable_image($fileinfo['dirpath'] . '/' . $item->gmuid)){
-                    @rename($fileinfo['dirpath_original'] . '/' . $item->gmuid, $fileinfo['filepath_original']);
+                    if(is_file($fileinfo['dirpath_original'] . '/' . $item->gmuid)){
+                        @rename($fileinfo['dirpath_original'] . '/' . $item->gmuid, $fileinfo['filepath_original']);
+                    }
                     @rename($fileinfo['dirpath_thumb'] . '/' . $item->gmuid, $fileinfo['filepath_thumb']);
                 }
                 if(@rename($fileinfo['dirpath'] . '/' . $item->gmuid, $fileinfo['filepath'])){
@@ -101,7 +103,6 @@ function gmedia_update_data(){
             $result = $gmDB->get_gmedia($id);
         }
 
-        include_once(GMEDIA_ABSPATH . 'admin/pages/library/functions.php');
         gmedia_item_more_data($result);
         if('image' != $result->type){
             $result->thumbnail = gmedia_item_thumbnail($result);
@@ -215,10 +216,15 @@ function gmedit_save(){
                 }
             }
 
+            $no_original = false;
             if('thumb' == $applyto){
                 $editfile = $fileinfo['filepath_thumb'];
             } else{
                 $editfile = $fileinfo['filepath'];
+                if(('JPG' == $extensions[ $size[2] ]) && !is_file($fileinfo['filepath_original'])){
+                    $no_original = true;
+                    @copy($editfile, $fileinfo['filepath_original']);
+                }
             }
             if(!@file_put_contents($editfile, $image['data'])){
                 $fail = $fileinfo['basename'] . ": " . __('Can\'t write to file. Permission denied', 'grand-media');
@@ -230,8 +236,11 @@ function gmedit_save(){
 
             // Web-image
             if('thumb' !== $applyto){
-                if(('JPG' == $extensions[ $size[2] ]) && !(extension_loaded('imagick') || class_exists("Imagick"))){
+                if('JPG' == $extensions[ $size[2] ]){
                     $gmCore->copy_exif($fileinfo['filepath_original'], $fileinfo['filepath']);
+                    if($no_original){
+                        @unlink($fileinfo['filepath_original']);
+                    }
                 }
             }
             // Thumbnail
@@ -259,7 +268,7 @@ function gmedit_save(){
                     }
 
                     $thumbis = false;
-                    if(file_exists($fileinfo['filepath_thumb'])){
+                    if(is_file($fileinfo['filepath_thumb'])){
                         $thumbis = true;
                         rename($fileinfo['filepath_thumb'], $fileinfo['filepath_thumb'] . '.tmp');
                     }
@@ -867,7 +876,7 @@ function gmedia_get_modal(){
                     <div class="batch_set_custom" style="margin-top:5px;display:none;">
                         <input class="form-control input-sm" name="batch_filename_custom" value="" placeholder="<?php echo 'newname_{id}'; ?>"/>
 
-                        <div><?php _e('Variables: <b>{filename}</b> - original file name; <b>{id}</b> - Gmedia #ID in database; <b>{index:1}</b> - index of selected file in order you select (set start number after colon).') ?></div>
+                        <div><?php _e('Variables: <b>{filename}</b> - original file name; <b>{id}</b> - Gmedia #ID in database; <b>{index:001}</b> - index of selected file in order you select (set start number after colon).') ?></div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -1005,7 +1014,7 @@ function gmedia_tag_edit(){
                 $out['error'] = $gmCore->alert('danger', __("A term with the name provided already exists", 'grand-media'));
             }
         } else{
-            $out['error'] = $gmCore->alert('danger', __("A term with the id provided do not exists", 'grand-media'));
+            $out['error'] = $gmCore->alert('danger', __("A term with the id provided does not exists", 'grand-media'));
         }
     } else{
         $out['error'] = $gmCore->alert('danger', __("Term name can't be only digits or empty", 'grand-media'));
@@ -1110,6 +1119,8 @@ function gmedia_module_install(){
             die();
         } else{
             echo $gmCore->alert('success', sprintf(__("The `%s` module successfuly installed", 'flag'), $module));
+            // Try to clear cache after module update
+            @$gmCore->clear_cache();
         }
     } else{
         echo $gmCore->alert('danger', __('No file specified', 'grand-media'));
@@ -1647,7 +1658,7 @@ function gmedia_import_handler(){
                             $gmuid = basename($filepath);
                             if(in_array($gmuid, $gmedias)){
                                 $fileinfo = $gmCore->fileinfo($gmuid, false);
-                                if(!(('image' == $fileinfo['dirname']) && !file_exists($fileinfo['filepath']))){
+                                if(!(('image' == $fileinfo['dirname']) && !is_file($fileinfo['filepath']))){
                                     unset($files[ $i ]);
                                 }
                             }
@@ -2083,7 +2094,7 @@ function gmedia_term_sortorder(){
     }
 
     if(!$term_id || !($term_id = $gmDB->term_exists($term_id))){
-        wp_send_json(array('error' => array('code' => 101, 'message' => __('A term with the id provided do not exists', 'grand-media')), 'id' => $term_id));
+        wp_send_json(array('error' => array('code' => 101, 'message' => __('A term with the id provided does not exists', 'grand-media')), 'id' => $term_id));
     }
     $term = $gmDB->get_term($term_id);
     if(((int)$term->global != (int)$user_ID) && !current_user_can('gmedia_edit_others_media')){
@@ -2169,9 +2180,10 @@ function gmedia_hash_files(){
 
     foreach($unhashed as $item){
         $fileinfo  = $gmCore->fileinfo($item->gmuid, false);
-        $hash_file = hash_file('md5', $fileinfo['filepath_original']);
+        $filepath  = is_file($fileinfo['filepath_original'])? $fileinfo['filepath_original'] : $fileinfo['filepath'];
+        $hash_file = hash_file('md5', $filepath);
         $gmDB->update_metadata($meta_type = 'gmedia', $item->ID, $meta_key = '_hash', $hash_file);
-        $file_size = filesize($fileinfo['filepath_original']);
+        $file_size = filesize($filepath);
         $gmDB->update_metadata($meta_type = 'gmedia', $item->ID, $meta_key = '_size', $file_size);
     }
 

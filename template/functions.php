@@ -35,9 +35,10 @@ function gmediacloud_meta_generator(){
     <meta property="og:description" content="<?php _e('Shared with GmediaGallery', 'grand-media'); ?>"/>
     <?php
     if($gmedia_type != 'single'){
-        if(did_action('gmedia_shortcode')){
+        if(did_action('gmedia_shortcode') && count($gmGallery->shortcode)){
             $og_imgs = array();
-            $query = array_merge($gmGallery->shortcode['query'], array('status' => 'publish', 'mime_type' => 'image', 'nopaging' => true, 'limit' => 3));
+            $shortcode = reset($gmGallery->shortcode);
+            $query = array_merge($shortcode['query'], array('status' => 'publish', 'mime_type' => 'image', 'nopaging' => true, 'limit' => 3));
             $gmedias = $gmDB->get_gmedias($query);
             foreach($gmedias as $item){
                 $og_imgs[] = $gmCore->gm_get_media_image($item->ID);
@@ -194,7 +195,7 @@ add_filter('body_class', 'gmedia_body_class');
 function get_gmedia_header(){
     global $gmedia_module, $gmCore;
     $module = $gmCore->get_module_path($gmedia_module);
-    if(file_exists($module['path'] . '/template/head.php')){
+    if(is_file($module['path'] . '/template/head.php')){
         /** @noinspection PhpIncludeInspection */
         include_once($module['path'] . '/template/head.php');
     } else{
@@ -206,7 +207,7 @@ function get_gmedia_header(){
 function get_gmedia_footer(){
     global $gmedia_module, $gmCore;
     $module = $gmCore->get_module_path($gmedia_module);
-    if(file_exists($module['path'] . '/template/foot.php')){
+    if(is_file($module['path'] . '/template/foot.php')){
         /** @noinspection PhpIncludeInspection */
         include_once($module['path'] . '/template/foot.php');
     } else{

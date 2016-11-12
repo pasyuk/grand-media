@@ -505,7 +505,7 @@ function gmedia_images_update($files){
 
         if('image' == $fileinfo['dirname']){
             $size = @getimagesize($fileinfo['filepath']);
-            if(!file_exists($fileinfo['filepath_thumb']) && file_is_displayable_image($fileinfo['filepath'])){
+            if(!is_file($fileinfo['filepath_thumb']) && file_is_displayable_image($fileinfo['filepath'])){
                 if(function_exists('memory_get_usage')){
                     $extensions = array('1' => 'GIF', '2' => 'JPG', '3' => 'PNG', '6' => 'BMP');
                     switch($extensions[ $size[2] ]){
@@ -749,7 +749,7 @@ function gmedia_quite_update(){
             gmedia_restore_original_images();
         }
         if(version_compare($current_version, '1.8.08', '<')){
-            if(file_exists($gmCore->upload['path'] . '/module/mosaic/js/mosaic.min.js')){
+            if(is_file($gmCore->upload['path'] . '/module/mosaic/js/mosaic.min.js')){
                 @unlink($gmCore->upload['path'] . '/module/mosaic/js/jquery.prettyPhoto-min.js');
                 @unlink($gmCore->upload['path'] . '/module/mosaic/js/mosaic.js');
             }

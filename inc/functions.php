@@ -43,7 +43,7 @@ function get_gmedia_modules($including_remote = true){
     if(isset($modules['in']) && !empty($modules['in'])){
         foreach($modules['in'] as $mfold => $module){
             // todo: get broken modules folders and delete them
-            if(!file_exists($module['module_path'] . '/index.php')){
+            if(!is_file($module['module_path'] . '/index.php')){
                 unset($modules['in'][ $mfold ]);
                 continue;
             }
@@ -69,7 +69,7 @@ function get_gmedia_modules($including_remote = true){
                     $modules['xml'][ $name ]['place'] = 'remote';
                     if(isset($modules['in'][ $name ]) && !empty($modules['in'][ $name ])){
                         $modules['in'][ $name ] = array_merge(get_object_vars($m), $modules['in'][ $name ]);
-                        if(version_compare((float)$modules['xml'][ $name ]['version'], (float)$modules['in'][ $name ]['version'], '>')){
+                        if(version_compare($modules['xml'][ $name ]['version'], $modules['in'][ $name ]['version'], '>')){
                             $modules['in'][ $name ]['update'] = $modules['xml'][ $name ]['version'];
                             $modules['out'][ $name ]          = $modules['xml'][ $name ];
                         }
@@ -108,18 +108,27 @@ function gmedia_item_more_data(&$item){
     $item->url  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder'][ $type[0] ] . '/' . $item->gmuid;
     $item->path = $gmCore->upload['path'] . '/' . $gmGallery->options['folder'][ $type[0] ] . '/' . $item->gmuid;
 
-    $item->editor = (('image' == $type[0]) && in_array($type[1], array('jpeg', 'png', 'gif')))? true : false;
+    $item->editor = (('image' == $item->type) && in_array($type[1], array('jpeg', 'png', 'gif')))? true : false;
     $item->gps    = '';
-    if($item->editor){
-        $item->url_original  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
-        $item->url_thumb     = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_thumb'] . '/' . $item->gmuid;
-        $item->path_original = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
+    if('image' == $item->type){
         $item->path_thumb    = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_thumb'] . '/' . $item->gmuid;
+        $item->path_web      = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image'] . '/' . $item->gmuid;
+        $item->path_original = $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
+        $item->url_thumb     = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_thumb'] . '/' . $item->gmuid;
+        $item->url_web       = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image'] . '/' . $item->gmuid;
+        $item->url_original  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
+        if(!is_file($item->path_original)){
+            $item->path_original = null;
+            $item->url_original = $item->url_web;
+        }
         if(!empty($metadata['image_meta']['GPS'])){
             $item->gps = implode(', ', $metadata['image_meta']['GPS']);
         }
     } else{
-        $item->url_thumb = $gmCore->gm_get_media_image($item, 'thumb');
+        $cover              = $gmCore->gm_get_media_image($item, 'all');
+        $item->url_thumb    = $cover['thumb'];
+        $item->url_web      = $cover['web'];
+        $item->url_original = $cover['original'];
     }
 
     $item->alttext = !empty($meta['_image_alt'][0])? $meta['_image_alt'][0] : $item->title;
@@ -231,21 +240,20 @@ function gmedia_term_item_more_data(&$item){
  *
  * @param $item
  */
-function gmedia_gallery_more_data(&$item) {
+function gmedia_gallery_more_data(&$item){
     global $gmDB, $gmCore, $user_ID;
 
     $item->custom            = array();
-    $item->meta              = array(
-        '_edited' => '&#8212;',
-        '_query'  => array(),
-        '_module' => $gmCore->_get('gallery_module', 'phantom')
+    $item->meta              = array('_edited' => '&#8212;',
+                                     '_query'  => array(),
+                                     '_module' => $gmCore->_get('gallery_module', 'phantom')
     );
     $item->meta['_settings'] = array($item->meta['_module'] => array());
 
     $item->allow_edit   = false;
     $item->allow_delete = false;
 
-    if(empty($item->term_id)) {
+    if(empty($item->term_id)){
         $item->term_id     = 0;
         $item->name        = '';
         $item->taxonomy    = 'gmedia_gallery';
@@ -259,23 +267,23 @@ function gmedia_gallery_more_data(&$item) {
 
         $item->cloud_link = '';
         $item->post_link  = '';
-    } else {
+    } else{
         $item->taxterm = str_replace('gmedia_', '', $item->taxonomy);
 
         $meta = $gmDB->get_metadata('gmedia_term', $item->term_id);
-        foreach($meta as $key => $value) {
-            if($gmCore->is_protected_meta($key, 'gmedia_term')) {
-                $item->meta[$key] = $value[0];
-            } else {
-                $item->custom[$key] = $value;
+        foreach($meta as $key => $value){
+            if($gmCore->is_protected_meta($key, 'gmedia_term')){
+                $item->meta[ $key ] = $value[0];
+            } else{
+                $item->custom[ $key ] = $value;
             }
         }
 
         $post_id       = isset($meta['_post_ID'][0])? (int)$meta['_post_ID'][0] : 0;
         $item->post_id = $post_id;
-        if($post_id) {
+        if($post_id){
             $post_item = get_post($post_id);
-            if($post_item) {
+            if($post_item){
                 $item->slug           = $post_item->post_name;
                 $item->post_password  = $post_item->post_password;
                 $item->comment_count  = $post_item->comment_count;
@@ -284,8 +292,8 @@ function gmedia_gallery_more_data(&$item) {
         }
 
         $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);
-        if(!empty($item->meta['_post_ID'][0])){
-            $item->post_link = get_permalink($item->meta['_post_ID'][0]);
+        if(!empty($item->meta['_post_ID'])){
+            $item->post_link = get_permalink($item->meta['_post_ID']);
         } else{
             $item->post_link = '';
         }
@@ -312,17 +320,17 @@ function gmedia_gallery_more_data(&$item) {
     $item->module         = $gmCore->get_module_path($_module_name);
     $item->module['name'] = $_module_name;
     $module_info          = array('type' => '&#8212;');
-    if(file_exists($item->module['path'] . '/index.php')) {
+    if(is_file($item->module['path'] . '/index.php')){
         include($item->module['path'] . '/index.php');
 
         $item->module['info'] = $module_info;
-    } else {
+    } else{
         $item->module['broken'] = true;
     }
 
-    if($item->global) {
+    if($item->global){
         $item->author_name = get_the_author_meta('display_name', $item->global);
-    } else {
+    } else{
         $item->author_name = false;
     }
 

@@ -7,6 +7,7 @@ $module_info = array(
     'author'       => 'CodEasily.com',
     'description'  => 'Responsive Gallery based on jQuery with keyboard control, displaying thumbs, author, title and optional description, download, link button, like button, full window and full screen mode',
     'type'         => 'gallery',
+    'branch'       => '1',
     'status'       => 'free',
     'price'        => '0',
     'demo'         => 'http://codeasily.com/portfolio-item/gmedia-photomania/',

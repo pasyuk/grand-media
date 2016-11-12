@@ -48,7 +48,7 @@ function gmedia_term_shortcode($atts, $content = ''){
  */
 function gmedia_shortcode($atts, $content = ''){
     global $gmDB, $gmGallery, $gmCore;
-    global $gmedia_shortcode_instance;
+    global $gmedia_shortcode_instance, $gmedia_shortcode_ids;
 
     /**
      * @var $id
@@ -126,16 +126,6 @@ function gmedia_shortcode($atts, $content = ''){
         $module = $preview_module;
     }
 
-    $module = $gmCore->get_module_path($module);
-    if(!$module || !file_exists($module['path'] . '/index.php') || !file_exists($module['path'] . '/settings.php')){
-        return '<div class="gmedia_gallery gmediaShortcodeError" data-id="' . $id . '" data-error="' . $_module . ': folder missed or module broken">' . $content . '</div>';
-    }
-
-    if($_module !== $module['name']){
-        $_module  = $module['name'];
-        $settings = array($_module => array());
-    }
-
     $gallery = array();
     if(!$id){
         $string2hash = json_encode(array($_module => $query));
@@ -145,6 +135,16 @@ function gmedia_shortcode($atts, $content = ''){
                          'name'        => __('Gallery', 'grand-media'),
                          'description' => ''
         );
+    }
+
+    $module = $gmCore->get_module_path($module);
+    if(!$module || !is_file($module['path'] . '/index.php') || !is_file($module['path'] . '/settings.php')){
+        return '<div class="gmedia_gallery gmediaShortcodeError" data-gmid="' . $id . '" data-error="' . $_module . ': folder missed or module broken">' . $content . '</div>';
+    }
+
+    if($_module !== $module['name']){
+        $_module  = $module['name'];
+        $settings = array($_module => array());
     }
 
     include($module['path'] . '/index.php');
@@ -169,8 +169,10 @@ function gmedia_shortcode($atts, $content = ''){
 
     $query = array_merge(apply_filters('gmedia_shortcode_query', $query, $id), $protected_query_args);
 
+    $moduleCSS = isset($gmGallery->do_module[ $_module ])? '' : $gmGallery->load_module_styles($module);
+
     $gmGallery->do_module[ $_module ] = $module;
-    $gmGallery->shortcode             = compact('id', 'query', 'module', 'settings', 'term');
+    $gmGallery->shortcode[ $id ]      = compact('id', 'query', 'module', 'settings', 'term');
 
     $customCSS = (isset($settings['customCSS']) && ('' !== trim($settings['customCSS'])))? $settings['customCSS'] : '';
     unset($settings['customCSS']);
@@ -243,7 +245,7 @@ function gmedia_shortcode($atts, $content = ''){
         }
 
         if(0 === count($gmedia)){
-            return '<div class="gmedia_gallery gmedia_gallery_empty">' . __('Gallery is empty') . '<br />' . $content . '</div>';
+            return '<div class="gmedia_gallery gmedia_gallery_empty" data-gmid="' . esc_attr($id) . '" data-module="' . $_module . '">' . __('Gallery is empty') . '<br />' . $content . '</div>';
         }
     }
 
@@ -262,6 +264,25 @@ function gmedia_shortcode($atts, $content = ''){
     if(!empty($atts['class'])){
         $sc_classes .= ' ' . esc_attr($atts['class']);
     }
+
+    $sc_duplicate = 0;
+    if(empty($gmedia_shortcode_ids)){
+        $gmedia_shortcode_ids[] = (string)$id;
+    } else{
+        if(in_array($id, $gmedia_shortcode_ids)){
+            $sc_duplicate = 1;
+            while(true){
+                if(in_array("{$id}_{$sc_duplicate}", $gmedia_shortcode_ids)){
+                    $sc_duplicate ++;
+                } else{
+                    $gmedia_shortcode_ids[] = "{$id}_{$sc_duplicate}";
+                    break;
+                }
+            }
+        } else{
+            $gmedia_shortcode_ids[] = (string)$id;
+        }
+    }
     $sc_id = str_replace(' ', '_', "GmediaGallery_{$id}");
 
     if(!empty($atts['style'])){
@@ -270,7 +291,8 @@ function gmedia_shortcode($atts, $content = ''){
 
     do_action('pre_gmedia_shortcode');
 
-    $out = '<div class="' . $sc_classes . '" id="' . $sc_id . '" data-gallery="' . esc_attr($id) . '" data-module="' . $_module . '"' . $sc_styles . '>';
+    $out = $moduleCSS;
+    $out .= '<div class="' . $sc_classes . '" id="' . $sc_id . '" data-gmid="' . esc_attr($id) . '" data-module="' . $_module . '"' . $sc_styles . '>';
     $out .= $content;
 
     ob_start();
@@ -285,6 +307,10 @@ function gmedia_shortcode($atts, $content = ''){
 
     $out .= $module_content;
     $out .= '</div>';
+
+    if($sc_duplicate){
+        $out = str_replace($sc_id, "{$sc_id}_{$sc_duplicate}", $out);
+    }
 
     do_action('gmedia_shortcode');
 

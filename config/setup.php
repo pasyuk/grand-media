@@ -20,6 +20,8 @@ function gmedia_default_options(){
     $gm['site_description'] = '';
     $gm['mobile_app']       = 0;
 
+    $gm['modules_update'] = 0;
+
     $gm['gmedia_post_slug']              = 'gmedia';
     $gm['gmedia_exclude_from_search']    = '0';
     $gm['gmedia_has_archive']            = '1';
@@ -32,10 +34,15 @@ function gmedia_default_options(){
     $gm['gmedia_gallery_post_slug']           = 'gmedia-gallery';
     $gm['gmedia_gallery_has_archive']         = '0';
     $gm['gmedia_gallery_exclude_from_search'] = '0';
-    $gm['preview_bgcolor']                    = 'ffffff';
 
-    $gm['default_gmedia_term_comment_status'] = 'closed'; // can be 'closed', 'open'
+    $gm['wp_term_related_gmedia'] = '1';
+    $gm['wp_post_related_gmedia'] = '0';
 
+    $gm['preview_bgcolor'] = 'ffffff';
+
+    //$gm['default_gmedia_term_comment_status'] = 'closed'; // can be 'closed', 'open'
+
+    $gm['delete_originals']   = '0';
     $gm['uninstall_dropdata'] = 'none'; // can be 'all', 'none', 'db'
 
     $gm['name2title_capitalize'] = '1';
@@ -50,7 +57,7 @@ function gmedia_default_options(){
 
     $gm['isolation_mode'] = '1';
     $gm['shortcode_raw']  = '0';
-    $gm['debug_mode']     = WP_DEBUG? '1' : '';
+    $gm['debug_mode']     = '';
 
     $gm['endpoint']                  = 'gmedia';
     $gm['gmediacloud_socialbuttons'] = '1';

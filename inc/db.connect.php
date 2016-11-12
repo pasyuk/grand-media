@@ -640,7 +640,6 @@ class GmediaDB{
 
     /**
      * Retrieves gmedia data given a gmedia ID or gmedia object.
-     * $media, must be given as a variable, since it is passed by reference.
      * @see  get_post()
      * @uses $wpdb
      *
@@ -649,7 +648,7 @@ class GmediaDB{
      *
      * @return mixed Gmedia data
      */
-    function get_gmedia(&$media, $output = OBJECT){
+    function get_gmedia($media, $output = OBJECT){
         /** @var $wpdb wpdb */
         global $wpdb;
         $null = null;
@@ -693,7 +692,6 @@ class GmediaDB{
 
     /**
      * Retrieves gmedia data given a post ID or post object.
-     * $post, must be given as a variable, since it is passed by reference.
      * @uses $wpdb
      *
      * @param int|object $post   Post ID or gmedia post object.
@@ -701,7 +699,7 @@ class GmediaDB{
      *
      * @return mixed Gmedia data
      */
-    function get_post_gmedia(&$post, $output = OBJECT){
+    function get_post_gmedia($post, $output = OBJECT){
         /** @var $wpdb wpdb */
         global $wpdb;
         $null = null;
@@ -2721,7 +2719,7 @@ class GmediaDB{
      * @param string|array $taxonomies Taxonomy name or list of Taxonomy names
      * @param string|array $args       The values of what to search for when returning terms
      *
-     * @return array|WP_Error List of Term Objects. Will return WP_Error, if any of $taxonomies do not exist.
+     * @return array|WP_Error List of Term Objects. Will return WP_Error, if any of $taxonomies does not exist.
      */
     function get_terms($taxonomies, $args = array()){
         /** @var $wpdb wpdb */

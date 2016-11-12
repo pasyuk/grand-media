@@ -5,6 +5,7 @@
  */
 class GmediaProcessor_Modules extends GmediaProcessor{
     private static $me = null;
+    public $modules = array();
 
     protected function processor(){
         global $gmDB, $gmCore, $gmGallery, $user_ID;
@@ -64,7 +65,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                     $term['name'] = '[' . $term['module'] . '] ' . $term['name'];
 
                     if($edit_preset && !$gmDB->term_exists($edit_preset)){
-                        $this->error[] = __('A term with the id provided do not exists', 'grand-media');
+                        $this->error[] = __('A term with the id provided does not exists', 'grand-media');
                         $edit_preset   = false;
                     }
                     if(($term_id = $gmDB->term_exists($term['name'], $taxonomy, $term['global']))){
@@ -79,7 +80,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                 $module_settings = $gmCore->_post('module', array());
                 $module_path     = $gmCore->get_module_path($term['module']);
                 $default_options = array();
-                if(file_exists($module_path['path'] . '/settings.php')){
+                if(is_file($module_path['path'] . '/settings.php')){
                     /** @noinspection PhpIncludeInspection */
                     include($module_path['path'] . '/settings.php');
                 } else{
@@ -192,6 +193,10 @@ class GmediaProcessor_Modules extends GmediaProcessor{
             }
         }
 
+        $this->modules = get_gmedia_modules();
+        wp_clear_scheduled_hook('gmedia_modules_update');
+        wp_schedule_event(time(), 'daily', 'gmedia_modules_update');
+        $gmCore->modules_update($this->modules);
     }
 
     public static function getMe() {

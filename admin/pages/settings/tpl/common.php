@@ -19,6 +19,14 @@ if(!defined('ABSPATH')){
             <option value="none" <?php selected($gmGallery->options['uninstall_dropdata'], 'none'); ?>><?php _e('Do not delete database and uploaded files', 'grand-media'); ?></option>
         </select>
     </div>
+    <div class="form-group">
+        <label><?php _e('Delete original images', 'grand-media') ?>:</label>
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[delete_originals]" value="0"/>
+            <label><input type="checkbox" name="set[delete_originals]" value="1" <?php checked($gmGallery->options['delete_originals'], '1'); ?> /> <?php _e('Do not keep original images on the server', 'grand-media'); ?> </label>
+        </div>
+        <p class="help-block"><?php _e('Warning: You can\'t undo this operation. Checking this option you agree to delete original images. You will not be able: restore images after modification in the Image Editor; re-create web-optimized images; ...', 'grand-media'); ?></p>
+    </div>
     <div class="form-group row">
         <div class="col-xs-6">
             <label><?php _e('In Tags order gmedia', 'grand-media'); ?></label>

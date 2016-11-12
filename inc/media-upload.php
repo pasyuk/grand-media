@@ -246,7 +246,7 @@ function gmedia_add_media_galleries(){
 
                                 $module      = $gmCore->get_module_path($term_meta['_module']);
                                 $module_info = array('type' => '&#8212;');
-                                if(file_exists($module['path'] . '/index.php')){
+                                if(is_file($module['path'] . '/index.php')){
                                     $broken = false;
                                     /** @noinspection PhpIncludeInspection */
                                     include($module['path'] . '/index.php');
@@ -752,27 +752,9 @@ function gmedia_add_media_library(){
                     <?php
                     if(count($gmediaQuery)){
                         foreach($gmediaQuery as $item){
-                            $meta = $gmDB->get_metadata('gmedia', $item->ID);
-                            $type = explode('/', $item->mime_type);
-
-                            /*
-                            $item_url = $gmCore->upload['url'] . '/' . $gmGallery->options['folder'][$type[0]] . '/' . $item->gmuid;
-                            $item_path = $gmCore->upload['path'] . '/' . $gmGallery->options['folder'][$type[0]] . '/' . $item->gmuid;
-
-                            if (function_exists('exif_imagetype')) {
-                                $is_webimage = (('image' == $type[0]) && in_array(exif_imagetype($item_path), array(IMAGETYPE_GIF,
-                                                                                                                                                                                                        IMAGETYPE_JPEG,
-                                                                                                                                                                                                        IMAGETYPE_PNG)))? true : false;
-                            } else{
-                                $is_webimage = (('image' == $type[0]) && in_array($type[1], array('jpeg', 'png', 'gif')))? true : false;
-                            }
-
-                            $tags = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_tag');
-                            $albs = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_album');
-                            $cats = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category');
-                            */
+                            gmedia_item_more_data($item);
                             ?>
-                            <form class="thumbnail" id="list-item-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-type="<?php echo $type[0]; ?>">
+                            <form class="thumbnail" id="list-item-<?php echo $item->ID; ?>" data-id="<?php echo $item->ID; ?>" data-type="<?php echo $item->type; ?>">
                                 <img src="<?php echo $gmCore->gm_get_media_image($item, 'thumb'); ?>" style="height:100px;width:auto;" alt=""/>
                                 <span class="glyphicon glyphicon-ok text-success"></span>
 
@@ -788,33 +770,34 @@ function gmedia_add_media_library(){
                                         <select id="gmedia_url" class="form-control input-sm" style="display:block;margin-bottom:5px;">
                                             <option value="customurl" selected="selected"><?php _e('Custom URL'); ?></option>
                                             <option value="weburl"><?php _e('Web size image'); ?></option>
-                                            <option value="originalurl"><?php _e('Original image'); ?></option>
+                                            <?php if($item->path_original){ ?>
+                                                <option value="originalurl"><?php _e('Original image'); ?></option>
+                                            <?php } ?>
                                         </select>
                                         <input name="link" type="text" class="customurl form-control input-sm" value="<?php echo $item->link; ?>" placeholder="http://"/>
-                                        <input name="link" type="text" style="display:none;font-size:80%;" readonly="readonly" disabled="disabled" class="weburl form-control input-sm" value="<?php echo $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image'] . '/' . $item->gmuid; ?>"/>
-                                        <input name="link" type="text" style="display:none;font-size:80%;" readonly="readonly" disabled="disabled" class="originalurl form-control input-sm" value="<?php echo $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid; ?>"/>
+                                        <input name="link" type="text" style="display:none;font-size:80%;" readonly="readonly" disabled="disabled" class="weburl form-control input-sm" value="<?php echo $item->url_web; ?>"/>
+                                        <?php if($item->path_original){ ?>
+                                            <input name="link" type="text" style="display:none;font-size:80%;" readonly="readonly" disabled="disabled" class="originalurl form-control input-sm" value="<?php echo $item->url_original; ?>"/>
+                                        <?php } ?>
                                     </div>
                                     <div class="form-group">
                                         <label><?php _e('Description', 'grand-media'); ?></label>
                                         <textarea name="description" class="form-control input-sm" rows="4" cols="10"><?php echo esc_textarea($item->description); ?></textarea>
                                     </div>
-                                    <?php //if($is_webimage){
-                                    ?>
-                                    <?php if('image' == $type[0]){
-                                        //$_metadata = maybe_unserialize($meta['_metadata'][0]);
-                                        $_metadata = $meta['_metadata'][0];
+                                    <?php if('image' == $item->type){
+                                        $_metadata = $item->meta['_metadata'][0];
                                         ?>
                                         <div class="form-group">
                                             <label><?php _e('Size', 'grand-media'); ?></label>
                                             <select name="size" class="form-control input-sm">
                                                 <option value="thumb"><?php echo 'Thumb - ' . $_metadata['thumb']['width'] . ' × ' . $_metadata['thumb']['height']; ?></option>
                                                 <option value="web" selected="selected"><?php echo 'Web - ' . $_metadata['web']['width'] . ' × ' . $_metadata['web']['height']; ?></option>
-                                                <option value="original"><?php echo 'Original - ' . $_metadata['original']['width'] . ' × ' . $_metadata['original']['height']; ?></option>
+                                                <?php if($item->path_original){ ?>
+                                                    <option value="original"><?php echo 'Original - ' . $_metadata['original']['width'] . ' × ' . $_metadata['original']['height']; ?></option>
+                                                <?php } ?>
                                             </select>
                                         </div>
                                     <?php } ?>
-                                    <?php //}
-                                    ?>
                                     <div class="form-group">
                                         <label><?php _e('Alignment', 'grand-media'); ?></label>
                                         <select name="align" class="form-control input-sm">

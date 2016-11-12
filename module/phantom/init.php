@@ -70,29 +70,16 @@ if(!isset($shortcode_raw)){
             $web_size   = array();
             $thumb_size = array();
             foreach($gmedias as $item){
-                $image = $gmCore->gm_get_media_image($item->ID, 'web');
-                $thumb = $gmCore->gm_get_media_image($item->ID, 'thumb');
-                $type  = explode('/', $item->mime_type);
-                $type  = $type[0];
-                $ext   = strtolower(pathinfo($item->gmuid, PATHINFO_EXTENSION));
+                gmedia_item_more_data($item);
+                $image = $item->url_web;
+                $thumb = $item->url_thumb;
+                $type  = $item->type;
+                $ext   = strtolower($item->ext);
 
-                $meta      = $gmDB->get_metadata('gmedia', $item->ID);
-                $_metadata = isset($meta['_metadata'])? $meta['_metadata'][0] : array();
-                if(!isset($_metadata['web'])){
-                    if(!isset($web_size[ $image ])){
-                        $web_size[ $image ] = getimagesize($image);
-                    }
-                    $_metadata['web'] = array('width' => $web_size[ $image ][0], 'height' => $web_size[ $image ][1]);
-
-                    if(!isset($thumb_size[ $image ])){
-                        $thumb_size[ $image ] = getimagesize($thumb);
-                    }
-                    $_metadata['thumb'] = array('width' => $thumb_size[ $image ][0], 'height' => $thumb_size[ $image ][1]);
-                }
-
+                $meta      = $item->meta;
                 $description = str_replace(array("\r\n", "\r", "\n"), '', wpautop($item->description));
                 $title       = $item->title;
-                $alttext     = !empty($meta['_image_alt'][0])? $meta['_image_alt'][0] : $item->title;
+                $alttext     = $item->alttext;
 
                 $link_target = '';
                 if($item->link){
@@ -109,12 +96,12 @@ if(!isset($shortcode_raw)){
                 }
 
                 if('image' === $type){
-                    $download_link = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_original']}/{$item->gmuid}";
+                    $download_link = $item->url_original;
                 } else{
-                    $download_link = "{$gmCore->upload['url']}/{$gmGallery->options['folder'][$type]}/{$item->gmuid}";
+                    $download_link = $item->url;
                 }
 
-                $thumb_r   = $_metadata['thumb']['width'] / $_metadata['thumb']['height'];
+                $thumb_r   = $item->thumb_width / $item->thumb_height;
                 $item_data = array('id'      => $item->ID,
                                    'post_id' => $item->post_id,
                                    'ratio'   => $thumb_r,
@@ -150,11 +137,12 @@ if(!isset($shortcode_raw)){
 
                 $item_data_html = '';
                 foreach($item_data as $key => $val){
+                    $val = esc_attr($val);
                     $item_data_html .= " data-{$key}=\"{$val}\"";
                 }
                 ?>
             <div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo(!in_array($type, array('image'))? " mfp-iframe" : ''); ?>"<?php echo $item_data_html; ?>>
-                <a href="<?php echo "{$gmCore->upload['url']}/{$gmGallery->options['folder'][$type]}/{$item->gmuid}"; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php esc_attr_e($alttext); ?>"/></a>
+                <a href="<?php echo $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php esc_attr_e($alttext); ?>"/></a>
                 <?php
                 if(in_array($allsettings['thumbsInfo'], array('label', 'label_bottom'))){ ?>
                     <div class="gmPhantom_ThumbLabel"><span class="gmPhantom_ThumbLabel_title"><?php echo $title; ?></span></div>
@@ -173,7 +161,7 @@ if(!isset($shortcode_raw)){
                     <?php } ?>
                     <?php
                     $tags = array();
-                    if((int)$allsettings['show_tags'] && ($terms = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_tag'))){
+                    if((int)$allsettings['show_tags'] && ($terms = $item->tags)){
                         foreach($terms as $_term){
                             $url    = add_query_arg(array("gm{$id}" => array('tag__in' => $_term->term_id)), $term_url);
                             $tags[] = '<a href="' . urldecode($url) . '" class="gmPhantom_tag">#' . $_term->name . '</a>';
@@ -181,7 +169,7 @@ if(!isset($shortcode_raw)){
                     }
 
                     $categories = array();
-                    if((int)$allsettings['show_categories'] && ($terms = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category'))){
+                    if((int)$allsettings['show_categories'] && ($terms = $item->categories)){
                         foreach($terms as $_term){
                             $url          = add_query_arg(array("gm{$id}" => array('category__in' => $_term->term_id)), $term_url);
                             $categories[] = '<a href="' . urldecode($url) . '" class="gmPhantom_cat">' . $_term->name . '</a>';
@@ -189,7 +177,7 @@ if(!isset($shortcode_raw)){
                     }
 
                     $albums = array();
-                    if((int)$allsettings['show_albums'] && ($terms = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_album'))){
+                    if((int)$allsettings['show_albums'] && ($terms = $item->album)){
                         foreach($terms as $_term){
                             $url      = add_query_arg(array("gm{$id}" => array('album__in' => $_term->term_id)), $term_url);
                             $albums[] = '<a href="' . urldecode($url) . '" class="gmPhantom_alb">' . $_term->name . '</a>';
@@ -330,14 +318,22 @@ if(isset($settings['thumbAlphaHover'])){
 {$cssid} .gmPhantom_ThumbContainer:hover .gmPhantom_Thumb {opacity:{$alpha};}";
 }
 if(isset($settings['thumbBorderSize']) || isset($settings['thumbBorderColor'])){
-    if((int)$settings['thumbBorderSize']){
+    if((int)$allsettings['thumbBorderSize']){
         $dcss .= "
 {$cssid} .gmPhantom_ThumbContainer,
 {$cssid} .gmPhantom_LoadMore {border:{$allsettings['thumbBorderSize']}px solid #{$allsettings['thumbBorderColor']};}";
+    } else{
+        $dcss .= "
+{$cssid} .gmPhantom_ThumbContainer,
+{$cssid} .gmPhantom_LoadMore {border:none;}";
     }
 }
 if(isset($settings['thumbBorderSize'])){
-    if((int)$settings['thumbBorderSize'] > 1){
+    if((int)$settings['thumbBorderSize'] == 0){
+        $dcss .= "
+{$cssid} .gmPhantom_ThumbContainer,
+{$cssid} .gmPhantom_LoadMore {box-shadow:none;}";
+    } else{
         $dcss .= "
 {$cssid} .gmPhantom_ThumbContainer,
 {$cssid} .gmPhantom_LoadMore {box-shadow:0 0 5px -2px;}";

@@ -119,12 +119,18 @@ if(!defined('ABSPATH')) {
                     <?php if(('image' == $item->type) && !empty($item->meta['_metadata'])) {
                         ?>
                         <br/><span class="label label-default"><?php _e('Dimensions', 'grand-media'); ?>:</span>
+                    <?php
+                    $is_file_original = (bool)$item->path_original;
+                    if($is_file_original){ ?>
                         <a href="<?php echo $item->url_original; ?>"
                            data-target="#previewModal"
                            data-width="<?php echo $item->meta['_metadata'][0]['original']['width']; ?>"
                            data-height="<?php echo $item->meta['_metadata'][0]['original']['height']; ?>"
                            class="preview-modal"
                            title="<?php _e('Original', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['original']['width'] . '×' . $item->meta['_metadata'][0]['original']['height']; ?></a>,
+                    <?php } else{ ?>
+                        <span title="<?php _e('Original', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['original']['width'] . '×' . $item->meta['_metadata'][0]['original']['height']; ?></span>,
+                    <?php } ?>
                         <a href="<?php echo $item->url; ?>"
                            data-target="#previewModal"
                            data-width="<?php echo $item->meta['_metadata'][0]['web']['width']; ?>"

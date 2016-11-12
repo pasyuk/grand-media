@@ -9,12 +9,16 @@ if(!defined('ABSPATH')){
  * @var $term_id
  * @var $gmedia_term_taxonomy
  * @var $gmProcessor
+ * @var $gmCore
  */
+$curpage = $gmCore->_get('page', 'GrandMedia');
+$refurl = strpos(wp_get_referer(), "page={$curpage}")? wp_get_referer() : $gmProcessor->url;
+$referer = remove_query_arg(array('edit_term', 'gmedia_module'), $refurl);
 ?>
 <div class="panel-heading-fake"></div>
 <div class="panel-heading clearfix">
     <div class="btn-toolbar pull-left">
-        <a class="btn btn-default pull-left" style="margin-right:20px;" href="<?php echo remove_query_arg(array('edit_term', 'gmedia_module'), wp_get_referer()); ?>"><?php _e('Go Back', 'grand-media'); ?></a>
+        <a class="btn btn-default pull-left" style="margin-right:20px;" href="<?php echo $referer; ?>"><?php _e('Go Back', 'grand-media'); ?></a>
 
         <?php if($term_id){ ?>
             <div class="btn-group">

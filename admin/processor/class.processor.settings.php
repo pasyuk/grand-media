@@ -96,6 +96,24 @@ class GmediaProcessor_Settings extends GmediaProcessor{
                 }
             }
 
+            if(isset($set['delete_originals']) && (int)$set['delete_originals']){
+//                if (($handle = opendir($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original']))) {
+//                    while (false !== ($file = readdir($handle))) {
+//                        // do something with the file
+//                        // note that '.' and '..' is returned even
+//                        @unlink($file);
+//                    }
+//                    closedir($handle);
+//                }
+                $files = glob( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT);
+                if(!empty($files)){
+                    foreach($files as $file){
+                        @unlink($file);
+                    }
+                }
+
+            }
+
             update_option('gmediaOptions', $gmGallery->options);
             if(isset($_POST['GmediaHashID_salt'])){
                 update_option('GmediaHashID_salt', (string)$_POST['GmediaHashID_salt']);

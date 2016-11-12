@@ -1080,7 +1080,11 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                     );
                     $gmedias[ $i ]->meta['thumb']['link']    = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_thumb']}/{$item->gmuid}";
                     $gmedias[ $i ]->meta['web']['link']      = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image']}/{$item->gmuid}";
-                    $gmedias[ $i ]->meta['original']['link'] = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_original']}/{$item->gmuid}";
+                    if(is_file("{$gmCore->upload['path']}/{$gmGallery->options['folder']['image_original']}/{$item->gmuid}")){
+                        $gmedias[ $i ]->meta['original']['link'] = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_original']}/{$item->gmuid}";
+                    } else{
+                        $gmedias[ $i ]->meta['original']['link'] = '';
+                    }
 
                     if(isset($_metadata['image_meta'])){
                         $gmedias[ $i ]->meta['data'] = $_metadata['image_meta'];
@@ -1099,7 +1103,11 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                             );
                             $gmedias[ $i ]->meta['thumb']['link']    = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_thumb']}/{$cover_gmedia->gmuid}";
                             $gmedias[ $i ]->meta['web']['link']      = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image']}/{$cover_gmedia->gmuid}";
-                            $gmedias[ $i ]->meta['original']['link'] = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_original']}/{$cover_gmedia->gmuid}";
+                            if(is_file("{$gmCore->upload['path']}/{$gmGallery->options['folder']['image_original']}/{$cover_gmedia->gmuid}")){
+                                $gmedias[ $i ]->meta['original']['link'] = "{$gmCore->upload['url']}/{$gmGallery->options['folder']['image_original']}/{$cover_gmedia->gmuid}";
+                            } else{
+                                $gmedias[ $i ]->meta['original']['link'] = '';
+                            }
                         }
                     }
                     unset($meta['_cover']);
@@ -1223,7 +1231,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                         $term['status'] = 'publish';
                     }
                     if($edit_term && !$gmDB->term_exists($edit_term, $taxonomy)){
-                        $error[]   = __('A term with the id provided do not exists', 'grand-media');
+                        $error[]   = __('A term with the id provided does not exists', 'grand-media');
                         $edit_term = false;
                     }
                     $term_author = isset($term['global'])? $term['global'] : false;
@@ -1335,7 +1343,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                                 $error_info['terms'][ $term_id ] = $term['name'];
                             }
                         } else{
-                            $error[] = __("A term with the id provided do not exists", 'grand-media');
+                            $error[] = __("A term with the id provided does not exists", 'grand-media');
                         }
                     } else{
                         $error[] = __("Term name can't be only digits or empty", 'grand-media');
@@ -1406,7 +1414,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                                 $error_info['terms'][ $term_id ] = $term['name'];
                             }
                         } else{
-                            $error[] = __("A term with the id provided do not exists", 'grand-media');
+                            $error[] = __("A term with the id provided does not exists", 'grand-media');
                         }
                     } else{
                         $error[] = __("Term name can't be only digits or empty", 'grand-media');

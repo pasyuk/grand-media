@@ -6,82 +6,24 @@ if(!defined('ABSPATH')){
     exit;
 } // Exit if accessed directly
 
-add_action('pre_get_posts', 'gmedia_alter_query');
+global $gmGallery;
 
-function gmedia_alter_query($query){
-    $gm_tax = '';
-    if(!empty($query->query['gmedia_tag'])){
-        $gm_tax = 'gmedia_tag';
-    } elseif(!empty($query->query['gmedia_category'])){
-        $gm_tax = 'gmedia_category';
-    }
-    if($gm_tax){
-        global $wp_query, $gmDB, $gmGallery;
-        $term = urldecode($query->query[ $gm_tax ]);
-        if($term && ($term_id = $gmDB->term_exists($term, $gm_tax))){
-            $args = array('tag_id' => $term_id);
-            if('gmedia_tag' == $gm_tax){
-                $args['orderby']  = $gmGallery->options['in_tag_orderby'];
-                $args['order']    = $gmGallery->options['in_tag_order'];
-                $wp_query->is_tag = true;
-            } elseif('gmedia_category' == $gm_tax){
-                $term_meta             = $gmDB->get_metadata('gmedia_term', $term_id);
-                $args['orderby']       = isset($term_meta['_orderby'][0])? $term_meta['_orderby'][0] : $gmGallery->options['in_category_orderby'];
-                $args['order']         = isset($term_meta['_order'][0])? $term_meta['_order'][0] : $gmGallery->options['in_category_order'];
-                $wp_query->is_category = true;
-            }
-            $gmedias  = $gmDB->get_gmedias($args);
-            $post_ids = array();
-            foreach($gmedias as $item){
-                $post_ids[] = $item->post_id;
-            }
-            if(!empty($post_ids)){
-                $query->set($gm_tax, null);
-                $query->set('post_type', 'gmedia');
-                $query->set('post__in', $post_ids);
-                $query->set('orderby', 'post__in');
-
-                $wp_query->is_tax     = true;
-                $wp_query->is_archive = true;
-
-                //we remove the actions hooked on the '__after_loop' (post navigation)
-                remove_all_actions('__after_loop');
-            }
-        }
-    }
+add_action('wp_head', 'gmogmeta_header'); // Generate og:image meta tag
+add_action('pre_get_posts', 'gmedia_alter_query'); // Show taxonomy archives for gmedia tags and categories
+if((int)$gmGallery->options['wp_term_related_gmedia']){
+    add_filter('the_posts', 'gmedia_the_posts_filter', 10, 2); // Prepend related gmedia for tags and categories archives
 }
+add_action('the_post', 'gmedia_the_post'); // Show Gmedia post types
 
-function set_gmedia_query(){
-    global $wp_query, $wp_the_query;
-    switch(current_filter()){
-        case '__before_loop':
-            $tax = get_query_var('taxonomy');
-            if(isset($tax) && 'gmedia_tag' == $tax){
-                var_dump($tax);
-            }
-            //replace the current query by a custom query
-            //Note : the initial query is stored in another global named $wp_the_query
-            $wp_query = new WP_Query(array('post_type'   => 'post',
-                                           'post_status' => 'publish',
-                                           //others parameters...
-                                     ));
-        break;
-
-        default:
-            //back to the initial WP query stored in $wp_the_query
-            $wp_query = $wp_the_query;
-        break;
-    }
-}
-
-add_action('wp_head', 'gmogmeta_header');
+/**
+ * Generate og:image meta tag
+ */
 function gmogmeta_header(){
     if(is_single()){
         global $post;
         if(isset($post->post_type) && $post->post_type == 'gmedia'){
             global $gmDB, $gmCore;
-            $gmedia_id = get_post_meta($post->ID, '_gmedia_ID', true);
-            $gmedia    = $gmDB->get_gmedia($gmedia_id);
+            $gmedia = $gmDB->get_post_gmedia($post->ID);
             if($gmedia){
                 $image_url = $gmCore->gm_get_media_image($gmedia, 'web');
                 ?>
@@ -94,14 +36,165 @@ function gmogmeta_header(){
     }
 }
 
-add_action('the_post', 'gmedia_the_post');
-function gmedia_the_post($post){
-    if('gmedia' == substr($post->post_type, 0, 6)){
-        add_filter('get_the_excerpt', 'gmedia_post_type__the_excerpt', 150);
-        add_filter('the_content', 'gmedia_post_type__the_content', 200);
+/** Show taxonomy archives for gmedia tags and categories
+ * @param $query
+ */
+function gmedia_alter_query($query){
+    if(!empty($query->query['gmedia_tag'])){
+        $gm_tax = 'gmedia_tag';
+    } elseif(!empty($query->query['gmedia_category'])){
+        $gm_tax = 'gmedia_category';
+    } else{
+        return;
+    }
+
+    global $wp_query, $gmDB, $gmGallery;
+    $term = urldecode($query->query[ $gm_tax ]);
+    if(!$term || !($term_id = $gmDB->term_exists($term, $gm_tax))){
+        return;
+    }
+
+    $args = array('fields' => 'post_ids', 'status' => array('publish'));
+    if(get_current_user_id()){
+        $args['status'][] = 'private';
+    }
+    if('gmedia_tag' == $gm_tax){
+        $args['tag__in']  = $term_id;
+        $args['orderby']  = $gmGallery->options['in_tag_orderby'];
+        $args['order']    = $gmGallery->options['in_tag_order'];
+        $wp_query->is_tag = true;
+    } elseif('gmedia_category' == $gm_tax){
+        $args['category__in']  = $term_id;
+        $term_meta             = $gmDB->get_metadata('gmedia_term', $term_id);
+        $args['orderby']       = isset($term_meta['_orderby'][0])? $term_meta['_orderby'][0] : $gmGallery->options['in_category_orderby'];
+        $args['order']         = isset($term_meta['_order'][0])? $term_meta['_order'][0] : $gmGallery->options['in_category_order'];
+        $wp_query->is_category = true;
+    }
+    $gmedias  = $gmDB->get_gmedias($args);
+    $post_ids = array();
+    foreach($gmedias as $item){
+        $post_ids[] = $item->post_id;
+    }
+    if(!empty($post_ids)){
+        $query->set($gm_tax, null);
+        $query->set('post_type', 'gmedia');
+        $query->set('post__in', $post_ids);
+        $query->set('orderby', 'post__in');
+
+        $wp_query->is_tax     = true;
+        $wp_query->is_archive = true;
+
+        //we remove the actions hooked on the '__after_loop' (post navigation)
+        remove_all_actions('__after_loop');
     }
 }
 
+/** Add related media for tags and categories
+ * @param $posts
+ * @param $query
+ *
+ * @return mixed
+ */
+function gmedia_the_posts_filter($posts, $query){
+
+    $paged = (get_query_var('paged'))? get_query_var('paged') : 1;
+    if($paged != 1){
+        return $posts;
+    }
+
+    if(!empty($query->query['tag'])){
+        $tax = 'tag';
+    } elseif(!empty($query->query['category'])){
+        $tax = 'category';
+    } else{
+        return $posts;
+    }
+
+    global $wp_query, $gmDB, $gmGallery;
+    $term   = urldecode($query->query[ $tax ]);
+    $gm_tax = "gmedia_{$tax}";
+    if(!$term || !($term_id = $gmDB->term_exists($term, $gm_tax))){
+        return $posts;
+    }
+
+    $args = array('fields' => 'post_ids', 'status' => array('publish'), 'limit' => 1);
+    if(get_current_user_id()){
+        $args['status'][] = 'private';
+    }
+    if('tag' == $tax){
+        $args['tag__in']  = $term_id;
+        $args['orderby']  = $gmGallery->options['in_tag_orderby'];
+        $args['order']    = $gmGallery->options['in_tag_order'];
+        $wp_query->is_tag = true;
+    } elseif('category' == $tax){
+        $args['category__in']  = $term_id;
+        $term_meta             = $gmDB->get_metadata('gmedia_term', $term_id);
+        $args['orderby']       = isset($term_meta['_orderby'][0])? $term_meta['_orderby'][0] : $gmGallery->options['in_category_orderby'];
+        $args['order']         = isset($term_meta['_order'][0])? $term_meta['_order'][0] : $gmGallery->options['in_category_order'];
+        $wp_query->is_category = true;
+    }
+    $gmedia_ids = $gmDB->get_gmedias($args);
+    if(count($gmedia_ids)){
+        $query->gmedia_term_post = $term_id;
+        array_unshift($posts, $gmedia_ids[0]->post_id);
+    }
+
+    return $posts;
+}
+
+/** Show related media for tags and categories
+ * @param $post
+ */
+function gmedia_the_post($post){
+    global $gmGallery;
+    if('gmedia' == substr($post->post_type, 0, 6)){
+        global $wp_query, $gmDB;
+        if(isset($wp_query->gmedia_term_post)){
+            global $post;
+            $term = $gmDB->get_term($wp_query->gmedia_term_post);
+            $date = gmdate('Y-m-d H:i:s');
+            $post = (object)array('ID'                    => 0,
+                                  'term_id'               => $term->term_id,
+                                  'post_author'           => 0,
+                                  'post_date'             => $date,
+                                  'post_date_gmt'         => $date,
+                                  'post_content'          => "[gm id={$term->term_id}]",
+                                  'post_title'            => __('Related Media', 'grand-media') . ': ' . $term->name,
+                                  'post_excerpt'          => '',
+                                  'post_status'           => 'publish',
+                                  'comment_status'        => 'closed',
+                                  'ping_status'           => 'closed',
+                                  'post_password'         => '',
+                                  'post_name'             => '',
+                                  'to_ping'               => '',
+                                  'pinged'                => '',
+                                  'post_modified'         => $date,
+                                  'post_modified_gmt'     => $date,
+                                  'post_content_filtered' => '',
+                                  'post_parent'           => '0',
+                                  'guid'                  => '',
+                                  'menu_order'            => '0',
+                                  'post_type'             => $term->taxonomy,
+                                  'post_mime_type'        => '',
+                                  'comment_count'         => '0',
+                                  'filter'                => 'raw',
+            );
+            $wp_query->posts[0] = $post;
+            $wp_query->post = $post;
+            unset($wp_query->gmedia_term_post);
+        }
+        add_filter('get_the_excerpt', 'gmedia_post_type__the_excerpt', 150);
+        add_filter('the_content', 'gmedia_post_type__the_content', 200);
+    } elseif('post' == $post->post_type && (int)$gmGallery->options['wp_post_related_gmedia'] && is_single()){
+        add_filter('the_content', 'gmedia_related__the_content', 200);
+    }
+}
+
+/**
+ * @param $content
+ *
+ * @return mixed|string
+ */
 function gmedia_post_type__the_excerpt($content){
     remove_filter('get_the_excerpt', 'gmedia_post_type__the_excerpt', 150);
     remove_filter('the_content', 'gmedia_post_type__the_content', 200);
@@ -110,11 +203,17 @@ function gmedia_post_type__the_excerpt($content){
     return gmedia_post_type__the_content($content);
 }
 
+/**
+ * @param $content
+ *
+ * @return mixed|string
+ */
 function gmedia_post_type__the_content($content){
     global $post, $gmDB, $gmCore;
 
     if(isset($post->gmedia_content)){
         $post->post_content = $post->gmedia_content;
+
         return $post->gmedia_content;
     }
 
@@ -125,7 +224,6 @@ function gmedia_post_type__the_content($content){
         $gmedia_id = get_post_meta($post->ID, '_gmedia_ID', true);
         $gmedia    = $gmDB->get_gmedia($gmedia_id);
         if($gmedia){
-            include_once(GMEDIA_ABSPATH . 'admin/pages/library/functions.php');
             gmedia_item_more_data($gmedia);
 
             ob_start();
@@ -394,11 +492,13 @@ function gmedia_post_type__the_content($content){
 
     } else{
         if('get_the_excerpt' != current_filter()){
-            $term_id = get_post_meta($post->ID, '_gmedia_term_ID', true);
-            if(in_array($post->post_type, array('gmedia_album'))){
-                $output .= do_shortcode("[gm id={$term_id}]");
-            } elseif($post->post_type == 'gmedia_gallery'){
-                $output .= do_shortcode("[gmedia id={$term_id}]");
+            if(!isset($post->term_id)){
+                $post->term_id = get_post_meta($post->ID, '_gmedia_term_ID', true);
+            }
+            if($post->post_type == 'gmedia_gallery'){
+                $output .= do_shortcode("[gmedia id={$post->term_id}]");
+            } else{
+                $output .= do_shortcode("[gm id={$post->term_id}]");
             }
         }
     }
@@ -406,35 +506,53 @@ function gmedia_post_type__the_content($content){
     $output = str_replace(array("\r\n", "\r", "\n"), '', $output);
     $output = preg_replace('/ {2,}/', ' ', $output);
 
-    $post->post_content = $output;
+    $post->post_content   = $output;
     $post->gmedia_content = $output;
 
     return $output;
 }
 
-/*
-add_filter('the_title', 'gmedia_post_type__the_title', 10, 2);
-function gmedia_post_type__the_title($title, $id = null) {
-    if($id && !trim($title)) {
-        $post = get_post($id);
-        if(isset($post->post_type) && (strpos($post->post_type, 'gmedia') !== false)) {
-            global $gmDB;
-            if($post->post_type == 'gmedia') {
-                $gmedia_id = get_post_meta($post->ID, '_gmedia_ID', true);
-                $gmedia    = $gmDB->get_gmedia($gmedia_id);
-                if($gmedia) {
-                    $title = trim($gmedia->title)? $gmedia->title : $gmedia->gmuid;
-                }
-            } else {
-                $term_id = get_post_meta($post->ID, '_gmedia_term_ID', true);
-                $gmedia_term = $gmDB->get_term($term_id, $post->post_type);
-                if($gmedia_term) {
-                    $title = $gmedia_term->name;
-                }
-            }
-        }
+/**
+ * @param $content
+ *
+ * @return mixed|string
+ */
+function gmedia_related__the_content($content){
+    global $post, $gmDB, $gmGallery, $user_ID;
+
+    remove_filter('the_content', 'gmedia_related__the_content', 200);
+
+    $post_terms = get_the_tags($post->ID);
+    if(empty($post_terms)){
+        return $content;
     }
 
-    return $title;
+    $args = array('status' => array('publish'),
+                  'orderby' => $gmGallery->options['in_tag_orderby'],
+                  'order' => $gmGallery->options['in_tag_order'],
+                  'null_tags'    => true
+                  );
+    if($user_ID){
+        $args['status'][] = 'private';
+    }
+    foreach($post_terms as $term){
+        $args['tag_name__in'][] = $term->name;
+    }
+
+    $gmedias = $gmDB->get_gmedias($args);
+    if(empty($gmedias)){
+        return $content;
+    }
+
+    unset($args['null_tags']);
+    $gmedia_content = gmedia_shortcode(array('query' => $args));
+
+    $gmedia_content = str_replace(array("\r\n", "\r", "\n"), '', $gmedia_content);
+    $gmedia_content = preg_replace('/ {2,}/', ' ', $gmedia_content);
+
+    $content   .= apply_filters('before_gmedia_related__the_content', '');
+    $content   .= $gmedia_content;
+    $content   .= apply_filters('after_gmedia_related__the_content', '');
+
+    return $content;
 }
-*/

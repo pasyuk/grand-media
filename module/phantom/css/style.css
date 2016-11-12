@@ -53,6 +53,7 @@ div.gmPhantom_Container img {
   z-index:2;
   -webkit-backface-visibility:hidden;
   backface-visibility:hidden;
+  max-width:100%;
 }
 .gmPhantom_ThumbContainer,
 .gmPhantom_LoadMore {

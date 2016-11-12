@@ -26,7 +26,7 @@ if(!defined('ABSPATH')) {
                          * @var $module_path
                          */
                         extract($m);
-                        if (! file_exists($module_path . '/index.php')) {
+                        if (! is_file($module_path . '/index.php')) {
                             continue;
                         }
                         $module_info = array();

@@ -27,6 +27,10 @@ $openPage = $gmDB->openPage;
 $perPages = $gmDB->perPages;
 $idx0 = $perPages * ($openPage - 1);
 
+if(isset($gmedia_filter['author__in']) && !gm_user_can('show_others_media')){
+    unset($gmDB->filter['author__in']);
+    unset($gmedia_filter['author__in']);
+}
 if($_get_filter && ($_get_filter != 'selected')){
     unset($gmDB->filter['mime_type']);
     unset($gmedia_filter['mime_type']);

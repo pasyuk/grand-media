@@ -40,7 +40,7 @@ if ( isset( $gmedia_modules['in'][ $term->module['name'] ] ) ) {
      * @var $default_options
      */
     extract( $gmedia_modules['in'][ $term->module['name'] ] );
-    if ( file_exists( $module_path . '/index.php' ) && file_exists( $module_path . '/settings.php' ) ) {
+    if ( is_file( $module_path . '/index.php' ) && is_file( $module_path . '/settings.php' ) ) {
         /** @noinspection PhpIncludeInspection */
         include( $module_path . '/index.php' );
         /** @noinspection PhpIncludeInspection */

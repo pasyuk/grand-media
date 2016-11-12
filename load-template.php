@@ -73,21 +73,21 @@ $module = $gmCore->get_module_path( $gmedia_module );
 /** @noinspection PhpIncludeInspection */
 require_once( GMEDIA_ABSPATH . 'template/functions.php' );
 
-if ( file_exists( $module['path'] . "/template/functions.php" ) ) {
+if ( is_file( $module['path'] . "/template/functions.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
 	include_once( $module['path'] . "/template/functions.php" );
 }
 
-if ( file_exists( $module['path'] . "/template/{$gmedia_type}.php" ) ) {
+if ( is_file( $module['path'] . "/template/{$gmedia_type}.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
 	require_once( $module['path'] . "/template/{$gmedia_type}.php" );
-} elseif ( in_array( $gmedia_type, array( 'album', 'tag', 'category' ) ) && file_exists( $module['path'] . "/template/gallery.php" ) ) {
+} elseif ( in_array( $gmedia_type, array( 'album', 'tag', 'category' ) ) && is_file( $module['path'] . "/template/gallery.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
 	require_once( $module['path'] . "/template/gallery.php" );
 } else {
 	/* only for default template */
 	add_action( 'gmedia_head', 'gmedia_default_template_styles' );
-	if ( file_exists( GMEDIA_ABSPATH . "template/{$gmedia_type}.php" ) ) {
+	if ( is_file( GMEDIA_ABSPATH . "template/{$gmedia_type}.php" ) ) {
 		/** @noinspection PhpIncludeInspection */
 		require_once( GMEDIA_ABSPATH . "template/{$gmedia_type}.php" );
 	} else {

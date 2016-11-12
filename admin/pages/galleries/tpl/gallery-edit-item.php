@@ -112,21 +112,12 @@ if(!defined('ABSPATH')){
                     }
                     $params['iframe'] = 1;
                     ?>
-                    <p><b><?php _e('GmediaCloud page URL for current gallery:'); ?></b> <?php
-                        $endpoint             = $gmGallery->options['endpoint'];
-                        $gmedia_hashid        = gmedia_hash_id_encode($term_id, 'gallery');
-                        $gallery_link_default = add_query_arg(array("$endpoint" => $gmedia_hashid, 't' => 'g'), home_url('index.php'));
-                        if(get_option('permalink_structure')){
-                            $gallery_link = home_url(urlencode($endpoint) . '/g/' . $gmedia_hashid);
-                        } else{
-                            $gallery_link = $gallery_link_default;
-                        } ?>
-                        <br/><a target="_blank" href="<?php echo $gallery_link; ?>"><?php echo $gallery_link; ?></a>
+                    <p><b><?php _e('GmediaCloud page URL for current gallery:'); ?></b>
+                        <br/><a target="_blank" href="<?php echo $term->cloud_link; ?>"><?php echo $term->cloud_link; ?></a>
                     </p>
-                    <?php if($term->post_id){ ?>
+                    <?php if($term->post_link){ ?>
                         <p><b><?php _e('Gmedia Post URL for current gallery:'); ?></b>
-                            <?php $post_link = get_permalink($term->post_id); ?>
-                            <br/><a target="_blank" href="<?php echo $post_link; ?>"><?php echo $post_link; ?></a>
+                            <br/><a target="_blank" href="<?php echo $term->post_link; ?>"><?php echo $term->post_link; ?></a>
                         </p>
                     <?php } ?>
                     <div class="help-block">
@@ -210,6 +201,7 @@ if(!defined('ABSPATH')){
             <h5><?php _e('Module Settings', 'grand-media'); ?></h5>
         </div>
         <?php
+        $gallery_link_default = $gmCore->gmcloudlink($term->term_id, $term->taxterm, true);
         include(GMEDIA_ABSPATH . 'admin/pages/galleries/tpl/module-settings.php');
         ?>
         <?php if(!empty($alert)){ ?>

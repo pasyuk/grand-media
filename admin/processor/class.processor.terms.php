@@ -126,7 +126,7 @@ class GmediaProcessor_Terms extends GmediaProcessor{
                 }
                 $taxonomy = 'gmedia_album';
                 if($edit_term && !$gmDB->term_exists($edit_term)){
-                    $this->error[] = __('A term with the id provided do not exists', 'grand-media');
+                    $this->error[] = __('A term with the id provided does not exists', 'grand-media');
                     $edit_term     = false;
                 }
                 if(($term_id = $gmDB->term_exists($term['name'], $taxonomy, $term['global']))){
@@ -179,7 +179,7 @@ class GmediaProcessor_Terms extends GmediaProcessor{
                 }
                 $taxonomy = 'gmedia_category';
                 if($edit_term && !$gmDB->term_exists($edit_term)){
-                    $this->error[] = __('A term with the id provided do not exists', 'grand-media');
+                    $this->error[] = __('A term with the id provided does not exists', 'grand-media');
                     $edit_term     = false;
                 }
                 if(($term_id = $gmDB->term_exists($term['name'], $taxonomy))){
