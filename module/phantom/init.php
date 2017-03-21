@@ -23,7 +23,9 @@ $allsettings = array_merge($module['options'], $settings);
 $base_url_host = parse_url($gmCore->upload['url'], PHP_URL_HOST);
 $term_url      = remove_query_arg('gm' . $id);
 
-$query['per_page'] = $allsettings['per_page'];
+if(empty($query['per_page'])){
+    $query['per_page'] = $allsettings['per_page'];
+}
 $gmedias           = $gmDB->get_gmedias($query);
 if($gmDB->openPage < $gmDB->pages){
     $load_query         = $query;
@@ -83,11 +85,14 @@ if(!isset($shortcode_raw)){
 
                 $link_target = '';
                 if($item->link){
-                    $url_host = parse_url($item->link, PHP_URL_HOST);
-                    if($url_host == $base_url_host || empty($url_host)){
-                        $link_target = '_self';
-                    } else{
-                        $link_target = '_blank';
+                    $link_target = $allsettings['link_target'];
+                    if('auto' == $link_target){
+                        $url_host = parse_url($item->link, PHP_URL_HOST);
+                        if($url_host == $base_url_host || empty($url_host)){
+                            $link_target = '_self';
+                        } else{
+                            $link_target = '_blank';
+                        }
                     }
                     if(isset($meta['link_target'][0])){
                         $link_target = $meta['link_target'][0];
@@ -142,7 +147,7 @@ if(!isset($shortcode_raw)){
                 }
                 ?>
             <div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo(!in_array($type, array('image'))? " mfp-iframe" : ''); ?>"<?php echo $item_data_html; ?>>
-                <a href="<?php echo $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php esc_attr_e($alttext); ?>"/></a>
+                <a href="<?php echo (!empty($allsettings['thumb2link']) && $item->link)? $item->link : $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php esc_attr_e($alttext); ?>"/></a>
                 <?php
                 if(in_array($allsettings['thumbsInfo'], array('label', 'label_bottom'))){ ?>
                     <div class="gmPhantom_ThumbLabel"><span class="gmPhantom_ThumbLabel_title"><?php echo $title; ?></span></div>
@@ -201,7 +206,7 @@ if(!isset($shortcode_raw)){
                             <div class="gmPhantom_other_terms">
                                 <table class="gmPhantom_other_terms_table">
                                     <?php foreach($details as $key => $value){ ?>
-                                        <tr class="gmPhantom_term_<?php echo sanitize_key($key); ?>">
+                                        <tr class="gmPhantom_term_row_<?php echo sanitize_key($key); ?>">
                                             <td class="gmPhantom_term_key"><?php echo ucwords($key); ?></td>
                                             <td class="gmPhantom_term_value"><?php echo $value; ?></td>
                                         </tr>
@@ -241,12 +246,14 @@ if(isset($settings['lightboxControlsColor'])){
 }
 if(isset($settings['lightboxTitleColor'])){
     $mfp_css .= "
-{$mfp_id} .mfp-title,
+{$mfp_id} .gmPhantom_title,
 {$mfp_id} .mfp-counter {color:#{$settings['lightboxTitleColor']};}";
 }
 if(isset($settings['lightboxTextColor'])){
     $mfp_css .= "
-{$mfp_id} .mfp-description {color:#{$settings['lightboxTextColor']};}";
+{$mfp_id} .gmPhantom_text,
+{$mfp_id} .gmPhantom_other_terms,
+{$mfp_id} .gmPhantom_other_terms_table {color:#{$settings['lightboxTextColor']};}";
 }
 if(isset($settings['lightboxBGColor'])){
     $mfp_css .= "
@@ -271,8 +278,8 @@ if($mfp_css){
 $cssid = "#GmediaGallery_{$id}";
 $dcss  = '';
 if(isset($settings['thumbWidth']) || isset($settings['thumbHeight']) || isset($settings['thumbWidthMobile']) || isset($settings['thumbHeightMobile'])){
-    $fsize1 = $allsettings['thumbHeight'] / 2;
-    $fsize2 = $allsettings['thumbHeightMobile'] / 2;
+    $fsize1 = min($allsettings['thumbHeight'] / 2, $allsettings['thumbWidth'] / 2);
+    $fsize2 = min($allsettings['thumbHeightMobile'] / 2, $allsettings['thumbWidthMobile'] / 2);
     $dcss .= "
 {$cssid} .gmPhantom_ThumbContainer,
 {$cssid} .gmPhantom_LoadMore {width:{$allsettings['thumbWidth']}px; height:{$allsettings['thumbHeight']}px;}
@@ -280,22 +287,33 @@ if(isset($settings['thumbWidth']) || isset($settings['thumbHeight']) || isset($s
 {$cssid} .gmPhantom_MobileView .gmPhantom_LoadMore {width:{$allsettings['thumbWidthMobile']}px; height:{$allsettings['thumbHeightMobile']}px;}
 {$cssid} .gmPhantom_LoadMore .gmPhantom_pager {font-size:{$fsize1}px;line-height:{$allsettings['thumbHeight']}px;}
 {$cssid} .gmPhantom_MobileView .gmPhantom_LoadMore .gmPhantom_pager {font-size:{$fsize2}px;line-height:{$allsettings['thumbHeightMobile']}px;}
-{$cssid} .gmPhantom_LoadMore[data-col=\"1\"] {width:100%;height:50px;}
+{$cssid} .gmPhantom_LoadMore[data-col=\"1\"] {width:auto;height:50px;}
 {$cssid} .gmPhantom_LoadMore[data-col=\"1\"] .gmPhantom_pager,
 {$cssid} .gmPhantom_MobileView .gmPhantom_LoadMore[data-col=\"1\"] .gmPhantom_pager {font-size:40px;line-height:50px;}";
+}
+if(isset($settings['thumbsAlign'])){
+    $margin = 'margin-left:auto;margin-right:auto;';
+    if('left' == $settings['thumbsAlign']){
+        $margin = 'margin-left:0;';
+    } elseif('right' == $settings['thumbsAlign']){
+        $margin = 'margin-right:0;';
+    }
+    $dcss .= "
+{$cssid} .gmPhantom_Container {{$margin}}";
 }
 if(isset($settings['thumbsSpacing'])){
     $dcss .= "
 {$cssid} .gmPhantom_ThumbContainer,
 {$cssid} .gmPhantom_LoadMore {margin:{$settings['thumbsSpacing']}px 0 0 {$settings['thumbsSpacing']}px;}
-{$cssid} .gmPhantom_LoadMore[data-col=\"1\"] {transform:translate(0, {$settings['thumbsSpacing']}px);}";
+{$cssid} .gmPhantom_LoadMore[data-col=\"1\"] {transform:translate(0, {$settings['thumbsSpacing']}px);margin-bottom:{$settings['thumbsSpacing']}px;}";
 }
 if(isset($settings['thumbPadding'])){
     $dcss .= "
 {$cssid} .gmPhantom_ThumbContainer,
 {$cssid} .gmPhantom_LoadMore {padding:{$allsettings['thumbPadding']}px;}
-{$cssid} .gmPhantom_LabelBottom .gmPhantom_ThumbContainer,
-{$cssid} .gmPhantom_LabelBottom .gmPhantom_LoadMore {padding-bottom:36px;}";
+{$cssid} .gmPhantom_LabelBottom .gmPhantom_ThumbContainer {padding-bottom:36px;}
+{$cssid} .gmPhantom_LabelBottom .gmPhantom_LoadMore {padding-top:36px;}
+{$cssid} .gmPhantom_LabelBottom .gmPhantom_LoadMore[data-col=\"1\"] {padding-top:{$allsettings['thumbPadding']}px;}";
 }
 if(isset($settings['thumbBG'])){
     if('' == $settings['thumbBG']){
@@ -336,7 +354,7 @@ if(isset($settings['thumbBorderSize'])){
     } else{
         $dcss .= "
 {$cssid} .gmPhantom_ThumbContainer,
-{$cssid} .gmPhantom_LoadMore {box-shadow:0 0 5px -2px;}";
+{$cssid} .gmPhantom_LoadMore {box-shadow:0 0 5px -2px #{$allsettings['thumbBorderColor']};}";
     }
 }
 if(isset($settings['label8TextColor'])){

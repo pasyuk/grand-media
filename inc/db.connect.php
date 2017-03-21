@@ -307,7 +307,12 @@ class GmediaDB{
             return '';
         }
         $params = $_GET;
-        unset($params['pager'], $params['do_gmedia'], $params['did_gmedia'], $params['do_gmedia_terms'], $params['did_gmedia_terms'], $params['ids'], $params['_wpnonce'], $params['doing_wp_cron']);
+        foreach ($params as $key => $value) {
+            if (strpos($key, '_wpnonce') !== false) {
+                unset($params[$key]);
+            }
+        }
+        unset($params['pager'], $params['do_gmedia'], $params['did_gmedia'], $params['do_gmedia_terms'], $params['did_gmedia_terms'], $params['ids'], $params['doing_wp_cron']);
         $new_query_string = http_build_query($params);
         //$self             = admin_url( 'admin.php?' . $new_query_string );
         $self = '?' . $new_query_string;
@@ -381,11 +386,11 @@ class GmediaDB{
         $object   = wp_parse_args($object, $defaults);
         if(isset($object['title'])){
             $object['title'] = strip_tags($object['title'], '<span>');
-            $object['title'] = mb_convert_encoding($object['title'], 'UTF-8', 'UTF-8');
+            $object['title'] = $gmCore->mb_convert_encoding_utf8($object['title']);
         }
         if(isset($object['description'])){
             $object['description'] = $gmCore->clean_input($object['description']);
-            $object['description'] = mb_convert_encoding($object['description'], 'UTF-8', 'UTF-8');
+            $object['description'] = $gmCore->mb_convert_encoding_utf8($object['description']);
         }
         if(isset($object['link'])){
             $object['link'] = esc_url_raw($object['link']);
@@ -1512,18 +1517,18 @@ class GmediaDB{
                 $allowed_keys[] = 'meta_value';
                 $allowed_keys[] = 'meta_value_num';
             }
-            if(in_array($q['orderby'], array('title', 'date', 'modified', 'comment_count', 'meta_value', 'meta_value_num'))){
-                $q['orderby'] .= ' ID';
+            if(in_array($q['orderby'], array('custom', 'title', 'date', 'modified', 'comment_count', 'meta_value', 'meta_value_num'))){
+                $q['orderby'] .= ' ID.DESC';
+                $allowed_keys[] = 'ID.DESC';
             }
-
             $orderby_array = array();
-            foreach(explode(' ', $q['orderby']) as $orderby){
+            foreach(explode(' ', $q['orderby']) as $_orderby){
                 // Only allow certain values for safety
-                if(!in_array($orderby, $allowed_keys)){
+                if(!in_array($_orderby, $allowed_keys)){
                     continue;
                 }
 
-                switch($orderby){
+                switch($_orderby){
                     case 'rand':
                         $orderby = 'RAND()';
                     break;
@@ -1545,16 +1550,23 @@ class GmediaDB{
                         $orderby = "{$wpdb->prefix}gmedia.gmuid";
                     break;
                     case 'custom':
-                        $orderby = "{$album['alias']}.gmedia_order {$q['order']}, {$wpdb->prefix}gmedia.ID";
+                        $orderby = "{$album['alias']}.gmedia_order";
                     break;
                     case 'comment_count':
                         $orderby = "wp.comment_count";
                     break;
+                    case 'ID.DESC':
+                        $orderby = "{$wpdb->prefix}gmedia.ID";
+                    break;
                     default:
-                        $orderby = "{$wpdb->prefix}gmedia." . $orderby;
+                        $orderby = "{$wpdb->prefix}gmedia." . $_orderby;
                 }
 
-                $orderby .= " {$q['order']}";
+                if('ID.DESC' !== $_orderby){
+                    $orderby .= " {$q['order']}";
+                } else{
+                    $orderby .= " DESC";
+                }
                 $orderby_array[] = $orderby;
             }
             $orderby = implode(', ', $orderby_array);
@@ -2058,7 +2070,7 @@ class GmediaDB{
         $meta_value = wp_unslash($meta_value);
         $meta_value = sanitize_meta($meta_key, $meta_value, $meta_type);
 
-        $check = apply_filters("add_{$meta_type}_metadata", null, $object_id, $meta_key, $meta_value, $unique);
+        $check = apply_filters("{$meta_type}_add_metadata", null, $object_id, $meta_key, $meta_value, $unique);
         if(null !== $check){
             return $check;
         }
@@ -2070,7 +2082,7 @@ class GmediaDB{
         $_meta_value = $meta_value;
         $meta_value  = maybe_serialize($meta_value);
 
-        do_action("add_{$meta_type}_meta", $object_id, $meta_key, $_meta_value);
+        do_action("{$meta_type}_add_meta", $object_id, $meta_key, $_meta_value);
 
         $result = $wpdb->insert($table, array($column      => $object_id,
                                               'meta_key'   => $meta_key,
@@ -2085,7 +2097,7 @@ class GmediaDB{
 
         wp_cache_delete($object_id, $meta_type . '_meta');
 
-        do_action("added_{$meta_type}_meta", $mid, $object_id, $meta_key, $_meta_value);
+        do_action("{$meta_type}_added_meta", $mid, $object_id, $meta_key, $_meta_value);
 
         return $mid;
     }
@@ -2132,7 +2144,7 @@ class GmediaDB{
         $meta_value   = stripslashes_deep($meta_value);
         $meta_value   = sanitize_meta($meta_key, $meta_value, $meta_type);
 
-        $check = apply_filters("update_{$meta_type}_metadata", null, $object_id, $meta_key, $meta_value, $prev_value);
+        $check = apply_filters("{$meta_type}_update_metadata", null, $object_id, $meta_key, $meta_value, $prev_value);
         if(null !== $check){
             return (bool)$check;
         }
@@ -2162,13 +2174,13 @@ class GmediaDB{
             $where['meta_value'] = $prev_value;
         }
 
-        do_action("update_{$meta_type}_meta", $meta_id, $object_id, $meta_key, $_meta_value);
+        do_action("{$meta_type}_update_meta", $meta_id, $object_id, $meta_key, $_meta_value);
 
         $wpdb->update($table, $data, $where);
 
         wp_cache_delete($object_id, $meta_type . '_meta');
 
-        do_action("updated_{$meta_type}_meta", $meta_id, $object_id, $meta_key, $_meta_value);
+        do_action("{$meta_type}_updated_meta", $meta_id, $object_id, $meta_key, $_meta_value);
 
         return true;
     }
@@ -2211,7 +2223,7 @@ class GmediaDB{
         $meta_key   = stripslashes($meta_key);
         $meta_value = stripslashes_deep($meta_value);
 
-        $check = apply_filters("delete_{$meta_type}_metadata", null, $object_id, $meta_key, $meta_value, $delete_all);
+        $check = apply_filters("{$meta_type}_delete_metadata", null, $object_id, $meta_key, $meta_value, $delete_all);
         if(null !== $check){
             return (bool)$check;
         }
@@ -2257,7 +2269,7 @@ class GmediaDB{
             wp_cache_delete($object_id, $meta_type . '_meta');
         }
 
-        do_action("deleted_{$meta_type}_meta", $meta_ids, $object_id, $meta_key, $_meta_value);
+        do_action("{$meta_type}_deleted_meta", $meta_ids, $object_id, $meta_key, $_meta_value);
 
         return true;
     }
@@ -2284,7 +2296,7 @@ class GmediaDB{
             return false;
         }
 
-        $check = apply_filters("get_{$meta_type}_metadata", null, $object_id, $meta_key, $single);
+        $check = apply_filters("{$meta_type}_get_metadata", null, $object_id, $meta_key, $single);
         if(null !== $check){
             if($single && is_array($check)){
                 return $check[0];
@@ -2414,7 +2426,7 @@ class GmediaDB{
             $where               = array();
             $where[ $id_column ] = $meta_id;
 
-            do_action("update_{$meta_type}_meta", $meta_id, $object_id, $meta_key, $_meta_value);
+            do_action("{$meta_type}_update_meta", $meta_id, $object_id, $meta_key, $_meta_value);
 
             // Run the update query, all fields in $data are %s, $where is a %d.
             $result = $wpdb->update($table, $data, $where, '%s', '%d');
@@ -2425,7 +2437,7 @@ class GmediaDB{
             // Clear the caches.
             wp_cache_delete($object_id, $meta_type . '_meta');
 
-            do_action("updated_{$meta_type}_meta", $meta_id, $object_id, $meta_key, $_meta_value);
+            do_action("{$meta_type}_updated_meta", $meta_id, $object_id, $meta_key, $_meta_value);
 
             return true;
         }
@@ -2466,7 +2478,7 @@ class GmediaDB{
         if(($meta = $this->get_metadata_by_mid($meta_type, $meta_id))){
             $object_id = $meta->{$column};
 
-            do_action("delete_{$meta_type}_meta", (array)$meta_id, $object_id, $meta->meta_key, $meta->meta_value);
+            do_action("{$meta_type}_delete_meta", (array)$meta_id, $object_id, $meta->meta_key, $meta->meta_value);
 
             // Run the query, will return true if deleted, false otherwise
             $result = (bool)$wpdb->delete($table, array($id_column => $meta_id));
@@ -2474,7 +2486,7 @@ class GmediaDB{
             // Clear the caches.
             wp_cache_delete($object_id, $meta_type . '_meta');
 
-            do_action("deleted_{$meta_type}_meta", (array)$meta_id, $object_id, $meta->meta_key, $meta->meta_value);
+            do_action("{$meta_type}_deleted_meta", (array)$meta_id, $object_id, $meta->meta_key, $meta->meta_value);
 
             return $result;
         }
@@ -2502,7 +2514,7 @@ class GmediaDB{
             return false;
         }
 
-        $check = apply_filters("get_{$meta_type}_metadata", null, $object_id, $meta_key, true);
+        $check = apply_filters("{$meta_type}_get_metadata", null, $object_id, $meta_key, true);
         if(null !== $check){
             return true;
         }
@@ -3123,10 +3135,12 @@ class GmediaDB{
 
         // expected_slashed ($name)
         $name = stripslashes($name);
+        $name = $gmCore->mb_convert_encoding_utf8($name);
         if('gmedia_module' == $taxonomy){
             $description = maybe_serialize($description);
         } else{
             $description = stripslashes($description);
+            $description = $gmCore->mb_convert_encoding_utf8($description);
             if(in_array($taxonomy, array('gmedia_tag', 'gmedia_category'))){
                 $global = 0;
             }
@@ -3237,6 +3251,7 @@ class GmediaDB{
 
         // expected_slashed ($name)
         $name = stripslashes($name);
+        $name = $gmCore->mb_convert_encoding_utf8($name);
         if('' == trim($name)){
             return new WP_Error('gm_empty_term_name', __('A name is required for term'));
         }
@@ -3251,6 +3266,7 @@ class GmediaDB{
             $description = maybe_serialize($description);
         } else{
             $description = stripslashes($description);
+            $description = $gmCore->mb_convert_encoding_utf8($description);
             if(in_array($taxonomy, array('gmedia_tag', 'gmedia_category'))){
                 $global = 0;
             }

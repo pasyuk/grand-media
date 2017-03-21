@@ -1,6 +1,6 @@
 /*
  * Title                   : Minima Gallery Module
- * Version                 : 2.9
+ * Version                 : 2.10
  * Copyright               : 2013-2015 CodEasily.com
  * Website                 : http://www.codeasily.com
  */
@@ -12,7 +12,7 @@ if (typeof jQuery.fn.gmMinima == 'undefined') {
     (function ($, window, document, undefined) {
         $.fn.gmMinima = function (method) {
             var Container = this,
-                ID = '',
+                ID = $(this).attr('id').replace('GmediaGallery_', ''),
                 flashVerion = '11',
                 Content,
                 ratio = 0,
@@ -75,7 +75,6 @@ if (typeof jQuery.fn.gmMinima == 'undefined') {
                                 opt[key] = parseInt(val);
                             }
                         });
-                        ID = opt.ID;
                         Content = arguments[0];
                         methods.initGallery();
                     },
@@ -95,14 +94,14 @@ if (typeof jQuery.fn.gmMinima == 'undefined') {
                             },
                             attributes = {
                                 styleclass: 'gmMinima_Flash',
-                                id: 'gmMinima_ID' + ID + '_Flash'
+                                id: 'GmediaGallery_' + ID + '_Flash'
                             };
                         if (opt.postID) {
                             flashvars.postID = opt.postID;
                             flashvars.postTitle = opt.postTitle;
                         }
                         prototypes.swfobject_switchOffAutoHideShow();
-                        swfobject.embedSWF(opt.moduleUrl + '/gallery.swf', 'gmMinima_ID' + ID + '_Container', '100%', '100%', flashVerion, opt.pluginUrl + '/inc/expressInstall.swf', flashvars, parameters, attributes, methods.callbackFn);
+                        swfobject.embedSWF(opt.moduleUrl + '/gallery.swf', 'GmediaGallery_' + ID + '_Container', '100%', '100%', flashVerion, opt.pluginUrl + '/inc/expressInstall.swf', flashvars, parameters, attributes, methods.callbackFn);
 
                     },
                     callbackFn: function (e) {// e = {(bool) success, (string) id, (reference to the active HTML object element) ref}
@@ -118,7 +117,7 @@ if (typeof jQuery.fn.gmMinima == 'undefined') {
                         });
                         if (e.success) {
                             var swfHover = e.ref;
-                            $('#gmMinima_ID' + ID).on("mouseenter", e.ref, function () {
+                            $('#GmediaGallery_' + ID).on("mouseenter", e.ref, function () {
                                 if ($.isFunction(swfHover['swfHover' + ID])) {
                                     swfHover['swfHover' + ID]('true');
                                 }
@@ -135,10 +134,10 @@ if (typeof jQuery.fn.gmMinima == 'undefined') {
                             var hiddenBustedItems = prototypes.doHideBuster($(Container));
                             var bars_height = opt.thumbnailsHeight + 80;
                             var size = prototypes.responsive_size(bars_height);
-                            $('#gmMinima_ID' + ID + '_Flash', Container).css({'width': size[0], 'height': size[1]});
+                            $('#GmediaGallery_' + ID + '_Flash', Container).css({'width': size[0], 'height': size[1]});
                             $(window).resize(function () {
                                 size = prototypes.responsive_size(bars_height);
-                                $('#gmMinima_ID' + ID + '_Flash', Container).css({'width': size[0], 'height': size[1]});
+                                $('#GmediaGallery_' + ID + '_Flash', Container).css({'width': size[0], 'height': size[1]});
                             });
                             $(window).trigger('resize');
                             prototypes.undoHideBuster(hiddenBustedItems);
@@ -150,9 +149,9 @@ if (typeof jQuery.fn.gmMinima == 'undefined') {
                         return {'settings': opt, 'content': Content};
                     },
                     noFlash: function () {
-                        var alt_template = $('#flashmodule_alternative_' + ID, Container);
+                        var alt_template = $('#GmediaGallery_' + ID + '_Alternative', Container);
                         if (alt_template.length) {
-                            $('#gmMinima_ID' + ID + '_Container', Container).html(alt_template.html()).find('img[data-src]').each(function () {
+                            $('#GmediaGallery_' + ID + '_Container', Container).html(alt_template.html()).find('img[data-src]').each(function () {
                                 $(this).attr('src', $(this).data('src'));
                             });
                         }

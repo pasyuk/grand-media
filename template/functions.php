@@ -31,8 +31,8 @@ function gmediacloud_meta_generator(){
     <link href="<?php echo $icon_url; ?>/icon_gmedia_152.png" rel="apple-touch-icon" sizes="152x152"/>
     <link href="<?php echo $icon_url; ?>/icon_gmedia_180.png" rel="apple-touch-icon" sizes="180x180"/>
 
-    <meta property="og:title" content="<?php the_gmedia_title(); ?>"/>
-    <meta property="og:description" content="<?php _e('Shared with GmediaGallery', 'grand-media'); ?>"/>
+    <meta property="og:title" content="<?php esc_attr_e(the_gmedia_title(true)); ?>"/>
+    <meta property="og:description" content="<?php esc_attr_e($gmedia->description . ' ' . __('Shared with GmediaGallery', 'grand-media')); ?>"/>
     <?php
     if($gmedia_type != 'single'){
         if(did_action('gmedia_shortcode') && count($gmGallery->shortcode)){
@@ -54,7 +54,7 @@ function gmediacloud_meta_generator(){
     ?>
     <meta property="og:url" content="<?php echo esc_url_raw($current_url); ?>"/>
     <!--<meta property="og:type" content="article" />-->
-    <meta property="og:site_name" content="<?php bloginfo('name') ?>"/>
+    <meta property="og:site_name" content="<?php esc_attr_e(get_bloginfo('name')) ?>"/>
 
     <meta name="msapplication-TileImage" content="<?php echo $icon_url; ?>/icon_gmedia_180.png"/>
     <meta name="msapplication-TileColor" content="#ffffff"/>
@@ -184,6 +184,9 @@ function gmedia_body_class($classes){
     $classes = array_merge($classes, array('gmedia-template', "gmedia-template-{$gmedia_type}"));
     if(wp_is_mobile()){
         $classes[] = 'is_mobile';
+    }
+    if(isset($_GET['is_admin_preview'])){
+        $classes[] = 'gmedia-module-preview';
     }
     $classes = apply_filters('gmedia_body_class', $classes);
 

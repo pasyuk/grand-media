@@ -208,7 +208,7 @@ if(!defined('ABSPATH')){
                     }
                     ?>
                 </div>
-                <?php if('image' != $item->type){ ?>
+                <?php if('image' != $item->type || ('image' == $item->type && !$item->editor)){ ?>
                     <div class="form-group">
                         <label><?php _e('Custom Cover', 'grand-media');
                             echo ' <small>(' . __('media image ID', 'grand-media') . ')</small>'; ?></label>
@@ -235,8 +235,9 @@ if(!defined('ABSPATH')){
                 <?php } ?>
                 <p class="media-meta">
                     <span class="label label-default"><?php _e('ID', 'grand-media') ?>:</span> <strong><?php echo $item->ID; ?></strong>
+                    <br/><span class="label label-default"><?php _e('Post ID', 'grand-media') ?>:</span> <strong><?php echo $item->post_id; ?></strong>
                     <br/><span class="label label-default"><?php _e('Type', 'grand-media'); ?>:</span> <?php echo $item->mime_type; ?>
-                    <?php if(('image' == $item->type) && !empty($item->meta['_metadata'])){ ?>
+                    <?php if(('image' == $item->type) && $item->editor && !empty($item->meta['_metadata'])){ ?>
                         <br/><span class="label label-default"><?php _e('Dimensions', 'grand-media'); ?>:</span>
                         <?php
                         $is_file_original = (bool) $item->path_original;

@@ -17,7 +17,7 @@ if(!defined('ABSPATH')) {
             </div>
             <div class="modal-body">
                 <p class="install-help"><?php _e('If you have a module in a .zip format, you may install it by uploading it here.'); ?></p>
-                <?php wp_nonce_field('GmediaModule'); ?>
+                <?php wp_nonce_field('gmedia_module', '_wpnonce_module'); ?>
                 <label class="screen-reader-text" for="modulezip"><?php _e('Module zip file'); ?></label>
                 <input type="file" id="modulezip" name="modulezip"/>
             </div>

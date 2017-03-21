@@ -156,7 +156,7 @@ if(!defined('ABSPATH')){
                         <a href="#libModal" data-modal="assign_album" data-action="gmedia_get_modal" data-ckey="<?php echo GmediaProcessor_Library::$cookie_key; ?>" class="gmedia-modal"><?php _e('Move to Album...', 'grand-media'); ?></a>
                     </li>
                     <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
-                        <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'unassign_album')), 'gmedia_action') ?>" data-confirm="<?php _e("You are about to remove the selected items from assigned albums.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media"); ?>"><?php _e('Remove from Album', 'grand-media'); ?></a>
+                        <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'unassign_album')), 'gmedia_action', '_wpnonce_action') ?>" data-confirm="<?php _e("You are about to remove the selected items from assigned albums.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media"); ?>"><?php _e('Remove from Album', 'grand-media'); ?></a>
                     </li>
                     <li class="<?php echo $rel_selected_show . (gm_user_can('terms')? '' : ' disabled'); ?>">
                         <a href="#libModal" data-modal="assign_category" data-action="gmedia_get_modal" data-ckey="<?php echo GmediaProcessor_Library::$cookie_key; ?>" class="gmedia-modal"><?php _e('Assign Categories...', 'grand-media'); ?></a>
@@ -172,16 +172,16 @@ if(!defined('ABSPATH')){
                     <li class="<?php echo $rel_selected_show . (gm_user_can('delete_media')? '' : ' disabled'); ?>">
                         <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'delete',
                                                                                 'ids'       => 'selected'
-                                                                          ), array('filter')), 'gmedia_delete') ?>" class="gmedia-delete" data-confirm="<?php _e("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media"); ?>"><?php _e('Delete Selected Items', 'grand-media'); ?></a>
+                                                                          ), array('filter')), 'gmedia_delete', '_wpnonce_delete') ?>" class="gmedia-delete" data-confirm="<?php _e("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media"); ?>"><?php _e('Delete Selected Items', 'grand-media'); ?></a>
                     </li>
 
                     <?php if(!$gmProcessor->gmediablank){ ?>
                         <li class="divider <?php echo $rel_selected_show; ?>"></li>
                         <li class="<?php echo $rel_selected_show . (gm_user_can('edit_media')? '' : ' disabled'); ?>">
-                            <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'recreate'), array()), 'gmedia_action') ?>" class="gmedia-update"><?php _e('Re-create Images (heavy process)', 'grand-media'); ?></a>
+                            <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'recreate'), array()), 'gmedia_action', '_wpnonce_action') ?>" class="gmedia-update"><?php _e('Re-create Images (heavy process)', 'grand-media'); ?></a>
                         </li>
                         <li class="<?php echo $rel_selected_show . (gm_user_can('edit_media')? '' : ' disabled'); ?>">
-                            <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'update_meta'), array()), 'gmedia_action') ?>" class="gmedia-update"><?php _e('Update Metadata in Database', 'grand-media'); ?></a>
+                            <a href="<?php echo wp_nonce_url(gm_get_admin_url(array('do_gmedia' => 'update_meta'), array()), 'gmedia_action', '_wpnonce_action') ?>" class="gmedia-update"><?php _e('Update Metadata in Database', 'grand-media'); ?></a>
                         </li>
 
                         <li class="divider"></li>

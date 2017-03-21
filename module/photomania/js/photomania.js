@@ -1,5 +1,5 @@
 /** @preserve
- * PhotoMania v1.4
+ * PhotoMania
  */
 (function ($, window, document, undefined) {
 
@@ -15,8 +15,7 @@
     // minified (especially when both are regularly referenced in your plugin).
 
     // Create the defaults once
-    var pluginName = "photomania",
-        pluginVersion = "1.4";
+    var pluginName = "photomania";
 
     // The actual plugin constructor
     function Plugin(element, options, content) {
@@ -24,7 +23,6 @@
         this.$el = $(element);
         this.content = content;
         this._options = options;
-        this._version = pluginVersion;
         this._name = pluginName;
 
         this.init();
@@ -491,13 +489,17 @@
                 var title = item.title,
                     slide_div = self.swiper_gallery.slides[ai],
                     imgsrc = $('img', slide_div).attr('src'),
-                    url = window.location.href;
-                //url = self.opts.url + ((self.opts.url.indexOf('?') > -1) ? '&' : '?') + 'gm' + self.opts.ID + '_slide=' + ai;
+                    _url = ('' + window.location.href).split('#'),
+                    url = _url[0];
                 if(!self.opts.hashnav && item.post_link){
                     url = item.post_link;
                 } else {
+                    var separator = (url.indexOf("?") === -1)? "?" : "&",
+                        newParam = separator + "gmedia_share=" + item.id;
+                    url = url.replace(newParam,"");
+                    url += newParam;
                     var hash = "#gmedia" + item.id;
-                    url = ('' + window.location.href).split('#')[0] + hash;
+                    url += hash;
                 }
                 if ($(this).hasClass('gmpm_twitter')) {
                     sharelink = 'https://twitter.com/home?status=' + encodeURIComponent(title + ' ' + url);
@@ -744,10 +746,6 @@
             }
 
             return false;
-        },
-
-        __: function () {
-            return this._version
         }
 
     });

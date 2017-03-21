@@ -11,7 +11,10 @@ global $gmCore;
 <form class="form-inline gmedia-search-form" role="search" method="get">
     <div class="form-group">
         <?php foreach($_GET as $key => $value){
-            if(!in_array($key, array('doing_wp_cron', '_wpnonce', 'do_gmedia', 'did_gmedia', 'do_gmedia_terms', 'did_gmedia_terms', 'ids', 's'))){
+            if(!in_array($key, array('doing_wp_cron', 'do_gmedia', 'did_gmedia', 'do_gmedia_terms', 'did_gmedia_terms', 'ids', 's'))){
+                if(strpos($key, '_wpnonce') !== false){
+                    continue;
+                }
                 if(is_array($value)){
                     $value = implode(',', $value);
                 }

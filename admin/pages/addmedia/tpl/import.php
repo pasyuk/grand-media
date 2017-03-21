@@ -23,7 +23,7 @@ $import_tab = array();
 <form class="row" id="import_form" name="import_form" target="import_window" action="<?php echo admin_url('admin-ajax.php'); ?>" method="POST" accept-charset="utf-8" style="padding:20px 0 10px;">
     <div class="col-md-4">
         <fieldset id="import_params" class="import-params">
-            <?php wp_nonce_field('GmediaImport'); ?>
+            <?php wp_nonce_field('gmedia_import', '_wpnonce_import'); ?>
             <input type="hidden" name="action" value="gmedia_import_handler"/>
             <input type="hidden" id="import-action" name="import" value=""/>
 
@@ -68,7 +68,7 @@ $import_tab = array();
                     /* <![CDATA[ */
                     jQuery(document).ready(function() {
                         jQuery("#file_browser").fileTree({
-                            script: ajaxurl + "?action=gmedia_ftp_browser&_ajax_nonce=<?php echo wp_create_nonce( 'grandMedia' ) ;?>",
+                            script: ajaxurl + "?action=gmedia_ftp_browser&_wpnonce=<?php echo wp_create_nonce( 'GmediaGallery' ) ;?>",
                             root: '/',
                             loadMessage: "<?php _e('loading...', 'grand-media'); ?>"
                         }, function(path) {

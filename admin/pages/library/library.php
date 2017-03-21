@@ -96,6 +96,9 @@ if($gmProcessorLibrary->mode) {
 
                     include(dirname(__FILE__) . "/tpl/{$display_mode_gmedia}-item.php");
                 }
+                if('grid' == $display_mode_gmedia){
+                    echo '<div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div>';
+                }
             } elseif(gm_user_can('edit_media')) {
                 $gm_category_terms  = $gmDB->get_terms('gmedia_category', array('fields' => 'names'));
                 $gm_tag_terms  = $gmDB->get_terms('gmedia_tag', array('fields' => 'names'));

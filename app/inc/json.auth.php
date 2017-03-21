@@ -33,14 +33,14 @@ class Gmedia_JSON_API_Auth_Controller
     {
 
         /**
-         * @var $nonce
+         * @var $_wpnonce_auth_app
          * @var $username
          * @var $password
          *
          */
         extract($args);
 
-        if (! wp_verify_nonce($nonce, 'auth_gmapp')) {
+        if (! wp_verify_nonce($_wpnonce_auth_app, 'gmedia_auth_app')) {
             return array('error' => array('code' => 'nononce', 'message' => "Something goes wrong (nonce error)... try again."));
         }
 

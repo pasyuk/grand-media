@@ -1,7 +1,7 @@
 /*
  * Title      : Music Player Module for Gmedia Gallery plugin
- * Version    : 2.9
- * Copyright  : 2013-2015 CodEasily.com
+ * Version    : 2.11
+ * Copyright  : 2013-2016 CodEasily.com
  * Website    : http://www.codeasily.com
  */
 (function ($) {
@@ -11,9 +11,9 @@
             $uid = $(this).data('uid');
         cssSelector = {
             jPlayer: ".gm-music-player",
-            jPlayerInterface: '.jqmp-' + $uid,
-            playerPrevious: ".jp-interface .jp-previous",
-            playerNext: ".jp-interface .jp-next",
+            jPlayerInterface: '.gmmp-' + $uid,
+            playerPrevious: ".gmmp-interface .gmmp-previous",
+            playerNext: ".gmmp-interface .gmmp-next",
             trackList: '.gmmp-tracklist',
             tracksWrapper: '.gmmp-tracks-wrapper',
             tracks: '.gmmp-tracks',
@@ -34,7 +34,16 @@
             //artistOuter:'.gmmp-artist-outer',
             albumCover: '.gmmp-img',
             description: '.gmmp-description',
-            descriptionShowing: '.gmmp-showing'
+            descriptionShowing: '.gmmp-showing',
+
+            play: ".gmmp-play",
+            pause: ".gmmp-pause",
+            stop: ".gmmp-stop",
+            mute: ".gmmp-mute",
+            unmute: ".gmmp-unmute",
+            currentTime: ".gmmp-current-time",
+            duration: ".gmmp-duration"
+
         };
 
         opt_str = {
@@ -49,7 +58,8 @@
         };
         opt_bool = {
             rating: true,
-            autoplay: false
+            autoplay: false,
+            loop: true,
         };
         opt_obj = {
             jPlayer: {
@@ -115,6 +125,7 @@
                     swfPath: "jplayer",
                     supplied: "mp3, oga",
                     cssSelectorAncestor: cssSelector.jPlayerInterface,
+                    cssSelector: cssSelector,
                     errorAlerts: false,
                     warningAlerts: false
                 };
@@ -218,7 +229,13 @@
             }
 
             function playlistNext() {
-                var index = (current + 1 < myPlaylist.length) ? current + 1 : 0;
+                var index = current + 1;
+                if(index >= myPlaylist.length){
+                    if(!options.loop){
+                        return;
+                    }
+                    index = 0;
+                }
                 playlistAdvance(index);
             }
 
@@ -365,7 +382,7 @@
                 var gmid = myPlaylist[index].id,
                     uip = userOptions.ip;
                 $.post(options.ajaxurl, {action: 'gmedia_module_interaction', rate: {uip: uip, gmid: gmid, rate: rating}}, function (r) {
-                    console.log(r);
+                    //console.log(r);
                 });
 
                 //runCallback(options.ratingCallback, index, myPlaylist[index], rating);
@@ -405,7 +422,7 @@
                 //I would normally use the templating plugin for something like this, but I wanted to keep this plugin's footprint as small as possible
                 markup =
                     '<div class="gm-music-player">' +
-                    '	<div class="gmmp-player jp-interface jqmp-' + $uid + '">' +
+                    '	<div class="gmmp-player gmmp-interface gmmp-' + $uid + '">' +
                     '		<div class="gmmp-album-cover">' +
                     '			<span class="gmmp-img"></span>' +
                     '   	<span class="gmmp-highlight"></span>' +
@@ -421,21 +438,21 @@
                     '   <div class="gmmp-track-title"></div>' +
                     '   <div class="gmmp-player-controls">' +
                     '   	<div class="gmmp-main">' +
-                    '     	<div class="gmmp-previous jp-previous"></div>' +
-                    '       <div class="gmmp-play jp-play"></div>' +
-                    '       <div class="gmmp-pause jp-pause"></div>' +
-                    '       <div class="gmmp-next jp-next"></div>' +
+                    '     	<div class="gmmp-previous gmmp-previous"></div>' +
+                    '       <div class="gmmp-play gmmp-play"></div>' +
+                    '       <div class="gmmp-pause gmmp-pause"></div>' +
+                    '       <div class="gmmp-next gmmp-next"></div>' +
                     '<!-- These controls aren\'t used by this plugin, but jPlayer seems to require that they exist -->' +
                     '       <span class="gmmp-unused-controls">' +
                     '       	<span class="jp-video-play"></span>' +
-                    '         <span class="jp-stop"></span>' +
-                    '         <span class="jp-mute"></span>' +
+                    '         <span class="gmmp-stop"></span>' +
+                    '         <span class="gmmp-mute"></span>' +
                     '         <span class="jp-unmute"></span>' +
                     '         <span class="jp-volume-bar"></span>' +
                     '         <span class="jp-volume-bar-value"></span>' +
                     '         <span class="jp-volume-max"></span>' +
-                    '         <span class="jp-current-time"></span>' +
-                    '         <span class="jp-duration"></span>' +
+                    '         <span class="gmmp-current-time"></span>' +
+                    '         <span class="gmmp-duration"></span>' +
                     '         <span class="jp-full-screen"></span>' +
                     '         <span class="jp-restore-screen"></span>' +
                     '         <span class="jp-repeat"></span>' +

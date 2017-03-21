@@ -121,7 +121,7 @@
 .gmpm_big_button_wrap .gmpm_comments_button .gmpm_count_icon { display: block; text-align: center; line-height: 210%; font-size: 160%; color:#ffffff; }
 .gmpm_big_button_wrap .gmpm_comments_button .gmpm_comments_count { font-size: 70%; font-weight: 300; vertical-align: bottom; }
 .gmpm_big_button_wrap .gmpm_comments_button .gmpm_comments_icon { display:inline-block; }
-.gmpm_big_button_wrap svg { display:block; width:1em; height:1em; fill:currentColor; }
+.gmpm_big_button_wrap svg { position:static; display:block; width:1em; height:1em; fill:currentColor; }
 .gmpm_big_button_wrap .gmpm_button:hover { background-color:#71767a; }
 .gmpm_big_button_wrap .gmpm_button.gmpm_share { display:block; width:35px; height:24px; text-indent:-999px; overflow:hidden; background-image:url('../img/share@2x.png'); background-position:50% 50%; background-size:18px 18px; -webkit-background-size:18px; }
 .gmpm_big_button_wrap.gmpm_one_button .gmpm_button.gmpm_share { height:50px; }
@@ -131,11 +131,12 @@
 .gmpm_big_button_wrap .gmpm_button.gmpm_like.gmpm_liked,
 .gmpm_big_button_wrap .gmpm_button.gmpm_like.gmpm_liked:hover { background-color:#02adea; }
 .gmpm_big_button_wrap .gmpm_sharelizers_wrap { position:absolute; right:0; bottom:100%; z-index:10; display:none; padding-bottom:10px; }
-.gmpm_big_button_wrap .gmpm_sharelizers { background-color:#fff; border:1px solid #aaa; border-radius:3px; position:relative; list-style:none; margin:0; padding:0; }
-.gmpm_big_button_wrap .gmpm_sharelizers li { border-top:1px solid #aaa; margin:0; padding:0; }
+.gmpm_big_button_wrap .gmpm_sharelizers { background-color:#fff; border:1px solid #aaa; border-radius:3px; position:relative; margin:0; padding:0; list-style:none; list-style-image: none; list-style-type: none; }
+.gmpm_big_button_wrap .gmpm_sharelizers li { border-top:1px solid #aaa; margin:0; padding:0; list-style:none; list-style-image: none; list-style-type: none; }
 .gmpm_big_button_wrap ul.gmpm_sharelizers li:first-child { border-top-style:none; }
 .gmpm_big_button_wrap .gmpm_sharelizers .gmpm_button { background-color:#71767a!important; background-position:7px 50%!important; background-repeat:no-repeat!important; background-size:16px auto!important; border-radius:0; display:block; padding:7px 7px 7px 30px !important; }
 .gmpm_big_button_wrap .gmpm_sharelizers .gmpm_button:hover { color:#fff; }
+.gmpm_big_button_wrap ul { list-style:none; list-style-image: none; list-style-type: none; }
 .gmpm_big_button_wrap ul .gmpm_facebook { background:#262626 url('../img/facebook@2x.png')!important; background-size:22px 22px!important; }
 .gmpm_big_button_wrap ul .gmpm_facebook:hover { background-color:#3b5998!important; }
 .gmpm_big_button_wrap ul .gmpm_twitter { background:#262626 url('../img/twitter@2x.png')!important; background-size:22px 22px!important; }
@@ -151,10 +152,10 @@
 .gmpm_big_button_wrap .gmpm_share_opened .gmpm_sharelizers_wrap { display:block; }
 
 .gmpm_focus_actions { display:none; position:relative; z-index:1; -webkit-user-select:none; float:right; margin:20px 40px 0 0; padding-right:41px; }
-.gmpm_focus_actions ul { display:block; float:left; margin:0 0 0 10px; padding:0; list-style:none; }
+.gmpm_focus_actions ul { display:block; float:left; margin:0 0 0 10px; padding:0; list-style:none; list-style-image: none; list-style-type: none; }
 .gmpm_focus_actions ul:first-child { margin-left:0; }
 .gmpm_focus_actions ul:first-child li:first-child { margin-left:0; }
-.gmpm_focus_actions ul li { position:relative; float:left; margin:0 0 0 10px; padding:0; list-style:none; }
+.gmpm_focus_actions ul li { position:relative; float:left; margin:0 0 0 10px; padding:0; list-style:none; list-style-image: none; list-style-type: none; }
 .gmpm_focus_actions ul li ul { display:none; float:left; }
 .gmpm_focus_actions ul li ul:hover { display:block; }
 .gmpm_focus_actions ul li ul li { margin-left:0; }
@@ -217,8 +218,8 @@
 .gmpm_focus_keyboard .gmpm_focus_keyboard_title a { text-transform:uppercase; color:#000000 !important; border-radius:2px; font-size:10px; padding:2px 4px 0; margin:-1px 0 0 4px; cursor:pointer; background-color:#404243; display:inline-block;
   transition:all 0.1s ease-in-out; -webkit-transition:all 0.1s ease-in-out; }
 .gmpm_focus_keyboard .gmpm_focus_keyboard_title a:hover { background-color:#525558; color:black; }
-.gmpm_focus_keyboard ul { font-size:0; margin:0; padding:0; list-style:none; }
-.gmpm_focus_keyboard ul li { display:inline-block; margin:0; padding:0; list-style:none; font-family:Helvetica, Arial, sans-serif; }
+.gmpm_focus_keyboard ul { font-size:0; margin:0; padding:0; list-style:none; list-style-image: none; list-style-type: none; }
+.gmpm_focus_keyboard ul li { display:inline-block; margin:0; padding:0; font-family:Helvetica, Arial, sans-serif; list-style:none; list-style-image: none; list-style-type: none;}
 .gmpm_focus_keyboard ul li:last-child .gmpm_label { padding-right:0; }
 .gmpm_focus_keyboard ul .gmpm_key { display:inline-block; font-size:12px; width:22px; height:22px; border-radius:3px; text-align:center; line-height:22px; color:white; border:1px solid #000; position:relative; background:50% 50% no-repeat #404243;
   box-shadow:rgba(255, 255, 255, 0.0980392) 0 1px 0 inset, rgba(255, 255, 255, 0.14902) 0 0 1px 1px; -webkit-box-shadow:rgba(255, 255, 255, 0.0980392) 0 1px 0 inset, rgba(255, 255, 255, 0.14902) 0 0 1px 1px; }

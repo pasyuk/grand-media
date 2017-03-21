@@ -200,26 +200,26 @@ if ( ! $is_bot ) {
                 <div class="gmpm_focus_actions">
                     <?php if ( ! empty( $allsettings['show_share_button'] ) ) { ?>
                         <ul class="gmpm_focus_share">
-                            <li class="gmpm_share_wrapper">
+                            <li style="list-style:none;" class="gmpm_share_wrapper">
                                 <a class="gmpm_button gmpm_share"><?php _e( 'Share', 'grand-media' ); ?></a>
                                 <ul class="gmpm_sharelizers gmpm_clearfix">
-                                    <li><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
-                                    <li><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
-                                    <li><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
-                                    <li><a class="gmpm_button gmpm_google gmpm_sharelizer"><?php _e( 'Google+', 'grand-media' ); ?></a></li>
-                                    <li><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
+                                    <li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
+                                    <li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
+                                    <li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
+                                    <li style="list-style:none;"><a class="gmpm_button gmpm_google gmpm_sharelizer"><?php _e( 'Google+', 'grand-media' ); ?></a></li>
+                                    <li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
                                 </ul>
                             </li>
                         </ul>
                     <?php } ?>
                     <?php if ( ! empty( $allsettings['show_like_button'] ) ) { ?>
                         <ul class="gmpm_focus_like_fave gmpm_clearfix">
-                            <li><a class="gmpm_button gmpm_like"><?php _e( 'Like', 'grand-media' ); ?></a></li>
+                            <li style="list-style:none;"><a class="gmpm_button gmpm_like"><?php _e( 'Like', 'grand-media' ); ?></a></li>
                         </ul>
                     <?php } ?>
                     <ul class="gmpm_focus_arrows gmpm_clearfix">
-                        <li><a class="gmpm_button gmpm_photo_arrow_previous gmpm_prev"><?php _e( 'Previous', 'grand-media' ); ?></a></li>
-                        <li><a class="gmpm_button gmpm_photo_arrow_next gmpm_next"><?php _e( 'Next', 'grand-media' ); ?></a></li>
+                        <li style="list-style:none;"><a class="gmpm_button gmpm_photo_arrow_previous gmpm_prev"><?php _e( 'Previous', 'grand-media' ); ?></a></li>
+                        <li style="list-style:none;"><a class="gmpm_button gmpm_photo_arrow_next gmpm_next"><?php _e( 'Next', 'grand-media' ); ?></a></li>
                     </ul>
                 </div>
                 <div class="gmpm_name_wrap gmpm_clearfix<?php if ( empty( $allsettings['show_author_avatar'] ) ) {
@@ -261,11 +261,11 @@ if ( ! $is_bot ) {
 
                                     <div class="gmpm_sharelizers_wrap">
                                         <ul class="gmpm_sharelizers">
-                                            <li><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
-                                            <li><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
-                                            <li><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
-                                            <li><a class="gmpm_button gmpm_google gmpm_sharelizer"><?php _e( 'Google+', 'grand-media' ); ?></a></li>
-                                            <li><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
+                                            <li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
+                                            <li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
+                                            <li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
+                                            <li style="list-style:none;"><a class="gmpm_button gmpm_google gmpm_sharelizer"><?php _e( 'Google+', 'grand-media' ); ?></a></li>
+                                            <li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -351,11 +351,11 @@ if ( ! $is_bot ) {
             <div class="gmpm_focus_keyboard">
                 <div class="gmpm_focus_keyboard_title"><?php _e( 'Keyboard Shortcuts', 'grand-media' ); ?> <a class="gmpm_focus_keyboard_dismiss"><?php _e( 'Dismiss', 'grand-media' ); ?></a></div>
                 <ul>
-                    <li><a data-key="p" class="gmpm_key">S</a><span class="gmpm_label"><?php _e( 'Slideshow', 'grand-media' ); ?></span></li>
-                    <li><a data-key="m" class="gmpm_key">M</a><span class="gmpm_label"><?php _e( 'Maximize', 'grand-media' ); ?></span></li>
-                    <li><a data-key="left" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php _e( 'Previous', 'grand-media' ); ?></span></li>
-                    <li><a data-key="right" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php _e( 'Next', 'grand-media' ); ?></span></li>
-                    <li><a data-key="escape" class="gmpm_key gmpm_esc">esc</a><span class="gmpm_label"><?php _e( 'Close', 'grand-media' ); ?></span></li>
+                    <li style="list-style:none;"><a data-key="p" class="gmpm_key">S</a><span class="gmpm_label"><?php _e( 'Slideshow', 'grand-media' ); ?></span></li>
+                    <li style="list-style:none;"><a data-key="m" class="gmpm_key">M</a><span class="gmpm_label"><?php _e( 'Maximize', 'grand-media' ); ?></span></li>
+                    <li style="list-style:none;"><a data-key="left" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php _e( 'Previous', 'grand-media' ); ?></span></li>
+                    <li style="list-style:none;"><a data-key="right" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php _e( 'Next', 'grand-media' ); ?></span></li>
+                    <li style="list-style:none;"><a data-key="escape" class="gmpm_key gmpm_esc">esc</a><span class="gmpm_label"><?php _e( 'Close', 'grand-media' ); ?></span></li>
                 </ul>
             </div>
         </div>

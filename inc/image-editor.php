@@ -21,7 +21,7 @@ function gmedia_image_editor(){
                     <button type="button" id="gmedit-reset" name="gmedit_reset" class="btn btn-default" data-confirm="<?php _e('Do you really want reset all changes?') ?>"><?php _e('Reset', 'grand-media'); ?></button>
                     <button type="button" id="gmedit-save" name="gmedit_save" data-loading-text="<?php _e('Working', 'grand-media'); ?>" data-reset-text="<?php _e('Save image', 'grand-media'); ?>" class="btn btn-primary"><?php _e('Save image', 'grand-media'); ?></button>
                 </div>
-                <?php wp_nonce_field('gmedit-save'); ?>
+                <?php wp_nonce_field('gmedia_edit', '_wpnonce_edit'); ?>
             </div>
 
             <div class="gmedit-tool-button gmedit-rotate left" title="<?php _e('Rotate Counterclockwise', 'grand-media'); ?>"></div>
@@ -190,7 +190,7 @@ function gmedia_image_editor(){
                 var btn = $('#gmedit-save');
                 btn.text(btn.data('loading-text')).prop('disabled', true);
                 var post_data = {
-                    action: 'gmedit_save', id: gmid, image: a, applyto: $('#applyto').val(), _wpnonce: $('#_wpnonce').val()
+                    action: 'gmedit_save', id: gmid, image: a, applyto: $('#applyto').val(), _wpnonce_edit: $('#_wpnonce_edit').val()
                 };
                 $.post(ajaxurl, post_data).always(function(c) {
                     if(c.msg && !c.error) {
@@ -222,7 +222,7 @@ function gmedia_image_editor(){
                 var btn = $('#gmedit-save');
                 btn.text(btn.data('loading-text')).prop('disabled', true);
                 var post_data = {
-                    action: 'gmedit_restore', id: gmid, _wpnonce: $('#_wpnonce').val()
+                    action: 'gmedit_restore', id: gmid, _wpnonce_edit: $('#_wpnonce_edit').val()
                 };
                 $.post(ajaxurl, post_data).always(function(c) {
                     if(c.msg && !c.error) {

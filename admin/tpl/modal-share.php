@@ -41,7 +41,7 @@ if(!defined('ABSPATH')) {
                     <textarea style="margin-top:4px;" name="message" cols="20" rows="3" class="form-control" placeholder="<?php _e('Message (optional)', 'grand-media'); ?>"></textarea>
                 </div>
                 <input type="hidden" name="action" value="gmedia_share_page"/>
-                <?php wp_nonce_field('share_modal', '_sharenonce'); ?>
+                <?php wp_nonce_field('gmedia_share', '_wpnonce_share'); ?>
             </form>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary sharebutton" disabled="disabled"><?php _e('Send', 'grand-media'); ?></button>

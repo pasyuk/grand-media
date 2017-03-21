@@ -147,7 +147,13 @@ class GmediaCore{
             $uri = admin_url('admin.php');
         }
         $remove_args = empty($remove_args)? array() : (array)$remove_args;
-        $remove_args = array_unique(array_merge(array('doing_wp_cron', '_wpnonce', 'do_gmedia', 'did_gmedia', 'do_gmedia_terms', 'did_gmedia_terms', 'ids'), $remove_args, array_keys($add_args)));
+        $_wpnonce = array();
+        foreach ($_GET as $key => $value) {
+            if (strpos($key, '_wpnonce') !== false) {
+                $_wpnonce[$key] = $value;
+            }
+        }
+        $remove_args = array_unique(array_merge(array('doing_wp_cron', '_wpnonce', 'do_gmedia', 'did_gmedia', 'do_gmedia_terms', 'did_gmedia_terms', 'ids'), $_wpnonce, $remove_args, array_keys($add_args)));
         $new_uri     = remove_query_arg($remove_args, $uri);
         if(!empty($preserve_args)){
             $_add_args = array();
@@ -276,7 +282,7 @@ class GmediaCore{
             $size = 'web';
         }
         if(empty($item)){
-            $image  = $default? $default : $this->gmedia_url . '/admin/assets/img/blank.gif';
+            $image  = $default? $default : $this->gmedia_url . '/admin/assets/img/default.png';
             $images = apply_filters('gm_get_media_image', array('thumb'    => $image,
                                                                 'web'      => $image,
                                                                 'original' => $image
@@ -288,19 +294,26 @@ class GmediaCore{
             }
         }
         $type = explode('/', $item->mime_type);
-
+        $img_cover = false;
         if('image' == $type[0]){
             $images      = array('thumb'    => "{$this->upload['url']}/{$gmGallery->options['folder']['image_thumb']}/{$item->gmuid}",
                                  'web'      => "{$this->upload['url']}/{$gmGallery->options['folder']['image']}/{$item->gmuid}",
                                  'original' => "{$this->upload['url']}/{$gmGallery->options['folder']['image_original']}/{$item->gmuid}"
             );
+            if('all' == $size || 'thumb' == $size){
+                $thumb_path = "{$this->upload['path']}/{$gmGallery->options['folder']['image_thumb']}/{$item->gmuid}";
+                if( !is_file($thumb_path)){
+                    $img_cover = true;
+                }
+            }
             if('all' == $size || 'original' == $size){
                 $original_path = "{$this->upload['path']}/{$gmGallery->options['folder']['image_original']}/{$item->gmuid}";
                 if(!is_file($original_path)){
                     $images['original'] = $images['web'];
                 }
             }
-        } else{
+        }
+        if('image' != $type[0] || $img_cover){
             $ext = ltrim(strrchr($item->gmuid, '.'), '.');
             if(!$type = wp_ext2type($ext)){
                 $type = 'application';
@@ -317,7 +330,7 @@ class GmediaCore{
                     if($this->is_digit($cover)){
                         $images = $this->gm_get_media_image((int)$cover, 'all', false);
                     }
-                } elseif($default !== false && $size !== 'all'){
+                } elseif($default !== false){
                     return $default;
                 }
             }
@@ -403,7 +416,7 @@ class GmediaCore{
         $fileinfo['basename']          = $fileinfo['filename'] . '.' . $fileinfo['extension'];
         $fileinfo['title']             = str_replace('_', ' ', esc_sql($title));
         if((int)$gmGallery->options['name2title_capitalize']){
-            $fileinfo['title'] = mb_convert_case($fileinfo['title'], MB_CASE_TITLE, 'UTF-8');
+            $fileinfo['title'] = $this->mb_ucwords_utf8($fileinfo['title']);
         }
         $fileinfo['mime_type'] = (empty($filetype['type']))? 'application/' . $fileinfo['extension'] : $filetype['type'];
         list($dirname) = explode('/', $fileinfo['mime_type']);
@@ -1978,12 +1991,13 @@ class GmediaCore{
                         }
                         $is_webimage = true;
                     } else{
-                        @unlink($fileinfo['filepath']);
+                        /*@unlink($fileinfo['filepath']);
                         $return = array("error" => array("code" => 104, "message" => __("Could not read image size. Invalid image was deleted.", 'grand-media')),
                                         "id"    => $fileinfo['basename_original']
                         );
 
                         return $return;
+                        */
                     }
                 }
 
@@ -2636,7 +2650,12 @@ class GmediaCore{
                             'title'       => $gmedia->title,
                             'link'        => $gmedia->link,
                             'description' => $gmedia->description,
-                            'status'      => $gmedia->status
+                            'status'      => $gmedia->status,
+                            'terms'       => array(
+                                'gmedia_album' => $gmDB->get_gmedia_terms($gmedia->ID, array('gmedia_album'), array('fields' => 'ids')),
+                                'gmedia_category' => $gmDB->get_gmedia_terms($gmedia->ID, array('gmedia_category'), array('fields' => 'ids')),
+                                'gmedia_tag' => $gmDB->get_gmedia_terms($gmedia->ID, array('gmedia_tag'), array('fields' => 'ids', 'order' => 'term_order'))
+                            )
         );
 
         $media_data['author'] = get_current_user_id();
@@ -2646,11 +2665,11 @@ class GmediaCore{
 
         $media_metadata = $gmDB->get_metadata('gmedia', $gmedia->ID);
         foreach($media_metadata as $key => $values){
-            if($this->is_protected_meta($key, 'gmedia')){
+            //if($this->is_protected_meta($key, 'gmedia')){
                 foreach($values as $val){
                     $gmDB->add_metadata($meta_type = 'gmedia', $id, $key, $val);
                 }
-            }
+            //}
         }
 
     }
@@ -3161,7 +3180,7 @@ class GmediaCore{
         $entry['meta_id']    = (int)$entry['meta_id'];
 
         $colsm = ('gmedia' == $meta_type)? 6 : 4;
-        //$delete_nonce = wp_create_nonce( 'gmedia_custom_field', '_customfield_nonce' );
+        //$delete_nonce = wp_create_nonce( 'gmedia_custom_field', '_wpnonce_custom_field' );
         $item = '
 			<div class="form-group col-sm-' . $colsm . ' gm-custom-meta-' . $entry['meta_id'] . '">
 				<span class="delete-custom-field glyphicon glyphicon-remove pull-right text-danger"></span>
@@ -3326,7 +3345,7 @@ class GmediaCore{
                         continue;
                     }
                     $key_name         = $this->i18n_exif_name($key);
-                    $key_name         = ucwords(str_replace('_', ' ', $key_name));
+                    $key_name         = $this->mb_ucwords_utf8(str_replace('_', ' ', $key_name));
                     $value            = $this->sanitize_meta_value($value);
                     $metadata[ $key ] = array('name' => $key_name, 'value' => $value);
                 }
@@ -3349,7 +3368,7 @@ class GmediaCore{
                     continue;
                 }
                 $key_name = $this->i18n_exif_name($key);
-                $key_name = ucwords(str_replace('_', ' ', $key_name));
+                $key_name = $this->mb_ucwords_utf8(str_replace('_', ' ', $key_name));
                 if(is_array($val)){
                     $val = $this->sanitize_meta_value($val);
                 }
@@ -3540,14 +3559,19 @@ class GmediaCore{
      * @return array Gmedia Capabilities
      */
     function modules_order(){
-        return array('phantom'        => '',
+        return array(
                      'phantom-pro'    => '',
+                     'albums-stripes' => '',
                      'cubik'          => '',
+                     'desire'         => '',
                      'phototravlr'    => '',
                      'realslider'     => '',
                      'mosaic'         => '',
                      'photobox'       => '',
                      'wavesurfer'     => '',
+                     'phantom'        => '',
+                     'flipgrid'       => '',
+                     'cubik-lite'     => '',
                      'photomania'     => '',
                      'jq-mplayer'     => '',
                      'wp-videoplayer' => '',
@@ -3584,8 +3608,8 @@ class GmediaCore{
             $preset = $gmDB->get_term($module);
             if($preset && !is_wp_error($preset)){
                 $module          = $preset->status;
-                $module_settings = array($module => (array)maybe_unserialize($preset->description)
-                );
+                $module_settings = array($module => (array)maybe_unserialize($preset->description));
+                $name = trim(str_replace('[' . $module . ']', '', $preset->name));
             } else{
                 return $this->getModulePreset($set_module_callback);
             }
@@ -3593,14 +3617,15 @@ class GmediaCore{
             $preset = $gmDB->get_term('[' . $module . ']', array('taxonomy' => 'gmedia_module', 'global' => '0'));
             if($preset && !is_wp_error($preset)){
                 $module          = $preset->status;
-                $module_settings = array($module => (array)maybe_unserialize($preset->description)
-                );
+                $module_settings = array($module => (array)maybe_unserialize($preset->description));
+                $name = __('Default Settings', 'grand-media');
             } else{
                 $module_settings = array($module => array());
+                $name = $module;
             }
         }
 
-        return array('module' => $module, 'settings' => $module_settings);
+        return array('module' => $module, 'settings' => $module_settings, 'name' => $name);
     }
 
     /**
@@ -3671,6 +3696,37 @@ class GmediaCore{
     }
 
     /**
+     * mb_convert_encoding alternative function
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    function mb_convert_encoding_utf8($string){
+        if(function_exists('mb_convert_encoding')){
+            $string = mb_convert_encoding($string, 'UTF-8', 'UTF-8');
+        } else{
+            $string = htmlspecialchars_decode(utf8_decode(htmlentities($string, ENT_COMPAT, 'utf-8', false)));
+        }
+
+        return $string;
+    }
+
+    /**
+     * mb_convert_case alternative function
+     *
+     * @param $string
+     *
+     * @return string
+     */
+    function mb_ucwords_utf8($string){
+        $string = $this->mb_convert_encoding_utf8($string);
+        $string = ucwords($string);
+
+        return $string;
+    }
+
+    /**
      * Converts IDN in given url address to its ASCII form, also known as punycode, if possible.
      * This function silently returns unmodified address if:
      * - No conversion is necessary (i.e. domain name is not an IDN, or is already in ASCII form)
@@ -3686,11 +3742,7 @@ class GmediaCore{
         $url_host = parse_url($url, PHP_URL_HOST);
 
         if((boolean)preg_match('/[\x80-\xFF]/', $url_host)){
-            if(function_exists('mb_convert_encoding')){
-                $host = mb_convert_encoding($url_host, 'UTF-8');
-            } else{
-                $host = $url_host;
-            }
+            $host = $this->mb_convert_encoding_utf8($url_host);
             if(function_exists('idn_to_ascii')){
                 $options = 0;
                 if(($punycode = defined('INTL_IDNA_VARIANT_UTS46')? idn_to_ascii($host, $options, INTL_IDNA_VARIANT_UTS46) : idn_to_ascii($host)) !== false){

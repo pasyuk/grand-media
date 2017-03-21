@@ -45,6 +45,7 @@ $default_options = array('per_page'                => '100',
                          'likesEnabled'            => '1',
                          'commentsEnabled'         => '1',
                          'thumb2link'              => '0',
+                         'link_target'             => 'auto',
                          'show_title'              => '1',
                          'show_tags'               => '1',
                          'show_categories'         => '1',
@@ -57,7 +58,7 @@ $options_tree    = array(array('label'  => 'Common Settings',
                                'fields' => array('per_page'             => array('label' => 'Items Per Page',
                                                                                  'tag'   => 'input',
                                                                                  'attr'  => 'type="number" min="1"',
-                                                                                 'text'  => ''
+                                                                                 'text'  => '(ignored if there is "per_page" parameter in the Query Args.)'
                                ),
                                                  'maxheight'            => array('label' => 'Max-Height',
                                                                                  'tag'   => 'input',
@@ -101,6 +102,22 @@ $options_tree    = array(array('label'  => 'Common Settings',
                                                                                  'tag'   => 'checkbox',
                                                                                  'attr'  => '',
                                                                                  'text'  => 'If item have Link, then open Link instead of lightbox. Note: Link also will be available via item Title on the thumbnail\'s label and in the lightbox'
+                                                 ),
+                                                 'link_target'          => array('label'   => 'Link Target',
+                                                                                 'tag'     => 'select',
+                                                                                 'attr'    => '',
+                                                                                 'text'    => '"_self" to open links in same window; "_blank" to open in new tab. Could be overwrited via "link_target" custom field',
+                                                                                 'choices' => array(array('label' => 'auto (only external links in new tab)',
+                                                                                                          'value' => 'auto'
+                                                                                                    ),
+                                                                                                    array('label' => '_self',
+                                                                                                          'value' => '_self'
+                                                                                                    ),
+                                                                                                    array('label' => '_blank',
+                                                                                                          'value' => '_blank'
+                                                                                                    )
+                                                                                 )
+
                                                  ),
                                                  'deepLinks'            => array('label' => 'Deep Links',
                                                                                  'tag'   => 'checkbox',

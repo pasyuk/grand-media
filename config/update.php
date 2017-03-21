@@ -314,7 +314,7 @@ function gmedia_db_update__0_9_6(){
 }
 
 function gmedia_db_update__1_8_0(){
-    global $wpdb, $gmDB, $gmGallery;
+    global $wpdb, $gmDB, $gmGallery, $gmCore;
 
     $info  = get_transient('gmediaHeavyJob');
     $steps = get_transient('gmediaUpgradeSteps');
@@ -349,9 +349,9 @@ function gmedia_db_update__1_8_0(){
                 $i ++;
 
                 $description = $gmedia->description;
-                $description = mb_convert_encoding($description, 'UTF-8', 'UTF-8');
+                $description = $gmCore->mb_convert_encoding_utf8($description);
                 $title       = $gmedia->title;
-                $title       = mb_convert_encoding($title, 'UTF-8', 'UTF-8');
+                $title       = $gmCore->mb_convert_encoding_utf8($title);
                 if($description !== $gmedia->description || $title !== $gmedia->title){
                     $gmDB->insert_gmedia((array)$gmedia);
                 }
@@ -411,8 +411,8 @@ function gmedia_db_update__1_8_0(){
                     continue;
                 }
                 $post_data = array('post_author'  => $term->global,
-                                   'post_content' => $term->description,
-                                   'post_title'   => $term->name,
+                                   'post_content' => $gmCore->mb_convert_encoding_utf8($term->description),
+                                   'post_title'   => $gmCore->mb_convert_encoding_utf8($term->name),
                                    'post_status'  => $term->status,
                                    'post_type'    => $term->taxonomy
                 );
@@ -864,6 +864,11 @@ function gmedia_quite_update(){
         }
 
         $new_options        = $gmCore->array_diff_key_recursive($default_options, $options);
+
+        if(version_compare($current_version, '1.9.8', '<')){
+            $new_options['modules_xml']  = 'https://codeasily.com/gmedia_modules/modules_v1.xml';
+        }
+
         $gmGallery->options = $gmCore->array_replace_recursive($options, $new_options);
         update_option('gmediaOptions', $gmGallery->options);
 
@@ -872,6 +877,7 @@ function gmedia_quite_update(){
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/minima');
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/phantom');
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/wp-videoplayer');
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/cubik-lite');
 
         update_option("gmediaVersion", GMEDIA_VERSION);
 

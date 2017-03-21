@@ -3,7 +3,7 @@ $module_info = array(
     'base'         => 'minima',
     'name'         => 'minima',
     'title'        => 'Minima',
-    'version'      => '2.9',
+    'version'      => '2.10',
     'author'       => 'CodEasily.com',
     'description'  => 'Multi-tab professional image gallery skin with slideshow feature. This is the free light version of <a target="_blank" href="http://codeasily.com/portfolio-item/gmedia-optima/">Optima Module</a>.',
     'type'         => 'gallery',

@@ -42,6 +42,7 @@ global $gmGallery;
     <div class="col-lg-7">
         <?php if($term_id || isset($preset_module)){
             $bgcolor = empty($gmGallery->options['preview_bgcolor'])? 'ffffff' : $gmGallery->options['preview_bgcolor'];
+            $params['is_admin_preview'] = 1;
             ?>
             <div class="clearfix">
                 <div class="form-group pull-right" style="margin:-10px 0 5px 0;"><input type="text" data-type="color" class="form-control input-sm" id="preview_color" name="preview_bgcolor" value="<?php echo $bgcolor; ?>" placeholder="ffffff" size="7"/></div>

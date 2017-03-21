@@ -2,7 +2,7 @@
 /**
  * Gmedia Comments
  */
-if(!defined('ABSPATH')) {
+if(!defined('ABSPATH')){
     exit;
 } // Exit if accessed directly
 
@@ -15,15 +15,15 @@ global $gmDB, $gmCore, $gmGallery, $post;
 
 $gmedia_id      = $gmCore->_get('gmedia_id');
 $gmedia_term_id = $gmCore->_get('gmedia_term_id');
-if($gmedia_id) {
-    $gmedia  = $gmDB->get_gmedia($gmedia_id);
+if($gmedia_id){
+    $gmedia = $gmDB->get_gmedia($gmedia_id);
     gmedia_item_more_data($gmedia);
     $post_id = $gmedia->post_id;
-} elseif($gmedia_term_id) {
+} elseif($gmedia_term_id){
     $gmedia_term = $gmDB->get_term($gmedia_term_id);
     gmedia_term_item_more_data($gmedia_term);
     $post_id = $gmedia_term->post_id;
-} else {
+} else{
     die('-1');
 }
 
@@ -31,17 +31,18 @@ $post = get_post($post_id);
 ?>
 <div id="commentsdiv" style="padding:1px 0;">
     <style type="text/css" scoped>
-        #commentsdiv {padding-top:1px;}
-        #commentsdiv > .thumbnail {float:left; margin:0 10px 10px;}
-        #commentsdiv > .thumbnail img.gmedia-thumb {max-height:72px;}
-        #commentsdiv > h4 {margin-left:10px;}
-        #commentsdiv .fixed .column-author {width:20%;}
+        #commentsdiv { padding-top:1px; }
+        #commentsdiv > .thumbnail { float:left; margin:0 10px 10px; }
+        #commentsdiv > .thumbnail img.gmedia-thumb { max-height:72px; }
+        #commentsdiv > h4 { margin-left:10px; }
+        #commentsdiv .fixed .column-author { width:20%; }
+        #commentsdiv .row-actions .edit { display:none; }
     </style>
     <?php
-    printf( '<a target="_blank" href="%s" class="pull-right">%s</a>',
-            esc_url( add_query_arg( array( 'p' => $post_id ), admin_url( 'edit-comments.php' ) ) ),
-            __('Open in new tab'));
-    if($gmedia_id) { ?>
+    if(current_user_can('edit_posts')){
+        printf('<a target="_blank" href="%s" class="pull-right">%s</a>', esc_url(add_query_arg(array('p' => $post_id), admin_url('edit-comments.php'))), __('Open in new tab'));
+    }
+    if($gmedia_id){ ?>
         <span class="thumbnail">
             <?php echo gmedia_item_thumbnail($gmedia); ?>
         </span>
@@ -56,7 +57,12 @@ $post = get_post($post_id);
 <script type="text/javascript">
     //<![CDATA[
     jQuery(document).ready(function($) {
-        $("table.comments-box").css("display", "")
+        $('table.comments-box').css('display', '');
+//        $('table.comments-box').on('click', '.row-actions .edit a', function(e) {
+//            e.preventDefault();
+//            window.open($(this).attr('href'), '_blank');
+//            return false;
+//        });
     });
     //]]>
 </script>

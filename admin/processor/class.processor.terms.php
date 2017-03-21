@@ -104,7 +104,7 @@ class GmediaProcessor_Terms extends GmediaProcessor{
         }
 
         if(isset($_POST['gmedia_album_save'])){
-            check_admin_referer('GmediaTerms', 'term_save_wpnonce');
+            check_admin_referer('gmedia_terms', '_wpnonce_terms');
             $edit_term = (int)$gmCore->_get('edit_term');
             do{
                 if(!$gmCore->caps['gmedia_album_manage']){
@@ -153,11 +153,11 @@ class GmediaProcessor_Terms extends GmediaProcessor{
                     $gmDB->update_term_sortorder($term_id);
                 }
 
-                $this->msg[] = sprintf(__('Album `%s` successfuly saved', 'grand-media'), $term['name']);
+                $this->msg[] = sprintf(__('Album `%s` successfully saved', 'grand-media'), $term['name']);
 
             } while(0);
         } elseif(isset($_POST['gmedia_category_save'])){
-            check_admin_referer('GmediaTerms', 'term_save_wpnonce');
+            check_admin_referer('gmedia_terms', '_wpnonce_terms');
             $edit_term = (int)$gmCore->_get('edit_term');
             do{
                 if(!$gmCore->caps['gmedia_category_manage']){
@@ -202,12 +202,12 @@ class GmediaProcessor_Terms extends GmediaProcessor{
                     break;
                 }
 
-                $this->msg[] = sprintf(__('Category `%s` successfuly saved', 'grand-media'), $term['name']);
+                $this->msg[] = sprintf(__('Category `%s` successfully saved', 'grand-media'), $term['name']);
 
             } while(0);
         } elseif(isset($_POST['gmedia_tag_add'])){
             if($gmCore->caps['gmedia_tag_manage']){
-                check_admin_referer('GmediaTerms', 'term_save_wpnonce');
+                check_admin_referer('gmedia_terms', '_wpnonce_terms');
                 $term        = $gmCore->_post('term');
                 $terms       = array_filter(array_map('trim', explode(',', $term['name'])));
                 $terms_added = 0;
@@ -223,7 +223,7 @@ class GmediaProcessor_Terms extends GmediaProcessor{
                         if(is_wp_error($term_id)){
                             $this->error[] = $term_id->get_error_message();
                         } else{
-                            $this->msg['tag_add'] = sprintf(__('%d of %d tags successfuly added', 'grand-media'), ++ $terms_added, $terms_qty);
+                            $this->msg['tag_add'] = sprintf(__('%d of %d tags successfully added', 'grand-media'), ++ $terms_added, $terms_qty);
                         }
                     } else{
                         $this->error['tag_add'] = __('Some of provided tags are already exists', 'grand-media');
@@ -236,7 +236,7 @@ class GmediaProcessor_Terms extends GmediaProcessor{
 
         $do_gmedia_terms = $gmCore->_get('do_gmedia_terms');
         if('delete' == $do_gmedia_terms){
-            check_admin_referer('gmedia_delete');
+            check_admin_referer('gmedia_delete', '_wpnonce_delete');
             if($gmCore->caps['gmedia_terms_delete']){
                 $ids            = $gmCore->_get('ids', 'selected');
                 $selected_items = ('selected' == $ids)? $this->selected_items : wp_parse_id_list($ids);
@@ -261,7 +261,7 @@ class GmediaProcessor_Terms extends GmediaProcessor{
                         }
                     }
                     if($count){
-                        $this->msg[] = sprintf(__('%d item(s) deleted successfuly', 'grand-media'), $count);
+                        $this->msg[] = sprintf(__('%d item(s) deleted successfully', 'grand-media'), $count);
                     }
                     setcookie(self::$cookie_key, '', time() - 3600);
                     unset($_COOKIE[ self::$cookie_key ]);
@@ -278,7 +278,14 @@ class GmediaProcessor_Terms extends GmediaProcessor{
             }
         }
         if($do_gmedia_terms){
-            $location = remove_query_arg(array('do_gmedia_terms', 'ids', '_wpnonce'));
+            $_wpnonce = array();
+            foreach ($_GET as $key => $value) {
+                if (strpos($key, '_wpnonce') !== false) {
+                    $_wpnonce[$key] = $value;
+                }
+            }
+            $remove_args = array_merge(array('do_gmedia_terms', 'ids'), $_wpnonce);
+            $location = remove_query_arg($remove_args);
             $location = add_query_arg('did_gmedia_terms', $do_gmedia_terms, $location);
             wp_redirect($location);
             exit;

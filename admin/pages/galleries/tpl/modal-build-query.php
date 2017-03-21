@@ -17,6 +17,7 @@ global $user_ID, $gmDB, $gmCore
 		<div class="modal-content">
 			<div class="modal-header">
                 <div class="pull-right" style="margin-top:-4px;">
+                    <button type="button" class="btn btn-default buildqueryreset"><?php _e('Reset', 'grand-media'); ?></button>
                     <button type="button" class="btn btn-primary buildquerysubmit"><?php _e('Build Query', 'grand-media'); ?></button>
                     <button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
                 </div>
@@ -62,7 +63,7 @@ global $user_ID, $gmDB, $gmCore
 
 						<div class="row">
 							<div class="col-xs-8">
-								<input id="query_album__" name="album__in" data-include="album__in" data-exclude="album__not_in" class="form-control input-sm" value="<?php echo implode(',', $query_gmedia_albums) ?>" placeholder="<?php esc_attr_e(__('Any Album...', 'grand-media')); ?>"/>
+								<input id="query_album__" name="album__in" data-include="album__in" data-exclude="album__not_in" class="form-control gm-selectize input-sm" value="<?php echo implode(',', $query_gmedia_albums) ?>" placeholder="<?php esc_attr_e(__('Any Album...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<div class="checkbox"><label><input class="query_switch" data-target="query_album__" type="checkbox"<?php echo (empty($query_data['album__in']) && !empty($query_data['album__not_in']))? ' checked="checked"' : ''; ?> /> <?php _e('Exclude selected Albums', 'grand-media'); ?></label></div>
@@ -84,15 +85,15 @@ global $user_ID, $gmDB, $gmCore
 						<div class="row">
 							<div class="col-xs-4">
 								<label><?php _e('[IN] Categories', 'grand-media'); ?></label>
-								<input name="category__in" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__in'])); ?>" placeholder="<?php esc_attr_e(__('Either of chosen Categories...', 'grand-media')); ?>"/>
+								<input name="category__in" class="form-control input-sm gm-selectize combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__in'])); ?>" placeholder="<?php esc_attr_e(__('Either of chosen Categories...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[AND] Categories', 'grand-media'); ?></label>
-								<input name="category__and" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__and'])); ?>" placeholder="<?php esc_attr_e(__('Have all chosen Categories...', 'grand-media')); ?>"/>
+								<input name="category__and" class="form-control input-sm gm-selectize combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__and'])); ?>" placeholder="<?php esc_attr_e(__('Have all chosen Categories...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[NOT IN] Categories', 'grand-media'); ?></label>
-								<input name="category__not_in" class="form-control input-sm combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__not_in'])); ?>" placeholder="<?php esc_attr_e(__('Exclude Categories...', 'grand-media')); ?>"/>
+								<input name="category__not_in" class="form-control input-sm gm-selectize combobox_gmedia_category" value="<?php echo implode(',', wp_parse_id_list($query_data['category__not_in'])); ?>" placeholder="<?php esc_attr_e(__('Exclude Categories...', 'grand-media')); ?>"/>
 							</div>
 						</div>
 					</div>
@@ -105,15 +106,15 @@ global $user_ID, $gmDB, $gmCore
 						<div class="row">
 							<div class="col-xs-4">
 								<label><?php _e('[IN] Tags', 'grand-media'); ?> </label>
-								<input name="tag__in" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__in'])); ?>" placeholder="<?php esc_attr_e(__('Either of chosen Tags...', 'grand-media')); ?>"/>
+								<input name="tag__in" class="form-control input-sm gm-selectize combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__in'])); ?>" placeholder="<?php esc_attr_e(__('Either of chosen Tags...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[AND] Tags', 'grand-media'); ?> </label>
-								<input name="tag__and" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__and'])); ?>" placeholder="<?php esc_attr_e(__('Have all chosen Tags...', 'grand-media')); ?>"/>
+								<input name="tag__and" class="form-control input-sm gm-selectize combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__and'])); ?>" placeholder="<?php esc_attr_e(__('Have all chosen Tags...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
 								<label><?php _e('[NOT IN] Tags', 'grand-media'); ?> </label>
-								<input name="tag__not_in" class="form-control input-sm combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__not_in'])); ?>" placeholder="<?php esc_attr_e(__('Exclude Tags...', 'grand-media')); ?>"/>
+								<input name="tag__not_in" class="form-control input-sm gm-selectize combobox_gmedia_tag" value="<?php echo implode(',', wp_parse_id_list($query_data['tag__not_in'])); ?>" placeholder="<?php esc_attr_e(__('Exclude Tags...', 'grand-media')); ?>"/>
 							</div>
 						</div>
 					</div>
@@ -150,7 +151,13 @@ global $user_ID, $gmDB, $gmCore
 				<div class="form-group">
 					<div class="row">
 						<div class="col-xs-8">
-							<div class="pull-right"><a id="use_lib_selected" class="label label-primary" href="#libselected"><?php _e('Use selected in Library', 'grand-media'); ?></a></div>
+							<div class="pull-right">
+                                <a id="_use_lib_selected" title="<?php _e('Select Media', 'grand-media'); ?>" href="<?php echo $gmCore->get_admin_url(array('page'        => 'GrandMedia',
+                                    'mode'        => 'select_multiple',
+                                    'gmediablank' => 'library',
+                                    'filter'      => 'image'
+                                ), array(), true); ?>" class="label label-primary preview-modal" data-target="#previewModal" data-width="1200" data-height="500" data-cls="select_gmedia"><?php _e('Select in Library', 'grand-media'); ?></a>
+                            </div>
 							<label><?php _e('Gmedia IDs <small class="text-muted">separated by comma</small>', 'grand-media'); ?> </label>
 						</div>
 					</div>
@@ -185,7 +192,7 @@ global $user_ID, $gmDB, $gmCore
 							);
                             $mime_type_val = is_array($query_data['mime_type'])? implode(',', $query_data['mime_type']) : str_replace(', ', ',', $query_data['mime_type']);
 							?>
-							<input name="mime_type" class="form-control input-sm gmedia-combobox" data-options='<?php echo json_encode($mime_types); ?>' value="<?php esc_attr_e($mime_type_val); ?>" placeholder="<?php esc_attr_e(__('All types...', 'grand-media')); ?>"/>
+							<input name="mime_type" class="form-control input-sm gm-selectize gmedia-combobox" data-options='<?php echo json_encode($mime_types); ?>' value="<?php esc_attr_e($mime_type_val); ?>" placeholder="<?php esc_attr_e(__('All types...', 'grand-media')); ?>"/>
 						</div>
 						<div class="col-xs-4">
 							<label><?php _e('Authors', 'grand-media'); ?></label>
@@ -212,7 +219,7 @@ global $user_ID, $gmDB, $gmCore
 									$query_authors = $query_data['author__not_in'];
 								}
 								?>
-								<input id="query_author__" name="author__in" data-include="author__in" data-exclude="author__not_in" class="form-control input-sm gmedia-combobox" data-options='<?php echo str_replace("'", "\'", json_encode($_users)); ?>' value="<?php echo implode(',', wp_parse_id_list($query_authors)); ?>" placeholder="<?php esc_attr_e(__('All authors...', 'grand-media')); ?>"/>
+								<input id="query_author__" name="author__in" data-include="author__in" data-exclude="author__not_in" class="form-control input-sm gm-selectize gmedia-combobox" data-options='<?php echo str_replace("'", "\'", json_encode($_users)); ?>' value="<?php echo implode(',', wp_parse_id_list($query_authors)); ?>" placeholder="<?php esc_attr_e(__('All authors...', 'grand-media')); ?>"/>
 							<?php } else { ?>
 								<input type="text" readonly="readonly" name="author__in" class="form-control input-sm" value="<?php the_author_meta('display_name', $user_ID); ?>"/>
 							<?php } ?>
@@ -362,23 +369,27 @@ global $user_ID, $gmDB, $gmCore
 								var count = '';
 								var status = '';
 								var author = '';
-								if(item.term_id) {
+								var term_id = '';
+								if(parseInt(item.term_id)) {
 									count = '(' + escape(item.count) + ')';
 									status = (typeof item.status != 'undefined' && ('publish' != item.status))? ' [' + item.status + '] ' : '';
 									author = ' ' + item.by_author;
+									term_id = '[' + item.term_id + '] ';
 								}
-								return '<div>' + escape(item.name) + ' <small>' + count + status + author + '</small></div>';
+								return '<div>' + term_id + escape(item.name) + ' <small>' + count + status + author + '</small></div>';
 							},
 							option: function(item, escape) {
 								var count = '';
 								var status = '';
 								var author = '';
-								if(item.term_id) {
+								var term_id = '';
+								if(parseInt(item.term_id)) {
 									count = '(' + escape(item.count) + ')';
 									status = (typeof item.status != 'undefined' && ('publish' != item.status))? ' [' + item.status + '] ' : '';
 									author = ' ' + item.by_author;
+                                    term_id = '[' + item.term_id + '] ';
 								}
-								return '<div>' + escape(item.name) + ' <small>' + count + status + author + '</small></div>';
+								return '<div>[' + item.term_id + '] ' + escape(item.name) + ' <small>' + count + status + author + '</small></div>';
 							}
 						}
 
@@ -395,20 +406,24 @@ global $user_ID, $gmDB, $gmCore
 						render: {
 							item: function(item, escape) {
 								var count = '';
-								if(item.term_id) {
+                                var term_id = '';
+								if(parseInt(item.term_id)) {
 									count = ' <small>(' + escape(item.count) + ')</small>';
+                                    term_id = '[' + item.term_id + '] ';
 								}
-								return '<div>' + escape(item.name) + count + '</div>';
+								return '<div>' + term_id + escape(item.name) + count + '</div>';
 							},
 							option: function(item, escape) {
 								if(('category__and' == this.$input[0].name) && !item.term_id) {
 									return '';
 								}
 								var count = '';
-								if(item.term_id) {
+                                var term_id = '';
+								if(parseInt(item.term_id)) {
 									count = ' <small>(' + escape(item.count) + ')</small>';
+                                    term_id = '[' + item.term_id + '] ';
 								}
-								return '<div>' + escape(item.name) + count + '</div>';
+								return '<div>' + term_id + escape(item.name) + count + '</div>';
 							}
 						}
 
@@ -437,10 +452,10 @@ global $user_ID, $gmDB, $gmCore
 						searchField: ['name'],
 						render: {
 							item: function(item, escape) {
-								return '<div>' + escape(item.name) + ' <small>(' + escape(item.count) + ')</small></div>';
+								return '<div>[' + item.term_id + '] ' + escape(item.name) + ' <small>(' + escape(item.count) + ')</small></div>';
 							},
 							option: function(item, escape) {
-								return '<div>' + escape(item.name) + ' <small>(' + escape(item.count) + ')</small></div>';
+								return '<div>[' + item.term_id + '] ' + escape(item.name) + ' <small>(' + escape(item.count) + ')</small></div>';
 							}
 						}
 
@@ -482,7 +497,7 @@ global $user_ID, $gmDB, $gmCore
 						var field = $('#query_gmedia__');
 						var valData = field.val().split(',');
 						var storedData = getStorage();
-						storedData = storedData.get('library').split('.');
+						storedData = storedData.get('gmedia_library').split('.');
 						valData = $.grep(valData, function(e) {
 							return e;
 						});
@@ -496,10 +511,21 @@ global $user_ID, $gmDB, $gmCore
 						});
 						field.val(valData.join(','));
 					});
+
+                    $('.buildqueryreset').on('click', function() {
+                        $('input.gm-selectize, select.gm-selectize', '#buildQuery').each(function(){
+                            this.selectize.clear();
+                        });
+                        $('input[type="text"], select', '#buildQuery').each(function(){
+                            $(this).val('');
+                        });
+                        $('input[type="checkbox"]', '#buildQuery').prop('checked', false);
+                    });
 				});
 
 			</script>
 			<div class="modal-footer">
+                <button type="button" class="btn btn-default buildqueryreset"><?php _e('Reset', 'grand-media'); ?></button>
 				<button type="button" class="btn btn-primary buildquerysubmit"><?php _e('Build Query', 'grand-media'); ?></button>
 				<button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
 			</div>

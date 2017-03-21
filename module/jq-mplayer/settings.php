@@ -3,6 +3,7 @@ $default_options = array(
     'maxwidth'     => '0',
     'rating'       => '1',
     'autoplay'     => '0',
+    'loop'         => '1',
     'buttonText'   => 'Download',
     'downloadTrack'=> '0',
     'tracksToShow' => '5',
@@ -27,6 +28,12 @@ $options_tree    = array(
             ),
             'autoplay'     => array(
                 'label' => 'Autoplay',
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => ''
+            ),
+            'loop'     => array(
+                'label' => 'Loop Playback',
                 'tag'   => 'checkbox',
                 'attr'  => '',
                 'text'  => ''

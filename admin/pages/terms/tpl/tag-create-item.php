@@ -21,7 +21,7 @@ $gmedia_url = $gmProcessor->url;
         <div class="col-xs-3" style="padding-top:24px;">
             <?php
             wp_original_referer_field(true, 'previous');
-            wp_nonce_field('GmediaTerms', 'term_save_wpnonce');
+            wp_nonce_field('gmedia_terms', '_wpnonce_terms');
             ?>
             <input type="hidden" name="term[taxonomy]" value="gmedia_tag"/>
             <button type="submit" class="btn btn-primary btn-sm" name="gmedia_tag_add"><?php _e('Add New Tags', 'grand-media'); ?></button>

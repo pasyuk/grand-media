@@ -99,6 +99,27 @@ if(!defined('ABSPATH')) {
             <label><input type="checkbox" name="set[wp_post_related_gmedia]" value="1" <?php checked($gmGallery->options['wp_post_related_gmedia'], '1'); ?> /> <?php _e('Show Related Media from Gmedia library for Wordpress Posts based on tags', 'grand-media'); ?> </label>
         </div>
     </div>
+
+    <hr />
+    <h4><?php _e('Choose what to show on Author Profile pages', 'grand-media'); ?></h4>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_author_related_gmedia]" value="0"/>
+            <label><input type="checkbox" name="set[wp_author_related_gmedia]" value="1" <?php checked($gmGallery->options['wp_author_related_gmedia'], '1'); ?> /> <?php _e('Gmedia Posts (media items from Gmedia Libary)', 'grand-media'); ?> </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_author_related_gmedia_album]" value="0"/>
+            <label><input type="checkbox" name="set[wp_author_related_gmedia_album]" value="1" <?php checked($gmGallery->options['wp_author_related_gmedia_album'], '1'); ?> /> <?php _e('Gmedia Albums', 'grand-media'); ?> </label>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_author_related_gmedia_gallery]" value="0"/>
+            <label><input type="checkbox" name="set[wp_author_related_gmedia_gallery]" value="1" <?php checked($gmGallery->options['wp_author_related_gmedia_gallery'], '1'); ?> /> <?php _e('Gmedia Galleries', 'grand-media'); ?> </label>
+        </div>
+    </div>
 </fieldset>
 
 <fieldset id="gmedia_settings_cloud" class="tab-pane">

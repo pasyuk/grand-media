@@ -34,7 +34,7 @@ $referer = remove_query_arg(array('edit_term', 'gmedia_module'), $refurl);
 
                     echo '<li' . ($term->allow_delete? '' : ' class="disabled"') . '><a href="' . wp_nonce_url(gm_get_admin_url(array('do_gmedia_terms' => 'delete',
                                                                                                                                       'ids'             => $term->term_id
-                                                                                                                                ), array('edit_term'), $gmProcessor->url), 'gmedia_delete') . '" data-confirm="' . __("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media") . '">' . __('Delete', 'grand-media') . '</a></li>';
+                                                                                                                                ), array('edit_term'), $gmProcessor->url), 'gmedia_delete', '_wpnonce_delete') . '" data-confirm="' . __("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media") . '">' . __('Delete', 'grand-media') . '</a></li>';
                     ?>
                 </ul>
             </div>

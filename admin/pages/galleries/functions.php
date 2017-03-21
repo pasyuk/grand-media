@@ -25,7 +25,7 @@ function gmedia_gallery_actions($item) {
 
     $trash_icon = '<span class="glyphicon glyphicon-trash"></span>';
     if($item->allow_delete) {
-        $actions['delete'] = '<a class="trash-icon" title="' . __('Delete', 'grand-media') . '" href="' . wp_nonce_url(add_query_arg(array('do_gmedia_terms' => 'delete', 'ids' => $item->term_id), $gmProcessor->url), 'gmedia_delete') . '" data-confirm="' . __("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media") . '">' . $trash_icon . '</a>';
+        $actions['delete'] = '<a class="trash-icon" title="' . __('Delete', 'grand-media') . '" href="' . wp_nonce_url(add_query_arg(array('do_gmedia_terms' => 'delete', 'ids' => $item->term_id), $gmProcessor->url), 'gmedia_delete', '_wpnonce_delete') . '" data-confirm="' . __("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media") . '">' . $trash_icon . '</a>';
     } else {
         $actions['delete'] = "<span class='action-inactive'>$trash_icon</span>";
     }

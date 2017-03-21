@@ -67,7 +67,7 @@ if (! empty($content)) {
         'libraryUrl' => $gmCore->upload['url']
     ));
     ?>
-    <div id="gmMinima_ID<?php echo $gallery['term_id']; ?>_Container">
+    <div id="GmediaGallery_<?php echo $gallery['term_id']; ?>_Container">
         <?php if ($shortcode_raw) { echo '<pre style="display:none">'; }
         ?><script type="text/javascript">
             var GmediaGallery_<?php echo $gallery['term_id']; ?>;
@@ -77,7 +77,7 @@ if (! empty($content)) {
                 GmediaGallery_<?php echo $gallery['term_id']; ?> = jQuery('#GmediaGallery_<?php echo $gallery['term_id'] ?>').gmMinima([content, settings]);
             });
         </script><?php if ($shortcode_raw) { echo '</pre>'; } ?>
-        <?php if (! $is_bot) { echo '<script type="text/html" id="flashmodule_alternative_' . $gallery['term_id'] . '">'; }
+        <?php if (! $is_bot) { echo '<script type="text/html" id="GmediaGallery_' . $gallery['term_id'] . '_Alternative">'; }
         ?><div class="flashmodule_alternative <?php if (! $is_bot) { echo 'delay'; } ?> noLightbox">
             <div class="gmcatlinks"><?php foreach ($content as $cat) { echo "<a class='gmcat' href='#{$cat['gid']}'>{$cat['title']}</a>"; } ?></div>
             <?php foreach ($content as $cat) { ?>

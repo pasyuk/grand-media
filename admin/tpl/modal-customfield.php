@@ -14,7 +14,7 @@ if ( isset( $customfield_meta_type ) && $customfield_meta_type ) { ?>
                 <form class="modal-body" method="post" id="newCustomFieldForm">
                     <?php
                     echo $gmCore->meta_form( $customfield_meta_type );
-                    wp_nonce_field( 'gmedia_custom_field', '_customfield_nonce' );
+                    wp_nonce_field( 'gmedia_custom_field', '_wpnonce_custom_field' );
                     wp_referer_field();
                     ?>
                     <input type="hidden" name="action" value="<?php echo $customfield_meta_type; ?>_add_custom_field"/>

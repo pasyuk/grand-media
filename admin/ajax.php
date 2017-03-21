@@ -105,6 +105,7 @@ function gmedia_update_data(){
 
         gmedia_item_more_data($result);
         if('image' != $result->type){
+            include_once(GMEDIA_ABSPATH . 'admin/pages/library/functions.php');
             $result->thumbnail = gmedia_item_thumbnail($result);
         }
 
@@ -141,7 +142,7 @@ function gmedia_update_data(){
 add_action('wp_ajax_gmedit_save', 'gmedit_save');
 function gmedit_save(){
     global $gmDB, $gmCore, $gmGallery;
-    check_ajax_referer("gmedit-save");
+    check_ajax_referer('gmedia_edit', '_wpnonce_edit');
     if(!current_user_can('gmedia_edit_media')){
         die('-1');
     }
@@ -315,7 +316,7 @@ function gmedit_save(){
 add_action('wp_ajax_gmedit_restore', 'gmedit_restore');
 function gmedit_restore(){
     global $gmCore;
-    check_ajax_referer("gmedit-save");
+    check_ajax_referer('gmedia_edit', '_wpnonce_edit');
     if(!current_user_can('gmedia_edit_media')){
         die('-1');
     }
@@ -978,7 +979,7 @@ function gmedia_get_modal(){
                 <button type="button" onclick="jQuery('#ajax-modal-form').submit()" class="btn <?php echo $button_class; ?>"><?php echo $modal_button; ?></button>
                 <?php
             }
-            wp_nonce_field('gmedia_action');
+            wp_nonce_field('gmedia_action', '_wpnonce_action');
             ?>
         </div>
     </form><!-- /.modal-content -->
@@ -990,7 +991,7 @@ add_action('wp_ajax_gmedia_tag_edit', 'gmedia_tag_edit');
 function gmedia_tag_edit(){
     global $gmCore, $gmDB;
 
-    check_ajax_referer('GmediaTerms');
+    check_ajax_referer('gmedia_terms', '_wpnonce_terms');
     if(!current_user_can('gmedia_tag_manage') && !current_user_can('gmedia_edit_others_media')){
         $out['error'] = $gmCore->alert('danger', __("You are not allowed to edit others media", 'grand-media'));
         header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
@@ -1008,7 +1009,7 @@ function gmedia_tag_edit(){
                 if(is_wp_error($term_id)){
                     $out['error'] = $gmCore->alert('danger', $term_id->get_error_message());
                 } else{
-                    $out['msg'] = $gmCore->alert('info', sprintf(__("Tag #%d successfuly updated", 'grand-media'), $term_id));
+                    $out['msg'] = $gmCore->alert('info', sprintf(__("Tag #%d successfully updated", 'grand-media'), $term_id));
                 }
             } else{
                 $out['error'] = $gmCore->alert('danger', __("A term with the name provided already exists", 'grand-media'));
@@ -1118,7 +1119,7 @@ function gmedia_module_install(){
             echo $gmCore->alert('danger', $result->get_error_message());
             die();
         } else{
-            echo $gmCore->alert('success', sprintf(__("The `%s` module successfuly installed", 'flag'), $module));
+            echo $gmCore->alert('success', sprintf(__("The `%s` module successfully installed", 'flag'), $module));
             // Try to clear cache after module update
             @$gmCore->clear_cache();
         }
@@ -1147,7 +1148,7 @@ function gmedia_import_wpmedia_modal(){
         </div>
         <div class="modal-body" style="position:relative; min-height:270px;">
             <form id="import_form" name="import_form" target="import_window" action="<?php echo admin_url('admin-ajax.php'); ?>" method="POST" accept-charset="utf-8">
-                <?php wp_nonce_field('GmediaImport'); ?>
+                <?php wp_nonce_field('gmedia_import', '_wpnonce_import'); ?>
                 <input type="hidden" name="action" value="gmedia_import_handler"/>
                 <input type="hidden" id="import-action" name="import" value="import-wpmedia"/>
                 <input type="hidden" name="selected" value="<?php $ckey = "gmedia_library:wpmedia";
@@ -1303,7 +1304,7 @@ function gmedia_relimage(){
     /** @var $wpdb wpdb */
     global $wpdb, $gmCore, $gmDB;
 
-    check_ajax_referer("grandMedia");
+    check_ajax_referer("GmediaGallery");
 
     // check for correct capability
     if(!current_user_can('gmedia_library')){
@@ -1403,7 +1404,7 @@ function gmedia_ftp_browser(){
     }
 
     // if nonce is not correct it returns -1
-    check_ajax_referer('grandMedia');
+    check_ajax_referer('GmediaGallery');
 
     // start from the default path
     $root = trailingslashit(ABSPATH);
@@ -1533,7 +1534,7 @@ function gmedia_upload_handler(){
     nocache_headers();
 
     // if nonce is not correct it returns -1
-    check_ajax_referer('GmediaUpload');
+    check_ajax_referer('gmedia_upload', '_wpnonce_upload');
     if(!current_user_can('gmedia_upload')){
         wp_die(__('You do not have permission to upload files in Gmedia Library.'));
     }
@@ -1605,7 +1606,7 @@ function gmedia_import_handler(){
     //send_origin_headers();
     nocache_headers();
 
-    check_admin_referer('GmediaImport');
+    check_admin_referer('gmedia_import', '_wpnonce_import');
     if(!current_user_can('gmedia_import')){
         wp_die(__('You do not have permission to upload files.'));
     }
@@ -1832,7 +1833,7 @@ add_action('wp_ajax_gmedia_share_page', 'gmedia_share_page');
 function gmedia_share_page(){
     global $gmCore, $user_ID;
     // if nonce is not correct it returns -1
-    check_ajax_referer('share_modal', '_sharenonce');
+    check_ajax_referer('gmedia_share', '_wpnonce_share');
 
     $sharelink    = $gmCore->_post('sharelink', '');
     $email        = $gmCore->_post('email', '');
@@ -1900,7 +1901,7 @@ EOT;
 add_action('wp_ajax_gmedia_add_custom_field', 'gmedia_add_custom_field');
 function gmedia_add_custom_field(){
     global $gmDB, $user_ID, $gmCore;
-    check_ajax_referer('gmedia_custom_field', '_customfield_nonce');
+    check_ajax_referer('gmedia_custom_field', '_wpnonce_custom_field');
 
     $meta_type = 'gmedia';
 
@@ -1945,7 +1946,7 @@ function gmedia_add_custom_field(){
 add_action('wp_ajax_gmedia_delete_custom_field', 'gmedia_delete_custom_field');
 function gmedia_delete_custom_field(){
     global $gmDB, $user_ID, $gmCore;
-    check_ajax_referer('gmedia_custom_field', '_customfield_nonce');
+    check_ajax_referer('gmedia_custom_field', '_wpnonce_custom_field');
 
     $meta_type = 'gmedia';
 
@@ -1987,7 +1988,7 @@ function gmedia_delete_custom_field(){
 add_action('wp_ajax_gmedia_term_add_custom_field', 'gmedia_term_add_custom_field');
 function gmedia_term_add_custom_field(){
     global $gmDB, $user_ID, $gmCore;
-    check_ajax_referer('gmedia_custom_field', '_customfield_nonce');
+    check_ajax_referer('gmedia_custom_field', '_wpnonce_custom_field');
 
     $meta_type = 'gmedia_term';
 
@@ -2034,7 +2035,7 @@ function gmedia_term_add_custom_field(){
 add_action('wp_ajax_gmedia_term_delete_custom_field', 'gmedia_term_delete_custom_field');
 function gmedia_term_delete_custom_field(){
     global $gmDB, $user_ID, $gmCore;
-    check_ajax_referer('gmedia_custom_field', '_customfield_nonce');
+    check_ajax_referer('gmedia_custom_field', '_wpnonce_custom_field');
 
     $meta_type = 'gmedia_term';
 
@@ -2079,7 +2080,7 @@ function gmedia_term_delete_custom_field(){
 add_action('wp_ajax_gmedia_term_sortorder', 'gmedia_term_sortorder');
 function gmedia_term_sortorder(){
     global $gmDB, $user_ID, $gmCore;
-    check_ajax_referer('GmediaTerms');
+    check_ajax_referer('gmedia_terms', '_wpnonce_terms');
 
     $term_id = $gmCore->_post('term_id');
     $idx0    = (int)$gmCore->_post('idx0');
@@ -2150,7 +2151,7 @@ add_action('wp_ajax_gmedia_hash_files', 'gmedia_hash_files');
 function gmedia_hash_files(){
     global $wpdb, $gmCore, $gmDB;
 
-    check_ajax_referer('ajaxLongOperation');
+    check_ajax_referer('gmedia_ajax_long_operations', '_wpnonce_ajax_long_operations');
 
     $all_count = wp_cache_get('gmedia_count_all');
     if(false === $all_count){
@@ -2196,7 +2197,7 @@ add_action('wp_ajax_gmedia_recreate_images', 'gmedia_recreate_images');
 function gmedia_recreate_images(){
     global $gmCore;
 
-    check_ajax_referer('ajaxLongOperation');
+    check_ajax_referer('gmedia_ajax_long_operations', '_wpnonce_ajax_long_operations');
 
     $gmid            = 0;
     $ajax_operations = get_option('gmedia_ajax_long_operations', array());

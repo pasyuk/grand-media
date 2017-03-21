@@ -8,11 +8,21 @@ if(!defined('ABSPATH')) {
  * @var $url
  * @var $import
  */
+global $gmCore, $gmProcessor;
 $extra_tools = ($gmProcessor->gmediablank || (defined('GMEDIA_IFRAME') && GMEDIA_IFRAME))? false : true;
 ?>
 <div class="panel-heading clearfix">
-    <?php if($extra_tools) { ?>
+    <?php if($extra_tools) {
+        $refurl = strpos(wp_get_referer(), "edit_term")? wp_get_referer() : false;
+        ?>
         <div class="btn-toolbar pull-left" style="white-space:nowrap;">
+            <?php if($refurl){
+                $referer = $gmCore->get_admin_url(array(), array(), $refurl);
+                ?>
+                <a class="btn btn-default pull-left" style="margin-right:20px;" href="<?php echo $referer; ?>"><?php _e('Go Back', 'grand-media'); ?></a>
+                <?php
+            } ?>
+
             <div class="btn-group">
                 <a class="btn btn<?php echo !$import? '-primary active' : '-default'; ?>" href="<?php echo gm_get_admin_url(array(), array('import'), $url); ?>"><?php _e('Upload Files', 'grand-media'); ?></a>
                 <?php if(gm_user_can('import')) { ?>

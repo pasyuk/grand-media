@@ -95,7 +95,7 @@ $gm_terms = array();
                     <?php } else{ ?>
                     multipart: true,
                     <?php } ?>
-                    multipart_params: {action: 'gmedia_upload_handler', _ajax_nonce: '<?php echo wp_create_nonce('GmediaUpload'); ?>', params: ''},
+                    multipart_params: {action: 'gmedia_upload_handler', _wpnonce_upload: '<?php echo wp_create_nonce('gmedia_upload'); ?>', params: ''},
                     <?php if('true' == $screen_options['uploader_chunking'] && ('html4' != $screen_options['uploader_runtime'])){ ?>
                     max_file_size: '2000Mb',
                     chunk_size: <?php echo min($maxchunksize, $screen_options['uploader_chunk_size']*1024*1024); ?>,
@@ -143,7 +143,7 @@ $gm_terms = array();
                     var response = jQuery.parseJSON(info.response);
                     if(response && response.error) {
                         file.status = plupload.FAILED;
-                        jQuery('<div></div>').addClass('alert alert-danger alert-dismissable').html(closebtn + '<strong>' + response.id + ':</strong> ' + response.error.message).appendTo('#gmedia-msg-panel');
+                        jQuery('<div></div>').addClass('alert alert-danger alert-dismissable').html(closebtn + '<strong>' + response.id + ':</strong> ' + response.error.message).appendTo('#gm-message');
                         console.log('[FileUploaded] ', response.error);
                     }
                 });
@@ -153,10 +153,11 @@ $gm_terms = array();
                 });
                 uploader.bind('Error', function(up, args) {
                     console.log('[Error] ', args);
-                    jQuery('<div></div>').addClass('alert alert-danger alert-dismissable').html(closebtn + '<strong>' + args.file.name + ':</strong> ' + args.message + ' ' + args.status).appendTo('#gmedia-msg-panel');
+                    jQuery('<div></div>').addClass('alert alert-danger alert-dismissable').html(closebtn + '<strong>' + args.file.name + ':</strong> ' + args.message + ' ' + args.status).appendTo('#gm-message');
                 });
                 uploader.bind('UploadComplete', function(up, files) {
                     console.log('[UploadComplete]', files);
+                    $('<div></div>').addClass('alert alert-success alert-dismissable').html(closebtn + "<?php esc_attr_e(__('Upload finished', 'grand-media')); ?>").appendTo('#gm-message');
                     $('#total-progress-info .progress-bar').css('width', '0').attr('aria-valuenow', '0');
                 });
 

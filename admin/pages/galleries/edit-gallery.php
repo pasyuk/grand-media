@@ -40,9 +40,6 @@ $global_preset   = array();
 $gmedia_filter = gmedia_gallery_query_data($term->meta['_query']);
 
 /**
- * @var $place
- * @var $module_name
- * @var $module_url
  * @var $module_path
  */
 if($term->module['name']){
@@ -89,13 +86,13 @@ if($term->module['name']){
                 $default_options = $gmCore->array_replace_recursive($default_options, $default_preset);
             }
         } else{
-            $alert[] = sprintf(__('Module `%s` is broken. Choose another module from the list.'), $module_name);
+            $alert[] = sprintf(__('Module `%s` is broken. Choose another module from the list.'), $term->module['name']);
         }
     } else{
-        $alert[] = sprintf(__('Can\'t get module with name `%s`. Choose module from the list.'), $module_name);
+        $alert[] = sprintf(__('Can\'t get module with name `%s`. Choose module from the list.'), $term->module['name']);
     }
 } else{
-    $alert[] = sprintf(__('Module is not selected for this gallery. Choose module from the list.'), $module_name);
+    $alert[] = __('Module is not selected for this gallery. Choose module from the list.');
 }
 
 if(!empty($alert)){
@@ -137,3 +134,18 @@ do_action('gmedia_gallery_after_panel');
 include(dirname(__FILE__) . "/tpl/choose-module.php");
 include(GMEDIA_ABSPATH . 'admin/tpl/modal-share.php');
 ?>
+<div class="modal fade gmedia-modal" id="previewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="btn-toolbar pull-right" style="margin-top:-4px;">
+                    <button type="button" class="btn btn-primary"><?php _e('Submit', 'grand-media'); ?></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
+                </div>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>
+

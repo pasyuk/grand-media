@@ -14,7 +14,7 @@ class GmediaProcessor_Settings extends GmediaProcessor{
         }
         $lk_check = isset($_POST['license-key-activate']);
         if(isset($_POST['gmedia_settings_save'])){
-            check_admin_referer('GmediaSettings');
+            check_admin_referer('gmedia_settings', '_wpnonce_settings');
 
             $set = $gmCore->_post('set', array());
 
@@ -33,8 +33,17 @@ class GmediaProcessor_Settings extends GmediaProcessor{
             if(empty($set['endpoint'])){
                 $set['endpoint'] = 'gmedia';
             }
-            if($set['endpoint'] !== $gmGallery->options['endpoint'] || $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug'] || $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug'] || $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']){
+            if(
+                $set['endpoint'] !== $gmGallery->options['endpoint']
+               || $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug']
+               || $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug']
+               || $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']
+               || $set['gmedia_has_archive'] !== $gmGallery->options['gmedia_has_archive']
+               || $set['gmedia_album_has_archive'] !== $gmGallery->options['gmedia_album_has_archive']
+               || $set['gmedia_gallery_has_archive'] !== $gmGallery->options['gmedia_gallery_has_archive']
+            ){
                 $flush_rewrite_rules = true;
+                $set['flush_rewrite_rules'] = true;
             }
 
             foreach($set as $key => $val){
@@ -125,7 +134,7 @@ class GmediaProcessor_Settings extends GmediaProcessor{
         }
 
         if($lk_check){
-            check_admin_referer('GmediaSettings');
+            check_admin_referer('gmedia_settings', '_wpnonce_settings');
             $license_key = $gmCore->_post('set');
             if(!empty($license_key['purchase_key'])){
                 global $wp_version;
@@ -171,7 +180,7 @@ class GmediaProcessor_Settings extends GmediaProcessor{
         }
 
         if(isset($_POST['gmedia_settings_reset'])){
-            check_admin_referer('GmediaSettings');
+            check_admin_referer('gmedia_settings', '_wpnonce_settings');
             include_once(GMEDIA_ABSPATH . 'config/setup.php');
             $_temp_options      = $gmGallery->options;
             $gmGallery->options = gmedia_default_options();

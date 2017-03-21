@@ -58,7 +58,7 @@ if(!defined('ABSPATH')){
                     <li class="<?php echo $rel_selected_show . (gm_user_can('terms_delete')? '' : ' disabled'); ?>">
                         <a href="<?php echo wp_nonce_url($gmCore->get_admin_url(array('do_gmedia_terms' => 'delete',
                                                                                       'ids'             => 'selected'
-                                                                                ), array('filter')), 'gmedia_delete') ?>" class="gmedia-delete" data-confirm="<?php _e("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media"); ?>"><?php _e('Delete Selected Items', 'grand-media'); ?></a>
+                                                                                ), array('filter')), 'gmedia_delete', '_wpnonce_delete') ?>" class="gmedia-delete" data-confirm="<?php _e("You are about to permanently delete the selected items.\n\r'Cancel' to stop, 'OK' to delete.", "grand-media"); ?>"><?php _e('Delete Selected Items', 'grand-media'); ?></a>
                     </li>
                     <?php do_action('gmedia_terms_action_list'); ?>
                 </ul>

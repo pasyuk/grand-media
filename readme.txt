@@ -2,13 +2,13 @@
 Contributors: pasyuk
 Donate link: http://codeasily.com/donate/
 Tags: gallery, comments, image, image gallery, images, music, lightbox, photo, photo gallery, portfolio, responsive, thumbnail, lightbox, media, audio, easy, free, google maps, iphone, map, maps, photos, picture, pictures, slider, slideshow, categories, tags, video, widget
-Requires at least: 3.6
-Tested up to: 4.6
+Requires at least: 3.7
+Tested up to: 4.7.3
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Gallery Gmedia - media gallery, comments for images, social sharing, show EXIF & Metadata, map geolocation (GPS)
+Gallery Gmedia - photo gallery with comments, EXIF & Metadata, map geolocation (GPS), private galleries, music & video player.
 
 == Description ==
 
@@ -36,25 +36,28 @@ Friendly for iPad and iPhone. Doesn’t slow down your website. **Unlimited gall
 
 #### Photo Gallery Modules, Music Players, Mixed Galleries demos
 
-*   [Phantom Pro - Mixed Gallery Module](http://codeasily.com/portfolio-item/gmedia-phantom-pro/) is the Wall/Grid Gallery with social sharing - you can easily change thumbnail sizes, colors, navigation, borders, add stylish labels to thumbnails ... and much more. PhotoSwipe like theme on touch devices.. only better.
-*   [WaveSurfer - Music Module](http://codeasily.com/portfolio-item/gmedia-wavesurfer/) superior responsive SoundCloud like music player with terms support (tags, albums, categories) and ability to show track covers, download button, custom link button, like button, share button, plays & comments counter.
+*   [Cubik - Mixed 3D Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/cubik-3d-photo-gallery-for-wordpress/) is the 3D Cube Gallery with social sharing - highly customizible grid and Magnific Popup lightbox with additional information for each photo.
+*   [Phantom Pro - Mixed Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/phantom-pro/) is the Wall/Grid Gallery with social sharing - you can easily change thumbnail sizes, colors, navigation, borders, add stylish labels to thumbnails ... and much more.
+*   [WaveSurfer - Music Module](http://codeasily.com/portfolio/gmedia-gallery-modules/wavesurfer/) superior responsive SoundCloud like music player with terms support (tags, albums, categories) and ability to show track covers, download button, custom link button, like button, share button, plays & comments counter.
 *   [PhotoTravlr - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/gmedia-phototravlr/) is amazing responsive gallery with terms support (tags, albums, categories) and details for each image like author, caption, download button, link button, like button, EXIF info, location map. Can be in full window and full screen mode.
-*   [PhotoMania - Gallery Module (GmediaCloud demo)](http://codeasily.com/portfolio-item/gmedia-photomania/) - free responsive gallery with thumbs panel and other details for each image like author, caption, download button, link button, like button. Can be in full window and full screen mode.
-*   [Mosaic - Gallery Module](http://codeasily.com/portfolio-item/gmedia-mosaic/) is an image gallery with masonry layout built on jQuery. Responsive gallery with built in prettyPhoto lightbox for big images.
-*   [RealSlider - Gallery Module](http://codeasily.com/portfolio-item/gmedia-realslider/) is an image/video gallery slider module built on jQuery. RealSlider module is responsive and touch friendly gallery with 50+ options for customization.
-*   [PhotoBox - Gallery Module](http://codeasily.com/portfolio-item/gmedia-photobox/) - a lightweight image gallery which uses only CSS3 for silky-smooth animations and transitions.
-*   [Music Player Module](http://codeasily.com/portfolio-item/gmedia-music-player/) - beautiful audio player with playlist is totally written in jQuery and HTML5.
+*   [PhotoMania - Gallery Module (GmediaCloud demo)](http://codeasily.com/portfolio/gmedia-gallery-modules/photomania/) - free responsive gallery with thumbs panel and other details for each image like author, caption, download button, link button, like button. Can be in full window and full screen mode.
+*   [Mosaic - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/mosaic/) is an image gallery with masonry layout built on jQuery. Responsive gallery with built in prettyPhoto lightbox for big images.
+*   [RealSlider - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/realslider/) is an image/video gallery slider module built on jQuery. RealSlider module is responsive and touch friendly gallery with 50+ options for customization.
+*   [PhotoBox - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/photobox/) - a lightweight image gallery which uses only CSS3 for silky-smooth animations and transitions.
+*   [Music Player Module](http://codeasily.com/portfolio/gmedia-gallery-modules/music-player/) - beautiful audio player with playlist is totally written in jQuery and HTML5.
 *   [More Galleries...](http://codeasily.com/portfolio/gmedia-gallery-modules/)
 
 Help me make it **best gallery** plugin: test it and [write suggestions](http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/) how it could be improved in feature versions.
 
 #### Gallery Features
 
-*   New in 1.8.*: **Option to automatically create gallery in Post with related images (images with the same tags as in Post)**
-*   New in 1.8.*: **Show Related Media for WP tags and categories archive pages**
-*   New in 1.8.*: **Widget for Album and Gallery widget**
-*   New in 1.8.*: **Comments for Gmedia Items** (Note: not all gallery modules support comments.)
-*   New in 1.8.*: **Integration with WordPress Search. Gmedia items looks like a regular post with comments. Also you can search for albums and galleries**
+*   New in 1.9.*: **New free gallery module: Cubik Lite - 3D Cube Gallery (HTML5, CSS3, JS, responsive)**
+*   New in 1.9.*: **Option to show own Gmedia Albums on Author Pofile page**
+*   New in 1.9.*: **[Option to automatically create gallery in Post with related images (images with the same tags as in Post)](http://codeasily.com/portfolio/gmedia-gallery-modules/)**
+*   New in 1.9.*: **Show Related Media for WP tags and categories archive pages**
+*   **Widget for Album and Gallery widget**
+*   **Comments for Gmedia Items**
+*   **Integration with WordPress Search. Gmedia items looks like a regular post with comments. Also you can search for albums and galleries**
 *   **Music player & WaveForm for music. Create and save music waveforms & display them nicely with WaveSurfer music module**
 *   **Duplicate item in Gmedia Library**
 *   **iOS application "Gmedia" - [iOS manage application](https://itunes.apple.com/ua/app/gmedia/id947515626?mt=8) to manage your Library with your iPhone**
@@ -89,7 +92,6 @@ Help me make it **best gallery** plugin: test it and [write suggestions](http://
 *   Related Post images on Edit Post (work in progress..)
 *   Share albums to socials from admin panel (in queue)
 *   More modules for creating photo gallery, audio playlist, video playlist
-*   Easily add to Post audio and video files with tags related to post tags
 *   Watermark/Crop image feature
 
 Create Slideshow Galleries with using tags and automatically add images to several galleries by assigning these tags to uploaded photos.
@@ -151,6 +153,98 @@ Gmedia Gallery - is Grand Media Gallery (photo gallery, image gallery, music gal
 
 = Modules Updated =
 * Go to Gmedia Gallery Modules page and update installed premium modules to latest versions
+
+= Gmedia Gallery v1.9.12 =
+* Fixed: iOS application upload to Album (Category, tag)
+
+= Gmedia Gallery v1.9.11 =
+* Fixed: Save WaveForm for music files not worked
+
+= Gmedia Gallery v1.9.10 =
+* Fixed: Compatibility with StarBox plugin
+* Fixed: iOS app not worked on some servers configurations
+
+= Gmedia Gallery v1.9.9 =
+* Fixed: FlipGrid module not worked if GmediaService disabled
+
+= Gmedia Gallery v1.9.8 =
+* Fixed: Modules remote XML error
+* Added: FlipGrid module
+
+= Gmedia Gallery v1.9.7 =
+* Fixed: Upload of TIFF files
+* Added: Cover field for non editable images
+
+= Gmedia Gallery v1.9.6 =
+* Added: Visual media select in Query Builder
+* Fixed: minor bug fixes
+
+= Gmedia Gallery v1.9.5 =
+* Added: og: meta tags for Facebook and Google+ share
+* Updated Modules
+
+= Gmedia Gallery v1.9.4 =
+* Added: Reset button to Build Query
+* Updated: Single Gmedia Post
+* Updated: Modules: Cubik Lite, Phantom
+* Other small improvements
+
+= Gmedia Gallery v1.9.3 =
+* Updated: Phantom module
+* Updated: Third party JS libraries
+* Improved: Duplicate item now copy all meta and terms too
+* Improved: Gmedia permalink changing
+
+= Gmedia Gallery v1.9.2 =
+* Updated: Phantom, Phantom Pro, Cubik Lite, Cubik gallery modules now support youtube/vimeo videos and google maps embed in lightbox
+* Updated: Music modules compatibility with some themes
+* Compatible with Wordpress 4.7
+
+= Gmedia Gallery v1.9.1 =
+* Fixed: Tag edit
+* Fixed: Gmedia iOS app compatibility with WP-SpamShield plugin
+* Fixed: Compatibility Gmedia Terms archive pages with some themes
+* Fixed: Author profile page not shows Posts
+* Fixed: Change gallery module doesn't load default/global preset
+
+= Gmedia Gallery v1.9.0 =
+* Added: Batch edit Module/Preset for selected Galleries
+* Fixed: Notice in compatibility.php
+* Fixed: subscribers now can leave comments for private gmedia items
+* Updated: Phantom gallery module
+* Updated: PhotoMania gallery module
+
+= Gmedia Gallery v1.8.99 =
+* Added: New free module - Cubik Lite (3D Cube Gallery)
+* Added: Settings for Author profile page
+* Added: Show Related Gmedia Metabox for Posts
+* Added: Back button on Upload page
+* Added: Show term description on standalone post
+* Updated: Latest version of Lightbox script
+* Improved: Compatibility with ajax themes
+* Improved: Compatibility with JetPack plugin
+* Fixed: Cover change error on Edit Item
+* Fixed: Library Grid Mode on Safari
+* Fixed: Refresh after edit item in popup
+* Fixed: Actions on Edit Term page
+* Fixed: Add/Edit comments for roles lower than editor
+* Fixed: Error on servers with 'mbstring' disabled
+
+= Gmedia Gallery v1.8.98 =
+* Fixed: Compatibility with "All in One SEO Pack" plugin
+* Fixed: Load registered styles only once if there are few different gallery modules on the page
+* Fixed: Module styles doesn't load when Raw output enabled in settings
+* Fixed: Notice in Media Upload popup
+
+= Gmedia Gallery v1.8.97 =
+* Changed: Shortcode css output
+* Changed: Shortcode js output to avoid cache for new versions
+
+= Gmedia Gallery v1.8.96 =
+* Added: Message "Upload complete" on Add Media page
+* Fixed: Library grid on Safari
+* Fixed: Minima module
+* Improved: Shortcode output
 
 = Gmedia Gallery v1.8.95 =
 * Added: Setting "Delete original images"

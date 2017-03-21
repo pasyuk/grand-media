@@ -3,14 +3,14 @@ $module_info = array(
     'base'         => 'photomania',
     'name'         => 'photomania',
     'title'        => 'PhotoMania',
-    'version'      => '1.3',
+    'version'      => '1.4',
     'author'       => 'CodEasily.com',
     'description'  => 'Responsive Gallery based on jQuery with keyboard control, displaying thumbs, author, title and optional description, download, link button, like button, full window and full screen mode',
     'type'         => 'gallery',
     'branch'       => '1',
     'status'       => 'free',
     'price'        => '0',
-    'demo'         => 'http://codeasily.com/portfolio-item/gmedia-photomania/',
+    'demo'         => 'http://codeasily.com/portfolio/gmedia-gallery-modules/photomania/',
     'download'     => 'http://codeasily.com/download/photomania-module-zip/',
     'dependencies' => 'swiper,mousetrap'
 );

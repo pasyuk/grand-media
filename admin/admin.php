@@ -176,6 +176,14 @@ class GmediaAdmin{
             }
         }
 
+//        global $wpdb;
+//        $query = $wpdb->get_results("SELECT * FROM {$wpdb->prefix}gmedia_term");
+//        foreach($query as $item){
+//            $name = $gmCore->mb_convert_encoding_utf8($item->name);
+//            $wpdb->update($wpdb->prefix . 'gmedia_term', array('name' => $name), array('term_id' => $item->term_id));
+//        }
+//        echo '<pre>' . print_r($query, true) . '</pre>';
+
         ?>
         <div id="gmedia-container" class="gmedia-admin">
             <div id="gmedia-header" class="clearfix">
@@ -278,14 +286,14 @@ class GmediaAdmin{
         }
         reset($ajax_operations);
         $ajax  = key($ajax_operations);
-        $nonce = wp_create_nonce('ajaxLongOperation');
+        $nonce = wp_create_nonce('gmedia_ajax_long_operations');
         ?>
         <script type="text/javascript">
             jQuery(document).ready(function($) {
                 var header = $('#gmedia-header');
                 header.append('<div id="ajax-long-operation"><div class="progress"><div class="progress-bar progress-bar-info" style="width: 0%;"></div><div class="progress-bar-indicator">0%</div></div></div>');
                 gmAjaxLongOperation = function() {
-                    jQuery.post(ajaxurl, {action: '<?php echo $ajax; ?>', _ajax_nonce: '<?php echo $nonce; ?>'}, function(r) {
+                    jQuery.post(ajaxurl, {action: '<?php echo $ajax; ?>', _wpnonce_ajax_long_operations: '<?php echo $nonce; ?>'}, function(r) {
                         if(r.data) {
                             jQuery('.progress-bar-info', header).width(r.data.progress);
                             var indicator = r.data.info? r.data.info + ' ' + r.data.progress : r.data.progress;

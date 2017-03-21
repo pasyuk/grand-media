@@ -55,7 +55,7 @@ $gmedia_terms_pager = $gmDB->query_pager();
                 include(dirname(__FILE__) . '/tpl/no-items.php');
             }
             wp_original_referer_field(true, 'previous');
-            wp_nonce_field('GmediaTerms');
+            wp_nonce_field('gmedia_terms', '_wpnonce_terms');
             ?>
         </form>
         <?php

@@ -56,7 +56,7 @@ $gmedia_modules     = get_gmedia_modules(false);
                 include(GMEDIA_ABSPATH . 'admin/pages/terms/tpl/no-items.php');
             }
             wp_original_referer_field(true, 'previous');
-            wp_nonce_field('GmediaTerms');
+            wp_nonce_field('gmedia_terms', '_wpnonce_terms');
             ?>
         </form>
         <?php

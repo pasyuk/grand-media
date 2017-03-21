@@ -25,7 +25,7 @@ $lk  = isset($gmGallery->options['license_key'])? $gmGallery->options['license_k
             </div>
         </div>
         <?php
-        wp_nonce_field('GmediaSettings');
+        wp_nonce_field('gmedia_settings', '_wpnonce_settings');
         ?>
     </div>
     <div class="panel-body" id="gmedia-msg-panel"></div>

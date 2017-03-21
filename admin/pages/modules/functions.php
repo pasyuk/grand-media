@@ -19,7 +19,7 @@ function gmedia_module_action_buttons($module){
         $buttons['update'] = '<a class="btn btn-warning module_install" data-module="' . $module['module_name'] . '" data-loading-text="' . __('Loading...', 'grand-media') . '" href="' . esc_url($module['download']) . '">' . __('Update Module', 'grand-media') . " (v{$module['update']})</a>";
     }
     if(('upload' == $module['place']) && gm_user_can('module_manage')){
-        $buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url($gmCore->get_admin_url(array('delete_module' => $module['module_name']), array(), $gmProcessor->url), 'gmedia_module_delete') . '">' . __('Delete Module', 'grand-media') . '</a>';
+        $buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url($gmCore->get_admin_url(array('delete_module' => $module['module_name']), array(), $gmProcessor->url), 'gmedia_module_delete', '_wpnonce_module_delete') . '">' . __('Delete Module', 'grand-media') . '</a>';
     }
     if(!empty($module['download'])){
         $buttons['download'] = '<a class="btn btn-link" href="' . $module['download'] . '" download="true">' . __('Download module ZIP', 'grand-media') . '</a>';
