@@ -1,7 +1,7 @@
 === Gallery - Gmedia Photo Gallery. Music Player, Video Gallery, Media Library ===
 Contributors: pasyuk
 Donate link: http://codeasily.com/donate/
-Tags: gallery, comments, image, image gallery, images, music, lightbox, photo, photo gallery, portfolio, responsive, thumbnail, lightbox, media, audio, easy, free, google maps, iphone, map, maps, photos, picture, pictures, slider, slideshow, categories, tags, video, widget
+Tags: gallery, image gallery, photo gallery, lightbox gallery, comments gallery
 Requires at least: 3.7
 Tested up to: 4.7.3
 Stable tag: trunk
@@ -153,6 +153,9 @@ Gmedia Gallery - is Grand Media Gallery (photo gallery, image gallery, music gal
 
 = Modules Updated =
 * Go to Gmedia Gallery Modules page and update installed premium modules to latest versions
+
+= Gmedia Gallery v1.9.13 =
+* Fixed: "Add from Library" button on edit term page
 
 = Gmedia Gallery v1.9.12 =
 * Fixed: iOS application upload to Album (Category, tag)

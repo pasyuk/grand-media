@@ -1070,7 +1070,7 @@ var GmediaFunction = {
             jQuery('#previewModal').modal('hide');
         });
 
-        jQuery(document).on('click.gmedia', '#previewModal .select_gmedia .btn-primary', function() {
+        jQuery(document).on('click.gmedia', '#previewModal .select_gmedia:not(.assign_gmedia_term) .btn-primary', function() {
             var field = jQuery('.previewModal_initiator').closest('.form-group').find('.form-control');
             var valData = field.val().split(',');
             var storedData = getStorage();
