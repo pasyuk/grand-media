@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.9.13
+ * Version: 1.10.05
  * Author: Rattus
  * Author URI: http://codeasily.com/
  * Requires at least: 3.7
@@ -42,7 +42,7 @@ if(!class_exists('Gmedia')){
      */
     class Gmedia{
 
-        var $version = '1.9.13';
+        var $version = '1.10.05';
         var $dbversion = '1.8.0';
         var $minium_WP = '3.7';
         var $options = '';
@@ -337,8 +337,8 @@ if(!class_exists('Gmedia')){
                                                                                'plugin_dirurl' => $gmCore->gmedia_url
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.9.13', 'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.9.13');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.10.05', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.10.05');
             wp_localize_script('grand-media', 'grandMedia', array('error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                                                                   'download' => __('downloading...', 'grand-media'),
                                                                   'wait'     => __('Working. Wait please.', 'grand-media'),
@@ -355,7 +355,7 @@ if(!class_exists('Gmedia')){
         function register_scripts_frontend(){
             global $gmCore, $wp_scripts;
 
-            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '1.9.4');
+            wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '1.9.16');
             wp_localize_script('gmedia-global-frontend', 'GmediaGallery', array('ajaxurl'       => admin_url('admin-ajax.php'),
                                                                                 'nonce'         => wp_create_nonce('GmediaGallery'),
                                                                                 'upload_dirurl' => $gmCore->upload['url'],
@@ -625,6 +625,7 @@ if(!class_exists('Gmedia')){
 //                              'moderate_comments'  => 'moderate_gmedia_comments',
 //                              'edit_post'          => 'edit_gmedia_post',
 //                              'edit_posts'         => 'edit_gmedia_posts',
+                              'create_posts' => false
                           )
             );
             register_post_type('gmedia', $args);

@@ -25,7 +25,7 @@ global $gmCore;
         }
         $gm_search_string = $gmCore->_get('s', '');
         ?>
-        <input id="gmedia-search" class="form-control input-xs" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php esc_attr_e($gm_search_string); ?>"/>
+        <input id="gmedia-search" class="form-control input-xs allow-key-enter" type="text" name="s" placeholder="<?php _e('Search...', 'grand-media'); ?>" value="<?php esc_attr_e($gm_search_string); ?>"/>
     </div>
     <button type="submit" class="btn btn-default input-xs"><span class="glyphicon glyphicon-search"></span></button>
 </form>

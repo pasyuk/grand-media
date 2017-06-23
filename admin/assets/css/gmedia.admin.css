@@ -878,7 +878,6 @@ a.edit_tag_save.btn {
 #gmedia-edit-term .gm-img-thumbnail img { max-height: 150px; }
 .choose-module {
   padding:10px;
-  cursor:pointer;
   overflow:hidden;
   margin:0;
 }
@@ -910,6 +909,12 @@ a.edit_tag_save.btn {
 }
 #chooseModuleModal .choose-module:last-child {
   border-bottom: none;
+}
+.modules-body .media {
+  display:none;
+}
+.modules-body .module-filtered {
+  display:block;
 }
 .presetlist a { }
 .gm-preset-id {

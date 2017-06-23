@@ -338,7 +338,7 @@ class GmediaDB{
         foreach($params as $key => $value){
             $result .= '<input type="hidden" name="' . $key . '" value="' . $value . '" />';
         }
-        $result .= '<input class="form-control pager_current_page" name="pager" type="text" value="' . $this->openPage . '" /><span class="input-group-addon">' . __("of", "grand-media") . ' ' . $this->pages . '</span>';
+        $result .= '<input class="form-control pager_current_page allow-key-enter" name="pager" type="text" value="' . $this->openPage . '" /><span class="input-group-addon">' . __("of", "grand-media") . ' ' . $this->pages . '</span>';
         $result .= '</form>';
 
         $result .= '<div class="btn-group btn-group-xs">';
@@ -3690,7 +3690,7 @@ class GmediaDB{
      * @param string|array $taxonomies The taxonomies to retrieve terms from.
      * @param array|string $args       Change what is returned
      *
-     * @return array|WP_Error The requested term data or empty array if no terms found. WP_Error if $taxonomy does not exist.
+     * @return array The requested term data or empty array if no terms found. WP_Error if $taxonomy does not exist.
      */
     function get_gmedia_terms($object_ids, $taxonomies, $args = array()){
         /** @var $wpdb wpdb */

@@ -4,10 +4,10 @@ $module_info = array('base'         => 'phantom',
                      'title'        => 'Phantom',
                      'version'      => '3.18',
                      'author'       => 'CodEasily.com',
-                     'description'  => 'This module will help you to easily add a grid gallery to your WordPress website or blog. The gallery is completely customizable, resizable and is compatible with all browsers and devices (iPhone, iPad and Android smartphones).
+                     'description'  => __('This module will help you to easily add a grid gallery to your WordPress website or blog. The gallery is completely customizable, resizable and is compatible with all browsers and devices (iPhone, iPad and Android smartphones).
 
 	Responsive | Social Sharing integrated | Views/Likes Counters Support | Comments Support | Customize each gallery individually | Customizable lightbox | Deeplinking support | Change thumbnail size, border, spacing, transparency, background, controls ...
-	',
+	', 'grand-media'),
                      'type'         => 'gallery',
                      'branch'       => '1',
                      'status'       => 'free',

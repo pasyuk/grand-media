@@ -851,13 +851,23 @@ function gmedia_get_modal(){
                                                 'include_selected' => true,
                                                 'name'             => 'author_ids',
                                                 'selected'         => $user_ID,
-                                                'class'            => 'form-control'
+                                                'class'            => 'form-control combobox_authors'
                                           ));
                     } else{
                         echo '<div>' . get_the_author_meta('display_name', $user_ID) . '</div>';
                     }
                     ?>
                 </div>
+                <script type="text/javascript">
+                    jQuery(function(){
+                        jQuery('.combobox_authors').selectize({
+                            create: false,
+                            maxItems: 1,
+                            openOnFocus: true,
+                            hideSelected: true
+                        });
+                    });
+                </script>
             <?php
             } else{
                 echo '<p>' . __('You are not allowed to see others media') . '</p>';
@@ -1102,9 +1112,9 @@ function gmedia_module_install(){
             WP_Filesystem();
         }
         if(!is_object($wp_filesystem)){
-            $result = new WP_Error('fs_unavailable', __('Could not access filesystem.', 'flag'));
+            $result = new WP_Error('fs_unavailable', __('Could not access filesystem.', 'grand-media'));
         } elseif($wp_filesystem->errors->get_error_code()){
-            $result = new WP_Error('fs_error', __('Filesystem error', 'flag'), $wp_filesystem->errors);
+            $result = new WP_Error('fs_error', __('Filesystem error', 'grand-media'), $wp_filesystem->errors);
         } else{
             if($module && is_dir($to_folder . $module)){
                 $gmCore->delete_folder($to_folder . $module);
@@ -1119,7 +1129,7 @@ function gmedia_module_install(){
             echo $gmCore->alert('danger', $result->get_error_message());
             die();
         } else{
-            echo $gmCore->alert('success', sprintf(__("The `%s` module successfully installed", 'flag'), $module));
+            echo $gmCore->alert('success', sprintf(__("The `%s` module successfully installed", 'grand-media'), $module));
             // Try to clear cache after module update
             @$gmCore->clear_cache();
         }
@@ -2315,6 +2325,8 @@ function gmedia_module_interaction(){
             $transient_value = array($uip => array($gmid => $rate));
         }
         set_transient($transient_key, $transient_value, 18 * HOUR_IN_SECONDS);
+
+        do_action('gmedia_rate', $gmid, $rating['value']);
 
         $rating['votes'] = $old_rate? $rating['votes'] : $rating['votes'] + 1;
         $rating['value'] = ($rating['value'] * $rating['votes'] + $rate - $old_rate) / $rating['votes'];

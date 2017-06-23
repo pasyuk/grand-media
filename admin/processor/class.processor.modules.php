@@ -143,7 +143,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
 
                 // Move the file to the modules dir
                 if(false === @move_uploaded_file($_FILES['modulezip']['tmp_name'], $to_folder . $filename)){
-                    $this->error[] = sprintf(__('The uploaded file could not be moved to %s', 'flag'), $to_folder . $filename);
+                    $this->error[] = sprintf(__('The uploaded file could not be moved to %s', 'grand-media'), $to_folder . $filename);
                 } else{
                     global $wp_filesystem;
                     // Is a filesystem accessor setup?
@@ -152,9 +152,9 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                         WP_Filesystem();
                     }
                     if(!is_object($wp_filesystem)){
-                        $result = new WP_Error('fs_unavailable', __('Could not access filesystem.', 'flag'));
+                        $result = new WP_Error('fs_unavailable', __('Could not access filesystem.', 'grand-media'));
                     } elseif($wp_filesystem->errors->get_error_code()){
-                        $result = new WP_Error('fs_error', __('Filesystem error', 'flag'), $wp_filesystem->errors);
+                        $result = new WP_Error('fs_error', __('Filesystem error', 'grand-media'), $wp_filesystem->errors);
                     } else{
                         $maybe_folder_dir = basename($_FILES['modulezip']['name'], '.zip');
                         $maybe_folder_dir = sanitize_file_name($maybe_folder_dir);
@@ -168,7 +168,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                     if(is_wp_error($result)){
                         $this->error[] = $result->get_error_message();
                     } else{
-                        $this->msg[] = sprintf(__("The `%s` file unzipped to module's directory", 'flag'), $filename);
+                        $this->msg[] = sprintf(__("The `%s` file unzipped to module's directory", 'grand-media'), $filename);
                     }
                 }
             } else{
@@ -184,7 +184,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                     check_admin_referer('gmedia_module_delete', '_wpnonce_module_delete');
                     $gmCore->delete_folder($mpath);
                     $location = remove_query_arg(array('_wpnonce_module_delete'));
-                    set_transient('gmedia_module_deleted', sprintf(__("The `%s` module folder was deleted", 'flag'), $mpath), 60);
+                    set_transient('gmedia_module_deleted', sprintf(__("The `%s` module folder was deleted", 'grand-media'), $mpath), 60);
                     wp_redirect($location);
                 }
             } elseif(false !== ($message = get_transient('gmedia_module_deleted'))){

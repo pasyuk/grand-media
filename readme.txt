@@ -1,14 +1,14 @@
 === Gallery - Gmedia Photo Gallery. Music Player, Video Gallery, Media Library ===
 Contributors: pasyuk
-Donate link: http://codeasily.com/donate/
-Tags: gallery, image gallery, photo gallery, lightbox gallery, comments gallery
+Donate link: https://codeasily.com/donate/
+Tags: gallery, gallery image, photo gallery, gallery lightbox, gallery comments
 Requires at least: 3.7
-Tested up to: 4.7.3
+Tested up to: 4.8.0
 Stable tag: trunk
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Gallery Gmedia - photo gallery with comments, EXIF & Metadata, map geolocation (GPS), private galleries, music & video player.
+Gallery Gmedia - photo gallery with comments, gallery with EXIF & Metadata, gallery with map geolocation (GPS), private galleries, music gallery & video gallery.
 
 == Description ==
 
@@ -19,41 +19,43 @@ Manage files, show image galleries and photo slideshows, play music on your site
 > #### Gallery iOS application client
 >
 > Now You can upload and manage your Gmedia Library (images, tags, albums) anywhere!!!
-> Get new **[Gmedia Gallery application for iPhone](http://codeasily.com/gmedia-ios-app/)**
+> Get new **[Gmedia Gallery application for iPhone](https://codeasily.com/gmedia-ios-app/)**
 
 With Gmedia Gallery plugin you can upload an unlimited number of photo and audio files, create dozens of galleries and playlists, group pictures and other files in albums, andadd tags for each file.
 Handle any file format and link any files with images in few clicks. You can import images with captions from Worpress Media Library, Flagallery plugin and from NextGen Gallery plugin right to Gmedia Library.
 
 = Gallery Links =
 
-**[Gallery Home Page](http://codeasily.com/)**, **[Gallery Skins Portfolio](http://codeasily.com/portfolio/gmedia-gallery-modules/)**,  **[Gmedia Gallery Support Forum](http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/)**
+**[Gallery Home Page](https://codeasily.com/)**, **[Gallery Skins Portfolio](https://codeasily.com/portfolio/gmedia-gallery-modules/)**,  **[Gmedia Gallery Support Forum](https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/)**
 
 = How to create FREE responsive photo gallery =
 
-**[Create responsive photo gallery in few clicks. Various customization options and awesome features.](http://codeasily.com/how-to-create-an-image-gallery-in-wordpress/)**
+**[Create responsive photo gallery in few clicks. Various customization options and awesome features.](https://codeasily.com/how-to-create-an-image-gallery-in-wordpress/)**
 
 Friendly for iPad and iPhone. Doesn’t slow down your website. **Unlimited galleries** on your website with **unlimited customizations** for each gallery.
 
 #### Photo Gallery Modules, Music Players, Mixed Galleries demos
 
-*   [Cubik - Mixed 3D Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/cubik-3d-photo-gallery-for-wordpress/) is the 3D Cube Gallery with social sharing - highly customizible grid and Magnific Popup lightbox with additional information for each photo.
-*   [Phantom Pro - Mixed Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/phantom-pro/) is the Wall/Grid Gallery with social sharing - you can easily change thumbnail sizes, colors, navigation, borders, add stylish labels to thumbnails ... and much more.
-*   [WaveSurfer - Music Module](http://codeasily.com/portfolio/gmedia-gallery-modules/wavesurfer/) superior responsive SoundCloud like music player with terms support (tags, albums, categories) and ability to show track covers, download button, custom link button, like button, share button, plays & comments counter.
-*   [PhotoTravlr - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/gmedia-phototravlr/) is amazing responsive gallery with terms support (tags, albums, categories) and details for each image like author, caption, download button, link button, like button, EXIF info, location map. Can be in full window and full screen mode.
-*   [PhotoMania - Gallery Module (GmediaCloud demo)](http://codeasily.com/portfolio/gmedia-gallery-modules/photomania/) - free responsive gallery with thumbs panel and other details for each image like author, caption, download button, link button, like button. Can be in full window and full screen mode.
-*   [Mosaic - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/mosaic/) is an image gallery with masonry layout built on jQuery. Responsive gallery with built in prettyPhoto lightbox for big images.
-*   [RealSlider - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/realslider/) is an image/video gallery slider module built on jQuery. RealSlider module is responsive and touch friendly gallery with 50+ options for customization.
-*   [PhotoBox - Gallery Module](http://codeasily.com/portfolio/gmedia-gallery-modules/photobox/) - a lightweight image gallery which uses only CSS3 for silky-smooth animations and transitions.
-*   [Music Player Module](http://codeasily.com/portfolio/gmedia-gallery-modules/music-player/) - beautiful audio player with playlist is totally written in jQuery and HTML5.
-*   [More Galleries...](http://codeasily.com/portfolio/gmedia-gallery-modules/)
+*   [AlbumsGrid - Splash Gallery for your Albums, Categories, Tags](https://codeasily.com/portfolio/gmedia-gallery-modules/albumsgrid/).
+*   [AlbumsStripes - Slider for your Albums](https://codeasily.com/portfolio/gmedia-gallery-modules/stripes/).
+*   [Cubik 3D - Mixed 3D Gallery Module](https://codeasily.com/portfolio/gmedia-gallery-modules/cubik-3d-photo-gallery-for-wordpress/) is the 3D Cube Gallery with social sharing - highly customizible grid and Magnific Popup lightbox with additional information for each photo.
+*   [Phantom Pro - Mixed Gallery Module](https://codeasily.com/portfolio/gmedia-gallery-modules/phantom-pro/) is the Wall/Grid Gallery with social sharing - you can easily change thumbnail sizes, colors, navigation, borders, add stylish labels to thumbnails ... and much more.
+*   [WaveSurfer - Music Module](https://codeasily.com/portfolio/gmedia-gallery-modules/wavesurfer/) superior responsive SoundCloud like music player with terms support (tags, albums, categories) and ability to show track covers, download button, custom link button, like button, share button, plays & comments counter.
+*   [PhotoTravlr - Gallery Module](https://codeasily.com/portfolio/gmedia-gallery-modules/gmedia-phototravlr/) is amazing responsive gallery with terms support (tags, albums, categories) and details for each image like author, caption, download button, link button, like button, EXIF info, location map. Can be in full window and full screen mode.
+*   [PhotoMania - Gallery Module (GmediaCloud demo)](https://codeasily.com/portfolio/gmedia-gallery-modules/photomania/) - free responsive gallery with thumbs panel and other details for each image like author, caption, download button, link button, like button. Can be in full window and full screen mode.
+*   [Mosaic - Gallery Module](https://codeasily.com/portfolio/gmedia-gallery-modules/mosaic/) is an image gallery with masonry layout built on jQuery. Responsive gallery with built in prettyPhoto lightbox for big images.
+*   [RealSlider - Gallery Module](https://codeasily.com/portfolio/gmedia-gallery-modules/realslider/) is an image/video gallery slider module built on jQuery. RealSlider module is responsive and touch friendly gallery with 50+ options for customization.
+*   [PhotoBox - Gallery Module](https://codeasily.com/portfolio/gmedia-gallery-modules/photobox/) - a lightweight image gallery which uses only CSS3 for silky-smooth animations and transitions.
+*   [Music Player Module](https://codeasily.com/portfolio/gmedia-gallery-modules/music-player/) - beautiful audio player with playlist is totally written in jQuery and HTML5.
+*   [More Galleries...](https://codeasily.com/portfolio/gmedia-gallery-modules/)
 
-Help me make it **best gallery** plugin: test it and [write suggestions](http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/) how it could be improved in feature versions.
+Help me make it **best gallery** plugin: test it and [write suggestions](https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/) how it could be improved in feature versions.
 
 #### Gallery Features
 
 *   New in 1.9.*: **New free gallery module: Cubik Lite - 3D Cube Gallery (HTML5, CSS3, JS, responsive)**
 *   New in 1.9.*: **Option to show own Gmedia Albums on Author Pofile page**
-*   New in 1.9.*: **[Option to automatically create gallery in Post with related images (images with the same tags as in Post)](http://codeasily.com/portfolio/gmedia-gallery-modules/)**
+*   New in 1.9.*: **[Option to automatically create gallery in Post with related images (images with the same tags as in Post)](https://codeasily.com/portfolio/gmedia-gallery-modules/)**
 *   New in 1.9.*: **Show Related Media for WP tags and categories archive pages**
 *   **Widget for Album and Gallery widget**
 *   **Comments for Gmedia Items**
@@ -118,7 +120,7 @@ Gmedia Gallery is the result of hundreds of hours of working to bring you the ul
 
 = Where I can ask support question about gallery? =
 
-Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/) If you have any troubles with gmedia gallery plugin. I'll try to answer ASAP
+Use [Gmedia Gallery support forum](https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/) If you have any troubles with gmedia gallery plugin. I'll try to answer ASAP
 
 == Screenshots ==
 
@@ -138,7 +140,7 @@ Use [Gmedia Gallery support forum](http://codeasily.com/community/forum/gmedia-g
 
 == Other Notes ==
 
-[Gmedia Gallery plugin with wide range of functionality. Responsive gallery, gallery with multi categories, gallery with tags, gallery with geolocation, gallery with comments, advanced gallery images management tools](http://codeasily.com/).
+[Gmedia Gallery plugin with wide range of functionality. Responsive gallery, gallery with multi categories, gallery with tags, gallery with geolocation, gallery with comments, advanced gallery images management tools](https://codeasily.com/).
 
 **Gallery Gmedia it's very useful and beautiful element of website interface. Gmedia Gallery one of the most powerful wordpress photo gallery plugin with comments, geolocation. Gmedia Gallery interface implemented with full set of settings for managing files (like in Media Library only better) and creating mixed galleries. All image galleries have a variety of options that could be easily changed, as result you can make gallery perfectly fit your website.**
 
@@ -153,6 +155,43 @@ Gmedia Gallery - is Grand Media Gallery (photo gallery, image gallery, music gal
 
 = Modules Updated =
 * Go to Gmedia Gallery Modules page and update installed premium modules to latest versions
+
+= Gmedia Gallery v1.10.05 =
+* Fixed compatibility with WP-SpamShield
+* Modules admin page new layout with filters by feature
+
+
+= Gmedia Gallery v1.10.04 =
+* Added option to disable Gmedia Logger
+* Added compatibility with the future gallery module
+
+= Gmedia Gallery v1.10.03 =
+* Added Gmedia Logger as a premium option
+* Fixed ENTER key on pagination
+* Other small improvements
+
+= Gmedia Gallery v1.9.20 =
+* Added few action hooks for developers
+
+= Gmedia Gallery v1.9.19 =
+* Query Builder modal small fix
+* Fixed PHP Notice
+* Fixed sort order in AlbumsGrid module
+
+= Gmedia Gallery v1.9.18 =
+* Added Settings to hide sidebar sections
+* Modules functions improvements
+
+= Gmedia Gallery v1.9.17 =
+* Use Album Covers as default artwork for non-image files
+* Preparations for the new gallery module
+
+= Gmedia Gallery v1.9.15 =
+* Build Query fixes
+* Minor bug fixes
+
+= Gmedia Gallery v1.9.14 =
+* Update if you have some issues with installing premium modules
 
 = Gmedia Gallery v1.9.13 =
 * Fixed: "Add from Library" button on edit term page

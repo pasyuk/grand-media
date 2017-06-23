@@ -188,26 +188,6 @@ if(!defined('ABSPATH')){
                 <?php } ?>
             </div>
             <div class="col-lg-6">
-                <div class="form-group">
-                    <label><?php _e('Author', 'grand-media'); ?></label>
-                    <?php $user_ids = gm_user_can('delete_others_media')? $gmCore->get_editable_user_ids() : false;
-                    if($user_ids){
-                        if(!in_array($user_ID, $user_ids)){
-                            array_push($user_ids, $user_ID);
-                        }
-                        wp_dropdown_users(array('include'          => $user_ids,
-                                                'include_selected' => true,
-                                                'name'             => 'author',
-                                                'selected'         => $item->author,
-                                                'class'            => 'form-control',
-                                                'multi'            => true
-                                          ));
-                    } else{
-                        echo '<input type="hidden" name="author" value="' . $item->author . '"/>';
-                        echo '<div>' . get_the_author_meta('display_name', $item->author) . '</div>';
-                    }
-                    ?>
-                </div>
                 <?php if('image' != $item->type || ('image' == $item->type && !$item->editor)){ ?>
                     <div class="form-group">
                         <label><?php _e('Custom Cover', 'grand-media');
@@ -234,7 +214,8 @@ if(!defined('ABSPATH')){
                     </div>
                 <?php } ?>
                 <p class="media-meta">
-                    <span class="label label-default"><?php _e('ID', 'grand-media') ?>:</span> <strong><?php echo $item->ID; ?></strong>
+                    <span class="label label-default"><?php _e('Author', 'grand-media'); ?>:</span> <?php echo get_the_author_meta('display_name', $item->author); ?>
+                    <br/><span class="label label-default"><?php _e('ID', 'grand-media') ?>:</span> <strong><?php echo $item->ID; ?></strong>
                     <br/><span class="label label-default"><?php _e('Post ID', 'grand-media') ?>:</span> <strong><?php echo $item->post_id; ?></strong>
                     <br/><span class="label label-default"><?php _e('Type', 'grand-media'); ?>:</span> <?php echo $item->mime_type; ?>
                     <?php if(('image' == $item->type) && $item->editor && !empty($item->meta['_metadata'])){ ?>

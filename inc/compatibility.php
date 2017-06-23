@@ -26,8 +26,7 @@ function jetpack_photon_skip_gmedia($skip, $src){
  * @return bool
  */
 function wpss_gmedia_check_bypass($pass){
-    global $wp;
-    $is_app = (isset($wp->query_vars['gmedia-app']) && !empty($wp->query_vars['gmedia-app']));
+    $is_app = (isset($_GET['gmedia-app']) && !empty($_GET['gmedia-app']));
     if($is_app) {
         return true;
     }

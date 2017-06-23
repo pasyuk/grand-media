@@ -3,7 +3,7 @@
 /**
  * GmediaProcessor_Library
  */
-class GmediaProcessor_Library extends GmediaProcessor{
+class GmediaProcessor_Library extends GmediaProcessor {
 
     private static $me = null;
     public static $cookie_key = false;
@@ -79,12 +79,13 @@ class GmediaProcessor_Library extends GmediaProcessor{
         $args['status']           = $gmCore->_get('status');
         $args['page']             = $gmCore->_get('pager');
         $args['per_page']         = $gmCore->_get('per_page', $per_page);
-        $args['author__in']       = parent::filter_by_author($gmCore->_get('author'));
+        $args['author__in']       = parent::filter_by_author($gmCore->_get('author__in', $gmCore->_get('author')));
         $args['alb']              = $gmCore->_get('alb');
         $args['album__in']        = $gmCore->_get('album__in');
         $args['album__not_in']    = $gmCore->_get('album__not_in');
         $args['tag_id']           = $gmCore->_get('tag_id');
         $args['tag__in']          = $gmCore->_get('tag__in');
+        $args['tag__and']         = $gmCore->_get('tag__and');
         $args['tag__not_in']      = $gmCore->_get('tag__not_in');
         $args['cat']              = $gmCore->_get('cat');
         $args['category__in']     = $gmCore->_get('category__in');
@@ -94,10 +95,12 @@ class GmediaProcessor_Library extends GmediaProcessor{
         $args['s']                = $gmCore->_get('s');
         $args['orderby']          = $gmCore->_get('orderby', $orderby);
         $args['order']            = $gmCore->_get('order', $order);
+        $args['terms_relation']   = $gmCore->_get('terms_relation');
+        $args['limit']            = $gmCore->_get('limit');
 
         if('duplicates' === $args['gmedia__in']){
             $duplicates = $gmDB->get_duplicates();
-            if(!empty($duplicates['duplicate_ids'])){
+            if( !empty($duplicates['duplicate_ids'])){
                 $args['gmedia__in'] = $duplicates['duplicate_ids'];
                 $args['orderby']    = 'gmedia__in';
 
@@ -143,24 +146,25 @@ class GmediaProcessor_Library extends GmediaProcessor{
             }
         }
 
-        if(!empty($query_args['author__in']) && $gmCore->caps['gmedia_show_others_media']){
+        if( !empty($query_args['author__in']) && $gmCore->caps['gmedia_show_others_media']){
             $authors_names = $query_args['author__in'];
             foreach($authors_names as $i => $id){
-                if((int)$id){
+                if((int) $id){
                     $authors_names[ $i ] = get_the_author_meta('display_name', $id);
                 }
             }
-            $this->filters['filter_author'] = array('title'  => __('Filter Author', 'grand-media'),
-                                                    'filter' => $authors_names
+            $this->filters['filter_author'] = array(
+                'title'  => __('Filter Author', 'grand-media'),
+                'filter' => $authors_names
             );
         }
 
         $gmDB->gmedias_album_stuff($query_args);
-        if(!empty($query_args['album__in'])){
+        if( !empty($query_args['album__in'])){
             if(isset($query_args['within_album'])){
                 $filter_title = __('Exclude Album', 'grand-media');
                 $albums_names = array();
-                if(!empty($query_args['with_album__not_in'])){
+                if( !empty($query_args['with_album__not_in'])){
                     $albums_names = $gmDB->get_terms('gmedia_album', array('fields' => 'names', 'global' => $args['author__in'], 'include' => $query_args['with_album__not_in']));
                 }
                 array_push($albums_names, __('Hide items without album', 'grand-media'));
@@ -168,17 +172,18 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $filter_title = __('Filter Album', 'grand-media');
                 $albums_names = $gmDB->get_terms('gmedia_album', array('fields' => 'names', 'global' => $args['author__in'], 'include' => $query_args['album__in']));
             }
-            if(!empty($albums_names)){
-                $this->filters['filter_albums'] = array('title'  => $filter_title,
-                                                        'filter' => $albums_names
+            if( !empty($albums_names)){
+                $this->filters['filter_albums'] = array(
+                    'title'  => $filter_title,
+                    'filter' => $albums_names
                 );
             }
         }
-        if(!empty($query_args['album__not_in'])){
+        if( !empty($query_args['album__not_in'])){
             if(isset($query_args['without_album'])){
                 $filter_title = __('Filter Album', 'grand-media');
                 $albums_names = array();
-                if(!empty($query_args['with_album__in'])){
+                if( !empty($query_args['with_album__in'])){
                     $albums_names = $gmDB->get_terms('gmedia_album', array('fields' => 'names', 'global' => $args['author__in'], 'include' => $query_args['with_album__in']));
                 }
                 array_push($albums_names, __('Show items without album', 'grand-media'));
@@ -186,19 +191,20 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $filter_title = __('Exclude Album', 'grand-media');
                 $albums_names = $gmDB->get_terms('gmedia_album', array('fields' => 'names', 'global' => $args['author__in'], 'include' => $query_args['album__not_in']));
             }
-            if(!empty($albums_names)){
-                $this->filters['exclude_albums'] = array('title'  => $filter_title,
-                                                         'filter' => $albums_names
+            if( !empty($albums_names)){
+                $this->filters['exclude_albums'] = array(
+                    'title'  => $filter_title,
+                    'filter' => $albums_names
                 );
             }
         }
 
         $gmDB->gmedias_category_stuff($query_args);
-        if(!empty($query_args['category__in'])){
+        if( !empty($query_args['category__in'])){
             if(isset($query_args['within_category'])){
                 $filter_title   = __('Exclude Category', 'grand-media');
                 $category_names = array();
-                if(!empty($query_args['with_category__not_in'])){
+                if( !empty($query_args['with_category__not_in'])){
                     $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['with_category__not_in']));
                 }
                 $category_names = array_push($category_names, __('Hide items without categories', 'grand-media'));
@@ -206,17 +212,18 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $filter_title   = __('Filter Category', 'grand-media');
                 $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['category__in']));
             }
-            if(!empty($category_names)){
-                $this->filters['filter_categories'] = array('title'  => $filter_title,
-                                                            'filter' => $category_names
+            if( !empty($category_names)){
+                $this->filters['filter_categories'] = array(
+                    'title'  => $filter_title,
+                    'filter' => $category_names
                 );
             }
         }
-        if(!empty($query_args['category__not_in'])){
+        if( !empty($query_args['category__not_in'])){
             if(isset($query_args['without_category'])){
                 $filter_title   = __('Filter Category', 'grand-media');
                 $category_names = array();
-                if(!empty($query_args['with_category__in'])){
+                if( !empty($query_args['with_category__in'])){
                     $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['with_category__in']));
                 }
                 $category_names = array_push($category_names, __('Show items without categories', 'grand-media'));
@@ -224,29 +231,39 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $filter_title   = __('Exclude Category', 'grand-media');
                 $category_names = $gmDB->get_terms('gmedia_category', array('fields' => 'names', 'include' => $query_args['category__not_in']));
             }
-            if(!empty($category_names)){
-                $this->filters['exclude_categories'] = array('title'  => $filter_title,
-                                                             'filter' => $category_names
+            if( !empty($category_names)){
+                $this->filters['exclude_categories'] = array(
+                    'title'  => $filter_title,
+                    'filter' => $category_names
                 );
             }
         }
 
         $gmDB->gmedias_tag_stuff($query_args);
-        if(!empty($query_args['tag__in'])){
+        if( !empty($query_args['tag__in'])){
             $tag_names = $gmDB->get_terms('gmedia_tag', array('fields' => 'names', 'include' => $query_args['tag__in']));
-            if(!empty($tag_names)){
-                $this->filters['filter_tags'] = array('title'  => __('Filter Tag', 'grand-media'),
-                                                      'filter' => $tag_names
+            if( !empty($tag_names)){
+                $this->filters['filter_tags'] = array(
+                    'title'  => __('Filter Tag', 'grand-media'),
+                    'filter' => $tag_names
                 );
             }
         }
-        if(!empty($query_args['tag__not_in'])){
+        if( !empty($query_args['tag__not_in'])){
             $tag_names = $gmDB->get_terms('gmedia_tag', array('fields' => 'names', 'include' => $query_args['tag__not_in']));
-            if(!empty($tag_names)){
-                $this->filters['exclude_tags'] = array('title'  => __('Exclude Tag', 'grand-media'),
-                                                       'filter' => $tag_names
+            if( !empty($tag_names)){
+                $this->filters['exclude_tags'] = array(
+                    'title'  => __('Exclude Tag', 'grand-media'),
+                    'filter' => $tag_names
                 );
             }
+        }
+
+        if( !empty($args['terms_relation'])){
+            $this->filters['terms_relation'] = array(
+                'title'  => __('Terms Relation', 'grand-media'),
+                'filter' => array(strip_tags($args['terms_relation']))
+            );
         }
 
         return $query_args;
@@ -255,7 +272,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
     protected function processor(){
         global $user_ID, $gmCore, $gmDB, $gmGallery;
 
-        if(!$gmCore->caps['gmedia_library']){
+        if( !$gmCore->caps['gmedia_library']){
             wp_die(__('You are not allowed to be here', 'grand-media'));
         }
 
@@ -303,8 +320,8 @@ class GmediaProcessor_Library extends GmediaProcessor{
 
         if(isset($_POST['quick_gallery'])){
             check_admin_referer('gmedia_action', '_wpnonce_action');
-            do{
-                if(!$gmCore->caps['gmedia_gallery_manage']){
+            do {
+                if( !$gmCore->caps['gmedia_gallery_manage']){
                     $this->error[] = __('You are not allowed to manage galleries', 'grand-media');
                     break;
                 }
@@ -335,10 +352,11 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $getModulePreset  = $gmCore->getModulePreset($gallery['module']);
                 $gallery['query'] = array_merge($gallery['query'], array('order' => 'ASC', 'orderby' => 'gmedia__in'));
 
-                $gallery_meta = array('_edited'   => gmdate('Y-m-d H:i:s'),
-                                      '_query'    => $gallery['query'],
-                                      '_module'   => $getModulePreset['module'],
-                                      '_settings' => $getModulePreset['settings']
+                $gallery_meta = array(
+                    '_edited'   => gmdate('Y-m-d H:i:s'),
+                    '_query'    => $gallery['query'],
+                    '_module'   => $getModulePreset['module'],
+                    '_settings' => $getModulePreset['settings']
                 );
                 foreach($gallery_meta as $key => $value){
                     $gmDB->update_metadata('gmedia_term', $term_id, $key, $value);
@@ -370,19 +388,19 @@ class GmediaProcessor_Library extends GmediaProcessor{
         }
         if(isset($_POST['filter_author'])){
             $authors  = $gmCore->_post('author_ids');
-            $location = add_query_arg(array('author' => (int)$authors), $this->url);
+            $location = add_query_arg(array('author' => (int) $authors), $this->url);
             wp_redirect($location);
             exit;
         }
 
         $do_gmedia = $gmCore->_get('do_gmedia');
-        if(!empty($this->selected_items) || isset($_POST['cookie_key'])){
+        if( !empty($this->selected_items) || isset($_POST['cookie_key'])){
             if(isset($_POST['assign_album'])){
                 check_admin_referer('gmedia_action', '_wpnonce_action');
                 if($gmCore->caps['gmedia_terms']){
                     $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                     $ids        = $this->selected_items($cookie_key);
-                    if(!$gmCore->caps['gmedia_edit_others_media']){
+                    if( !$gmCore->caps['gmedia_edit_others_media']){
                         $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                         if(count($selected_items) < count($ids)){
                             $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -409,7 +427,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                     }
                                 }
                             }
-                            if(!empty($term_ids)){
+                            if( !empty($term_ids)){
                                 global $wpdb;
 
                                 foreach($term_ids as $term_id => $item_ids){
@@ -443,7 +461,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 if($gmCore->caps['gmedia_terms']){
                     $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                     $ids        = $this->selected_items($cookie_key);
-                    if(!$gmCore->caps['gmedia_edit_others_media']){
+                    if( !$gmCore->caps['gmedia_edit_others_media']){
                         $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                         if(count($selected_items) < count($ids)){
                             $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -453,13 +471,13 @@ class GmediaProcessor_Library extends GmediaProcessor{
                     }
                     $term = $gmCore->_post('cat_names');
                     $term = explode(',', $term);
-                    if(!empty($term) && ($count = count($selected_items))){
+                    if( !empty($term) && ($count = count($selected_items))){
                         foreach($selected_items as $item){
                             $result = $gmDB->set_gmedia_terms($item, $term, 'gmedia_category', $append = 1);
                             if(is_wp_error($result)){
                                 $this->error[] = $result;
                                 $count --;
-                            } elseif(!$result){
+                            } elseif( !$result){
                                 $count --;
                             }
                         }
@@ -478,7 +496,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 if(($term = $gmCore->_post('category_id')) && $gmCore->caps['gmedia_terms']){
                     $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                     $ids        = $this->selected_items($cookie_key);
-                    if(!$gmCore->caps['gmedia_edit_others_media']){
+                    if( !$gmCore->caps['gmedia_edit_others_media']){
                         $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                         if(count($selected_items) < count($ids)){
                             $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -493,7 +511,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                             if(is_wp_error($result)){
                                 $this->error[] = $result;
                                 $count --;
-                            } elseif(!$result){
+                            } elseif( !$result){
                                 $count --;
                             }
                         }
@@ -508,7 +526,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
             }
             if(isset($_POST['add_tags'])){
                 check_admin_referer('gmedia_action', '_wpnonce_action');
-                if(!$gmCore->caps['gmedia_terms']){
+                if( !$gmCore->caps['gmedia_terms']){
                     $this->error[] = __('You are not allowed to assign terms', 'grand-media');
                 } else{
                     $term      = $gmCore->_post('tag_names');
@@ -516,7 +534,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                     if($term || $iptc_tags){
                         $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                         $ids        = $this->selected_items($cookie_key);
-                        if(!$gmCore->caps['gmedia_edit_others_media']){
+                        if( !$gmCore->caps['gmedia_edit_others_media']){
                             $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                             if(count($selected_items) < count($ids)){
                                 $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -538,7 +556,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                 if(is_wp_error($result)){
                                     $this->error[] = $result;
                                     $count --;
-                                } elseif(!$result){
+                                } elseif( !$result){
                                     $count --;
                                 }
                             }
@@ -557,7 +575,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 if(($term = $gmCore->_post('tag_id')) && $gmCore->caps['gmedia_terms']){
                     $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                     $ids        = $this->selected_items($cookie_key);
-                    if(!$gmCore->caps['gmedia_edit_others_media']){
+                    if( !$gmCore->caps['gmedia_edit_others_media']){
                         $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                         if(count($selected_items) < count($ids)){
                             $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -572,7 +590,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                             if(is_wp_error($result)){
                                 $this->error[] = $result;
                                 $count --;
-                            } elseif(!$result){
+                            } elseif( !$result){
                                 $count --;
                             }
                         }
@@ -590,7 +608,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 if($gmCore->caps['gmedia_edit_media']){
                     $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                     $ids        = $this->selected_items($cookie_key);
-                    if(!$gmCore->caps['gmedia_edit_others_media']){
+                    if( !$gmCore->caps['gmedia_edit_others_media']){
                         $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                         if(count($selected_items) < count($ids)){
                             $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -618,16 +636,16 @@ class GmediaProcessor_Library extends GmediaProcessor{
                         }
                         $i = 0;
                         foreach($selected_items as $item){
-                            $id          = (int)$item;
-                            $gmedia      = $gmDB->get_gmedia($id, ARRAY_A);
-                            if(!$gmedia){
+                            $id     = (int) $item;
+                            $gmedia = $gmDB->get_gmedia($id, ARRAY_A);
+                            if( !$gmedia){
                                 continue;
                             }
-                            $item_author = (int)$gmedia['author'];
+                            $item_author = (int) $gmedia['author'];
 
                             if('custom' == $b_filename && ($gmCore->caps['gmedia_delete_others_media'] || ($item_author == $user_ID))){
                                 $filename_custom = $gmCore->_post('batch_filename_custom');
-                                if(!empty($filename_custom) && ('{filename}' !== $filename_custom)){
+                                if( !empty($filename_custom) && ('{filename}' !== $filename_custom)){
 
                                     $gmuid = pathinfo($gmedia['gmuid']);
 
@@ -668,32 +686,32 @@ class GmediaProcessor_Library extends GmediaProcessor{
                             switch($b_title){
                                 case 'empty':
                                     $batch_data['title'] = '';
-                                break;
+                                    break;
                                 case 'filename':
                                     $title               = pathinfo($gmedia['gmuid'], PATHINFO_FILENAME);
                                     $batch_data['title'] = str_replace('_', ' ', $title);
                                     if($gmGallery->options['name2title_capitalize']){
                                         $batch_data['title'] = $gmCore->mb_ucwords_utf8($batch_data['title']);
                                     }
-                                break;
+                                    break;
                                 case 'custom':
                                     $title_custom = $gmCore->_post('batch_title_custom');
                                     if(false !== $title_custom){
                                         $batch_data['title'] = $title_custom;
                                     }
-                                break;
+                                    break;
                             }
                             switch($b_description){
                                 case 'empty':
                                     $batch_data['description'] = '';
-                                break;
+                                    break;
                                 case 'metadata':
                                     $metatext = $gmCore->metadata_text($id);
                                     if($gmedia['description']){
                                         $gmedia['description'] .= "\n";
                                     }
                                     $batch_data['description'] = $gmedia['description'] . $metatext;
-                                break;
+                                    break;
                                 case 'custom':
                                     $description_custom = $gmCore->_post('batch_description_custom');
                                     if(false !== $description_custom){
@@ -706,25 +724,25 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                             $batch_data['description'] = $description_custom . $gmedia['description'];
                                         }
                                     }
-                                break;
+                                    break;
                             }
                             switch($b_link){
                                 case 'empty':
                                     $batch_data['link'] = '';
-                                break;
+                                    break;
                                 case 'self':
                                     $fileinfo           = $gmCore->fileinfo($gmedia['gmuid'], false);
                                     $fileurl            = is_file($fileinfo['filepath_original'])? $fileinfo['fileurl_original'] : $fileinfo['fileurl'];
                                     $batch_data['link'] = $fileurl;
-                                break;
+                                    break;
                                 case 'custom':
                                     $link_custom = $gmCore->_post('batch_link_custom');
                                     if(false !== $link_custom){
                                         $batch_data['link'] = $link_custom;
                                     }
-                                break;
+                                    break;
                             }
-                            if(!empty($batch_data)){
+                            if( !empty($batch_data)){
                                 $batch_data['modified'] = current_time('mysql');
                                 $gmedia_data            = array_merge($gmedia, $batch_data);
                                 $gmDB->insert_gmedia($gmedia_data);
@@ -750,7 +768,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                     if($gmCore->caps['gmedia_terms']){
                         $cookie_key = $gmCore->_post('cookie_key', self::$cookie_key);
                         $ids        = $this->selected_items($cookie_key);
-                        if(!$gmCore->caps['gmedia_edit_others_media']){
+                        if( !$gmCore->caps['gmedia_edit_others_media']){
                             $selected_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $ids));
                             if(count($selected_items) < count($ids)){
                                 $this->error[] = __('You are not allowed to edit others media', 'grand-media');
@@ -781,13 +799,13 @@ class GmediaProcessor_Library extends GmediaProcessor{
                         $count          = count($selected_items);
                         if($count){
                             foreach($selected_items as $item){
-                                $id             = (int)$item;
+                                $id             = (int) $item;
                                 $media_metadata = $gmDB->generate_gmedia_metadata($id);
                                 $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_metadata', $media_metadata);
-                                if(!empty($media_metadata['image_meta']['created_timestamp'])){
+                                if( !empty($media_metadata['image_meta']['created_timestamp'])){
                                     $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_created_timestamp', $media_metadata['image_meta']['created_timestamp']);
                                 }
-                                if(!empty($media_metadata['image_meta']['GPS'])){
+                                if( !empty($media_metadata['image_meta']['GPS'])){
                                     $gmDB->update_metadata($meta_type = 'gmedia', $id, $meta_key = '_gps', $media_metadata['image_meta']['GPS']);
                                 }
                             }
@@ -808,7 +826,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                         $selected_items = $this->selected_items($cookie_key);
                         $count          = count($selected_items);
                         if($count){
-                            if(!$gmCore->caps['gmedia_edit_others_media']){
+                            if( !$gmCore->caps['gmedia_edit_others_media']){
                                 $edit_items     = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'mime_type' => 'image', 'gmedia__in' => $selected_items));
                                 $selected_items = $edit_items;
                             } else{
@@ -839,7 +857,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $ids            = $gmCore->_get('ids', 'selected');
                 $cookie_key     = $gmCore->_post('cookie_key', self::$cookie_key);
                 $selected_items = ('selected' == $ids)? $this->selected_items($cookie_key) : wp_parse_id_list($ids);
-                if(!empty($selected_items)){
+                if( !empty($selected_items)){
                     if(($count = count($selected_items))){
                         foreach($selected_items as $gmid){
                             $gmCore->duplicate_gmedia($gmid);
@@ -860,8 +878,8 @@ class GmediaProcessor_Library extends GmediaProcessor{
                 $ids            = $gmCore->_get('ids', 'selected');
                 $cookie_key     = $gmCore->_post('cookie_key', self::$cookie_key);
                 $selected_items = ('selected' == $ids)? $this->selected_items($cookie_key) : wp_parse_id_list($ids);
-                if(!empty($selected_items)){
-                    if(!$gmCore->caps['gmedia_delete_others_media']){
+                if( !empty($selected_items)){
+                    if( !$gmCore->caps['gmedia_delete_others_media']){
                         $delete_items = $gmDB->get_gmedias(array('fields' => 'ids', 'author' => $user_ID, 'gmedia__in' => $selected_items));
                         if(count($delete_items) < count($selected_items)){
                             $this->error[] = __('You are not allowed to delete others media', 'grand-media');
@@ -871,7 +889,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                     if(($count = count($selected_items))){
                         $delete_original_file = !('delete__save_original' == $do_gmedia);
                         foreach($selected_items as $item){
-                            if(!$gmDB->delete_gmedia((int)$item, $delete_original_file)){
+                            if( !$gmDB->delete_gmedia((int) $item, $delete_original_file)){
                                 $this->error[] = "#{$item}: " . __('Error in deleting...', 'grand-media');
                                 $count --;
                             }
@@ -902,7 +920,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
                                 }
                             }
                         }
-                        if(!empty($this->stack_items)){
+                        if( !empty($this->stack_items)){
                             $this->stack_items = array_diff($this->stack_items, $selected_items);
                             if(empty($this->stack_items)){
                                 $this->clear_selected_items("gmedia_{$user_ID}_libstack");;
@@ -915,23 +933,23 @@ class GmediaProcessor_Library extends GmediaProcessor{
             } else{
                 $this->error[] = __('You are not allowed to delete files', 'grand-media');
             }
-            if(!empty($this->msg)){
+            if( !empty($this->msg)){
                 set_transient('gmedia_action_msg', $this->msg, 30);
             }
-            if(!empty($this->error)){
+            if( !empty($this->error)){
                 set_transient('gmedia_action_error', $this->error, 30);
             }
         }
         if($do_gmedia){
             $_wpnonce = array();
-            foreach ($_GET as $key => $value) {
-                if (strpos($key, '_wpnonce') !== false) {
-                    $_wpnonce[$key] = $value;
+            foreach($_GET as $key => $value){
+                if(strpos($key, '_wpnonce') !== false){
+                    $_wpnonce[ $key ] = $value;
                 }
             }
             $remove_args = array_merge(array('do_gmedia', 'ids'), $_wpnonce);
-            $location = remove_query_arg($remove_args);
-            $location = add_query_arg('did_gmedia', $do_gmedia, $location);
+            $location    = remove_query_arg($remove_args);
+            $location    = add_query_arg('did_gmedia', $do_gmedia, $location);
             wp_redirect($location);
             exit;
         }
@@ -939,12 +957,12 @@ class GmediaProcessor_Library extends GmediaProcessor{
             $msg = get_transient('gmedia_action_msg');
             if($msg){
                 delete_transient('gmedia_action_msg');
-                $this->msg = (array)$msg;
+                $this->msg = (array) $msg;
             }
             $error = get_transient('gmedia_action_error');
             if($error){
                 delete_transient('gmedia_action_error');
-                $this->error = (array)$error;
+                $this->error = (array) $error;
             }
         }
     }
@@ -961,7 +979,7 @@ class GmediaProcessor_Library extends GmediaProcessor{
     }
 
     public function wpLink(){
-        if(!class_exists('_WP_Editors', false)){
+        if( !class_exists('_WP_Editors', false)){
             require_once(ABSPATH . WPINC . '/class-wp-editor.php');
         }
         _WP_Editors::wp_link_dialog();

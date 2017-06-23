@@ -3,10 +3,11 @@
 function gmedia_item_thumbnail($item){
     global $gmCore;
 
-    $thumb = '<img class="gmedia-thumb" src="' . $gmCore->gm_get_media_image($item, 'thumb') . '" alt=""/>';
+    $images = $gmCore->gm_get_media_image($item, 'all');
+    $thumb = '<img class="gmedia-thumb" src="' . $images['thumb'] . '" alt=""/>';
 
-    if(isset($item->meta['_cover'][0]) && !empty($item->meta['_cover'][0])){
-        $thumb .= '<img class="gmedia-typethumb" src="' . $gmCore->gm_get_media_image($item, 'thumb', false) . '" alt=""/>';
+    if(!empty($images['icon'])){
+        $thumb .= '<img class="gmedia-typethumb" src="' . $images['icon'] . '" alt=""/>';
     }
 
     return $thumb;

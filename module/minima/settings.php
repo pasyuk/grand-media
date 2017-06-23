@@ -27,190 +27,190 @@ $default_options = array(
 );
 $options_tree    = array(
     array(
-        'label'  => 'Common Settings',
+        'label'  => __('Common Settings', 'grand-media'),
         'fields' => array(
             'maxwidth'              => array(
-                'label' => 'Max-Width',
+                'label' => __('Max-Width', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0"',
-                'text'  => 'Set the maximum width of the gallery. Leave 0 to disable max-width.'
+                'text'  => __('Set the maximum width of the gallery. Leave 0 to disable max-width.', 'grand-media')
             ),
             'lockheight'            => array(
-                'label' => 'Set height manually',
+                'label' => __('Set height manually', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => 'data-watch="change"',
-                'text'  => 'By default a gallery automatically calculates own height to best fit the tallest image in a gallery.'
+                'text'  => __('By default a gallery automatically calculates own height to best fit the tallest image in a gallery.', 'grand-media')
             ),
             'height'                => array(
-                'label' => 'Height',
+                'label' => __('Height', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" min="0" data-lockheight="is:1"',
-                'text'  => 'Set height of the gallery. Do not set % unless you know what you doing.'
+                'text'  => __('Set height of the gallery. Do not set % unless you know what you doing.', 'grand-media')
             ),
             'maxheight'             => array(
-                'label' => 'Max-Height',
+                'label' => __('Max-Height', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" data-lockheight="is:0"',
-                'text'  => 'Set the maximum height of the gallery. Leave 0 to disable max-height.'
+                'text'  => __('Set the maximum height of the gallery. Leave 0 to disable max-height.', 'grand-media')
             ),
             'autoSlideshow'         => array(
-                'label' => 'Automatic Slideshow',
+                'label' => __('Automatic Slideshow', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
                 'text'  => ''
             ),
             'slideshowDelay'        => array(
-                'label' => 'Slideshow Delay',
+                'label' => __('Slideshow Delay', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="1" max="300"',
-                'text'  => 'Set delay between slides in seconds'
+                'text'  => __('Set delay between slides in seconds', 'grand-media')
             ),
             'thumbnailsWidth'       => array(
-                'label' => 'Thumbnails Width',
+                'label' => __('Thumbnails Width', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" max="300"',
-                'text'  => 'Set bottom thumbnails width in pixels'
+                'text'  => __('Set bottom thumbnails width in pixels', 'grand-media')
             ),
             'thumbnailsHeight'      => array(
-                'label' => 'Thumbnails Height',
+                'label' => __('Thumbnails Height', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" max="300"',
-                'text'  => 'Set bottom thumbnails height in pixels'
+                'text'  => __('Set bottom thumbnails height in pixels', 'grand-media')
             ),
             'property0'             => array(
-                'label'   => 'Wmode for flash object',
+                'label'   => __('Wmode for flash object', 'grand-media'),
                 'tag'     => 'select',
                 'attr'    => 'data-watch="change"',
-                'text'    => 'Default value: Opaque. If \'transparent\' - "Background Color" option is ignored, but you can position the absolute elements over the flash',
+                'text'    => __('Default value: Opaque. If \'transparent\' - "Background Color" option is ignored, but you can position the absolute elements over the flash', 'grand-media'),
                 'choices' => array(
                     array(
-                        'label' => 'Opaque',
+                        'label' => __('Opaque', 'grand-media'),
                         'value' => 'opaque'
                     ),
                     array(
-                        'label' => 'Window',
+                        'label' => __('Window', 'grand-media'),
                         'value' => 'window'
                     ),
                     array(
-                        'label' => 'Transparent',
+                        'label' => __('Transparent', 'grand-media'),
                         'value' => 'transparent'
                     )
                 )
             ),
             'property1'             => array(
-                'label' => 'Background Color',
+                'label' => __('Background Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color" data-property0="not:transparent"',
-                'text'  => 'Set gallery background color'
+                'text'  => __('Set gallery background color', 'grand-media')
             ),
             'counterStatus'         => array(
-                'label' => 'Show image views/likes counter',
+                'label' => __('Show image views/likes counter', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
                 'text'  => ''
             ),
             'barBgColor'            => array(
-                'label' => 'Header & Footer Background Color',
+                'label' => __('Header & Footer Background Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => ''
             ),
             'labelColor'            => array(
-                'label' => 'Buttons Text Color',
+                'label' => __('Buttons Text Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => ''
             ),
             'labelColorOver'        => array(
-                'label' => 'Buttons Text Color on MouseOver',
+                'label' => __('Buttons Text Color on MouseOver', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => ''
             ),
             'backgroundColorButton' => array(
-                'label' => 'Buttons BG Color',
+                'label' => __('Buttons BG Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => ''
             ),
             'descriptionBGColor'    => array(
-                'label' => 'Description BG Color',
+                'label' => __('Description BG Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
-                'text'  => 'Background for the image description that appears on mouseover'
+                'text'  => __('Background for the image description that appears on mouseover', 'grand-media')
             ),
             'descriptionBGAlpha'    => array(
-                'label' => 'Image Description Background Alpha',
+                'label' => __('Image Description Background Alpha', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0" max="100" step="5"',
-                'text'  => 'Opacity of the image description background'
+                'text'  => __('Opacity of the image description background', 'grand-media')
             ),
             'imageTitleColor'       => array(
-                'label' => 'Image Title Color',
+                'label' => __('Image Title Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
-                'text'  => 'Color for image title text'
+                'text'  => __('Color for image title text', 'grand-media')
             ),
             'galleryTitleFontSize'  => array(
-                'label' => 'Gallery Title Font Size',
+                'label' => __('Gallery Title Font Size', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="10" max="30"',
                 'text'  => ''
             ),
             'titleFontSize'         => array(
-                'label' => 'Image Title Font Size',
+                'label' => __('Image Title Font Size', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="10" max="30"',
                 'text'  => ''
             ),
             'imageDescriptionColor' => array(
-                'label' => 'Image Description Color',
+                'label' => __('Image Description Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
-                'text'  => 'Color of text for image description'
+                'text'  => __('Color of text for image description', 'grand-media')
             ),
             'descriptionFontSize'   => array(
-                'label' => 'Image Description Font Size',
+                'label' => __('Image Description Font Size', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="10" max="30"',
-                'text'  => 'Value from 10 to 30. Default value: 12'
+                'text'  => __('Value from 10 to 30. Default value: 12', 'grand-media')
             ),
             'linkColor'             => array(
-                'label' => 'Link Color (in image description)',
+                'label' => __('Link Color (in image description)', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
                 'text'  => ''
             )
             /*,
             'backButtonTextColor' => array(
-                'label' => 'Back Button Text Color',
+                'label' => __('Back Button Text Color', 'grand-media'),
                 'tag' => 'input',
                 'attr' => 'type="text" data-type="color"',
-                'text' => '(only for Full Window template). Default: ffffff'
+                'text' => __('(only for Full Window template). Default: ffffff', 'grand-media')
             ),
             'backButtonBgColor' => array(
-                'label' => 'Back Button Background Color',
+                'label' => __('Back Button Background Color', 'grand-media'),
                 'tag' => 'input',
                 'attr' => 'type="text" data-type="color"',
-                'desc'  => '(only for Full Window template). Default: 000000'
+                'text'  => __('(only for Full Window template). Default: 000000', 'grand-media')
             )*/
         )
     ),
     array(
-        'label'  => 'Advanced Settings',
+        'label'  => __('Advanced Settings', 'grand-media'),
         'fields' => array(
             'customCSS' => array(
-                'label' => 'Custom CSS',
+                'label' => __('Custom CSS', 'grand-media'),
                 'tag'   => 'textarea',
                 'attr'  => 'cols="20" rows="10"',
-                'text'  => 'You can enter custom style rules into this box if you\'d like. IE: <i>a{color: red !important;}</i><br />This is an advanced option! This is not recommended for users not fluent in CSS... but if you do know CSS, anything you add here will override the default styles'
+                'text'  => __('You can enter custom style rules into this box if you\'d like. IE: <i>a{color: red !important;}</i><br />This is an advanced option! This is not recommended for users not fluent in CSS... but if you do know CSS, anything you add here will override the default styles', 'grand-media')
             )
             /*,
             'loveLink' => array(
-                'label' => 'Display LoveLink?',
+                'label' => __('Display LoveLink?', 'grand-media'),
                 'tag' => 'checkbox',
                 'attr' => '',
-                'text' => 'Selecting "Yes" will show the lovelink icon (codeasily.com) somewhere on the gallery'
+                'text' => __('Selecting "Yes" will show the lovelink icon (codeasily.com) somewhere on the gallery', 'grand-media')
             )*/
         )
     )

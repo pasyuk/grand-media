@@ -7,19 +7,23 @@ function gmedia_module_action_buttons($module){
     global $gmCore, $gmProcessor;
 
     $buttons = array();
-    if('remote' == $module['place']){
+    if(('remote' == $module['place']) && !empty($module['buy'])){
+        //$sale = !empty($module['sale'])? 'onsale' : '';
+        $buttons['buy'] = '<a class="btn btn-primary" href="' . $module['buy'] . '" target="_blank">' . __('Buy Now', 'grand-media') . ' <span>' . $module['price'] . '</span></a>';
+    }
+    if('remote' == $module['place'] && !empty($module['download'])){
         $buttons['install'] = '<a class="btn btn-primary ' . (gm_user_can('module_manage')? 'module_install' : 'disabled') . '" data-module="' . $module['name'] . '" data-loading-text="' . __('Loading...', 'grand-media') . '" href="' . esc_url($module['download']) . '">' . __('Install Module', 'grand-media') . '</a>';
-    } else{
-        $buttons['create'] = '<a class="btn btn-success" href="' . $gmCore->get_admin_url(array('page' => 'GrandMedia_Galleries', 'gallery_module' => $module['module_name']), array(), true) . '">' . __('Create Gallery', 'grand-media') . '</a>';
+    } elseif('remote' != $module['place']){
+        $buttons['create'] = '<a class="btn btn-success" href="' . $gmCore->get_admin_url(array('page' => 'GrandMedia_Galleries', 'gallery_module' => $module['name']), array(), true) . '">' . __('Create Gallery', 'grand-media') . '</a>';
     }
     if(!empty($module['demo']) && $module['demo'] != '#'){
         $buttons['demo'] = '<a class="btn btn-default" target="_blank" href="' . $module['demo'] . '">' . __('View Demo', 'grand-media') . '</a>';
     }
     if(!empty($module['update']) && 'remote' != $module['place']){
-        $buttons['update'] = '<a class="btn btn-warning module_install" data-module="' . $module['module_name'] . '" data-loading-text="' . __('Loading...', 'grand-media') . '" href="' . esc_url($module['download']) . '">' . __('Update Module', 'grand-media') . " (v{$module['update']})</a>";
+        $buttons['update'] = '<a class="btn btn-warning module_install" data-module="' . $module['name'] . '" data-loading-text="' . __('Loading...', 'grand-media') . '" href="' . esc_url($module['download']) . '">' . __('Update Module', 'grand-media') . " (v{$module['update']})</a>";
     }
-    if(('upload' == $module['place']) && gm_user_can('module_manage')){
-        $buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url($gmCore->get_admin_url(array('delete_module' => $module['module_name']), array(), $gmProcessor->url), 'gmedia_module_delete', '_wpnonce_module_delete') . '">' . __('Delete Module', 'grand-media') . '</a>';
+    if(('remote' != $module['place']) && ('phantom' != $module['name']) && gm_user_can('module_manage')){
+        $buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url($gmCore->get_admin_url(array('delete_module' => $module['name']), array(), $gmProcessor->url), 'gmedia_module_delete', '_wpnonce_module_delete') . '">' . __('Delete Module', 'grand-media') . '</a>';
     }
     if(!empty($module['download'])){
         $buttons['download'] = '<a class="btn btn-link" href="' . $module['download'] . '" download="true">' . __('Download module ZIP', 'grand-media') . '</a>';

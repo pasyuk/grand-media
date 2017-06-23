@@ -31,6 +31,7 @@ if(isset($_FILES['userfile']['name'])){
     $globaldata = file_get_contents("php://input");
 }
 
+$gmedia_options = get_option('gmediaOptions');
 if($globaldata){
 
     $json = json_decode($globaldata);
@@ -43,7 +44,6 @@ if($globaldata){
         gmedia_ios_app_counters($json->counter);
     }
 
-    $gmedia_options = get_option('gmediaOptions');
     if(isset($json->cookie) && !empty($json->cookie)){
         if(empty($gmedia_options['mobile_app'])){
             $out['error'] = array('code' => 'app_inactive', 'message' => 'Service not enabled/activated for this site');
@@ -288,6 +288,19 @@ function gmedia_ios_app_library_data($data = array('site', 'authors', 'filter', 
                 gmedia_ios_app_term_data_extend($gmediaTerms[ $i ], $share_link_base, $logic, $cap);
             }
 
+            if(!empty($_args['include'])){
+                $_gmediaTerms = array();
+                foreach($gmediaTerms as $term){
+                    $_gmediaTerms["{$term->term_id}"] = $term;
+                }
+                $include = (array) $_args['include'];
+                $gmediaTerms = array();
+                foreach($include as $tid){
+                    if(isset($_gmediaTerms["{$tid}"])){
+                        $gmediaTerms[] = $_gmediaTerms["{$tid}"];
+                    }
+                }
+            }
             $out['categories']['data'] = array_values($gmediaTerms);
         }
     }
@@ -331,6 +344,19 @@ function gmedia_ios_app_library_data($data = array('site', 'authors', 'filter', 
             gmedia_ios_app_term_data_extend($gmediaTerms[ $i ], $share_link_base, $logic, $cap);
         }
         $gmediaTerms          = array_filter($gmediaTerms);
+        if(!empty($_args['include'])){
+            $_gmediaTerms = array();
+            foreach($gmediaTerms as $term){
+                $_gmediaTerms["{$term->term_id}"] = $term;
+            }
+            $include = (array) $_args['include'];
+            $gmediaTerms = array();
+            foreach($include as $tid){
+                if(isset($_gmediaTerms["{$tid}"])){
+                    $gmediaTerms[] = $_gmediaTerms["{$tid}"];
+                }
+            }
+        }
         $props['items_count'] = count($gmediaTerms);
 
         $out['albums'] = array('cap'        => $cap,
@@ -1214,8 +1240,15 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                 }
 
                 $item_name                = $item->title? $item->title : pathinfo($item->gmuid, PATHINFO_FILENAME);
-                $gmedia_hashid            = gmedia_hash_id_encode($item->ID, 'single');
-                $gmedias[ $i ]->sharelink = str_replace(array('$1', '$2'), array(urlencode($gmedia_hashid), 's'), $share_link_base);
+                if(!empty($gmedias[ $i ]->post_id)){
+                    $gmedias[ $i ]->sharelink = get_permalink($gmedias[ $i ]->post_id);
+                } else{
+                    $gmedia_hashid = gmedia_hash_id_encode($item->ID, 'single');
+                    $gmedias[ $i ]->sharelink = str_replace(array('$1', '$2'), array(
+                        urlencode($gmedia_hashid),
+                        's'
+                    ), $share_link_base);
+                }
                 if(1 === $logic && 'publish' == $item->status){
                     $gmedias[ $i ]->status = 'public';
                 }
@@ -1573,6 +1606,7 @@ function gmedia_ios_app_counters($data){
 $time += microtime(true);
 //$time = microtime(true) - $_SERVER["REQUEST_TIME_FLOAT"];
 $out['microtime'] = $time;
+$out['key'] = $gmedia_options['license_key'];
 
 header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
 echo json_encode($out);

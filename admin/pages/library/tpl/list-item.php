@@ -144,7 +144,7 @@ if(!defined('ABSPATH')) {
                            class="preview-modal"
                            title="<?php _e('Thumbnail', 'grand-media'); ?>"><?php echo $item->meta['_metadata'][0]['thumb']['width'] . '×' . $item->meta['_metadata'][0]['thumb']['height']; ?></a>
                     <?php } ?>
-                    <br/><span class="label label-default"><?php _e('Filename', 'grand-media'); ?>:</span> <a href="<?php echo $item->url; ?>" download="true"><?php echo $item->gmuid; ?></a>
+                    <br/><span class="label label-default"><?php _e('Filename', 'grand-media'); ?>:</span> <a href="<?php echo $item->url; ?>" download="<?php echo $item->gmuid; ?>"><?php echo $item->gmuid; ?></a>
                     <?php if(!empty($item->meta['_created_timestamp'][0])) { ?>
                         <br/><span class="label label-default"><?php _e('Created', 'grand-media') ?>:</span> <?php echo date('Y-m-d H:i:s ', $item->meta['_created_timestamp'][0]); ?>
                     <?php } ?>

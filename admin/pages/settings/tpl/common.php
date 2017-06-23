@@ -19,14 +19,8 @@ if(!defined('ABSPATH')){
             <option value="none" <?php selected($gmGallery->options['uninstall_dropdata'], 'none'); ?>><?php _e('Do not delete database and uploaded files', 'grand-media'); ?></option>
         </select>
     </div>
-    <div class="form-group">
-        <label><?php _e('Delete original images', 'grand-media') ?>:</label>
-        <div class="checkbox" style="margin:0;">
-            <input type="hidden" name="set[delete_originals]" value="0"/>
-            <label><input type="checkbox" name="set[delete_originals]" value="1" <?php checked($gmGallery->options['delete_originals'], '1'); ?> /> <?php _e('Do not keep original images on the server', 'grand-media'); ?> </label>
-        </div>
-        <p class="help-block"><?php _e('Warning: You can\'t undo this operation. Checking this option you agree to delete original images. You will not be able: restore images after modification in the Image Editor; re-create web-optimized images; ...', 'grand-media'); ?></p>
-    </div>
+
+    <hr />
     <div class="form-group row">
         <div class="col-xs-6">
             <label><?php _e('In Tags order gmedia', 'grand-media'); ?></label>
@@ -48,6 +42,8 @@ if(!defined('ABSPATH')){
             </select>
         </div>
     </div>
+
+    <hr />
     <div class="form-group">
         <div class="row">
             <div class="col-xs-6">
@@ -72,6 +68,8 @@ if(!defined('ABSPATH')){
         </div>
         <p class="help-block"><?php _e('This option could be rewritten by individual category settings.', 'grand-media'); ?></p>
     </div>
+
+    <hr />
     <div class="form-group">
         <div class="row">
             <div class="col-xs-6">
@@ -104,6 +102,8 @@ if(!defined('ABSPATH')){
             <option value="draft" <?php selected($gmGallery->options['in_album_status'], 'draft'); ?>><?php _e('Draft', 'grand-media'); ?></option>
         </select>
     </div>
+
+    <hr />
     <?php $gmedia_modules = get_gmedia_modules(false); ?>
     <div class="form-group">
         <label><?php _e('Choose default module', 'grand-media') ?>:</label>
@@ -137,6 +137,25 @@ if(!defined('ABSPATH')){
 
         <p class="help-block"><?php _e('Chosen module will be used for terms pages.', 'grand-media'); ?></p>
     </div>
+
+    <hr />
+    <div class="form-group">
+        <label><?php _e('Choose what to show on Author Profile pages', 'grand-media'); ?></label>
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_author_related_gmedia]" value="0"/>
+            <label><input type="checkbox" name="set[wp_author_related_gmedia]" value="1" <?php checked($gmGallery->options['wp_author_related_gmedia'], '1'); ?> /> <?php _e('Gmedia Posts (media items from Gmedia Libary)', 'grand-media'); ?> </label>
+        </div>
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_author_related_gmedia_album]" value="0"/>
+            <label><input type="checkbox" name="set[wp_author_related_gmedia_album]" value="1" <?php checked($gmGallery->options['wp_author_related_gmedia_album'], '1'); ?> /> <?php _e('Gmedia Albums', 'grand-media'); ?> </label>
+        </div>
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[wp_author_related_gmedia_gallery]" value="0"/>
+            <label><input type="checkbox" name="set[wp_author_related_gmedia_gallery]" value="1" <?php checked($gmGallery->options['wp_author_related_gmedia_gallery'], '1'); ?> /> <?php _e('Gmedia Galleries', 'grand-media'); ?> </label>
+        </div>
+    </div>
+
+    <hr />
     <div class="form-group">
         <label><?php _e('When set title from filename', 'grand-media') ?>:</label>
 
@@ -145,6 +164,8 @@ if(!defined('ABSPATH')){
             <label><input type="checkbox" name="set[name2title_capitalize]" value="1" <?php checked($gmGallery->options['name2title_capitalize'], '1'); ?> /> <?php _e('Make the first letter of each word capitalized (Title Case)', 'grand-media'); ?> </label>
         </div>
     </div>
+
+    <hr />
     <div class="form-group">
         <label><?php _e('Forbid other plugins to load their JS and CSS on Gmedia admin pages', 'grand-media') ?>:</label>
 

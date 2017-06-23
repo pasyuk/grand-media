@@ -21,203 +21,203 @@ $default_options = array(
     'show_like_button'        => '1',
     'link_color'              => '0099e5',
     'link_color_hover'        => '02adea',
-    'download_button_text'    => 'Download',
-    'link_button_text'        => 'Open Link',
-    'comments_button_text'    => 'Discuss',
-    'description_title'       => 'Description',
+    'download_button_text'    => __('Download', 'grand-media'),
+    'link_button_text'        => __('Open Link', 'grand-media'),
+    'comments_button_text'    => __('Discuss', 'grand-media'),
+    'description_title'       => __('Description', 'grand-media'),
     'customCSS'               => ''
 );
 $options_tree    = array(
     array(
-        'label'  => 'Common Settings',
+        'label'  => __('Common Settings', 'grand-media'),
         'fields' => array(
             'base_gallery_width'   => array(
-                'label' => 'Base Width',
+                'label' => __('Base Width', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="1"',
-                'text'  => ''
+                'text'  => '',
             ),
             'base_gallery_height'  => array(
-                'label' => 'Base Height',
+                'label' => __('Base Height', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="1"',
-                'text'  => 'Slider will autocalculate the ratio based on these values'
+                'text'  => __('Slider will autocalculate the ratio based on these values', 'grand-media')
             ),
             'gallery_min_height'   => array(
-                'label' => 'Minimal Height',
+                'label' => __('Minimal Height', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="230"',
-                'text'  => ''
+                'text'  => '',
             ),
             'gallery_maximized'    => array(
-                'label' => 'Auto Height for Each Slide',
+                'label' => __('Auto Height for Each Slide', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => 'Change slider height on change slide to best fit image in it'
+                'text'  => __('Change slider height on change slide to best fit image in it', 'grand-media')
             ),
             'scale_mode'           => array(
-                'label'   => 'Image Scale Mode',
+                'label'   => __('Image Scale Mode', 'grand-media'),
                 'tag'     => 'select',
                 'attr'    => '',
-                'text'    => 'Default value: Fit. Note \'Fill\' - can work inproperly on IE browser',
+                'text'    => __('Default value: Fit. Note \'Fill\' - can work inproperly on IE browser', 'grand-media'),
                 'choices' => array(
                     array(
-                        'label' => 'Fit',
+                        'label' => __('Fit', 'grand-media'),
                         'value' => 'fit'
                     ),
                     array(
-                        'label' => 'Fill',
+                        'label' => __('Fill', 'grand-media'),
                         'value' => 'fill'
                     )
                 )
             ),
             'initial_slide'        => array(
-                'label' => 'Initial Slide',
+                'label' => __('Initial Slide', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="0"',
-                'text'  => ''
+                'text'  => '',
             ),
             'slideshow_autoplay'   => array(
-                'label' => 'Autoplay On Load',
+                'label' => __('Autoplay On Load', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => 'Start slideshow automatically on gallery load'
+                'text'  => __('Start slideshow automatically on gallery load', 'grand-media')
             ),
             'slideshow_delay'      => array(
-                'label' => 'Slideshow Delay',
+                'label' => __('Slideshow Delay', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="number" min="1000"',
-                'text'  => 'Delay between change slides in miliseconds'
+                'text'  => __('Delay between change slides in miliseconds', 'grand-media')
             ),
             'show_download_button' => array(
-                'label' => 'Show Download Button',
+                'label' => __('Show Download Button', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => 'data-watch="change"',
-                'text'  => 'Download original file or if custom field with name "download" specified for the item then its value will be used.'
+                'text'  => __('Download original file or if custom field with name "download" specified for the item then its value will be used.', 'grand-media')
             ),
             'show_link_button'     => array(
-                'label' => 'Show Link Button',
+                'label' => __('Show Link Button', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => 'data-watch="change"',
-                'text'  => 'Uses link field from the item'
+                'text'  => __('Uses link field from the item', 'grand-media')
             ),
             'link_button_target'   => array(
-                'label' => 'Link Button Target',
+                'label' => __('Link Button Target', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" placeholder="_self" data-show_link_button="is:1"',
-                'text'  => '"_self" to open links in same window; "_blank" to open in new tab.'
+                'text'  => __('"_self" to open links in same window; "_blank" to open in new tab.', 'grand-media')
             ),
-            'show_comments'     => array(
-                'label' => 'Show Comments',
+            'show_comments'        => array(
+                'label' => __('Show Comments', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             ),
             'show_description'     => array(
-                'label' => 'Show Slide Description',
+                'label' => __('Show Slide Description', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => 'data-watch="change"',
-                'text'  => ''
+                'text'  => '',
             ),
             'show_author_avatar'   => array(
-                'label' => 'Show Author Avatar',
+                'label' => __('Show Author Avatar', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             ),
             'show_share_button'    => array(
-                'label' => 'Show Share Button',
+                'label' => __('Show Share Button', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             ),
             'show_like_button'     => array(
-                'label' => 'Show Like Button',
+                'label' => __('Show Like Button', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             )
         )
     ),
     array(
-        'label'  => 'Colors',
+        'label'  => __('Colors', 'grand-media'),
         'fields' => array(
-            'link_color'            => array(
-                'label' => 'Links and Buttons Color',
+            'link_color'       => array(
+                'label' => __('Links and Buttons Color', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
-                'text'  => ''
+                'text'  => '',
             ),
-            'link_color_hover'      => array(
-                'label' => 'Links and Buttons Color on Hover',
+            'link_color_hover' => array(
+                'label' => __('Links and Buttons Color on Hover', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text" data-type="color"',
-                'text'  => ''
+                'text'  => '',
             )
         )
     ),
     array(
-        'label'  => 'Translate Strings',
+        'label'  => __('Translate Strings', 'grand-media'),
         'fields' => array(
             'download_button_text' => array(
-                'label' => 'Download Button Name',
+                'label' => __('Download Button Name', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text"',
-                'text'  => ''
+                'text'  => '',
             ),
             'link_button_text'     => array(
-                'label' => 'Link Button Name',
+                'label' => __('Link Button Name', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text"',
-                'text'  => ''
+                'text'  => '',
             ),
             'comments_button_text' => array(
-                'label' => 'Comments Button Name',
+                'label' => __('Comments Button Name', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text"',
-                'text'  => ''
+                'text'  => '',
             ),
             'description_title'    => array(
-                'label' => 'Slide Description Title',
+                'label' => __('Slide Description Title', 'grand-media'),
                 'tag'   => 'input',
                 'attr'  => 'type="text"',
-                'text'  => ''
+                'text'  => '',
             ),
         )
     ),
     array(
-        'label'  => 'Advanced Settings',
+        'label'  => __('Advanced Settings', 'grand-media'),
         'fields' => array(
             'gallery_focus'           => array(
-                'label' => 'Full Window Mode on Start',
+                'label' => __('Full Window Mode on Start', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             ),
             'gallery_focus_maximized' => array(
-                'label' => 'Maximized Full Window Mode',
+                'label' => __('Maximized Full Window Mode', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             ),
             'keyboard_help'           => array(
-                'label' => 'Show Keyboard Help',
+                'label' => __('Show Keyboard Help', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
-                'text'  => ''
+                'text'  => '',
             ),
             'customCSS'               => array(
-                'label' => 'Custom CSS',
+                'label' => __('Custom CSS', 'grand-media'),
                 'tag'   => 'textarea',
                 'attr'  => 'cols="20" rows="10"',
-                'text'  => 'You can enter custom style rules into this box if you\'d like. IE: <i>a{color: red !important;}</i><br />This is an advanced option! This is not recommended for users not fluent in CSS... but if you do know CSS, anything you add here will override the default styles'
+                'text'  => __('You can enter custom style rules into this box if you\'d like. IE: <i>a{color: red !important;}</i><br />This is an advanced option! This is not recommended for users not fluent in CSS... but if you do know CSS, anything you add here will override the default styles', 'grand-media')
             )
             /*,
             'loveLink' => array(
-                'label' => 'Display LoveLink?',
+                'label' => __('Display LoveLink?', 'grand-media'),
                 'tag' => 'checkbox',
                 'attr' => '',
-                'text' => 'Selecting "Yes" will show the lovelink icon (codeasily.com) somewhere on the gallery'
+                'text' => __('Selecting "Yes" will show the lovelink icon (codeasily.com) somewhere on the gallery', 'grand-media')
             )*/
         )
     )

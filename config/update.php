@@ -865,24 +865,33 @@ function gmedia_quite_update(){
 
         $new_options        = $gmCore->array_diff_key_recursive($default_options, $options);
 
-        if(version_compare($current_version, '1.9.8', '<')){
-            $new_options['modules_xml']  = 'https://codeasily.com/gmedia_modules/modules_v1.xml';
+        if(version_compare($current_version, '1.10.03', '<')){
+            $gmCore->delete_folder(WP_PLUGIN_DIR . '/grand-media-logger');
+            gmedia_db_tables();
         }
 
+        if(version_compare($current_version, '1.10.05', '<')){
+            //$new_options['modules_xml']  = 'https://www.dropbox.com/s/t7oawbuxy1me5gk/modules_v1.xml?dl=1';
+            $new_options['modules_xml']  = 'https://www.dropbox.com/s/ysmedfuxyy5ff3w/modules_v2.xml?dl=1';
+        }
+
+
         $gmGallery->options = $gmCore->array_replace_recursive($options, $new_options);
+        $gmGallery->options['gm_screen_options'] = $default_options['gm_screen_options'];
+
         update_option('gmediaOptions', $gmGallery->options);
-
-        $gmCore->delete_folder($gmCore->upload['path'] . '/module/afflux');
-        $gmCore->delete_folder($gmCore->upload['path'] . '/module/jq-mplayer');
-        $gmCore->delete_folder($gmCore->upload['path'] . '/module/minima');
-        $gmCore->delete_folder($gmCore->upload['path'] . '/module/phantom');
-        $gmCore->delete_folder($gmCore->upload['path'] . '/module/wp-videoplayer');
-        $gmCore->delete_folder($gmCore->upload['path'] . '/module/cubik-lite');
-
         update_option("gmediaVersion", GMEDIA_VERSION);
 
         if((int)$gmGallery->options['mobile_app']){
             $gmCore->app_service('app_updatecron');
         }
+
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/phantom');
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/jq-mplayer');
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/wp-videoplayer');
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/cubik-lite');
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/afflux');
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/minima');
+
     }
 }

@@ -39,17 +39,20 @@ global $gmCore, $gmDB, $gmGallery;
                         }
                         $mclass = ' module-' . $module_info['type'] . ' module-' . $module_info['status'];
                         ?>
-                        <div data-href="<?php echo add_query_arg(array('gallery_module' => $module_name), $gmedia_url); ?>" class="choose-module media<?php echo $mclass; ?>">
-                            <a href="<?php echo add_query_arg(array('gallery_module' => $module_name), $gmedia_url); ?>" class="thumbnail pull-left">
-                                <img class="media-object" src="<?php echo $module_url . '/screenshot.png'; ?>" alt="<?php esc_attr_e($module_info['title']); ?>" width="160" height="120"/>
+                        <div class="choose-module media<?php echo $mclass; ?>">
+                            <a class="thumbnail pull-left" role="button" data-toggle="collapse" href="#collapseDescr_<?php echo $module_name; ?>" aria-expanded="false" aria-controls="collapseDescr_<?php echo $module_name; ?>">
+                                <img class="media-object" src="<?php echo $module_url . '/screenshot.png'; ?>" alt="<?php esc_attr_e($module_info['title']); ?>" width="100"/>
                             </a>
 
                             <div class="media-body" style="margin-left:180px;">
                                 <h4 class="media-heading"><?php echo $module_info['title']; ?></h4>
-
-                                <p class="version"><?php echo __('Version', 'grand-media') . ': ' . $module_info['version']; ?></p>
-
-                                <div class="description"><?php echo nl2br($module_info['description']); ?></div>
+                                <p class="version" style="margin: 6px 0;"><?php echo __('Version', 'grand-media') . ': ' . $module_info['version']; ?></p>
+                                <div class="description collapse" id="collapseDescr_<?php echo $module_name; ?>"><?php echo nl2br($module_info['description']); ?></div>
+                                <div class="action-buttons text-right">
+                                    <a href="<?php echo $gmCore->get_admin_url(array('page' => 'GrandMedia_Modules', 'preset_module' => $module_name), array(), admin_url('admin.php')); ?>" class="btn btn-default"><?php _e('Create Preset', 'grand-media'); ?></a>
+                                    &nbsp;&nbsp;&nbsp;
+                                    <a href="<?php echo add_query_arg(array('gallery_module' => $module_name), $gmedia_url); ?>" class="btn btn-primary"><?php _e('Create Gallery', 'grand-media'); ?></a>
+                                </div>
                             </div>
                         </div>
                         <?php

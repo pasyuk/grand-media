@@ -256,12 +256,14 @@ function gmediacloud_social_sharing(){
         return;
     }
 
-    global $wp, $gmedia_share_img;
+    global $wp, $gmedia, $gmedia_share_img;
 
     $url   = urlencode(esc_url_raw(home_url(add_query_arg(array(), $wp->request))));
-    $text  = urlencode(__('Shared with GmediaGallery', 'grand-media'));
-    $title = urlencode(the_gmedia_title(true));
+    $text  = $gmedia->description;
+    $title = the_gmedia_title(true);
     $image = urlencode($gmedia_share_img[0]);
+    $title_text = urldecode($title . ' ' . $text);
+    $mailbody = urlencode($text . ' ' . $url);
     ?>
     <style>
         /*@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css') all;*/
@@ -326,11 +328,11 @@ function gmediacloud_social_sharing(){
     </style>
     <div class="gmedia-socialsharebuttons">
         <!-- Facebook -->
-        <a href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $url; ?>&t=<?php echo $title; ?>" target="_blank" class="share-btn facebook">
+        <a href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $url; ?>&t=<?php echo $title_text; ?>" target="_blank" class="share-btn facebook">
             <i class="fa fa-facebook"><span>Facebook</span></i>
         </a>
         <!-- Twitter -->
-        <a href="http://twitter.com/share?url=<?php echo $url; ?>&text=<?php echo $text; ?>" target="_blank" class="share-btn twitter">
+        <a href="http://twitter.com/share?url=<?php echo $url; ?>&text=<?php echo $title_text; ?>" target="_blank" class="share-btn twitter">
             <i class="fa fa-twitter"><span>Twitter</span></i>
         </a>
         <!-- Google Plus -->
@@ -338,7 +340,7 @@ function gmediacloud_social_sharing(){
             <i class="fa fa-google-plus"><span>Google+</span></i>
         </a>
         <!-- Pinterest -->
-        <a href="http://pinterest.com/pin/create/button/?url=<?php echo $url; ?>&description=<?php echo $text; ?>&media=<?php echo $image; ?>" target="_blank"
+        <a href="http://pinterest.com/pin/create/button/?url=<?php echo $url; ?>&description=<?php echo $title_text; ?>&media=<?php echo $image; ?>" target="_blank"
            class="share-btn pinterest-p">
             <i class="fa fa-pinterest-p"><span>Pinterest</span></i>
         </a>
@@ -347,7 +349,7 @@ function gmediacloud_social_sharing(){
             <i class="fa fa-vk"><span>VK</span></i>
         </a>
         <!-- Email -->
-        <a href="mailto:?subject=<?php echo $title; ?>&body=<?php echo $url; ?>" target="_blank" class="share-btn email">
+        <a href="mailto:?subject=<?php echo $title; ?>&body=<?php echo $mailbody; ?>" target="_blank" class="share-btn email">
             <i class="fa fa-envelope"><span>Email</span></i>
         </a>
     </div>

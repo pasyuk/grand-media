@@ -1041,6 +1041,9 @@ var GmediaFunction = {
                 backdrop: true,
                 show: true
             }).one('hidden.bs.modal', function() {
+                if (jQuery('.gmedia-modal:visible').length) {
+                    jQuery('body').addClass('modal-open');
+                }
                 modal_title.empty();
                 modal_body.empty();
                 modal_dialog.removeAttr('style').attr('class', 'modal-dialog');
@@ -1174,7 +1177,7 @@ var GmediaFunction = {
             query = query_field.val();
 
             modal_div.modal({
-                backdrop: false,
+                backdrop: true,
                 show: true,
                 keyboard: false
             }).one('shown.bs.modal', function() {
@@ -1273,7 +1276,7 @@ var GmediaFunction = {
         });
 
 
-        gmedia_DOM.on('change', 'form.edit-gmedia :input', function() {
+        gmedia_DOM.on('change', 'form.edit-gmedia :input:not([name="doaction[]"])', function() {
             if(jQuery(this).hasClass('edit-gmedia-ignore')) {
                 return;
             }
@@ -1364,7 +1367,7 @@ var GmediaFunction = {
             });
         });
 
-        gmedia_DOM.on('keydown', 'form :input:visible:not(:submit,:button,:reset,textarea,#gmedia-search)', function(e) {
+        gmedia_DOM.on('keydown', 'form :input:visible:not(:submit,:button,:reset,textarea,.allow-key-enter)', function(e) {
             var charCode = e.charCode || e.keyCode || e.which;
             if(13 == charCode && !jQuery(this).parent().hasClass('selectize-input')) {
                 var inputs = jQuery(this).parents("form").eq(0).find(":input:visible");
@@ -1448,6 +1451,25 @@ var GmediaFunction = {
                 jQuery('body').removeClass('gmedia-busy');
             });
         });
+
+        gmedia_DOM.on('click', '.filter-modules > *', function(){
+            jQuery('.filter-modules > .btn-primary').removeClass('btn-primary').addClass('btn-default');
+            jQuery('.filter-modules > .label-primary').removeClass('label-primary').addClass('label-default');
+            if(jQuery(this).is('button')){
+                jQuery(this).addClass('btn-primary').removeClass('btn-default');
+            } else{
+                jQuery(this).addClass('label-primary').removeClass('label-default');
+            }
+            var filter = jQuery(this).attr('data-filter');
+            jQuery('#gmedia_modules .media').removeClass('module-filtered').filter('.module-' + filter).addClass('module-filtered');
+            if(!jQuery('#gmedia_modules .module-filtered').length){
+                if('not-installed' == filter){
+                    jQuery('#gmedia_modules .nomodules.nomodule-' + filter).addClass('module-filtered');
+                } else{
+                    jQuery('#gmedia_modules .nomodules.nomodule-tag').addClass('module-filtered');
+                }
+            }
+        })
 
         if(jQuery(".panel-fixed-header").length) {
             setPanelHeadersWidth();

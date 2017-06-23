@@ -1,5 +1,5 @@
 <?php // don't load directly
-if(!defined('ABSPATH')){
+if( !defined('ABSPATH')){
     die('-1');
 }
 
@@ -35,11 +35,11 @@ function gmedia_default_options(){
     $gm['gmedia_gallery_has_archive']         = '0';
     $gm['gmedia_gallery_exclude_from_search'] = '0';
 
-    $gm['wp_term_related_gmedia'] = '1';
+    $gm['wp_term_related_gmedia'] = '0';
     $gm['wp_post_related_gmedia'] = '0';
 
-    $gm['wp_author_related_gmedia'] = '0';
-    $gm['wp_author_related_gmedia_album'] = '1';
+    $gm['wp_author_related_gmedia']         = '0';
+    $gm['wp_author_related_gmedia_album']   = '1';
     $gm['wp_author_related_gmedia_gallery'] = '0';
 
     $gm['preview_bgcolor'] = 'ffffff';
@@ -47,6 +47,7 @@ function gmedia_default_options(){
     //$gm['default_gmedia_term_comment_status'] = 'closed'; // can be 'closed', 'open'
 
     $gm['delete_originals']   = '0';
+    $gm['disable_logs']       = '0';
     $gm['uninstall_dropdata'] = 'none'; // can be 'all', 'none', 'db'
 
     $gm['name2title_capitalize'] = '1';
@@ -59,7 +60,7 @@ function gmedia_default_options(){
     $gm['in_album_status']       = 'publish';
     $gm['default_gmedia_module'] = 'phantom';
 
-    $gm['isolation_mode'] = '1';
+    $gm['isolation_mode'] = '0';
     $gm['shortcode_raw']  = '0';
     $gm['debug_mode']     = '';
 
@@ -69,6 +70,9 @@ function gmedia_default_options(){
     $gm['gmediacloud_footer_css']    = '';
 
     $gm['gmedia_post_types_support'] = '';
+
+    $gm['feedback'] = '1';
+    $gm['twitter']  = '1';
 
     $gm['folder']['image']          = 'image';
     $gm['folder']['image_thumb']    = 'image/thumb';
@@ -82,7 +86,9 @@ function gmedia_default_options(){
     $gm['thumb'] = array('width' => 300, 'height' => 300, 'quality' => 80, 'crop' => 0);
     $gm['image'] = array('width' => 2200, 'height' => 2200, 'quality' => 85, 'crop' => 0);
 
-    $gm['modules_xml']  = 'https://codeasily.com/gmedia_modules/modules_v1.xml';
+    //$gm['modules_xml']  = 'https://codeasily.com/gmedia_modules/modules_v1.xml';
+    //$gm['modules_xml']  = 'https://www.dropbox.com/s/t7oawbuxy1me5gk/modules_v1.xml?dl=1';
+    $gm['modules_xml']  = 'https://www.dropbox.com/s/ysmedfuxyy5ff3w/modules_v2.xml?dl=1';
     $gm['license_name'] = '';
     $gm['purchase_key'] = '';
     $gm['license_key']  = '';
@@ -133,6 +139,10 @@ function gmedia_default_options(){
 
     $gm['gm_screen_options']['library_edit_quicktags'] = 'true';
 
+    $gm['gm_screen_options']['per_page_gmedia_log']  = '100';
+    $gm['gm_screen_options']['orderby_gmedia_log']   = 'log_date';
+    $gm['gm_screen_options']['sortorder_gmedia_log'] = 'DESC';
+
     return $gm;
 
 }
@@ -168,11 +178,62 @@ function gmedia_install(){
     global $wpdb, $gmGallery, $gmCore;
 
     // Check for capability
-    if(!current_user_can('activate_plugins')){
+    if( !current_user_can('activate_plugins')){
         return;
     }
 
     gmedia_capabilities();
+
+    gmedia_db_tables();
+
+    // check one table again, to be sure
+    $gmedia = $wpdb->prefix . 'gmedia';
+    if($wpdb->get_var("show tables like '$gmedia'") != $gmedia){
+        update_option("gmediaInitCheck", __('GmediaGallery: Tables could not created, please check your database settings', 'grand-media'));
+
+        return;
+    }
+
+    if( !get_option('GmediaHashID_salt')){
+        $ustr = wp_generate_password(12, false);
+        add_option('GmediaHashID_salt', $ustr);
+    }
+
+    // set the default settings, if we didn't upgrade
+    if(empty($gmGallery->options)){
+        $gmGallery->options = gmedia_default_options();
+        // Set installation date
+        if( !get_option('gmediaInstallDate')){
+            $installDate = time();
+            add_option('gmediaInstallDate', $installDate);
+        }
+        update_option('gmediaOptions', $gmGallery->options);
+    } else{
+        $default_options = gmedia_default_options();
+        unset($gmGallery->options['folder'], $gmGallery->options['taxonomies']);
+        $new_options                             = $gmCore->array_diff_key_recursive($default_options, $gmGallery->options);
+        $gmGallery->options                      = $gmCore->array_replace_recursive($gmGallery->options, $new_options);
+        $gmGallery->options['gm_screen_options'] = $default_options['gm_screen_options'];
+        update_option('gmediaOptions', $gmGallery->options);
+    }
+
+    // try to make gallery dirs if not exists
+    foreach($gmGallery->options['folder'] as $folder){
+        wp_mkdir_p($gmCore->upload['path'] . '/' . $folder);
+    }
+
+    wp_clear_scheduled_hook('gmedia_app_cronjob');
+    wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
+
+    add_option('gmediaActivated', time());
+}
+
+/**
+ * Create DB Tables
+ */
+function gmedia_db_tables(){
+    /** @var $wpdb wpdb */
+    global $wpdb;
 
     // upgrade function changed in WordPress 2.3
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -181,10 +242,10 @@ function gmedia_install(){
     $charset_collate = '';
 
     if($wpdb->has_cap('collation')){
-        if(!empty($wpdb->charset)){
+        if( !empty($wpdb->charset)){
             $charset_collate = "DEFAULT CHARACTER SET $wpdb->charset";
         }
-        if(!empty($wpdb->collate)){
+        if( !empty($wpdb->collate)){
             $charset_collate .= " COLLATE $wpdb->collate";
         }
     }
@@ -195,6 +256,7 @@ function gmedia_install(){
     $gmedia_term               = $wpdb->prefix . 'gmedia_term';
     $gmedia_term_meta          = $wpdb->prefix . 'gmedia_term_meta';
     $gmedia_term_relationships = $wpdb->prefix . 'gmedia_term_relationships';
+    $gmedia_log                = $wpdb->prefix . 'gmedia_log';
 
     if($wpdb->get_var("show tables like '$gmedia'") != $gmedia){
         $sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
@@ -278,44 +340,24 @@ function gmedia_install(){
         dbDelta($sql);
     }
 
-    // check one table again, to be sure
-    if($wpdb->get_var("show tables like '$gmedia'") != $gmedia){
-        update_option("gmediaInitCheck", __('GmediaGallery: Tables could not created, please check your database settings', 'grand-media'));
-
-        return;
+    if($wpdb->get_var("show tables like '$gmedia_log'") != $gmedia_log){
+        $sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+        $sql .= "CREATE TABLE {$gmedia_log} (
+			log VARCHAR(200) NOT NULL DEFAULT '',
+			ID BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+			log_author BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
+			log_date DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+			log_data LONGTEXT,
+			ip_address VARCHAR(45) NOT NULL DEFAULT '',
+			KEY log (log),
+			KEY ID (ID),
+			KEY log_author (log_author),
+			KEY log_date (log_date),
+			KEY ip_address (ip_address)
+		) {$charset_collate}";
+        dbDelta($sql);
     }
 
-    if(!get_option('GmediaHashID_salt')){
-        $ustr = wp_generate_password(12, false);
-        add_option('GmediaHashID_salt', $ustr);
-    }
-
-    // set the default settings, if we didn't upgrade
-    if(empty($gmGallery->options)){
-        $gmGallery->options = gmedia_default_options();
-        // Set installation date
-        if(!get_option('gmediaInstallDate')){
-            $installDate = time();
-            add_option('gmediaInstallDate', $installDate);
-        }
-        update_option('gmediaOptions', $gmGallery->options);
-    } else{
-        $default_options = gmedia_default_options();
-        unset($gmGallery->options['folder'], $gmGallery->options['taxonomies']);
-        $new_options        = $gmCore->array_diff_key_recursive($default_options, $gmGallery->options);
-        $gmGallery->options = $gmCore->array_replace_recursive($gmGallery->options, $new_options);
-        update_option('gmediaOptions', $gmGallery->options);
-    }
-
-    // try to make gallery dirs if not exists
-    foreach($gmGallery->options['folder'] as $folder){
-        wp_mkdir_p($gmCore->upload['path'] . '/' . $folder);
-    }
-
-    wp_clear_scheduled_hook('gmedia_app_cronjob');
-    wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
-
-    add_option('gmediaActivated', time());
 }
 
 /**
@@ -331,7 +373,7 @@ function gmedia_deactivate(){
     wp_clear_scheduled_hook('gmedia_app_cronjob');
 
     $options = get_option('gmediaOptions');
-    if((int)$options['mobile_app']){
+    if((int) $options['mobile_app']){
         $gmCore->app_service('app_deactivateplugin');
     }
 
