@@ -192,7 +192,7 @@ function gmedia_add_media_galleries(){
                             'number'     => $gmCore->_get('number', $per_page),
                             'hide_empty' => 0,
                             'page'       => $gmCore->_get('pager', 1),
-                            'status'     => array('publish', 'private')
+                            //'status'     => array('publish', 'private')
     );
     $args['offset'] = ($args['page'] - 1) * $args['number'];
 
@@ -257,6 +257,8 @@ function gmedia_add_media_galleries(){
                                 $list_row_class = '';
                                 if('private' == $term->status){
                                     $list_row_class = ' list-group-item-info';
+                                } elseif('draft' == $term->status){
+	                                $list_row_class = ' list-group-item-warning';
                                 }
                                 ?>
                                 <div class="gmedia-insert-item list-group-item clearfix d-row<?php echo $list_row_class; ?>" id="list-item-<?php echo $term->term_id; ?>" data-id="<?php echo $term->term_id; ?>" data-type="<?php echo $term_meta['_module']; ?>">
@@ -294,6 +296,21 @@ function gmedia_add_media_galleries(){
                                         <span class="label label-default"><?php _e('Last Edited', 'grand-media'); ?>:</span> <?php echo $term_meta['_edited']; ?>
                                         <br><span class="label label-default"><?php _e('Query Args.', 'grand-media'); ?>:</span> <?php echo !empty($term_meta['_query'])? str_replace(',"', ', "', json_encode($term_meta['_query'])) : ''; ?>
                                     </p>
+                                    <?php if('draft' == $term->status){
+                                    	if($term->global && !is_super_admin($term->global)) {
+		                                    ?>
+		                                    <p class="text-danger"><?php printf( __( 'This gallery will be loaded only for %s and admin users', 'grand-media' ), get_the_author_meta( 'display_name', $term->global ) ); ?></p>
+		                                    <?php
+	                                    } else {
+		                                    ?>
+		                                    <p class="text-danger"><?php _e( 'This gallery will be loaded only for admin users', 'grand-media' ); ?></p>
+		                                    <?php
+	                                    }
+                                    } elseif('private' == $term->status){
+	                                    ?>
+	                                    <p class="text-warning"><?php _e( 'This gallery will be loaded only for logged in users', 'grand-media' ); ?></p>
+	                                    <?php
+                                    } ?>
                                     <?php if(current_user_can('gmedia_gallery_manage')){
                                         if(!(((int)$term->global != $user_ID) && !current_user_can('gmedia_edit_others_media'))){
                                             ?>
@@ -394,7 +411,7 @@ function gmedia_add_media_terms(){
 
     switch($taxonomy){
         case 'gmedia_album':
-            $args['status'] = array('publish', 'private');
+            //$args['status'] = array('publish', 'private');
             $args['global'] = $gmCore->_get('author', $gmCore->caps['gmedia_edit_others_media']? '' : array(0, $user_ID));
             if(!$gmCore->caps['gmedia_show_others_media']){
                 $args['global'] = wp_parse_id_list($args['global']);
@@ -476,8 +493,8 @@ function gmedia_add_media_terms(){
                                         if('private' == $item->status){
                                             $list_row_class = ' list-group-item-info';
                                         } elseif('draft' == $item->status){
-                                            //$list_row_class = ' list-group-item-warning';
-                                            continue;
+                                            $list_row_class = ' list-group-item-warning';
+                                            //continue;
                                         }
                                     }
                                 }
@@ -601,7 +618,23 @@ function gmedia_add_media_terms(){
                                             <?php } ?>
                                             <br/><strong><?php _e('Module/Preset', 'grand-media'); ?>:</strong> <?php echo $module_preset; ?>
                                         </p>
-
+	                                    <?php if('gmedia_album' == $taxonomy){
+		                                    if('draft' == $item->status) {
+			                                    if ( $item->global && ! is_super_admin( $item->global ) ) {
+				                                    ?>
+				                                    <p class="text-danger"><?php printf( __( 'This gallery will be loaded only for %s and admin users', 'grand-media' ), $owner ); ?></p>
+				                                    <?php
+			                                    } else {
+				                                    ?>
+				                                    <p class="text-danger"><?php _e( 'This gallery will be loaded only for admin users', 'grand-media' ); ?></p>
+				                                    <?php
+			                                    }
+		                                    } elseif('private' == $item->status){
+			                                    ?>
+			                                    <p class="text-warning"><?php _e( 'This gallery will be loaded only for logged in users', 'grand-media' ); ?></p>
+			                                    <?php
+		                                    }
+	                                    } ?>
                                         <p>
                                             <a href="<?php echo add_query_arg(array('page'                => 'GrandMedia',
                                                                                     $lib_arg[ $taxonomy ] => $item->term_id

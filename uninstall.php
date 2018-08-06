@@ -26,7 +26,7 @@ if(function_exists('is_multisite') && is_multisite()) {
 
 /**
  * Uninstall all settings and tables
- * Called via Setup and register_unstall hook
+ * Called via Setup hook
  *
  * @access internal
  * @return void
@@ -101,6 +101,7 @@ function gmedia_uninstall() {
     delete_option('GmediaHashID_salt');
     delete_metadata('user', 0, 'gm_screen_options', '', true);
     wp_clear_scheduled_hook('gmedia_app_cronjob');
+    wp_clear_scheduled_hook('gmedia_modules_update');
 
     if(empty($upload['error'])) {
         if('all' == $options['uninstall_dropdata']) {

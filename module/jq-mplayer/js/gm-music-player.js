@@ -438,10 +438,10 @@
                     '   <div class="gmmp-track-title"></div>' +
                     '   <div class="gmmp-player-controls">' +
                     '   	<div class="gmmp-main">' +
-                    '     	<div class="gmmp-previous gmmp-previous"></div>' +
-                    '       <div class="gmmp-play gmmp-play"></div>' +
-                    '       <div class="gmmp-pause gmmp-pause"></div>' +
-                    '       <div class="gmmp-next gmmp-next"></div>' +
+                    '     	<div class="gmmp-previous"></div>' +
+                    '       <div class="gmmp-play"></div>' +
+                    '       <div class="gmmp-pause"></div>' +
+                    '       <div class="gmmp-next"></div>' +
                     '<!-- These controls aren\'t used by this plugin, but jPlayer seems to require that they exist -->' +
                     '       <span class="gmmp-unused-controls">' +
                     '       	<span class="jp-video-play"></span>' +

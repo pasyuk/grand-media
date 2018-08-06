@@ -22,7 +22,7 @@ if(!empty($tags)){
     $tags = array_unique($tags);
     sort($tags);
 }
-//echo '<pre style="max-height: 400px; overflow:auto;">' . print_r($modules, true) . '</pre>';
+//echo '<pre style="max-height: 500px; overflow:auto;">' . print_r($modules, true) . '</pre>';
 
 if(isset($modules['error'])){
     echo $gmCore->alert('danger', $modules['error']);

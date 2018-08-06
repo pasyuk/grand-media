@@ -14,10 +14,7 @@ if( !defined('ABSPATH')){
  */
 function gmedia_default_options(){
 
-    $gm['site_email']       = '';
     $gm['site_ID']          = '';
-    $gm['site_title']       = '';
-    $gm['site_description'] = '';
     $gm['mobile_app']       = 0;
 
     $gm['modules_update'] = 0;
@@ -93,6 +90,8 @@ function gmedia_default_options(){
     $gm['purchase_key'] = '';
     $gm['license_key']  = '';
     $gm['license_key2'] = '';
+
+    $gm['google_api_key'] = '';
 
     $gm['taxonomies']['gmedia_category'] = array();
     $gm['taxonomies']['gmedia_tag']      = array();
@@ -221,9 +220,6 @@ function gmedia_install(){
     foreach($gmGallery->options['folder'] as $folder){
         wp_mkdir_p($gmCore->upload['path'] . '/' . $folder);
     }
-
-    wp_clear_scheduled_hook('gmedia_app_cronjob');
-    wp_schedule_event(time(), 'gmedia_app', 'gmedia_app_cronjob');
 
     add_option('gmediaActivated', time());
 }
@@ -371,9 +367,10 @@ function gmedia_deactivate(){
     flush_rewrite_rules(false);
 
     wp_clear_scheduled_hook('gmedia_app_cronjob');
+    wp_clear_scheduled_hook('gmedia_modules_update');
 
     $options = get_option('gmediaOptions');
-    if((int) $options['mobile_app']){
+    if((int) $options['mobile_app'] || (int) $options['site_ID']){
         $gmCore->app_service('app_deactivateplugin');
     }
 

@@ -171,6 +171,11 @@ class GmediaProcessor_Galleries extends GmediaProcessor{
                     $this->error[] = sprintf(__('Can\'t load data from `%s` module'), $term['module']);
                     break;
                 }
+                foreach($module_settings as &$setting){
+                	if(is_string( $setting) && 7 === strlen( $setting ) && '#' === $setting[0] ){
+		                $setting = ltrim( $setting, '#');
+	                }
+                }
                 $module_settings = $gmCore->array_replace_recursive($default_options, $module_settings);
                 wp_parse_str($term['query'], $_query);
                 $gallery_meta = array('_edited'   => gmdate('Y-m-d H:i:s'),

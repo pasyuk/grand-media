@@ -17,6 +17,7 @@ $default_options = array(
     'link_button_target'      => '_self',
     'show_description'        => '1',
     'show_author_avatar'      => '1',
+    'show_author_name'        => '1',
     'show_share_button'       => '1',
     'show_like_button'        => '1',
     'link_color'              => '0099e5',
@@ -121,6 +122,12 @@ $options_tree    = array(
             ),
             'show_author_avatar'   => array(
                 'label' => __('Show Author Avatar', 'grand-media'),
+                'tag'   => 'checkbox',
+                'attr'  => '',
+                'text'  => '',
+            ),
+            'show_author_name'   => array(
+                'label' => __('Show Author Name', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
                 'text'  => '',

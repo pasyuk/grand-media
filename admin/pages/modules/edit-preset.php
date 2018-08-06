@@ -85,3 +85,17 @@ do_action( 'gmedia_module_preset_before_panel' );
 <?php
 do_action( 'gmedia_module_preset_after_panel' );
 ?>
+<div class="modal fade gmedia-modal" id="previewModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="btn-toolbar pull-right" style="margin-top:-4px;">
+                    <button type="button" class="btn btn-primary"><?php _e('Submit', 'grand-media'); ?></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><?php _e('Close', 'grand-media'); ?></button>
+                </div>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body"></div>
+        </div>
+    </div>
+</div>

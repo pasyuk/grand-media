@@ -130,11 +130,6 @@ if(!isset($shortcode_raw)){
                     $item_data['post_link'] = get_permalink($item->post_id);
                 }
 
-                if($allsettings['show_download_button']){
-                    $item_data['download'] = $download_link;
-                    $item_data['filename'] = $item->gmuid;
-                }
-
                 if($item->link){
                     $item_data['link']   = $item->link;
                     $item_data['target'] = $link_target;

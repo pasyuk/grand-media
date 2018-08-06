@@ -78,6 +78,11 @@ class GmediaProcessor_Modules extends GmediaProcessor{
 
 
                 $module_settings = $gmCore->_post('module', array());
+	            foreach($module_settings as &$setting){
+		            if(is_string( $setting) && 7 === strlen( $setting ) && '#' === $setting[0] ){
+			            $setting = ltrim( $setting, '#');
+		            }
+	            }
                 $module_path     = $gmCore->get_module_path($term['module']);
                 $default_options = array();
                 if(is_file($module_path['path'] . '/settings.php')){

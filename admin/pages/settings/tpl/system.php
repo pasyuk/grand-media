@@ -5,7 +5,7 @@ if(!defined('ABSPATH')) {
 }
 
 /**
- * System info (under constraction)
+ * System info (under construction)
  */
 ?>
 <fieldset id="gmedia_settings_sysinfo" class="tab-pane">
@@ -17,7 +17,7 @@ if(!defined('ABSPATH')) {
         echo '<p>' . __('PHP Memory Used: ', 'grand-media') . $memory_usage . 'M</p>';
     }
     ?>
-    <p><?php _e('Under constraction...') ?></p>
+    <p><?php _e('Under construction...') ?></p>
 
     <?php
     if ($gmCore->_get('showdb')) {

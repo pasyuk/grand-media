@@ -232,10 +232,11 @@ if ( ! $is_bot ) {
                     <?php } ?>
                     <div class="gmpm_title_author">
                         <div class="gmpm_title"><?php echo $content['data'][ $iSlide ]['title']; ?></div>
-
+	                    <?php if ( ! empty( $allsettings['show_author_name'] ) ) { ?>
                         <div class="gmpm_author_name">
                             <a class="gmpm_author_link" href="<?php echo urldecode( $content['data'][ $iSlide ]['author']['posts_link'] ); ?>"><?php echo $content['data'][ $iSlide ]['author']['name']; ?></a>
                         </div>
+                        <?php } ?>
                     </div>
                 </div>
                 <div class="gmpm_actions gmpm_clearfix">

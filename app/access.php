@@ -16,8 +16,9 @@ if(!$gmedia_app){
     die();
 }
 
-global $gmCore, $gmapp_version;
+global $gmCore, $gmapp_version, $gmmodule;
 $gmapp_version = isset($_GET['gmappversion'])? $_GET['gmappversion'] : 1;
+$gmmodule = isset($_GET['gmmodule'])? (int) $_GET['gmmodule'] : 0;
 
 $out = array();
 
@@ -36,13 +37,18 @@ if($globaldata){
 
     $json = json_decode($globaldata);
 
-    require_once(dirname(__FILE__) . '/inc/json.auth.php');
+	if(isset($json->counter)){
+		gmedia_ios_app_counters($json->counter);
+		$out['alert'] = array('title' => 'Success', 'message' => "\nCounters updated");
+		header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+		header('Access-Control-Allow-Origin: *');
+		echo json_encode($out);
+		die();
+	}
+
+	require_once(dirname(__FILE__) . '/inc/json.auth.php');
     global $gmAuth;
     $gmAuth = new Gmedia_JSON_API_Auth_Controller();
-
-    if(isset($json->counter)){
-        gmedia_ios_app_counters($json->counter);
-    }
 
     if(isset($json->cookie) && !empty($json->cookie)){
         if(empty($gmedia_options['mobile_app'])){
@@ -184,7 +190,7 @@ function gmedia_ios_app_login($json){
  * @return array
  */
 function gmedia_ios_app_library_data($data = array('site', 'authors', 'filter', 'gmedia_category', 'gmedia_album', 'gmedia_tag'), $args = array()){
-    global $user_ID, $wpdb, $gmDB, $gmGallery, $gmapp_version;
+    global $user_ID, $wpdb, $gmDB, $gmGallery, $gmapp_version, $gmmodule;
 
     if(null === $data){
         $data = array('site', 'authors', 'filter', 'gmedia_category', 'gmedia_album', 'gmedia_tag');
@@ -195,7 +201,11 @@ function gmedia_ios_app_library_data($data = array('site', 'authors', 'filter', 
         if(version_compare('3.1', $gmapp_version, '<')){
             $logic = 3;
         }
-        $terms_per_page = 40;
+        if($gmmodule){
+	        $terms_per_page = '';
+        } else {
+	        $terms_per_page = 40;
+        }
     } else{
         $logic          = 1;
         $terms_per_page = '';
@@ -550,7 +560,7 @@ function gmedia_object_to_array($obj) {
  * @return array
  */
 function gmedia_ios_app_processor($action, $data, $filter = true){
-    global $gmCore, $gmDB, $gmGallery, $user_ID, $gmapp_version;
+    global $gmCore, $gmDB, $gmGallery, $user_ID, $gmapp_version, $gmmodule;
 
     $out = array();
 
@@ -988,6 +998,10 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                                'status'       => null
             );
 
+            if($gmmodule) {
+            	$args['per_page'] = -1;
+            }
+
             $terms_ids_query = array();
             if(!empty($data['tag__in'])){
                 $tag_ids = wp_parse_id_list($data['tag__in']);
@@ -1146,17 +1160,17 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                 }
                 $gmedias[ $i ]->albums = $albums;
 
-                if('image' == $type[0]){
-                    $terms      = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category');
-                    $categories = array();
-                    if($terms){
-                        $terms = array_values((array)$terms);
-                        foreach($terms as $term){
-                            $categories[] = array('term_id' => $term->term_id, 'name' => $term->term_id, 'title' => $term->name);
-                        }
-                    }
-                    $gmedias[ $i ]->categories = $categories;
+	            $terms      = $gmDB->get_the_gmedia_terms($item->ID, 'gmedia_category');
+	            $categories = array();
+	            if($terms){
+		            $terms = array_values((array)$terms);
+		            foreach($terms as $term){
+			            $categories[] = array('term_id' => $term->term_id, 'name' => $term->term_id, 'title' => $term->name);
+		            }
+	            }
+	            $gmedias[ $i ]->categories = $categories;
 
+                if('image' == $type[0]){
                     $gmedias[ $i ]->meta                  = array('thumb'    => $_metadata['thumb'],
                                                                   'web'      => $_metadata['web'],
                                                                   'original' => $_metadata['original']
@@ -1592,10 +1606,12 @@ function gmedia_ios_app_counters($data){
             $counters['views'] = $gmDB->get_metadata('gmedia', $gmID, 'views', true);
             $counters['views'] += 1;
             $gmDB->update_metadata('gmedia', $gmID, 'views', $counters['views']);
+            do_action('gmedia_view', $gmID);
             if(isset($counters['likes'])){
                 $counters['likes'] = $gmDB->get_metadata('gmedia', $gmID, 'likes', true);
                 $counters['likes'] += 1;
                 $gmDB->update_metadata('gmedia', $gmID, 'likes', $counters['likes']);
+                do_action('gmedia_like', $gmID);
             }
 
         }
@@ -1609,4 +1625,5 @@ $out['microtime'] = $time;
 $out['key'] = $gmedia_options['license_key'];
 
 header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+header('Access-Control-Allow-Origin: *');
 echo json_encode($out);

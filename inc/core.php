@@ -62,7 +62,7 @@ class GmediaCore {
 
     function init_actions(){
         global $gmGallery;
-        if(!empty($gmGallery->options['license_key']) && empty($gmGallery->options['disable_logs'])){
+        if( !empty($gmGallery->options['license_key']) && empty($gmGallery->options['disable_logs'])){
             add_action('gmedia_view', array(&$this, 'log_views_handler'));
             add_action('gmedia_like', array(&$this, 'log_likes_handler'));
             add_action('gmedia_rate', array(&$this, 'log_rates_handler'), 10, 2);
@@ -2948,12 +2948,12 @@ class GmediaCore {
     /**
      * @param string $service
      *
-     * @return array json
+     * @return array|bool json
      */
     function app_service($service){
-        global $gmGallery, $gmDB;
+        global $gmGallery, $gmDB, $wp_version;
 
-        if('127.0.0.1' == $_SERVER['SERVER_ADDR']){
+	    if(empty($_SERVER['HTTP_X_REAL_IP']) && ('127.0.0.1' == $_SERVER['REMOTE_ADDR'] || '::1' == $_SERVER['REMOTE_ADDR'])){
             return false;
         }
         if( !current_user_can('manage_options')){
@@ -2971,28 +2971,31 @@ class GmediaCore {
             $options['mobile_app'] = 0;
         }
 
-        $data['site_email'] = $options['site_email'];
+        $data['site_email'] = get_option('admin_email');
         if(in_array($service, array('app_updateinfo')) && !is_email($data['site_email'])){
-            $result['error'][] = __('Enter valid email, please', 'grand-media');
+            $result['error'][] = __('Invalid email', 'grand-media');
         } else{
 
             $url       = home_url();
             $post_data = array('url' => $url);
 
-            if('app_uninstallplugin' == $service){
+            if(in_array($service, array('app_deactivateplugin', 'app_uninstallplugin'))){
                 if( !empty($options['site_ID'])){
                     $post_data['site_id'] = $options['site_ID'];
-                    wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
+                    wp_remote_post('https://gmediaservice.codeasily.com/?gmService=' . $service, array(
                         'method'  => 'POST',
                         'timeout' => 5,
-                        'body'    => $post_data
+                        'blocking'  => false,
+                        'sslverify' => false,
+                        'body'    => $post_data,
+
                     ));
                 }
 
                 return false;
             }
 
-            $hash = wp_generate_password('6', false);
+            $hash = 'gmedia_' . wp_generate_password('6', false);
 
             if(in_array($service, array('app_activate', 'app_updateinfo'))){
                 $status = 1;
@@ -3001,33 +3004,69 @@ class GmediaCore {
             }
             $install_date = get_option('gmediaInstallDate');
 
-            $data['service']      = $service;
-            $data['site_hash']    = $hash;
-            $data['site_ID']      = $options['site_ID'];
-            $data['title']        = empty($options['site_title'])? get_bloginfo('name') : $options['site_title'];
-            $data['description']  = empty($options['site_description'])? get_bloginfo('description') : $options['site_description'];
-            $data['url']          = $url;
-            $data['license']      = $options['license_key'];
-            $data['status']       = $status;
-            $data['install_date'] = $install_date? $install_date : time();
+            $data['service']        = $service;
+            $data['site_hash']      = $hash;
+            $data['site_ID']        = $options['site_ID'];
+            $data['title']          = get_bloginfo('name');
+            $data['description']    = get_bloginfo('description');
+            $data['url']            = $url;
+            $data['license']        = $options['license_key'];
+            $data['status']         = $status;
+            $data['install_date']   = (int)$install_date;
+            $data['counters']       = $gmDB->count_gmedia();
+            $data['php_version']    = phpversion();
+            $data['wp_version']     = $wp_version;
+            $data['gmedia_version'] = GMEDIA_VERSION;
+            $data['locale']         = get_locale();
 
-            $tagslist = $gmDB->get_terms('gmedia_tag', array(
+            $theme         = wp_get_theme();
+            $data['theme'] = array(
+                'name'      => $theme->get('Name'),
+                'version'   => $theme->get('Version'),
+                'theme_uri' => $theme->get('ThemeURI')
+            );
+
+            if ( ! function_exists( 'get_plugins' ) ) {
+                require_once ABSPATH . 'wp-admin/includes/plugin.php';
+            }
+            $active_plugins  = get_option('active_plugins');
+            $plugins         = get_plugins();
+            $data['plugins'] = array();
+            foreach($active_plugins as $p){
+                if(isset($plugins[ $p ])){
+                    $data['plugins'][ $p ] = array(
+                        'name'       => $plugins[ $p ]['Name'],
+                        'version'    => $plugins[ $p ]['Version'],
+                        'plugin_uri' => $plugins[ $p ]['PluginURI']
+                    );
+                }
+            }
+
+            $tagslist     = $gmDB->get_terms('gmedia_tag', array(
                 'hide_empty'    => true,
-                'fields'        => 'names',
+                'fields'        => 'names_count',
+                'orderby'       => 'count',
+                'order'         => 'DESC',
                 'no_found_rows' => true
             ));
+            $data['tags'] = array();
             if( !is_wp_error($tagslist)){
-                $data['tags'] = (array) $tagslist;
-            } else{
-                $data['tags'] = array();
+                foreach($tagslist as $tag){
+                    if($tag['count'] < 10){
+                        break;
+                    }
+                    $data['tags'][] = $tag['name'];
+                }
             }
 
             set_transient($hash, $data, 45);
 
             $post_data['hash'] = $hash;
-            $gms_post          = wp_remote_post('http://gmediaservice.codeasily.com/?gmService=' . $service, array(
+            $gms_post          = wp_remote_post('https://gmediaservice.codeasily.com/?gmService=' . $service, array(
                 'method'  => 'POST',
                 'timeout' => 45,
+                //'blocking'  => false,
+                'sslverify' => false,
                 'body'    => $post_data
             ));
             if(is_wp_error($gms_post)){
@@ -3044,8 +3083,9 @@ class GmediaCore {
                 $result['error']  = array_merge($result['error'], $_result['error']);
             } else{
                 $result = array_merge($_result, $result);
-                //$result['gms_post'] = $gms_post;
-                //$result['gms_post_body'] = $gms_post_body;
+//                   $result['gms_the_data'] = $data;
+//                   $result['gms_post'] = $gms_post;
+//                   $result['gms_post_body'] = $gms_post_body;
                 if(isset($result['message'])){
                     $result['message'] = $this->alert('info', $result['message']);
                 }
@@ -3535,7 +3575,7 @@ class GmediaCore {
      * @param $gmID
      * @param $meta
      *
-     * @return
+     * @return mixed
      */
     function gm_hitcounter($gmID, $meta){
         /** @var wpdb $wpdb */
@@ -3627,32 +3667,38 @@ class GmediaCore {
      */
     function modules_order(){
         return array(
-            'albumsgrid'     => '',
-            'phantom-pro'    => '',
-            'albums-stripes' => '',
-            'cubik'          => '',
-            'desire'         => '',
-            'phototravlr'    => '',
-            'realslider'     => '',
-            'mosaic'         => '',
-            'photobox'       => '',
-            'wavesurfer'     => '',
-            'phantom'        => '',
-            'flipgrid'       => '',
-            'cubik-lite'     => '',
-            'photomania'     => '',
-            'jq-mplayer'     => '',
-            'wp-videoplayer' => '',
-            'photo-pro'      => '',
-            'optima'         => '',
-            'afflux'         => '',
-            'slider'         => '',
-            'green-style'    => '',
-            'photo-blog'     => '',
-            'minima'         => '',
-            'sphere'         => '',
-            'cube'           => '',
-            'flatwall'       => ''
+	        'albumsListMasonry' => '',
+	        'albumsList'        => '',
+	        'woowslider'        => '',
+	        'albums-switcher'   => '',
+	        'photocluster'      => '',
+	        'albumsview'        => '',
+	        'albumsgrid'        => '',
+	        'phantom-pro'       => '',
+	        'albums-stripes'    => '',
+	        'cubik'             => '',
+	        'desire'            => '',
+	        'phototravlr'       => '',
+	        'realslider'        => '',
+	        'mosaic'            => '',
+	        'photobox'          => '',
+	        'wavesurfer'        => '',
+	        'phantom'           => '',
+	        'flipgrid'          => '',
+	        'cubik-lite'        => '',
+	        'photomania'        => '',
+	        'jq-mplayer'        => '',
+	        'wp-videoplayer'    => '',
+	        'photo-pro'         => '',
+	        'optima'            => '',
+	        'afflux'            => '',
+	        'slider'            => '',
+	        'green-style'       => '',
+	        'photo-blog'        => '',
+	        'minima'            => '',
+	        'sphere'            => '',
+	        'cube'              => '',
+	        'flatwall'          => ''
         );
     }
 
@@ -3735,6 +3781,8 @@ class GmediaCore {
      * @param $terms
      * @param $gmedia_id
      * @param $taxonomy
+     *
+     * @return mixed
      */
     function get_the_gmedia_terms($terms, $gmedia_id, $taxonomy){
         if('gmedia_album' === $taxonomy){
@@ -3901,7 +3949,7 @@ class GmediaCore {
                 'log_data'   => '1',
                 'ip_address' => $this->ip()
             );
-            $id = $wpdb->insert($wpdb->prefix . 'gmedia_log', $data);
+            $id   = $wpdb->insert($wpdb->prefix . 'gmedia_log', $data);
         }
     }
 

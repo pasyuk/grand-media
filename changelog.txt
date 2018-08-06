@@ -1,3 +1,265 @@
+
+= v1.8.99 =
+* Added: New free module - Cubik Lite (3D Cube Gallery)
+* Added: Settings for Author profile page
+* Added: Show Related Gmedia Metabox for Posts
+* Added: Back button on Upload page
+* Added: Show term description on standalone post
+* Updated: Latest version of Lightbox script
+* Improved: Compatibility with ajax themes
+* Improved: Compatibility with JetPack plugin
+* Fixed: Cover change error on Edit Item
+* Fixed: Library Grid Mode on Safari
+* Fixed: Refresh after edit item in popup
+* Fixed: Actions on Edit Term page
+* Fixed: Add/Edit comments for roles lower than editor
+* Fixed: Error on servers with 'mbstring' disabled
+
+= v1.8.98 =
+* Fixed: Compatibility with "All in One SEO Pack" plugin
+* Fixed: Load registered styles only once if there are few different gallery modules on the page
+* Fixed: Module styles doesn't load when Raw output enabled in settings
+* Fixed: Notice in Media Upload popup
+
+= v1.8.97 =
+* Changed: Shortcode css output
+* Changed: Shortcode js output to avoid cache for new versions
+
+= v1.8.96 =
+* Added: Message "Upload complete" on Add Media page
+* Fixed: Library grid on Safari
+* Fixed: Minima module
+* Improved: Shortcode output
+
+= v1.8.95 =
+* Added: Setting "Delete original images"
+* Added: Setting to show Related Media for WP tags and categories archive pages
+* Added: Setting to show Related Media for WP Posts based on tag names
+* Fixed: Gallery Share button in the admin linked to wrong post
+* Improved: Load module styles before the module content
+* Improved: Clear cache after module update
+* Improved: Do not show Reset Filter for author if there is only one author who can not view others media
+
+= v1.8.94 =
+* Fixed: Compatibility with Wordpress less than 4.4
+
+= v1.8.93 =
+* Added: Update Modules badge indicator
+* Added: Widget for Gmedia Galleries
+* Added: Show Albums on Menu page
+* Added: Order By: "comment count", "created date", "views", "likes", "file size"
+* Added: In "Batch Edit" renaming files with {index:0001} now keep leading zeroes
+* Added: Option to disable "Title Case" for titles converted from filenames
+* Fixed: Save Filename to Title when non English letters
+* Fixed: Do not show non-published albums for images on the front-end
+* Fixed: Gallery comments popup template for some themes
+* Updated: Phantom gallery module to support gallery pagination, terms
+* Updated: Other gallery modules
+* Fixes and improvements
+
+= v1.8.90 =
+* Added: Alt Text field for image
+* Added: Editor quick tag buttons for items description fields
+* Added: "Add from Library" button on Edit Term page
+* Added: "Upload to term" button on Edit Term page
+* Added: Modal window to easily set link for items from existing content
+* Added: Share, Delete actions on Edit Term page
+* Added: Links to view "GmediaCloud Page" and "Term's WP Post" on Edit Term page
+* Fixes and improvements
+
+
+= v1.8.89 =
+* Fixed: Auth redirect for ajaxurl loaded files on the front-end
+* Added: When changing cover for item you'll see change immediately
+* Added: Modal window to easily choose file cover, album cover and category cover
+* Added: Modal window to easily set link for items from existing content
+* Changed: Excluded gmedia items from WP Link query
+* Small fixes and improvements
+
+= v1.8.88 =
+* Fixed: Upload when edit post
+* Fixed: Compatibility with PHP 5.2
+
+= v1.8.86 =
+* Fixed: Fatal error bug on WP Media page
+
+= v1.8.85 =
+* Changed: Click on Thumbnail now open edit item
+* Changed: To select item use checkboxes
+* Improved: Library like view on edit Album page
+* Improved: Library like view on edit Category page
+* Improved: Storage of selected items
+* Added: Field for Item order (custom order) in Album
+* Other fixes and improvements
+
+= v1.8.80 =
+* Added: edit items in popup
+* Added: tags dropdown list in Edit Mode
+* Added: tooltips for admin elements
+* Added: "Duplicate Gmedia Item" action
+* Changed: grid mode view
+* Fixed: waveplayer in admin
+* Fixed: Add Album in Edit Mode
+* Updated: Phantom gallery module new version
+
+= v1.8.71 =
+* Fixed: Compatibility with some plugins, which manipulate posts meta
+* Fixed: Saving custom presets on Edit Gallery pages.
+* Improvements for future iOS app version.
+
+= v1.8.70 =
+* Added: New Action to re-create selected images in Library
+* Fixed: Author filter in Gmedia Library
+* Fixed: Fatal error for some images without EXIF
+* Updated: New compact look for comments in Phantom image gallery module
+* Other fixes and improvements
+
+= v1.8.63 =
+* Fixed: admin background
+* Fixed: Notice on Build Gallery Query popup
+* Fixed: database error if photos have unknown characters in EXIF
+* Fixed: Hide Gmedia Gallery button if it is not active for current post type
+* Small fixes and improvements
+
+= v1.8.62 =
+* Added: Ability to change gallery preview background color
+* Added: Global preset for modules (admin only)
+* Fixed: Upload for sites with Punycode url
+* Small fixes and improvements
+
+= v1.8.61 =
+* Fixed: Internal Server Error on some servers
+* Fixed: Increased upload chunk size
+* Fixed: Notice in Build Gallery Query popup, when MimeType chosen
+* Added: Class for manipulating hex colors with PHP
+
+= v1.8.60 =
+* Fixed: Preset Preview
+* Soon: New music module with waveform
+
+= v1.8.59 =
+* Fixed: Modules install not worked
+* Fixed: Google Maps not worked on some servers
+* Changed: Hide Presets for not installed modules
+* Improved: wavesurfer.js script
+
+= v1.8.58 =
+* Added: Waveform for music files
+* Added: Waveform music player in admin
+* Added: Spinner on item edit
+* Added: Clean cache of all major cache plugins when do some actions in Gmedia Gallery plugin
+* Fixed: Database creation on some servers
+
+= v1.8.57 =
+* Updated: Compatibility with latest Gmedia Gallery iOS application version
+* Fixed: Notice in Music Player playlist module
+
+= v1.8.56 =
+* Fixed: Apply preset for gallery
+* Updated Music Player audio playlist module
+
+= v1.8.55 =
+* Added: Show Duplicates in Gmedia Library
+* Added: Prevent duplicates been import
+* Added: Open in Gmedia Library button to Edit Album/Category page
+* Added: Login by email in Gmedia Gallery iOS app
+* Fixes and Improvements
+
+= v1.8.51 =
+* New: PhotoTravlr image gallery module on Modules page
+* Fixed: delete presets on Modules page
+
+= v1.8.50 =
+* Added: Page for creating Presets
+* New: Modules page now shows also available presets for each module
+* New: You can set global Module/Preset for terms
+* New: You can set Module/Preset individual for each album or category
+* Added: Tips for creating gallery's Query Args.
+* Added: Shortcode preview for each term
+* Bug Fixes & Improvements
+
+= v1.8.27 =
+* Added Open Graph Meta Image for Gmedia Posts
+* Added more info about item on Gmedia Post page (exif, map, terms)
+* Added 'style' parameter to shortcode, so user can add inline styles for gallery container
+* Added 'class' parameter for shortcode, so user can add own classes to gallery container
+* Fixes & improvements
+
+= v1.8.26 =
+* Enable/disable archive page option in Settings for gmedia library, albums, galleries.
+* Fixes for iOS app
+
+= v1.8.25 =
+* Fixed: Compatibility with Ajax themes
+
+= v1.8.24 =
+* Fixed: Screen Settings on pages
+* Fixed: Preview of changed module
+* Fixed: Google Maps JS error in admin on some installations
+
+= v1.8.23 =
+* Fixed: If gallery source is album, then set order from album (with ability to overwrite by query parameter)
+
+= v1.8.22 =
+* Fixed: Quick Galleries items order
+
+= v1.8.21 =
+* Fixed: Fatal Error on album sort
+
+= v1.8.20 =
+* Compatibility with WP 4.5
+* Changed: Removed Custom Filters
+* Changed: Taxonomies are now separate pages (Albums, Categories, Tags)
+* Changed: Galleries are now have query builder (like in custom filters) to make custom queries
+* Improved: Gallery Preview now resizable
+* Improved: Isolation Mode
+* Added: Custom Fields to Galleries
+* Added: Settings for default albums 'status', 'order', 'orderby'
+* Added: Setting for Default Module
+* Added: 'category__and' query parameter
+* Fixed: bugfixes
+* Code refactoring and other improvements
+
+= v1.8.14 =
+* Fixed: Multiple categories in Edit Mode
+
+= v1.8.12 =
+* New: Ability to create own categories
+* New: Ability to assign few categories to one item
+* New: Ability to assign categories to non images
+* Added: New capability for managing categories
+
+= v1.8.10 =
+* Added: Stack for Gmedia Items
+* New: Selected items now cleared automatically after Action
+* Changed: Numeric title from EXIF will be saved to DB
+
+= v1.8.08 =
+* Improved Phantom gallery module
+* Improved installations of modules
+* Fixed Install module ZIP
+* Fixed loading comments on some themes
+* Removed Font-Awesome from GmediaCloud page to improve loading speed
+
+= v1.8.07 =
+* Fixed: Modules update
+* Updated: Phantom photo gallery module (fixed few settings)
+
+= v1.8.06 =
+* Fixed: Notice on first install
+* Fixed: Ignored uninstall settings and gallery plugin doesn't delete database records and delete all files
+
+= v1.8.05 =
+* Improved: update process
+* Fixed: access point for Gmedia Gallery iOS app
+* Fixed: comments in Phantom photo gallery module not worked on some themes
+
+= v1.8.0 =
+* Added: Comments for Gmedia Items
+* Added: WP search integration for gmedia items, albums, galleries, filters
+* New: Phantom gallery module with comments support
+* Fixed: gallery search in admin and a lot of other bugs that I don't remember
+
 = 1.8.24 =
 * Fixed: Screen Settings on pages
 * Fixed: Preview of changed module

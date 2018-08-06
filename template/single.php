@@ -14,7 +14,7 @@
          * @var $gmGallery
          */
         $type = explode('/', $gmedia->mime_type, 2);
-        if ('image' == $type[0]) { ?>
+        if('image' == $type[0]){ ?>
             <div class="single-view type-image">
                 <img class="gmedia-image" src="<?php echo $gmCore->gm_get_media_image($gmedia->ID); ?>">
 
@@ -24,7 +24,7 @@
                     <div class="image-description"><?php echo wpautop($gmedia->description); ?></div>
                 </div>
             </div>
-        <?php } else { ?>
+        <?php } else{ ?>
             <div class="single-view type-download type-<?php echo $type[0]; ?>">
                 <img class="gmedia-image" src="<?php echo $gmCore->gm_get_media_image($gmedia->ID); ?>">
 

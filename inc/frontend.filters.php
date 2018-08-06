@@ -279,7 +279,7 @@ function gmedia_post_type__the_excerpt($content){
  * @return mixed|string
  */
 function gmedia_post_type__the_content($content){
-    global $post, $gmDB, $gmCore;
+    global $post, $gmDB, $gmCore, $gmGallery;
 
     if('gmedia' !== substr($post->post_type, 0, 6)){
         return $content;
@@ -427,7 +427,7 @@ function gmedia_post_type__the_content($content){
                                         <div class="gmsingle_location_info">
                                             <a href='https://www.google.com/maps/place/<?php echo $loc; ?>'
                                                target='_blank'><img
-                                                        src='//maps.googleapis.com/maps/api/staticmap?key=AIzaSyBMiF6nlG5O1tE81Q-35_dckOwW4ypMRuk&size=320x240&zoom=10&scale=2&maptype=roadmap&markers=<?php echo $loc; ?>'
+                                                        src='//maps.googleapis.com/maps/api/staticmap?key=<?php esc_attr_e($gmGallery->options['google_api_key']); ?>&size=320x240&zoom=10&scale=2&maptype=roadmap&markers=<?php echo $loc; ?>'
                                                         alt='' width='320' height='240'/></a>
                                         </div>
                                     </div>
@@ -756,7 +756,11 @@ function gmedia_post_type__the_content($content){
                 $ext2 = wp_get_video_extensions();
                 $ext  = array_merge($ext1, $ext2);
                 if(in_array($gmedia->ext, $ext)){
-                    $embed = do_shortcode("[embed]$gmedia->url[/embed]");
+                    global $wp_embed;
+                    $embed = $wp_embed->run_shortcode("[embed]$gmedia->url[/embed]");
+                    if('[' == substr($embed, 0, 1)){
+                        $embed = do_shortcode($embed);
+                    }
                     echo $embed;
                 } else{
                     $cover_url = $gmCore->gm_get_media_image($gmedia, 'web');
@@ -780,6 +784,7 @@ function gmedia_post_type__the_content($content){
         $output      = '';
         $gmedia_term = $gmDB->get_term($post->term_id);
         if($gmedia_term && !is_wp_error($gmedia_term)){
+	        add_filter( 'comments_open', '__return_false' );
             $current_filter = current_filter();
             if('get_the_excerpt' == $current_filter){
                 $cover_id = $gmDB->get_metadata('gmedia_term', $post->term_id, '_cover', true);

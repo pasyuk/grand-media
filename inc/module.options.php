@@ -144,7 +144,7 @@ if(!function_exists('gm_recognized_font_styles')) {
     /**
      * @param string $field_id
      *
-     * @return mixed|void
+     * @return array
      */
     function gm_recognized_font_styles($field_id = '') {
 
@@ -172,7 +172,7 @@ if(!function_exists('gm_recognized_font_weights')) {
     /**
      * @param string $field_id
      *
-     * @return mixed|void
+     * @return array
      */
     function gm_recognized_font_weights($field_id = '') {
 
@@ -210,7 +210,7 @@ if(!function_exists('gm_recognized_font_variants')) {
     /**
      * @param string $field_id
      *
-     * @return mixed|void
+     * @return array
      */
     function gm_recognized_font_variants($field_id = '') {
 
@@ -239,7 +239,7 @@ if(!function_exists('gm_recognized_font_families')) {
     /**
      * @param string $field_id
      *
-     * @return mixed|void
+     * @return array
      */
     function gm_recognized_font_families($field_id = '') {
 

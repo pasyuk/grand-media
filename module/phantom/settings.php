@@ -51,7 +51,6 @@ $default_options = array(
     'show_tags'               => '1',
     'show_categories'         => '1',
     'show_albums'             => '1',
-    'show_download_button'    => '1',
     'initRPdelay'             => '200',
     'customCSS'               => ''
 );
@@ -195,12 +194,6 @@ $options_tree    = array(
             ),
             'show_albums'          => array(
                 'label' => __('Show Album', 'grand-media'),
-                'tag'   => 'checkbox',
-                'attr'  => '',
-                'text'  => ''
-            ),
-            'show_download_button' => array(
-                'label' => __('Show Download Button', 'grand-media'),
                 'tag'   => 'checkbox',
                 'attr'  => '',
                 'text'  => ''

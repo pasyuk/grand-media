@@ -13,7 +13,7 @@ if(!defined('ABSPATH')){
  */
 $curpage = $gmCore->_get('page', 'GrandMedia');
 $refurl = strpos(wp_get_referer(), "page={$curpage}")? wp_get_referer() : $gmProcessor->url;
-$referer = remove_query_arg(array('edit_term', 'gmedia_module'), $refurl);
+$referer = remove_query_arg(array('edit_term', 'gallery_module'), $refurl);
 ?>
 <div class="panel-heading-fake"></div>
 <div class="panel-heading clearfix">

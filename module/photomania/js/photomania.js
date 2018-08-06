@@ -62,6 +62,7 @@
             show_comments: true,
             show_description: true,
             show_author_avatar: true,
+            show_author_name: true,
             show_share_button: true,
             show_like_button: true
         },
@@ -364,7 +365,9 @@
             if (self.opts.show_author_avatar) {
                 $('.gmpm_user_avatar_link', photo_show).attr('href', decodeURIComponent(item.author.posts_link)).html($('<img />').attr('src', item.author.avatar));
             }
-            $('.gmpm_author_link', photo_show).attr('href', decodeURIComponent(item.author.posts_link)).text(item.author.name);
+            if (self.opts.show_author_name){
+                $('.gmpm_author_link', photo_show).attr('href', decodeURIComponent(item.author.posts_link)).text(item.author.name);
+            }
 
             $('.gmpm_title', photo_show).text(item.title);
             if (self.opts.show_download_button) {

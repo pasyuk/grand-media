@@ -20,6 +20,9 @@ function get_gmedia_modules($including_remote = true){
     if(($plugin_modules = glob(GMEDIA_ABSPATH . 'module/*', GLOB_ONLYDIR | GLOB_NOSORT))){
         foreach($plugin_modules as $path){
             $mfold                   = basename($path);
+            if(in_array($mfold, array('minima', 'afflux'))){
+                continue;
+            }
             $modules['in'][ $mfold ] = array('place'       => 'plugin',
                                              'module_name' => $mfold,
                                              'module_url'  => $gmCore->gmedia_url . "/module/{$mfold}",
@@ -87,9 +90,12 @@ function get_gmedia_modules($including_remote = true){
                     unset($modules['xml'][ $name ]['screenshot']);
                     $modules['xml'][ $name ]['description'] = (string)$modules['xml'][ $name ]['description'];
                     if(isset($modules['in'][ $name ]) && !empty($modules['in'][ $name ])){
-                        $modules['in'][ $name ] = array_merge($modules['in'][ $name ], $modules['xml'][ $name ]);
+                        $xml_module = $modules['xml'][ $name ];
+                        unset($xml_module['version']);
+                        $modules['in'][ $name ] = array_merge($modules['in'][ $name ], $xml_module);
                         if(version_compare($modules['xml'][ $name ]['version'], $modules['in'][ $name ]['version'], '>')){
                             $modules['in'][ $name ]['update'] = $modules['xml'][ $name ]['version'];
+                            $modules['xml'][ $name ]['place'] = 'remote';
                             $modules['xml'][ $name ]['update'] = true;
                             $modules['out'][ $name ]          = $modules['xml'][ $name ];
                         }
@@ -151,7 +157,7 @@ function gmedia_item_more_data(&$item){
         $item->url_web       = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image'] . '/' . $item->gmuid;
         $item->url_original  = $gmCore->upload['url'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $item->gmuid;
         if(!is_file($item->path_original)){
-            $item->path_original = null;
+            $item->path_original = false;
             $item->url_original = $item->url_web;
         }
         if(!empty($metadata['image_meta']['GPS'])){
@@ -232,6 +238,7 @@ function gmedia_term_item_more_data(&$item){
         if($post_id){
             $post_item = get_post($post_id);
             if($post_item){
+                $item->post_date      = $post_item->post_date;
                 $item->slug           = $post_item->post_name;
                 $item->post_password  = $post_item->post_password;
                 $item->comment_count  = $post_item->comment_count;
@@ -418,12 +425,14 @@ function gmedia_gallery_query_data($query = array()){
     );
 }
 
-function gmedia_array_filter_recursive($input){
-    foreach($input as &$value){
-        if(is_array($value)){
-            $value = gmedia_array_filter_recursive($value);
-        }
-    }
+function gmedia_array_filter_recursive( $input ) {
+	foreach ( $input as &$value ) {
+		if ( is_array( $value ) ) {
+			$value = gmedia_array_filter_recursive( $value );
+		}
+	}
 
-    return array_filter($input);
+	return array_filter( $input, function( $val ) {
+		return is_string( $val ) ? strlen( $val ) : ! empty( $val );
+	} );
 }

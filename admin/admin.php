@@ -144,15 +144,16 @@ class GmediaAdmin {
         $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Library', 'grand-media'), __('Gmedia Library', 'grand-media'), 'gmedia_library', 'GrandMedia', array(&$this, 'shell'));
         if(current_user_can('gmedia_library')){
             $this->pages[] = add_submenu_page('GrandMedia', __('Add Media Files', 'grand-media'), __('Add/Import Files', 'grand-media'), 'gmedia_upload', 'GrandMedia_AddMedia', array(&$this, 'shell'));
-            $this->pages[] = add_submenu_page('GrandMedia', __('Tags', 'grand-media'), __('Tags', 'grand-media'), 'gmedia_library', 'GrandMedia_Tags', array(&$this, 'shell'));
-            $this->pages[] = add_submenu_page('GrandMedia', __('Categories', 'grand-media'), __('Categories', 'grand-media'), 'gmedia_library', 'GrandMedia_Categories', array(&$this, 'shell'));
-            $this->pages[] = add_submenu_page('GrandMedia', __('Albums', 'grand-media'), __('Albums', 'grand-media'), 'gmedia_library', 'GrandMedia_Albums', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Tags', 'grand-media'), __('Tags', 'grand-media'), 'gmedia_tag_manage', 'GrandMedia_Tags', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Categories', 'grand-media'), __('Categories', 'grand-media'), 'gmedia_category_manage', 'GrandMedia_Categories', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Albums', 'grand-media'), __('Albums', 'grand-media'), 'gmedia_album_manage', 'GrandMedia_Albums', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Galleries', 'grand-media'), __('Galleries', 'grand-media'), 'gmedia_gallery_manage', 'GrandMedia_Galleries', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Modules', 'grand-media'), __('Modules', 'grand-media'), 'gmedia_gallery_manage', 'GrandMedia_Modules', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Settings', 'grand-media'), __('Settings', 'grand-media'), 'manage_options', 'GrandMedia_Settings', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('iOS Application', 'grand-media'), __('iOS Application', 'grand-media'), 'gmedia_settings', 'GrandMedia_App', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Wordpress Media Library', 'grand-media'), __('WP Media Library', 'grand-media'), 'gmedia_import', 'GrandMedia_WordpressLibrary', array(&$this, 'shell'));
             $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Logs', 'grand-media'), __('Gmedia Logs', 'grand-media'), 'manage_options', 'GrandMedia_Logs', array(&$this, 'shell'));
+            $this->pages[] = add_submenu_page('GrandMedia', __('Gmedia Support', 'grand-media'), __('Support', 'grand-media'), 'manage_options', 'GrandMedia_Support', array(&$this, 'shell'));
         }
 
         foreach($this->pages as $page){
@@ -190,11 +191,23 @@ class GmediaAdmin {
 
         ?>
         <div id="gmedia-container" class="gmedia-admin">
+            <?php
+            if($gmProcessor->page !== 'GrandMedia_App' && !isset($gmGallery->options['gmedia_service']) && current_user_can('manage_options')){
+                $this->collect_data_permission();
+            }
+            ?>
             <div id="gmedia-header" class="clearfix">
                 <div id="gmedia-logo">Gmedia
                     <small> by CodEasily.com</small>
                 </div>
                 <h2><?php echo $sideLinks['grandTitle']; ?></h2>
+                <?php
+                if ( ! is_plugin_active( 'woowbox/woowbox.php' ) ){
+	                ?>
+                    <div class="promote-woowbox"><a href="https://bit.ly/woowbox" target="_blank"><img src="<?php echo plugins_url('/grand-media/admin/assets/img/woowbox-promote.png') ?>" alt="Try WoowBox Gallery plugin" /></a></div>
+	                <?php
+                }
+                ?>
             </div>
             <div class="container-fluid">
                 <div class="row row-fx180-fl">
@@ -265,7 +278,7 @@ class GmediaAdmin {
 			<div class="row">
 				<ul class="list-group"><li>';
         if(empty($gmGallery->options['license_key'])){
-            $content['sideLinks'] .= "\n" . '<a class="list-group-item list-group-item-premium" target="_blank" href="http://codeasily.com/product/one-site-license/">' . __('Get Gmedia Premium', 'grand-media') . '</a></li><li>';
+            $content['sideLinks'] .= "\n" . '<a class="list-group-item list-group-item-premium" target="_blank" href="https://codeasily.com/product/one-site-license/">' . __('Get Gmedia Premium', 'grand-media') . '</a></li><li>';
         }
         foreach($submenu['GrandMedia'] as $menuKey => $menuItem){
             if($menuItem[2] == $gmProcessor->page){
@@ -289,6 +302,50 @@ class GmediaAdmin {
 		</div>';
 
         return $content;
+    }
+
+    function collect_data_permission(){
+        $current_user = wp_get_current_user();
+        $nonce =  wp_create_nonce('GmediaService');
+        ?>
+        <div class="notice updated gm-message gmedia-service__message">
+            <div class="gm-message-content">
+                <div class="gm-plugin-icon">
+                    <img src="<?php echo plugins_url('/grand-media/admin/assets/img/icon-128x128.png') ?>" width="90" height="90">
+                </div>
+                <?php printf( __('<p>Hey %s,<br>Please help us improve <b>Gmedia Gallery</b>! If you opt-in, some data about your usage of <b>Gmedia Gallery</b> will be sent to <a href="https://codeasily.com/" target="_blank" tabindex="1">codeasily.com</a>.
+                    These data also required if you will use Gmedia iOS application on your iPhone.
+                    If you skip this, that\'s okay! <b>Gmedia Gallery</b> will still work just fine.</p>', 'grand-media'), $current_user->display_name ); ?>
+            </div>
+            <div class="gm-message-actions">
+                <button class="button button-secondary gm_service_action" data-action="skip" data-nonce="<?php echo $nonce; ?>"><?php _e('Skip', 'grand-media'); ?></button>
+                <button class="button button-primary gm_service_action" data-action="allow" data-nonce="<?php echo $nonce; ?>"><?php _e('Allow &amp; Continue', 'grand-media'); ?></button>
+            </div>
+            <div class="gm-message-plus gm-closed">
+                <a class="gm-mp-trigger" href="#" onclick="jQuery('.gm-message-plus').toggleClass('gm-closed gm-opened'); return false;"><?php _e('What permissions are being granted?', 'grand-media'); ?></a>
+                <ul>
+                    <li>
+                        <i class="dashicons dashicons-admin-users"></i>
+
+                        <div>
+                            <span><?php _e('Your Profile Overview', 'grand-media'); ?></span>
+
+                            <p><?php _e('Name and email address', 'grand-media'); ?></p>
+                        </div>
+                    </li>
+                    <li>
+                        <i class="dashicons dashicons-admin-settings"></i>
+
+                        <div>
+                            <span><?php _e('Your Site Overview', 'grand-media'); ?></span>
+
+                            <p><?php _e('Site URL, WP version, PHP version, active theme &amp; plugins', 'grand-media'); ?></p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <?php
     }
 
     function admin_footer(){
@@ -380,6 +437,10 @@ class GmediaAdmin {
             case 'GrandMedia_Logs':
                 include_once(dirname(__FILE__) . '/logs.php');
                 break;
+            case 'GrandMedia_Support':
+                include_once(dirname(__FILE__) . '/support.php');
+                gmediaSupport();
+                break;
             case 'GrandMedia_Update':
                 include_once(GMEDIA_ABSPATH . 'config/update.php');
                 gmedia_upgrade_progress_panel();
@@ -429,7 +490,10 @@ class GmediaAdmin {
         wp_register_script('selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.min.js', array('jquery'), '0.12.1');
         wp_register_style('selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.bootstrap3.css', array('gmedia-bootstrap'), '0.12.1', 'screen');
 
-        if(isset($_GET['page'])){
+	    wp_register_style('spectrum', $gmCore->gmedia_url . '/assets/spectrum/spectrum.min.css', array(), '1.8.0');
+	    wp_register_script('spectrum', $gmCore->gmedia_url . '/assets/spectrum/spectrum.min.js', array('jquery'), '1.8.0', true);
+
+	    if(isset($_GET['page'])){
             switch($_GET['page']){
                 case "GrandMedia" :
                     if($gmCore->caps['gmedia_edit_media']){
@@ -446,13 +510,15 @@ class GmediaAdmin {
                         if($gmProcessor->mode == 'edit'){
                             wp_enqueue_script('alphanum', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.alphanum.js', array('jquery'), '1.0.16');
 
-                            wp_enqueue_script('moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', array('jquery'), '2.5.1');
-                            wp_enqueue_style('datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', array('gmedia-bootstrap'), '2.1.32');
+	                        wp_enqueue_script('jquery-ui-sortable');
+
+                            wp_enqueue_script('moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', array('jquery'), '2.22.2');
+                            wp_enqueue_style('datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', array('gmedia-bootstrap'), '4.17.47');
                             wp_enqueue_script('datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js', array(
                                 'jquery',
                                 'moment',
                                 'gmedia-bootstrap'
-                            ), '2.1.32');
+                            ), '4.17.47');
                         }
                     }
                     wp_enqueue_script('wavesurfer', $gmCore->gmedia_url . '/assets/wavesurfer/wavesurfer.min.js', array('jquery'), '1.1.5');
@@ -465,6 +531,14 @@ class GmediaAdmin {
                             wp_enqueue_style('jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen');
                             wp_enqueue_script('jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', array(), '1.10.2');
                         }
+
+	                    wp_enqueue_script('moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', array('jquery'), '2.5.1');
+	                    wp_enqueue_style('datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', array('gmedia-bootstrap'), '2.1.32');
+	                    wp_enqueue_script('datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js', array(
+		                    'jquery',
+		                    'moment',
+		                    'gmedia-bootstrap'
+	                    ), '2.1.32');
                     }
                     break;
                 case "GrandMedia_Categories" :
@@ -501,6 +575,9 @@ class GmediaAdmin {
 
                         wp_enqueue_style('jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.css', array('gmedia-bootstrap'), '0.9.13');
                         wp_enqueue_script('jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.js', array('jquery'), '0.9.13');
+
+                        wp_enqueue_style('spectrum');
+                        wp_enqueue_script('spectrum');
                     }
                     break;
                 case "GrandMedia_Modules" :
@@ -513,6 +590,9 @@ class GmediaAdmin {
 
                         wp_enqueue_style('jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.css', array('gmedia-bootstrap'), '0.9.13');
                         wp_enqueue_script('jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.js', array('jquery'), '0.9.13');
+
+	                    wp_enqueue_style('spectrum');
+	                    wp_enqueue_script('spectrum');
                     }
                     break;
             }
@@ -537,17 +617,17 @@ class GmediaAdmin {
         $screen->add_help_tab(array(
             'id'      => 'help_' . $screen_id . '_support',
             'title'   => __('Support'),
-            'content' => '<h4>First steps</h4>
+            'content' => __('<h4>First steps</h4>
 <p>If you have any problems with displaying Gmedia Gallery in admin or on website. Before posting to the Forum try next:</p>
 <ul>
 	<li>Exclude plugin conflicts: Disable other plugins one by one and check if it resolve problem</li>
 	<li>Exclude theme conflict: Temporary switch to one of default themes and check if gallery works</li>
 </ul>
-<h4>Links</h4>
-<p><a href="http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/" target="_blank">' . __('Support Forum', 'grand-media') . '</a>
-	| <a href="http://codeasily.com/contact/" target="_blank">' . __('Contact', 'grand-media') . '</a>
-	| <a href="http://codeasily.com/portfolio/gmedia-gallery-modules/" target="_blank">' . __('Demo', 'grand-media') . '</a>
-	| <a href="http://codeasily.com/product/one-site-license/" target="_blank">' . __('Premium', 'grand-media') . '</a>
+<h4>Links</h4>', 'grand-media')
+. '<p><a href="https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/" target="_blank">' . __('Support Forum', 'grand-media') . '</a>
+	| <a href="https://codeasily.com/contact/" target="_blank">' . __('Contact', 'grand-media') . '</a>
+	| <a href="https://codeasily.com/portfolio/gmedia-gallery-modules/" target="_blank">' . __('Demo', 'grand-media') . '</a>
+	| <a href="https://codeasily.com/product/one-site-license/" target="_blank">' . __('Premium', 'grand-media') . '</a>
 </p>',
         ));
 
@@ -559,14 +639,36 @@ class GmediaAdmin {
                     $screen->add_help_tab(array(
                         'id'      => 'help_' . $screen_id . '_license',
                         'title'   => __('License Key'),
-                        'content' => '<h4>Should I buy it, to use plugin?</h4>
+                        'content' => sprintf(__('<h4>Should I buy it, to use plugin?</h4>
 <p>No, plugin is absolutely free and all modules for it are free to install.</p>
 <p>Even premium modules are fully functional and free to test, but have backlink labels. To remove baclink labels from premium modules you need license key.</p>
 <p>Note: License Key will remove backlinks from all current and future premium modules, so you can use all available modules on one website.</p>
-<p>Do not purchase license key before testing module you like. Only if everything works fine and you satisfied with functionality you are good to purchase license. Otherwise use <a href="http://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/" target="_blank">' . __('Gmedia Support Forum', 'grand-media') . '</a>.</p>
+<p>Do not purchase license key before testing module you like. Only if everything works fine and you satisfied with functionality you are good to purchase license. Otherwise use <a href="%1$s" target="_blank">Gmedia Support Forum</a>.</p>
 <h4>I have license key but I can\'t activate it</h4>
-<p>Contact developer <a href="mailto:gmediafolder@gmail.com">gmediafolder@gmail.com</a> with your problem and wait for additional instructions and code for manual activation</p>
-<div><a class="btn btn-default" href="' . admin_url('admin.php?page=' . $screen_id . '&license_activate=manual') . '">Manual Activation</a></div>',
+<p>Contact developer <a href="mailto:%2$s">%2$s</a> with your problem and wait for additional instructions and code for manual activation</p>', 'grand-media'), 'https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/', 'gmediafolder@gmail.com')
+. '<div><a class="btn btn-default" href="' . admin_url('admin.php?page=' . $screen_id . '&license_activate=manual') . '">' . __('Manual Activation', 'grand-media') . '</a></div>',
+                    ));
+                }
+                break;
+            case 'GrandMedia_App' :
+                $gm_options = get_option('gmediaOptions');
+                $nonce = wp_create_nonce('GmediaService');
+                if(current_user_can('manage_options') && (int)$gm_options['mobile_app']){
+                    $screen->add_help_tab(array(
+                        'id'      => 'help_' . $screen_id . '_optout',
+                        'title'   => __('Opt Out'),
+                        'content' => __('<h4>We appreciate your help in making the plugin better by letting us track some usage data.</h4>
+<p>Usage tracking is done in the name of making <strong>Gmedia Gallery</strong> better. Making a better user experience, prioritizing new features, and more good things.</p>
+<p>By clicking "Opt Out", we will no longer be sending any data from <strong>Gmedia Gallery</strong> to <a href="https://codeasily.com" target="_blank">codeasily.com</a>.</p>
+<p>You\'ll also not be able to use Gmedia iOS application.</p>', 'grand-media')
+. '<p><button class="button button-default gm_service_action"  data-action="app_deactivate" data-nonce="' . $nonce . '">' . __('Opt Out', 'grand-media') . '</button><span class="spinner" style="float: none;"></span></p>'
+. '<div style="display:none;">Test: 
+<button type="button" data-action="app_updateinfo" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Update</button>
+<button type="button" data-action="app_updatecron" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">CronJob</button> &nbsp;&nbsp;
+<button type="button" data-action="app_deactivateplugin" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Deactivate Plugin</button>
+<button type="button" data-action="app_uninstallplugin" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Uninstall Plugin</button>
+</div>
+',
                     ));
                 }
                 break;
@@ -826,7 +928,6 @@ class GmediaAdmin {
                     </div>
                     ';
                     break;
-
             }
 
             if($settings){

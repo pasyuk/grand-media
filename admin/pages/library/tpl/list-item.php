@@ -28,6 +28,17 @@ if(!defined('ABSPATH')) {
             echo gmedia_waveform_player($item);
         }
         ?>
+        <div class="related-media-previews">
+		    <?php
+		    $related_ids = isset( $item->meta['_related'][0] ) ? $item->meta['_related'][0] : array();
+		    if(!empty($related_ids)){
+			    $related_media = $gmDB->get_gmedias(array('gmedia__in' => $related_ids, 'orderby' => 'gmedia__in'));
+			    foreach($related_media as $r_item){
+				    ?><p class="thumbnail gmedia-related-image"><span class="image-wrapper"><?php echo gmedia_item_thumbnail( $r_item ); ?></span></p><?php
+			    }
+		    }
+		    ?>
+        </div>
     </div>
     <div class="col-sm-8">
         <div class="row" style="margin:0;">

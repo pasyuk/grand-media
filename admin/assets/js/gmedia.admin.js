@@ -298,7 +298,7 @@ var GmediaLibrary = {
 
         // Date/Time picker
         var gmedia_date_temp;
-        jQuery('.input-group.gmedia_date').datetimepicker({useSeconds: true}).on('dp.show', function() {
+        jQuery('.input-group.gmedia_date').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss', focusOnShow: false}).on('dp.show', function() {
             gmedia_date_temp = jQuery('input', this).val();
         }).on('dp.hide', function() {
             if(gmedia_date_temp != jQuery('input', this).val()) {
@@ -358,6 +358,25 @@ var GmediaLibrary = {
         jQuery(document).on('click.gmedia', '#wp-link-cancel, #wp-link-close, #wp-link-backdrop', function(e) {
             closeLinkModal()
         });
+
+        var related_sortable = jQuery('.related-media-previews');
+        if(related_sortable.length){
+            related_sortable.sortable({
+                items: '.gmedia-related-image',
+                handle: '.image-wrapper',
+                placeholder: 'gmedia-related-image',
+                tolerance: 'pointer',
+                //helper: 'clone',
+                revert: true,
+                forcePlaceholderSize: true,
+                stop: function(event, ui){
+                    console.log(ui);
+                    ui.item.find('input').trigger('change');
+                }
+            });
+        }
+
+
     }
 };
 
@@ -492,38 +511,38 @@ var GmediaAddMedia = {
  * Gmedia Terms
  */
 var GmediaTerms = {
-    init: function() {
+    init: function(){
 
-        if(jQuery('body').hasClass('GrandMedia_Tags')) {
+        if(jQuery('body').hasClass('GrandMedia_Tags')){
             jQuery('#gm-list-table').data('edit', false);
-            gmedia_DOM.on('keypress', 'input.edit_tag_input', function(e) {
+            gmedia_DOM.on('keypress', 'input.edit_tag_input', function(e){
                 var tagdiv = jQuery('#tag_' + jQuery(this).data('tag_id'));
                 var charCode = e.charCode || e.keyCode || e.which;
-                if(charCode == 13) {
+                if(charCode == 13){
                     e.preventDefault();
                     edit_tag(tagdiv);
                 }
-            }).on('blur', 'input.edit_tag_input', function() {
+            }).on('blur', 'input.edit_tag_input', function(){
                 var tagdiv = jQuery('#tag_' + jQuery(this).data('tag_id'));
                 edit_tag(tagdiv);
             });
 
-            gmedia_DOM.on('click', '.edit_tag_link', function(e) {
+            gmedia_DOM.on('click', '.edit_tag_link', function(e){
                 e.preventDefault();
                 var id = jQuery(this).attr('href');
                 jQuery(this).hide();
                 jQuery(id).find('.edit_tag_form').show().find('input').focus();
                 jQuery('#gm-list-table').data('edit', true);
             });
-            gmedia_DOM.on('click', '.edit_tag_save', function(e) {
+            gmedia_DOM.on('click', '.edit_tag_save', function(e){
                 e.preventDefault();
             });
 
-            function edit_tag(tagdiv) {
+            function edit_tag(tagdiv){
                 var inp = tagdiv.find('.edit_tag_form input');
                 var new_tag_name = jQuery.trim(inp.val());
                 var old_tag_name = inp.attr('placeholder');
-                if((old_tag_name == new_tag_name) || ('' === new_tag_name) || jQuery.isNumeric()) {
+                if((old_tag_name == new_tag_name) || ('' === new_tag_name) || jQuery.isNumeric()){
                     inp.val(old_tag_name);
                     tagdiv.find('.edit_tag_form').hide();
                     tagdiv.find('.edit_tag_link').show();
@@ -535,12 +554,12 @@ var GmediaTerms = {
                     tag_name: new_tag_name,
                     _wpnonce_terms: jQuery('#_wpnonce_terms').val()
                 };
-                jQuery.post(ajaxurl, post_data, function(data, textStatus, jqXHR) {
+                jQuery.post(ajaxurl, post_data, function(data, textStatus, jqXHR){
                     console.log(data);
-                    if(data.error) {
+                    if(data.error){
                         //inp.val(inp.attr('placeholder'));
                         jQuery('#gmedia-panel').before(data.error);
-                    } else {
+                    } else{
                         //new_tag_name = new_tag_name.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
                         inp.attr('placeholder', new_tag_name);
                         tagdiv.find('.edit_tag_link').text(new_tag_name).show();
@@ -552,17 +571,18 @@ var GmediaTerms = {
             }
         }
 
-        gmedia_DOM.on('click', '.term-shortcode input', function() {
+        gmedia_DOM.on('click', '.term-shortcode input', function(){
             this.setSelectionRange(0, 0);
             this.setSelectionRange(0, this.value.length);
         });
-        gmedia_DOM.on('change', '.term-shortcode input', function() {
+        gmedia_DOM.on('change', '.term-shortcode input', function(){
             shortcode_inp_autowidth(this);
         });
-        jQuery('.term-shortcode input', gmedia_DOM).each(function(i, e) {
+        jQuery('.term-shortcode input', gmedia_DOM).each(function(i, e){
             shortcode_inp_autowidth(this)
         });
-        function shortcode_inp_autowidth(e) {
+
+        function shortcode_inp_autowidth(e){
             var inp = jQuery(e),
                 buffer = inp.next('.input-buffer');
             buffer.text(inp.val());
@@ -570,13 +590,13 @@ var GmediaTerms = {
         }
 
         var sortable = jQuery('#gm-sortable');
-        if(sortable.length && !jQuery('#gmedia-panel', sortable).hasClass('gmedia-filtered')) {
+        if(sortable.length && !jQuery('#gmedia-panel', sortable).hasClass('gmedia-filtered')){
             var sortdiv = jQuery('#gm-list-table', sortable);
             var post_data = sortable.data();
             post_data['idx0'] = parseInt(sortdiv.attr('data-idx0'));
 
             var _ids = [];
-            jQuery('.gm-item-cell', sortdiv).each(function(index) {
+            jQuery('.gm-item-cell', sortdiv).each(function(index){
                 _ids.push(jQuery(this).attr('data-id'));
             });
             sortdiv.sortable({
@@ -587,17 +607,17 @@ var GmediaTerms = {
                 helper: 'clone',
                 revert: true,
                 forcePlaceholderSize: true,
-                stop: function(event, ui) {
+                stop: function(event, ui){
                     var ids = [];
-                    jQuery('.gm-item-cell', sortdiv).each(function(index) {
+                    jQuery('.gm-item-cell', sortdiv).each(function(index){
                         ids.push(jQuery(this).attr('data-id'));
                     });
 
-                    if(_ids.toString() != ids.toString()) {
+                    if(_ids.toString() != ids.toString()){
                         _ids = ids;
                         jQuery('.panel-heading .spinner', sortable).addClass('is-active');
                         post_data['ids'] = ids
-                        jQuery.post(ajaxurl, post_data, function(data, textStatus, jqXHR) {
+                        jQuery.post(ajaxurl, post_data, function(data, textStatus, jqXHR){
                             jQuery('.panel-heading .spinner', sortable).removeClass('is-active');
                             console.log(data);
                         });
@@ -609,10 +629,15 @@ var GmediaTerms = {
         gmedia_DOM.on('change', '#gmedia_term_orderby', function(){
             if('custom' == jQuery(this).val()){
                 jQuery('#gmedia_term_order').val('ASC').addClass('disabled');
-            } else {
+            } else{
                 jQuery('#gmedia_term_order').removeClass('disabled');
             }
         });
+
+        // Date/Time picker
+        if(jQuery.fn.datetimepicker){
+            jQuery('.input-group.gmedia_date').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss', focusOnShow: false});
+        }
 
     }
 };
@@ -935,6 +960,29 @@ var GmediaFunction = {
             return GmediaFunction.confirm(jQuery(this).data('confirm'));
         });
 
+        jQuery(document).on('click.gmedia', '.gm_service_action', function() {
+            var el = jQuery(this),
+                service = jQuery(this).attr('data-action'),
+                nonce = jQuery(this).attr('data-nonce');
+            var post_data = {
+                action: 'gmedia_application',
+                service: service,
+                _wpnonce: nonce
+            };
+            jQuery.post(ajaxurl, post_data, function(data, textStatus, jqXHR) {
+                console.log(data);
+                el.siblings('.spinner').removeClass('is-active');
+                if(data.error) {
+                    jQuery('#gmedia-service-msg-panel').prepend(data.error);
+                } else if(data.message) {
+                    jQuery('#gmedia-service-msg-panel').html(data.message);
+                }
+            });
+
+            el.siblings('.spinner').addClass('is-active');
+            jQuery('.gmedia-service__message').remove();
+        });
+
         gmedia_DOM.on('click', '.show-settings-link', function(e) {
             e.preventDefault();
             jQuery('#show-settings-link').trigger('click');
@@ -1041,7 +1089,7 @@ var GmediaFunction = {
                 backdrop: true,
                 show: true
             }).one('hidden.bs.modal', function() {
-                if (jQuery('.gmedia-modal:visible').length) {
+                if (jQuery('div.gmedia-modal:visible').length) {
                     jQuery('body').addClass('modal-open');
                 }
                 modal_title.empty();
@@ -1071,6 +1119,53 @@ var GmediaFunction = {
                 jQuery('<img src="" alt="" />').attr('src', window.gmediaTempData.src).appendTo(form.find('.gmedia-cover-image'));
             }
             jQuery('#previewModal').modal('hide');
+        });
+
+        jQuery(document).on('click.gmedia', '#previewModal .select_gmedia_related .btn-primary', function() {
+            var relatedDiv = jQuery('.previewModal_initiator').closest('.form-group').find('.related-media-previews');
+            var fields = relatedDiv.find('input');
+            var valData = [],
+                getData = [];
+            if(fields){
+                fields.each(function(){
+                    valData.push(jQuery(this).val());
+                });
+            }
+            var storage = getStorage();
+            storedData = storage.get('gmedia_library:frame').split('.');
+            jQuery.each(storedData, function(i, id) {
+                if(!id) {
+                    return true;
+                }
+                if(jQuery.inArray(id, valData) === -1) {
+                    getData.push(id);
+                }
+            });
+            if(getData.length){
+                jQuery.get(ajaxurl, {action: 'gmedia_get_data', gmedia__in: getData}, function(data, textStatus, jqXHR) {
+                    if(jQuery.isArray(data) && data.length){
+                        var thumbHTML
+                        jQuery.each(data, function(i, item){
+                            thumbHTML = '<p class="thumbnail gmedia-related-image">' +
+                                            '<span class="image-wrapper"><img class="gmedia-thumb" src="" alt=""></span>' +
+                                            '<span class="gm-remove">&times;</span>' +
+                                            '<input type="hidden" name="meta[_related][]" value="">' +
+                                        '</p>';
+                            jQuery(thumbHTML).find('img').attr('src', item.url_thumb).end().find('input').val(item.ID).end().appendTo(relatedDiv);
+                        });
+                        relatedDiv.sortable( "refresh" );
+                        relatedDiv.closest('form').find('input[name="title"]').trigger('change');
+                    }
+                });
+            }
+            storage.set('gmedia_library:frame', '');
+            jQuery('#previewModal').modal('hide');
+        });
+
+        jQuery(document).on('click.gmedia', '.related-media-previews .gm-remove', function() {
+            var inpTitle = jQuery(this).closest('form').find('input[name="title"]');
+            jQuery(this).closest('.gmedia-related-image').remove();
+            inpTitle.trigger('change');
         });
 
         jQuery(document).on('click.gmedia', '#previewModal .select_gmedia:not(.assign_gmedia_term) .btn-primary', function() {
@@ -1505,7 +1600,7 @@ window.closeModal = function(id) {
 
 
 /*
- * jQuery functions for GRAND Flash Media
+ * jQuery functions for GRAND Media
  */
 function GmediaInit(){
     gmedia_DOM = jQuery('#gmedia-container');

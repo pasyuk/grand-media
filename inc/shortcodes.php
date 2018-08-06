@@ -82,7 +82,8 @@ function gmedia_shortcode($atts, $shortcode_post_content = ''){
     $id     = isset($atts['id'])? (int)$atts['id'] : 0;
     $userid = get_current_user_id();
     if($id && ($term = gmedia_shortcode_id_data($id))){
-        if(('publish' !== $term->status && !$userid) || ('draft' === $term->status && $userid != $term->global)){
+    	$is_gallery_visible = ('publish' !== $term->status && !$userid) || ('draft' === $term->status && $userid != $term->global && !is_super_admin());
+        if(apply_filters('is_gmedia_gallery_visible', $is_gallery_visible)){
             return '';
         }
 
@@ -113,6 +114,12 @@ function gmedia_shortcode($atts, $shortcode_post_content = ''){
         if(!isset($query['orderby'])){
             $query['orderby'] = 'gmedia__in';
         }
+    }
+    if(empty($term)){
+    	$term = (object) array(
+    		'name' => '',
+    		'description' => '',
+	    );
     }
     if(isset($atts['orderby'])){
         $query['orderby'] = $atts['orderby'];
@@ -253,6 +260,19 @@ function gmedia_shortcode($atts, $shortcode_post_content = ''){
         if(0 === count($gmedia)){
             return '<div class="gmedia_gallery gmedia_gallery_empty" data-gmid="' . esc_attr($id) . '" data-module="' . $_module . '">' . __('Gallery is empty') . '<br />' . $shortcode_post_content . '</div>';
         }
+    } else {
+	    $gmDB->gmedias_album_stuff($query);
+	    $gmDB->gmedias_category_stuff($query);
+	    $gmDB->gmedias_tag_stuff($query);
+	    if(isset($query['album__in'])){
+		    $query['album__in'] = join( ',', $query['album__in']);
+	    }
+	    if(isset($query['category__in'])){
+		    $query['category__in'] = join( ',', $query['category__in']);
+	    }
+	    if(isset($query['tag__in'])){
+		    $query['tag__in'] = join( ',', $query['tag__in']);
+	    }
     }
 
     $is_bot = false;
@@ -282,11 +302,21 @@ function gmedia_shortcode($atts, $shortcode_post_content = ''){
 
     $out = '<div class="' . $sc_classes . '" id="' . esc_attr($sc_id) . '" data-gmid="' . esc_attr($id) . '" data-module="' . esc_attr($_module) . '"' . $sc_styles . '>';
 
-    ob_start();
-    /** @noinspection PhpIncludeInspection */
-    include($module['path'] . '/init.php');
-    $module_content = ob_get_contents();
-    ob_end_clean();
+    if(
+    	in_array($_module, array('albums-switcher', 'photocluster', 'albumsview'))
+        && empty($query['album__in']) && empty($query['category__in']) && empty($query['tag__in'])
+    ){
+    	$out = __('This Gmedia gallery module require at least one term (album, category or tag) to be chosen in Query Builder.', 'grand-media');
+	    $module_content = '';
+    } else {
+
+	    ob_start();
+	    /** @noinspection PhpIncludeInspection */
+	    include( $module['path'] . '/init.php' );
+	    $module_content = ob_get_contents();
+	    ob_end_clean();
+
+    }
 
     if($moduleCSS || $customCSS){
         $out .= "<style type='text/css' class='gmedia_module_style_import'>{$moduleCSS}";

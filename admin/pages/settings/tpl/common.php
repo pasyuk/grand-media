@@ -21,6 +21,20 @@ if(!defined('ABSPATH')){
     </div>
 
     <hr />
+    <div class="form-group">
+	    <label><?php esc_html_e('Google API Key', 'grand-media') ?></label>
+	    <div class="row">
+		    <div class="col-xs-6">
+		        <input type="text" name="set[google_api_key]" class="form-control input-sm" value="<?php echo esc_attr($gmGallery->options['google_api_key']) ?>">
+	        </div>
+	        <div class="col-xs-6">
+		        <p style="padding-top: 5px"><a target="_blank" href="https://support.google.com/googleapi/answer/6158862"><?php _e('How to create a Google API Key', 'grand-media') ?></a></p>
+	        </div>
+	    </div>
+	    <p class="help-block"><?php _e('This API key is required to using Google Map in admin and in the gallery modules.', 'grand-media'); ?></p>
+    </div>
+
+    <hr />
     <div class="form-group row">
         <div class="col-xs-6">
             <label><?php _e('In Tags order gmedia', 'grand-media'); ?></label>

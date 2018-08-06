@@ -3,13 +3,13 @@
 /**
  * GmediaProcessor_Settings
  */
-class GmediaProcessor_Settings extends GmediaProcessor{
+class GmediaProcessor_Settings extends GmediaProcessor {
     private static $me = null;
 
     protected function processor(){
         global $gmCore, $gmGallery, $gmDB;
 
-        if(!$gmCore->caps['gmedia_settings']){
+        if( !$gmCore->caps['gmedia_settings']){
             wp_die(__('You are not allowed to change gmedia settings', 'grand-media'));
         }
         $lk_check = isset($_POST['license-key-activate']);
@@ -18,10 +18,10 @@ class GmediaProcessor_Settings extends GmediaProcessor{
 
             $set = $gmCore->_post('set', array());
 
-            if(!empty($set['purchase_key']) && (empty($set['license_key']) || empty($set['license_key2']))){
+            if( !empty($set['purchase_key']) && (empty($set['license_key']) || empty($set['license_key2']))){
                 $lk_check = true;
             }
-            if(empty($set['purchase_key']) && (!empty($set['license_key']) || !empty($set['license_key2']))){
+            if(empty($set['purchase_key']) && ( !empty($set['license_key']) || !empty($set['license_key2']))){
                 $set['license_name'] = '';
                 $set['purchase_key'] = '';
                 $set['license_key']  = '';
@@ -35,14 +35,14 @@ class GmediaProcessor_Settings extends GmediaProcessor{
             }
             if(
                 $set['endpoint'] !== $gmGallery->options['endpoint']
-               || $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug']
-               || $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug']
-               || $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']
-               || $set['gmedia_has_archive'] !== $gmGallery->options['gmedia_has_archive']
-               || $set['gmedia_album_has_archive'] !== $gmGallery->options['gmedia_album_has_archive']
-               || $set['gmedia_gallery_has_archive'] !== $gmGallery->options['gmedia_gallery_has_archive']
+                || $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug']
+                || $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug']
+                || $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']
+                || $set['gmedia_has_archive'] !== $gmGallery->options['gmedia_has_archive']
+                || $set['gmedia_album_has_archive'] !== $gmGallery->options['gmedia_album_has_archive']
+                || $set['gmedia_gallery_has_archive'] !== $gmGallery->options['gmedia_gallery_has_archive']
             ){
-                $flush_rewrite_rules = true;
+                $flush_rewrite_rules        = true;
                 $set['flush_rewrite_rules'] = true;
             }
 
@@ -51,7 +51,7 @@ class GmediaProcessor_Settings extends GmediaProcessor{
             }
 
             $capabilities = $gmCore->_post('capability', array());
-            if(!empty($capabilities) && current_user_can('manage_options')){
+            if( !empty($capabilities) && current_user_can('manage_options')){
                 global $wp_roles;
                 $_roles = $wp_roles->roles;
                 $_roles = array_keys(apply_filters('editable_roles', $_roles));
@@ -105,7 +105,7 @@ class GmediaProcessor_Settings extends GmediaProcessor{
                 }
             }
 
-            if(isset($set['delete_originals']) && (int)$set['delete_originals']){
+            if(isset($set['delete_originals']) && (int) $set['delete_originals']){
 //                if (($handle = opendir($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original']))) {
 //                    while (false !== ($file = readdir($handle))) {
 //                        // do something with the file
@@ -114,8 +114,8 @@ class GmediaProcessor_Settings extends GmediaProcessor{
 //                    }
 //                    closedir($handle);
 //                }
-                $files = glob( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT);
-                if(!empty($files)){
+                $files = glob($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT);
+                if( !empty($files)){
                     foreach($files as $file){
                         @unlink($file);
                     }
@@ -125,7 +125,7 @@ class GmediaProcessor_Settings extends GmediaProcessor{
 
             update_option('gmediaOptions', $gmGallery->options);
             if(isset($_POST['GmediaHashID_salt'])){
-                update_option('GmediaHashID_salt', (string)$_POST['GmediaHashID_salt']);
+                update_option('GmediaHashID_salt', (string) $_POST['GmediaHashID_salt']);
             }
             if($flush_rewrite_rules){
                 flush_rewrite_rules(false);
@@ -136,18 +136,20 @@ class GmediaProcessor_Settings extends GmediaProcessor{
         if($lk_check){
             check_admin_referer('gmedia_settings', '_wpnonce_settings');
             $license_key = $gmCore->_post('set');
-            if(!empty($license_key['purchase_key'])){
+            if( !empty($license_key['purchase_key'])){
                 global $wp_version;
                 $gmedia_ua = "WordPress/{$wp_version} | ";
                 $gmedia_ua .= 'Gmedia/' . constant('GMEDIA_VERSION');
 
-                $response = wp_remote_post('http://codeasily.com/rest/gmedia-key.php', array('body'        => array('key' => $license_key['purchase_key'], 'site' => site_url()),
-                                                                                             'headers'     => array('Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option('blog_charset'),
-                                                                                                                    'Host'         => 'codeasily.com',
-                                                                                                                    'User-Agent'   => $gmedia_ua
-                                                                                             ),
-                                                                                             'httpversion' => '1.0',
-                                                                                             'timeout'     => 45
+                $response = wp_remote_post('https://codeasily.com/rest/gmedia-key.php', array(
+                    'body'        => array('key' => $license_key['purchase_key'], 'site' => site_url()),
+                    'headers'     => array(
+                        'Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option('blog_charset'),
+                        'Host'         => 'codeasily.com',
+                        'User-Agent'   => $gmedia_ua
+                    ),
+                    'httpversion' => '1.0',
+                    'timeout'     => 45
                 ));
 
                 if(is_wp_error($response)){
@@ -190,9 +192,11 @@ class GmediaProcessor_Settings extends GmediaProcessor{
             $gmGallery->options['license_key']  = $_temp_options['license_key'];
             $gmGallery->options['license_key2'] = $_temp_options['license_key2'];
             // don't reset mobile app
-            $gmGallery->options['site_email'] = $_temp_options['site_email'];
-            $gmGallery->options['site_ID']    = $_temp_options['site_ID'];
-            $gmGallery->options['mobile_app'] = $_temp_options['mobile_app'];
+            $gmGallery->options['site_ID']        = $_temp_options['site_ID'];
+            $gmGallery->options['mobile_app']     = (int)$_temp_options['mobile_app'];
+            if($gmGallery->options['mobile_app'] && isset($_temp_options['gmedia_service'])){
+                $gmGallery->options['gmedia_service'] = $_temp_options['gmedia_service'];
+            }
             delete_metadata('user', 0, 'gm_screen_options', '', true);
             update_option('gmediaOptions', $gmGallery->options);
 
@@ -209,8 +213,8 @@ class GmediaProcessor_Settings extends GmediaProcessor{
 
     }
 
-    public static function getMe() {
-        if ( self::$me == null ) {
+    public static function getMe(){
+        if(self::$me == null){
             self::$me = new GmediaProcessor_Settings();
         }
 

@@ -158,6 +158,16 @@ $_module_preset = !empty($term->meta['_module_preset'][0])? $term->meta['_module
                             <input type="text" class="form-control input-sm" name="term[slug]" value="<?php esc_attr_e($term->slug); ?>"/>
                         </div>
                     <?php } ?>
+                    <?php if(isset($term->post_date)){ ?>
+                        <div class="form-group">
+                            <label><?php _e('Date', 'grand-media'); ?></label>
+
+                            <div class="input-group gmedia_date input-group-sm" data-date-format="YYYY-MM-DD HH:mm:ss">
+                                <input name="term[post_date]" type="text" readonly="readonly" class="form-control input-sm" value="<?php echo $term->post_date; ?>" tabindex="-1"/>
+                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                            </div>
+                        </div>
+                    <?php } ?>
                     <?php $cover_id = isset($term->meta['_cover'][0])? $term->meta['_cover'][0] : ''; ?>
                     <div class="form-group">
                         <label><?php _e('Album Cover', 'grand-media'); ?></label>

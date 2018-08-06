@@ -112,6 +112,13 @@ global $gmGallery;
             theme: 'bootstrap'
         });
 
+        $('input', main).filter('[data-type="rgba"]').spectrum({
+            showInput: true,
+            showAlpha: true,
+            allowEmpty: false,
+            preferredFormat: 'rgb'
+        });
+
         $('[data-watch]', main).each(function() {
             var el = $(this);
             gmedia_options_conditional_logic(el, 0);

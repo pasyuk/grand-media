@@ -1492,7 +1492,8 @@ class GmediaDB{
 
         $where .= $whichstatus . $search;
 
-        if(empty($q['order']) || ((strtoupper($q['order']) != 'ASC') && (strtoupper($q['order']) != 'DESC'))){
+	    $empty_order = empty($q['order']);
+        if($empty_order || ((strtoupper($q['order']) != 'ASC') && (strtoupper($q['order']) != 'DESC'))){
             $q['order'] = 'DESC';
         }
 
@@ -1545,7 +1546,10 @@ class GmediaDB{
                         } else{
                             $orderby = "{$wpdb->prefix}gmedia.ID";
                         }
-                    break;
+	                    if($empty_order) {
+		                    $q['order'] = 'ASC';
+	                    }
+		                break;
                     case 'filename':
                         $orderby = "{$wpdb->prefix}gmedia.gmuid";
                     break;
@@ -3331,11 +3335,11 @@ class GmediaDB{
         }
 
         if(in_array($taxonomy, array('gmedia_album', 'gmedia_gallery'))){
-            $post_data = array('post_author'  => $global,
-                               'post_content' => $description,
-                               'post_title'   => $name,
-                               'post_status'  => $status,
-                               'post_type'    => $taxonomy
+            $post_data = array('post_author'   => $global,
+                               'post_content'  => $description,
+                               'post_title'    => $name,
+                               'post_status'   => $status,
+                               'post_type'     => $taxonomy
             );
             if(!empty($slug)){
                 $post_data['post_name'] = $slug;
@@ -3348,7 +3352,13 @@ class GmediaDB{
             $_post_ID = $this->get_metadata('gmedia_term', $term_id, '_post_ID', true);
             if($_post_ID){
                 $post_data['ID'] = $_post_ID;
-                if(!wp_update_post($post_data)){
+
+	            if ( ! empty( $post_date ) ) {
+		            $post_data['post_date']     = $post_date;
+		            $post_data['post_date_gmt'] = get_gmt_from_date( $post_date );
+	            }
+
+	            if(!wp_update_post($post_data)){
                     unset($post_data['ID']);
                     $_post_ID = wp_insert_post($post_data);
                     if($_post_ID){

@@ -32,7 +32,7 @@ function gmediacloud_meta_generator(){
     <link href="<?php echo $icon_url; ?>/icon_gmedia_180.png" rel="apple-touch-icon" sizes="180x180"/>
 
     <meta property="og:title" content="<?php esc_attr_e(the_gmedia_title(true)); ?>"/>
-    <meta property="og:description" content="<?php esc_attr_e($gmedia->description . ' ' . __('Shared with GmediaGallery', 'grand-media')); ?>"/>
+    <meta property="og:description" content="<?php esc_attr_e($gmedia->description); ?>"/>
     <?php
     if($gmedia_type != 'single'){
         if(did_action('gmedia_shortcode') && count($gmGallery->shortcode)){

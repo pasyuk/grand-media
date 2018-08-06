@@ -4,7 +4,7 @@ if(preg_match('#' . basename(__FILE__) . '#', $_SERVER['PHP_SELF'])){
 }
 
 /**
- * gmSettings()
+ * gmediaApp()
  * @return mixed content
  */
 function gmediaApp(){
@@ -13,56 +13,80 @@ function gmediaApp(){
     if(false !== ($force_app_status = $gmCore->_get('force_app_status'))){
         $gm_options               = get_option('gmediaOptions');
         $gm_options['mobile_app'] = (int)$force_app_status;
+        $gmGallery->options['mobile_app'] = $gm_options['mobile_app'];
+        if(!$gm_options['site_ID']){
+            $gm_options['site_ID'] = (int)$gmCore->_get('force_site_id');
+            $gmGallery->options['site_ID'] = $gm_options['site_ID'];
+        }
         update_option('gmediaOptions', $gm_options);
     }
-    $alert     = '';
-    $btn_state = '';
-    if('127.0.0.1' == $_SERVER['SERVER_ADDR']){
-        $alert     = $gmCore->alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
-        $btn_state = ' disabled';
-    }
 
-    $site_email       = $gmGallery->options['site_email'];
-    $site_title       = $gmGallery->options['site_title'];
-    $site_description = $gmGallery->options['site_description'];
-    $site_ID          = $gmGallery->options['site_ID'];
+    $alert = $gmCore->alert('danger', __('Your server is not accessable by iOS application', 'grand-media'));
+
+    $site_ID          = (int)$gmGallery->options['site_ID'];
     $mobile_app       = (int)$gmGallery->options['mobile_app'];
 
+    $current_user = wp_get_current_user();
+
     ?>
-    <form class="panel panel-default" method="post" id="gm_application">
-        <div class="panel-heading clearfix">
-            <div class="btn-toolbar pull-left gm_service_actions">
-                <div class="btn-group<?php echo $mobile_app? '' : ' hidden' ?>">
-                    <button type="button" name="gmedia_application_deactivate" data-action="app_deactivate" class="btn btn-danger<?php echo $btn_state; ?>" data-confirm="<?php _e('Exclude your website from GmediaService?') ?>"><?php _e('Disable GmediaService', 'grand-media'); ?></button>
-                    <button type="button" name="gmedia_application_updateinfo" data-action="app_updateinfo" class="btn btn-primary<?php echo $btn_state; ?>"><?php _e('Update Info', 'grand-media'); ?></button>
-                </div>
-                <button type="button" name="gmedia_application_activate" data-action="app_activate" class="gmapp_activate btn btn-primary<?php echo $btn_state . ($mobile_app? ' hidden' : ''); ?>"><?php _e('Enable GmediaService', 'grand-media'); ?></button>
-            </div>
-            <div class="spinner"></div>
-            <?php
-            wp_nonce_field('GmediaService');
-            ?>
-        </div>
-        <div class="panel-body" id="gmedia-msg-panel"><?php echo $alert; ?></div>
+    <div class="panel panel-default" id="gm_application">
+        <?php wp_nonce_field('GmediaService'); ?>
+        <div class="panel-body" id="gmedia-service-msg-panel"><?php
+            if(empty($_SERVER['HTTP_X_REAL_IP']) && ('127.0.0.1' == $_SERVER['REMOTE_ADDR'] || '::1' == $_SERVER['REMOTE_ADDR'])){
+                echo $alert;
+            } else{
+                if(!$mobile_app || !$site_ID){
+                    echo $alert;
+                    ?>
+                    <div class="notice updated gm-message">
+                        <div class="gm-message-content">
+                            <div class="gm-plugin-icon">
+                                <img src="<?php echo plugins_url('/grand-media/admin/assets/img/icon-128x128.png') ?>" width="80" height="80">
+                            </div>
+                            <?php printf( __('<p>Hey %s,<br>You should allow some data about your <b>Gmedia Gallery</b> to be sent to <a href="https://codeasily.com/" target="_blank" tabindex="1">codeasily.com</a> in order to use iOS application.
+                        <br />These data required if you want to use Gmedia iOS application on your iPhone.</p>', 'grand-media'), $current_user->display_name ); ?>
+                        </div>
+                        <div class="gm-message-actions">
+                            <span class="spinner" style="float: none;"></span>
+                            <button class="button button-primary gm_service_action" data-action="allow" data-nonce="<?php echo wp_create_nonce('GmediaService'); ?>"><?php _e('Allow &amp; Continue', 'grand-media'); ?></button>
+                        </div>
+                        <div class="gm-message-plus gm-closed">
+                            <a class="gm-mp-trigger" href="#" onclick="jQuery('.gm-message-plus').toggleClass('gm-closed gm-opened'); return false;"><?php _e('What permissions are being granted?', 'grand-media'); ?></a>
+                            <ul>
+                                <li>
+                                    <i class="dashicons dashicons-admin-users"></i>
+
+                                    <div>
+                                        <span><?php _e('Your Profile Overview', 'grand-media'); ?></span>
+
+                                        <p><?php _e('Name and email address', 'grand-media'); ?></p>
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="dashicons dashicons-admin-settings"></i>
+
+                                    <div>
+                                        <span><?php _e('Your Site Overview', 'grand-media'); ?></span>
+
+                                        <p><?php _e('Site URL, WP version, PHP version, active theme &amp; plugins', 'grand-media'); ?></p>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <?php
+                }
+            }
+
+        ?></div>
         <div class="panel-body" id="gm_application_data">
             <?php if(current_user_can('manage_options')){ ?>
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-xs-6">
-                            <?php /* ?>
-                            <div class="gm_service_actions">
-                                <p><button type="button" data-action="app_activate" class="btn btn-primary"><?php _e('Activate GmediaService', 'grand-media'); ?></button>
-                                    <button type="button" data-action="app_deactivate" class="btn btn-primary"><?php _e('Deactivate GmediaService', 'grand-media'); ?></button></p>
-
-                                <p><button type="button" data-action="app_updateinfo" class="btn btn-primary"><?php _e('Update GmediaService', 'grand-media'); ?></button>
-                                    <button type="button" data-action="app_updatecron" class="btn btn-primary"><?php _e('Cron Job GmediaService', 'grand-media'); ?></button></p>
-
-                                <p><button type="button" data-action="app_deactivateplugin" class="btn btn-primary"><?php _e('Deactivate Plugin GmediaService', 'grand-media'); ?></button>
-                                    <button type="button" data-action="app_uninstallplugin" class="btn btn-primary"><?php _e('Uninstall Plugin GmediaService', 'grand-media'); ?></button></p>
-                            </div>
-                            <?php */ ?>
                             <!--<p><?php echo 'Server address: ' . $_SERVER['SERVER_ADDR'];
                             echo '<br>Remote address: ' . $_SERVER['REMOTE_ADDR'];
+                            echo '<br>HTTP X Real IP: ' . isset($_SERVER['HTTP_X_REAL_IP'])? $_SERVER['HTTP_X_REAL_IP'] : '';
                             ?></p>-->
                             <div class="gmapp-description">
                                 <div style="text-align:center; margin-bottom:30px;">
@@ -104,21 +128,20 @@ function gmediaApp(){
                                 <p><?php _e('Below you can see information about your website that will be used by GmediaService and iOS application, so you\'ll be able to manage your Gmedia Library with your smartphone and other people can find and view your public collections.', 'grand-media'); ?></p>
                                 <div class="form-group">
                                     <label><?php _e('Email', 'grand-media') ?>:</label>
-                                    <input type="text" name="site_email" class="form-control input-sm" value="<?php esc_attr_e($site_email); ?>" placeholder="<?php esc_attr_e(get_option('admin_email')); ?>"/>
+                                    <input type="text" name="site_email" class="form-control input-sm" value="<?php esc_attr_e(get_option('admin_email')); ?>" readonly/>
                                 </div>
                                 <div class="form-group">
                                     <label><?php _e('Site URL', 'grand-media') ?>:</label>
-                                    <input type="text" readonly="readonly" name="site_url" class="form-control input-sm" value="<?php echo home_url(); ?>"/>
+                                    <input type="text" name="site_url" class="form-control input-sm" value="<?php echo home_url(); ?>" readonly/>
                                 </div>
                                 <div class="form-group">
                                     <label><?php _e('Site Title', 'grand-media') ?>:</label>
-                                    <input type="text" name="site_title" class="form-control input-sm" value="<?php esc_attr_e($site_title); ?>" placeholder="<?php esc_attr_e(get_bloginfo('name')); ?>"/>
+                                    <input type="text" name="site_title" class="form-control input-sm" value="<?php esc_attr_e(get_bloginfo('name')); ?>" readonly/>
                                 </div>
                                 <div class="form-group">
                                     <label><?php _e('Site Description', 'grand-media') ?>:</label>
-                                    <textarea rows="2" cols="10" name="site_description" class="form-control input-sm" placeholder="<?php esc_attr_e(get_bloginfo('description')); ?>"><?php esc_html_e($site_description); ?></textarea>
+                                    <textarea rows="2" cols="10" name="site_description" class="form-control input-sm" readonly><?php esc_attr_e(get_bloginfo('description')); ?></textarea>
                                 </div>
-                                <p><?php _e('Also the list of your Gmedia Tags will be shared with GmediaService.') ?></p>
                             </div>
 
                             <div class="gmapp-description">
@@ -149,48 +172,8 @@ function gmediaApp(){
                         </div>
                     </div>
                 </div>
-                <script type="text/javascript">
-                    jQuery(function($) {
-
-                        function gmedia_application(service) {
-                            var post_data = {
-                                action: 'gmedia_application',
-                                service: service,
-                                data: $('#gm_application_data :input').serialize(),
-                                _wpnonce: $('#_wpnonce').val()
-                            };
-                            $.post(ajaxurl, post_data, function(data, textStatus, jqXHR) {
-                                console.log(data);
-                                if(data.error) {
-                                    $('#gmedia-msg-panel').append(data.error);
-                                } else if(data.message) {
-                                    $('#gmedia-msg-panel').append(data.message);
-                                }
-                                //noinspection JSUnresolvedVariable
-                                if(parseInt(data.mobile_app)) {
-                                    $('.gm_service_actions > .btn-group').removeClass('hidden');
-                                    $('.gmapp_activate').addClass('hidden');
-                                } else {
-                                    $('.gm_service_actions > .btn-group').addClass('hidden');
-                                    $('.gmapp_activate').removeClass('hidden');
-                                }
-                            });
-                        }
-
-                        <?php if($mobile_app){ ?>
-                        gmedia_application('app_checkstatus');
-                        <?php } ?>
-
-                        $('.gm_service_actions button').on('click', function() {
-                            var service = $(this).attr('data-action');
-                            gmedia_application(service);
-                        });
-
-                    });
-
-                </script>
             <?php } ?>
         </div>
-    </form>
+    </div>
     <?php
 }
