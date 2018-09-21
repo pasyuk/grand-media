@@ -16,6 +16,8 @@ if((int) $gmGallery->options['wp_term_related_gmedia']){
 }
 add_action('the_post', 'gmedia_the_post'); // Show Gmedia post types
 
+add_filter( 'widget_comments_args', 'gmedia_widget_comments_args', 10 );
+
 /**
  * Generate og:image meta tag
  */
@@ -109,7 +111,7 @@ function gmedia_alter_query($query){
 
 /** Show gmedia posts on author profile page
  *
- * @param $query
+ * @param WP_Query $query
  */
 function gmedia_alter_query_author($query){
     if(empty($query->query['author']) && empty($query->query['author_name'])){
@@ -136,7 +138,11 @@ function gmedia_alter_query_author($query){
     $post_type = array_unique(array_merge($gmedia_post_type, (array) $post_type));
     $query->set('post_type', $post_type);
 
-    //we remove the actions hooked on the '__after_loop' (post navigation)
+	if(get_current_user_id()){
+		$query->set('post_status', array('publish', 'private'));
+	}
+
+	//we remove the actions hooked on the '__after_loop' (post navigation)
     remove_all_actions('__after_loop');
 }
 
@@ -870,4 +876,12 @@ function gmedia_related__the_content($content){
     $content .= apply_filters('after_gmedia_related__the_content', '');
 
     return $content;
+}
+
+function gmedia_widget_comments_args($args){
+	if(get_current_user_id()){
+		$args['post_status'] = array('publish', 'private');
+	}
+
+	return $args;
 }

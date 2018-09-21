@@ -142,6 +142,10 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= v1.13.3 =
+* Fixed recent comments widget not show comments from private gmedia for logged in users
+* Fixed issue with Phantom module on Safari
+
 = v1.13.2 =
 * Fix issue with ajax modules
 

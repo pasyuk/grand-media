@@ -804,23 +804,26 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                             e.stopPropagation();
                         });
 
-                        $('.gmPhantom_ThumbLoader .gmPhantom_Thumb img', Container).css({opacity: 0}).each(function() {
-                            var image = $(this),
-                                src = image.attr('src'),
-                                img_holder = image.closest('.gmPhantom_ThumbContainer'),
-                                load_img = new Image();
-                            load_img.onload = function() {
-                                img_holder.removeClass('gmPhantom_ThumbLoader');
+                        $('.gmPhantom_ThumbLoader .gmPhantom_Thumb img', Container).css({opacity: 0});
+	                    setTimeout(function(){
+                            $('.gmPhantom_ThumbLoader .gmPhantom_Thumb img', Container).on('load', function() {
+                                var image = $(this);
+                                image.closest('.gmPhantom_ThumbContainer').removeClass('gmPhantom_ThumbLoader');
                                 if(prototypes.isIEBrowser()) {
-                                    image.parent().css('background-image', 'url("'+src+'")')
+                                    image.parent().css('background-image', 'url("' + image.attr('src') + '")')
                                 } else{
                                     image.animate({opacity: opt.thumbAlpha / 100}, 600, function() {
                                         $(this).css({opacity: ''});
                                     });
                                 }
-                            }
-                            load_img.src = src;
-                        });
+                            }).on('error', function() {}).each(function() {
+                                    if(this.complete) {
+                                        $(this).load();
+                                    } else if(this.error) {
+                                        $(this).error();
+                                    }
+                                });
+	                    },0);
 
                         if(opt.maxheight !== 0) {
                             if(prototypes.isTouchDevice()) {
