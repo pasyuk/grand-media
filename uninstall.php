@@ -9,6 +9,7 @@ if(!defined('WP_UNINSTALL_PLUGIN')) {
 }
 
 require_once(dirname(__FILE__) . '/grand-media.php');
+require_once(dirname(__FILE__) . '/inc/functions.php');
 
 if(function_exists('is_multisite') && is_multisite()) {
     global $wpdb;
@@ -102,6 +103,7 @@ function gmedia_uninstall() {
     delete_metadata('user', 0, 'gm_screen_options', '', true);
     wp_clear_scheduled_hook('gmedia_app_cronjob');
     wp_clear_scheduled_hook('gmedia_modules_update');
+    gmedia_delete_transients( 'gm_cache' );
 
     if(empty($upload['error'])) {
         if('all' == $options['uninstall_dropdata']) {

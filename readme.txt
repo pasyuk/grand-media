@@ -26,6 +26,7 @@ Handle any file format and link any files with images in few clicks. You can imp
 
 #### Demos:
 
+*   [PhotoBlog Style Gallery](https://codeasily.com/portfolio/gmedia-gallery-modules/photoblog/) - Pinterest style gallery with global search and photo proofing.
 *   [AlbumsList Masonry](https://codeasily.com/portfolio/gmedia-gallery-modules/albumslist-masonry/) - Splash Slider with custom lightbox and masonry collection view.
 *   [AlbumsList](https://codeasily.com/portfolio/gmedia-gallery-modules/albumslist/) - Splash Slider with custom lightbox.
 *   [WoowSlider](https://codeasily.com/portfolio/gmedia-gallery-modules/woowslider/) - unique responsive Slider.
@@ -141,6 +142,25 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.14.2 =
+* Added option to disable WoowBox Banner
+* Added compatibility with PHP 7.2
+* Added compatibility with PHP 5.3
+* Fixed cache of gallery modules
+* Fixed uninstall error
+* Fixed clear button in Build Query
+
+
+= v1.14.0 =
+* Added cache for Gmedia Modules queries
+* Fixed gmedia edit date picker
+* Fixed Google API key trim white spaces on save
+* Fixed filter in BuildQuery -> select items
+* Added oEmbed for Gmedia Posts
+
+= v1.13.4 =
+* Fixed insert shortcode popup not load content in some cases
 
 = v1.13.3 =
 * Fixed recent comments widget not show comments from private gmedia for logged in users

@@ -744,7 +744,7 @@ function gmedia_add_media_terms(){
 
 function gmedia_add_media_library(){
 
-    global $user_ID, $gmCore, $gmDB, $gmGallery;
+    global $user_ID, $gmCore, $gmDB;
 
     wp_enqueue_style('gmedia-bootstrap');
     wp_enqueue_script('gmedia-bootstrap');

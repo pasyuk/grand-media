@@ -195,7 +195,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                     <label><?php _e( 'Date', 'grand-media' ); ?></label>
 
                     <div class="input-group gmedia_date input-group-sm" data-date-format="YYYY-MM-DD HH:mm:ss">
-                        <input name="date" type="text" class="form-control input-sm" value="<?php echo $item->date; ?>" tabindex="-1"/>
+                        <input name="date" type="text" class="form-control input-sm" value="<?php echo $item->date; ?>" readonly />
                         <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
                     </div>
                 </div>

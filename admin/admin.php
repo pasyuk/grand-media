@@ -135,7 +135,6 @@ class GmediaAdmin {
             }
         }
 
-        $gmediaURL     = plugins_url(GMEDIA_FOLDER);
         $this->pages   = array();
         $this->pages[] = add_menu_page(__('Gmedia Library', 'grand-media'), "Gmedia{$count}", 'gmedia_library', 'GrandMedia', array(
             &$this,
@@ -202,7 +201,7 @@ class GmediaAdmin {
                 </div>
                 <h2><?php echo $sideLinks['grandTitle']; ?></h2>
                 <?php
-                if ( ! is_plugin_active( 'woowbox/woowbox.php' ) ){
+                if ( ! is_plugin_active( 'woowbox/woowbox.php' ) && empty( $gmGallery->options['disable_ads'] ) ){
 	                ?>
                     <div class="promote-woowbox"><a href="https://bit.ly/woowbox" target="_blank"><img src="<?php echo plugins_url('/grand-media/admin/assets/img/woowbox-promote.png') ?>" alt="Try WoowBox Gallery plugin" /></a></div>
 	                <?php

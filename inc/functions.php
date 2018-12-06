@@ -227,32 +227,35 @@ function gmedia_term_item_more_data(&$item){
 
     if($item->global){
         $item->author_name = get_the_author_meta('display_name', $item->global);
+        if(!$item->author_name){
+        	$item->global = 0;
+        }
     } else{
         $item->author_name = false;
     }
 
     $item->taxterm = str_replace('gmedia_', '', $item->taxonomy);
     if('gmedia_album' == $item->taxonomy){
-        $post_id       = isset($meta['_post_ID'][0])? (int)$meta['_post_ID'][0] : 0;
-        $item->post_id = $post_id;
-        if($post_id){
-            $post_item = get_post($post_id);
-            if($post_item){
-                $item->post_date      = $post_item->post_date;
-                $item->slug           = $post_item->post_name;
-                $item->post_password  = $post_item->post_password;
-                $item->comment_count  = $post_item->comment_count;
-                $item->comment_status = $post_item->comment_status;
-            }
+	    $post_id         = isset( $meta['_post_ID'][0] ) ? (int) $meta['_post_ID'][0] : 0;
+	    $item->post_id   = $post_id;
+	    $item->slug      = '';
+	    $item->post_link = '';
+        if($post_id) {
+	        $post_item = get_post( $post_id );
+	        if($post_item){
+		        $item->post_date      = $post_item->post_date;
+		        $item->slug           = $post_item->post_name;
+		        $item->post_password  = $post_item->post_password;
+		        $item->comment_count  = $post_item->comment_count;
+		        $item->comment_status = $post_item->comment_status;
+
+		        if(!empty($item->meta['_post_ID'][0])){
+			        $item->post_link = (string) get_permalink($item->meta['_post_ID'][0]);
+		        }
+	        }
         }
     }
-
     $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);
-    if(!empty($item->meta['_post_ID'][0])){
-        $item->post_link = get_permalink($item->meta['_post_ID'][0]);
-    } else{
-        $item->post_link = '';
-    }
 
     if(is_user_logged_in()){
         $allow_terms_delete = gm_user_can('terms_delete');
@@ -319,24 +322,24 @@ function gmedia_gallery_more_data(&$item){
             }
         }
 
-        $post_id       = isset($meta['_post_ID'][0])? (int)$meta['_post_ID'][0] : 0;
-        $item->post_id = $post_id;
-        if($post_id){
-            $post_item = get_post($post_id);
-            if($post_item){
-                $item->slug           = $post_item->post_name;
-                $item->post_password  = $post_item->post_password;
-                $item->comment_count  = $post_item->comment_count;
-                $item->comment_status = $post_item->comment_status;
-            }
-        }
+        $post_id         = isset( $meta['_post_ID'][0] ) ? (int) $meta['_post_ID'][0] : 0;
+	    $item->post_id   = $post_id;
+	    $item->slug      = '';
+	    $item->post_link = '';
+        if($post_id) {
+	        $post_item = get_post( $post_id );
+	        if($post_item){
+		        $item->slug           = $post_item->post_name;
+		        $item->post_password  = $post_item->post_password;
+		        $item->comment_count  = $post_item->comment_count;
+		        $item->comment_status = $post_item->comment_status;
 
-        $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);
-        if(!empty($item->meta['_post_ID'])){
-            $item->post_link = get_permalink($item->meta['_post_ID']);
-        } else{
-            $item->post_link = '';
+		        if(!empty($item->meta['_post_ID'])){
+			        $item->post_link = (string) get_permalink($item->meta['_post_ID']);
+		        }
+	        }
         }
+        $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);
 
         if(is_user_logged_in()){
             $allow_terms_delete = gm_user_can('terms_delete');
@@ -370,6 +373,9 @@ function gmedia_gallery_more_data(&$item){
 
     if($item->global){
         $item->author_name = get_the_author_meta('display_name', $item->global);
+        if( !$item->author_name ) {
+	        $item->global = 0;
+        }
     } else{
         $item->author_name = false;
     }
@@ -435,4 +441,88 @@ function gmedia_array_filter_recursive( $input ) {
 	return array_filter( $input, function( $val ) {
 		return is_string( $val ) ? strlen( $val ) : ! empty( $val );
 	} );
+}
+
+/**
+ * Delete all transients with a key prefix.
+ *
+ * @param string $prefix The key prefix.
+ */
+function gmedia_delete_transients( $prefix ) {
+	gmedia_delete_transients_from_keys( gmedia_search_database_for_transients_by_prefix( $prefix ) );
+}
+
+/**
+ * Searches the database for transients stored there that match a specific prefix.
+ *
+ * @param  string $prefix Prefix to search for.
+ * @return array|bool     Nested array response for wpdb->get_results or false on failure.
+ */
+function gmedia_search_database_for_transients_by_prefix( $prefix ) {
+	global $wpdb;
+
+	// Add our prefix after concating our prefix with the _transient prefix.
+	$prefix = $wpdb->esc_like( '_transient_' . $prefix . '_' );
+
+	// Build up our SQL query.
+	$sql = "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE '%s'";
+
+	// Execute our query
+	$transients = $wpdb->get_results( $wpdb->prepare( $sql, $prefix . '%' ), ARRAY_A );
+
+	// If if looks good, pass it back.
+	if ( $transients && ! is_wp_error( $transients ) ) {
+		return $transients;
+	}
+
+	// Otherwise return false.
+	return false;
+}
+
+/**
+ * Expects a passed in multidimensional array of transient keys.
+ *
+ * array(
+ *     array( 'option_name' => '_transient_blah_blah' ),
+ *     array( 'option_name' => 'transient_another_one' ),
+ * )
+ *
+ * Can also pass in an array of transient names.
+ *
+ * @param  array|string $transients  Nested array of transients, keyed by option_name, or array of names of transients.
+ * @return array|bool                Count of total vs deleted or false on failure.
+ */
+function gmedia_delete_transients_from_keys( $transients ) {
+	if ( ! isset( $transients ) ) {
+		return false;
+	}
+
+	// If we get a string key passed in, might as well use it correctly.
+	if ( is_string( $transients ) ) {
+		$transients = array( array( 'option_name' => $transients ) );
+	}
+
+	// If its not an array, we can't do anything.
+	if ( ! is_array( $transients ) ) {
+		return false;
+	}
+
+	$results = array();
+
+	// Loop through our transients.
+	foreach ( $transients as $transient ) {
+		if ( is_array( $transient ) ) {
+			// If we have an array, grab the first element.
+			$transient = current( $transient );
+		}
+
+		// Remove that sucker.
+		$results[ $transient ] = delete_transient( str_replace( '_transient_', '', $transient ) );
+	}
+
+	// Return an array of total number, and number deleted.
+	return array(
+		'total'   => count( $results ),
+		'deleted' => array_sum( $results ),
+	);
 }

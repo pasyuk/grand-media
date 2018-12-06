@@ -212,7 +212,16 @@ function gmedia_ios_app_library_data($data = array('site', 'authors', 'filter', 
     }
     $args = array_merge(array('number' => $terms_per_page), (array)$args);
 
-    $out = array();
+	$cache_expiration = isset($gmGallery->options['cache_expiration'])? (int) $gmGallery->options['cache_expiration'] * HOUR_IN_SECONDS : 24 * HOUR_IN_SECONDS;
+	if($cache_expiration) {
+		$cache_key   = 'gm_cache_' . md5( json_encode( array( (int) $user_ID, $data, $args, $gmmodule, $gmapp_version ) ) );
+		$cache_value = get_transient( $cache_key );
+		if ( ! empty( $cache_value ) && is_array( $cache_value ) ) {
+			return $cache_value;
+		}
+	}
+
+	$out = array();
 
     $ep = $gmGallery->options['endpoint'];
     if(get_option('permalink_structure')){
@@ -408,7 +417,11 @@ function gmedia_ios_app_library_data($data = array('site', 'authors', 'filter', 
         );
     }
 
-    return $out;
+    if($cache_expiration) {
+	    set_transient( $cache_key, $out, $cache_expiration );
+    }
+
+	return $out;
 }
 
 /**
@@ -494,7 +507,7 @@ function gmedia_ios_app_term_data_extend(&$term, $share_link_base, $logic = 0, $
         }
         if($term_meta['_cover']){
             $cover_id = (int)$term_meta['_cover'];
-            $cover    = gmedia_ios_app_processor('library', array('gmedia__in' => array($cover_id)), false);
+            $cover    = gmedia_ios_app_processor('library', array('gmedia__in' => array($cover_id)), false, false);
             if(isset($cover['data'][0])){
                 $term_meta['_cover'] = $cover['data'][0];
                 $term->thumbnail     = $gmCore->gm_get_media_image($cover_id, 'thumb', false);
@@ -519,7 +532,7 @@ function gmedia_ios_app_term_data_extend(&$term, $share_link_base, $logic = 0, $
 
             $termItems = $gmDB->get_gmedias($gmargs);
             if(!empty($termItems)){
-                $cover = gmedia_ios_app_processor('library', array('gmedia__in' => array($termItems[0]->ID)), false);
+                $cover = gmedia_ios_app_processor('library', array('gmedia__in' => array($termItems[0]->ID)), false, false);
                 if(isset($cover['data'][0])){
                     $term_meta['_cover'] = $cover['data'][0];
                     $term->thumbnail     = $gmCore->gm_get_media_image($termItems[0], 'thumb', false);
@@ -556,10 +569,11 @@ function gmedia_object_to_array($obj) {
  * @param      $action
  * @param      $data
  * @param bool $filter
+ * @param bool $cache
  *
  * @return array
  */
-function gmedia_ios_app_processor($action, $data, $filter = true){
+function gmedia_ios_app_processor($action, $data, $filter = true, $cache = true){
     global $gmCore, $gmDB, $gmGallery, $user_ID, $gmapp_version, $gmmodule;
 
     $out = array();
@@ -976,7 +990,17 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
         break;
 
         case 'library':
-            $ep = $gmGallery->options['endpoint'];
+	        $cache_expiration = isset($gmGallery->options['cache_expiration'])? (int) $gmGallery->options['cache_expiration'] * HOUR_IN_SECONDS : 24 * HOUR_IN_SECONDS;
+        	if($cache && $cache_expiration) {
+		        $cache_key   = 'gm_cache_' . md5( json_encode( array( (int) $user_ID, $data, $filter, $gmmodule, $gmapp_version ) ) );
+		        $cache_value = get_transient( $cache_key );
+		        if ( ! empty( $cache_value ) && is_array( $cache_value ) ) {
+			        $out = $cache_value;
+			        break;
+		        }
+	        }
+
+	        $ep = $gmGallery->options['endpoint'];
             if(get_option('permalink_structure')){
                 $share_link_base = home_url(urlencode($ep) . '/$2/$1');
             } else{
@@ -1270,7 +1294,12 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
             $out = array_merge($filter, array('properties' => $properties,
                                               'data'       => array_values($gmedias)
             ));
-        break;
+
+            if($cache && $cache_expiration) {
+	            set_transient( $cache_key, $out, $cache_expiration );
+            }
+
+	        break;
         case 'delete_term':
             $taxonomy = $data['taxonomy'];
             if(!empty($data['items'])){
@@ -1391,7 +1420,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                     if(!empty($data['per_page'])){
                         $lib_data['per_page'] = $data['per_page'];
                     }
-                    $out = gmedia_ios_app_processor('library', $lib_data);
+                    $out = gmedia_ios_app_processor('library', $lib_data, true, false);
                 } else{
                     $out = gmedia_ios_app_library_data(array('filter', $taxonomy), $args);
                 }
@@ -1481,7 +1510,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                     if(!empty($data['per_page'])){
                         $lib_data['per_page'] = $data['per_page'];
                     }
-                    $out = gmedia_ios_app_processor('library', $lib_data);
+                    $out = gmedia_ios_app_processor('library', $lib_data, true, false);
                 } else{
                     $out = gmedia_ios_app_library_data(array('filter', $taxonomy), $args);
                 }
@@ -1552,7 +1581,7 @@ function gmedia_ios_app_processor($action, $data, $filter = true){
                     if(!empty($data['per_page'])){
                         $lib_data['per_page'] = $data['per_page'];
                     }
-                    $out = gmedia_ios_app_processor('library', $lib_data);
+                    $out = gmedia_ios_app_processor('library', $lib_data, true, false);
                 } else{
                     $out = gmedia_ios_app_library_data(array('filter', $taxonomy), $args);
                 }

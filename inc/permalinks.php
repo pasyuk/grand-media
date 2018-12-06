@@ -239,11 +239,13 @@ class gmediaPermalinks {
 	 *
 	 * @return string html output
 	 */
-	function gmedia_post_thumbnail( $html, $post_id, $post_thumbnail_id, $size = 'post-thumbnail', $attr = '' ) {
+	function gmedia_post_thumbnail( $html, $post_id = 0, $post_thumbnail_id = 0, $size = 'post-thumbnail', $attr = '' ) {
 
-		$gmedia_id = get_post_meta( $post_thumbnail_id, '_gmedia_image_id', true );
-		if ( ! empty( $gmedia_id ) ) {
-			$html = str_replace( 'wp-post-image', 'wp-post-image gmedia-post-thumbnail-' . $gmedia_id, $html );
+		if ( $post_thumbnail_id ) {
+			$gmedia_id = get_post_meta( $post_thumbnail_id, '_gmedia_image_id', true );
+			if ( ! empty( $gmedia_id ) ) {
+				$html = str_replace( 'wp-post-image', 'wp-post-image gmedia-post-thumbnail-' . $gmedia_id, $html );
+			}
 		}
 
 		return $html;

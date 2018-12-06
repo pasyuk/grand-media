@@ -35,6 +35,17 @@ if(!defined('ABSPATH')){
     </div>
 
     <hr />
+    <div class="form-group">
+	    <label><?php esc_html_e('Cache expiration', 'grand-media') ?></label>
+	    <div class="row">
+		    <div class="col-xs-6">
+		        <input type="number" name="set[cache_expiration]" class="form-control input-sm" value="<?php echo (int) $gmGallery->options['cache_expiration']; ?>">
+	        </div>
+	    </div>
+	    <p class="help-block"><?php _e('Set 0 to disable cache for Gmedia Modules. Cache also reset automatically every time you save or update item in Gmedia Library or update any term or gallery.', 'grand-media'); ?></p>
+    </div>
+
+    <hr />
     <div class="form-group row">
         <div class="col-xs-6">
             <label><?php _e('In Tags order gmedia', 'grand-media'); ?></label>

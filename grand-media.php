@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.13.3
+ * Version: 1.14.2
  * Author: Rattus
  * Author URI: https://codeasily.com/
  * Requires at least: 3.7
@@ -42,7 +42,7 @@ if( !class_exists('Gmedia')){
      */
     class Gmedia {
 
-        var $version = '1.13.3';
+        var $version = '1.14.2';
         var $dbversion = '1.8.0';
         var $minium_WP = '3.7';
         var $options = '';
@@ -102,6 +102,7 @@ if( !class_exists('Gmedia')){
             add_action('deleted_user', array(&$this, 'reassign_media'), 10, 2);
 
             add_action('init', array(&$this, 'gmedia_post_type'), 0);
+            add_action('init', array(&$this, 'compatibility'), 11);
             //add_action('init', array(&$this, 'gm_schedule_update_checks'), 0);
 
             // register widget
@@ -121,16 +122,16 @@ if( !class_exists('Gmedia')){
         function start_plugin(){
 
             $this->load_dependencies();
-            $this->compatibility();
 
             // Load the language file
             $this->load_textdomain();
 
-            // Check for upgrade
-            $this->upgrade();
+	        require_once(dirname(__FILE__) . '/inc/functions.php');
 
-            require_once(dirname(__FILE__) . '/inc/hashids.php');
-            require_once(dirname(__FILE__) . '/inc/functions.php');
+	        // Check for upgrade
+	        $this->upgrade();
+
+	        require_once(dirname(__FILE__) . '/inc/hashids.php');
             require_once(dirname(__FILE__) . '/inc/shortcodes.php');
 
             // Load the admin panel or the frontend functions
@@ -261,6 +262,7 @@ if( !class_exists('Gmedia')){
                 require_once(dirname(__FILE__) . '/config/update.php');
 
                 gmedia_quite_update();
+	            gmedia_delete_transients( 'gm_cache' );
                 add_action('init', 'gmedia_flush_rewrite_rules', 1000);
 
                 if((int) $this->options['mobile_app']){
@@ -352,8 +354,8 @@ if( !class_exists('Gmedia')){
                 'google_api_key'=> $this->options['google_api_key']
             ));
 
-            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.13.0', 'all');
-            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.13.0');
+            wp_register_style('grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', array(), '1.14.0', 'all');
+            wp_register_script('grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', array('jquery', 'gmedia-global-backend'), '1.14.0');
             wp_localize_script('grand-media', 'grandMedia', array(
                 'error3'   => __('Disable your Popup Blocker and try again.', 'grand-media'),
                 'download' => __('downloading...', 'grand-media'),
@@ -369,7 +371,7 @@ if( !class_exists('Gmedia')){
         }
 
         function register_scripts_frontend(){
-            global $gmCore, $wp_scripts, $wp;
+            global $gmCore, $wp_scripts;
 
             wp_register_style('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.css', array(), '1.12.11');
             wp_register_script('gmedia-global-frontend', $gmCore->gmedia_url . '/assets/gmedia.global.front.js', array('jquery'), '1.13.0');

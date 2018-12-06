@@ -15,8 +15,6 @@ class GmediaProcessor_WordpressLibrary extends GmediaProcessor {
     public function __construct() {
         parent::__construct();
 
-        global $user_ID;
-
         self::$cookie_key = "gmedia_library:wpmedia";
         $this->selected_items = parent::selected_items(self::$cookie_key);
 

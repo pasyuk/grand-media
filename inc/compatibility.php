@@ -20,6 +20,22 @@ function jetpack_photon_skip_gmedia($skip, $src){
 }
 
 /**
+ * Skip Gmedia images for Jetpack lazy load.
+ * @param bool $skip
+ * @param array $attributes
+ *
+ * @return bool
+ */
+function jetpack_no_lazy_for_gmedia( $skip, $attributes ) {
+	if ( isset( $attributes['src'] ) && strpos( 'grand-media', $attributes['src'] ) ) {
+		return true;
+	}
+
+	return $skip;
+}
+add_filter( 'jetpack_lazy_images_skip_image_with_attributes', 'jetpack_no_lazy_for_gmedia', 10, 2 );
+
+/**
  * WP-SpamShield plugin compatibility
  * @param $pass
  *

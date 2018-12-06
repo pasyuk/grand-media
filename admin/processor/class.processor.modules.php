@@ -118,6 +118,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
         if(('save' == $gmCore->_get('message')) && ($term_id = $gmCore->_get('preset'))){
             $gmedia_new_preset_id = get_transient('gmedia_new_preset_id');
             if(false !== $gmedia_new_preset_id){
+	            gmedia_delete_transients( 'gm_cache' );
                 delete_transient('gmedia_new_preset_id');
                 $this->msg[] = sprintf(__('Preset #%d successfully saved', 'grand-media'), $term_id);
             }
@@ -176,6 +177,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                         $this->msg[] = sprintf(__("The `%s` file unzipped to module's directory", 'grand-media'), $filename);
                     }
                 }
+	            gmedia_delete_transients( 'gm_cache' );
             } else{
                 $this->error[] = __('No file specified', 'grand-media');
             }
@@ -193,6 +195,7 @@ class GmediaProcessor_Modules extends GmediaProcessor{
                     wp_redirect($location);
                 }
             } elseif(false !== ($message = get_transient('gmedia_module_deleted'))){
+	            gmedia_delete_transients( 'gm_cache' );
                 delete_transient('gmedia_module_deleted');
                 $this->msg[] = $message;
             }

@@ -24,7 +24,6 @@
             ratingLevelOn: '.gmmp-on',
             title: '.gmmp-track-title',
             text: '.gmmp-track-description',
-            duration: '.gmmp-duration',
             button: '.gmmp-button',
             buttonNotActive: '.gmmp-not-active',
             playing: '.gmmp-playing',

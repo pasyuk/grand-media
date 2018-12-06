@@ -17,7 +17,9 @@ function gmedia_default_options(){
     $gm['site_ID']          = '';
     $gm['mobile_app']       = 0;
 
-    $gm['modules_update'] = 0;
+    $gm['modules_update']   = 0;
+    $gm['cache_expiration'] = 24;
+    $gm['disable_ads']      = '0';
 
     $gm['gmedia_post_slug']              = 'gmedia';
     $gm['gmedia_exclude_from_search']    = '0';

@@ -122,11 +122,11 @@ function gmedia_post_modal(el) {
             modal.css('display', 'none');
         });
         modal.find('.media-menu-item').on('click', function () {
-            jQuery('iframe', modal).attr('src', '');
+            jQuery('iframe', modal).attr('src', jQuery(this).attr('href'));
             jQuery(this).addClass('active').siblings('a').removeClass('active');
             jQuery('.media-frame-title h1', modal).text(jQuery(this).text());
         });
-        jQuery("body").append(modal);
+        jQuery('body').append(modal);
     }
 }
 

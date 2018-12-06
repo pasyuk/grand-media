@@ -89,6 +89,14 @@ if( !defined('ABSPATH')){
             </div>
             <p class="help-block"><?php _e('Follow Gmedia on twitter to not miss info about new modules and plugin updates.', 'grand-media'); ?></p>
         </div>
+        <div class="form-group">
+            <label><?php _e('Hide WoowBox Ad Banner', 'grand-media') ?>:</label>
+            <div class="checkbox" style="margin:0;">
+                <input type="hidden" name="set[disable_ads]" value="0"/>
+                <label><input type="checkbox" name="set[disable_ads]" value="1" <?php checked($gmGallery->options['disable_ads'], '1'); ?> /> <?php _e('Hide WoowBox Banner', 'grand-media'); ?>
+                </label>
+            </div>
+        </div>
     </fieldset>
 
 </fieldset>

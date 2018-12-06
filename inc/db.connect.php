@@ -29,7 +29,7 @@ class GmediaDB{
      */
     function get_wp_media_lib($arg){
         /** @var $wpdb wpdb */
-        global $user_ID, $wpdb, $gmCore;
+        global $wpdb, $gmCore;
         $default_arg = array('mime_type' => '', 'orderby' => 'ID', 'order' => '', 'limit' => '0', 'filter' => '', 'selected' => false, 's' => '');
         $arg         = array_merge($default_arg, $arg);
         /** @var $mime_type
@@ -78,7 +78,7 @@ class GmediaDB{
 
             // split the words it a array if seperated by a space or comma
             preg_match_all('/".*?("|$)|((?<=[\\s",+])|^)[^\\s",+]+/', $s, $matches);
-            $search_terms = array_map(create_function('$a', 'return trim($a, "\\"\'\\n\\r ");'), $matches[0]);
+            $search_terms = array_map(function($a){ return trim($a, "\"'\n\r "); }, $matches[0]);
 
             $n         = '%';
             $searchand = '';
@@ -181,7 +181,6 @@ class GmediaDB{
      * @return mixed
      */
     function count_wp_media($arg){
-        global $user_ID;
         /** @var $wpdb wpdb */
         global $wpdb;
         /** @var $filter
@@ -216,7 +215,7 @@ class GmediaDB{
 
             // split the words it a array if seperated by a space or comma
             preg_match_all('/".*?("|$)|((?<=[\\s",+])|^)[^\\s",+]+/', $s, $matches);
-            $search_terms = array_map(create_function('$a', 'return trim($a, "\\"\'\\n\\r ");'), $matches[0]);
+            $search_terms = array_map(function($a){ return trim($a, "\"'\n\r "); }, $matches[0]);
 
             $n         = '%';
             $searchand = '';
@@ -3655,7 +3654,7 @@ class GmediaDB{
      *
      * @return array|bool False on failure. Array of term objects on success.
      */
-    function get_the_gmedia_terms($id = 0, $taxonomy){
+    function get_the_gmedia_terms($id, $taxonomy){
         $id = (int)$id;
 
         if(!$id){

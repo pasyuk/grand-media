@@ -788,7 +788,7 @@ function gmedia_quite_update(){
                 foreach($categories as $c){
                     if(isset($cats[ $c->name ])){
                         $wpdb->update($wpdb->prefix . 'gmedia_term', array('name' => $cats[ $c->name ]), array('term_id' => $c->term_id));
-                        $gmDB->clean_term_cache($c->term_id, 'gmedia_category');
+                        $gmDB->clean_term_cache($c->term_id);
                     }
                 }
             }

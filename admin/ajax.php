@@ -134,6 +134,7 @@ function gmedia_update_data(){
         if( !empty($meta_error)){
             $result->meta_error = $meta_error;
         }
+	    gmedia_delete_transients( 'gm_cache' );
 
         header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
         echo json_encode($result);
@@ -2322,6 +2323,7 @@ function gmedia_save_waveform(){
         }
 
         $gmDB->update_metadata('gmedia', $id, '_peaks', $peaks);
+        do_action( 'clean_gmedia_cache', $id );
         wp_send_json_success(array('peaks' => $peaks));
     } else{
         wp_send_json_error();
@@ -2452,21 +2454,38 @@ function gmedia_module_load_comments(){
 }
 
 add_action('wp_ajax_gmedia_get_data', 'gmedia_get_data');
+add_action('wp_ajax_nopriv_gmedia_get_data', 'gmedia_get_data');
 function gmedia_get_data(){
-	global $gmDB, $gmProcessor;
+	global $gmDB, $gmProcessor, $gmGallery;
 
 	/** @var $gmProcessorLibrary */
 	include_once(GMEDIA_ABSPATH . 'admin/processor/class.processor.library.php');
 
 	$gmProcessorLibrary->user_options = $gmProcessor::user_options();
 	$query_args = $gmProcessorLibrary->query_args();
-	$gmedia_query = $gmDB->get_gmedias($query_args);
-	foreach($gmedia_query as &$item) {
-		gmedia_item_more_data( $item );
+
+	$cache_expiration = isset($gmGallery->options['cache_expiration'])? (int) $gmGallery->options['cache_expiration'] * HOUR_IN_SECONDS : 24 * HOUR_IN_SECONDS;
+	if($cache_expiration) {
+		$cache_key   = 'gm_cache_' . md5( json_encode( $query_args ) );
+		$cache_value = get_transient( $cache_key );
 	}
 
-    header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
-    echo json_encode($gmedia_query);
+	if(!empty( $cache_value)) {
+		header('Content-Type: application/json; charset=' . get_option('blog_charset'), true);
+		echo $cache_value;
+	} else {
+		$gmedia_query = $gmDB->get_gmedias( $query_args );
+		foreach ( $gmedia_query as &$item ) {
+			gmedia_item_more_data( $item );
+		}
+		$json_string = json_encode( $gmedia_query );
+		if($cache_expiration) {
+			set_transient( $cache_key, $json_string, $cache_expiration );
+		}
+
+		header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ), true );
+		echo $json_string;
+	}
 
     die();
 }

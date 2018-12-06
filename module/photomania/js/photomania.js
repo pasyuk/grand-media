@@ -620,7 +620,7 @@
             if (!item.viewed) {
                 this.content.data[ai].viewed = true;
                 this.storage[item.id].status = 'viewed';
-                var item = this.content.data[ai];
+                item = this.content.data[ai];
                 sessionStorage.setItem(elid, JSON.stringify(this.storage));
                 if (this.opts.ajaxurl) {
                     $.ajax({
@@ -640,7 +640,7 @@
                 this.content.data[ai].liked = true;
                 this.content.data[ai].meta.likes += 1;
                 this.storage[item.id].status = 'liked';
-                var item = this.content.data[ai];
+                item = this.content.data[ai];
                 sessionStorage.setItem(elid, JSON.stringify(this.storage));
                 if (this.opts.ajaxurl) {
                     $.ajax({

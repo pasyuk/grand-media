@@ -29,6 +29,8 @@ class GmediaProcessor_Settings extends GmediaProcessor {
                 $this->error[]       = __('License Key empty...', 'grand-media');
             }
 
+            $set['google_api_key'] = trim($set['google_api_key']);
+
             $flush_rewrite_rules = false;
             if(empty($set['endpoint'])){
                 $set['endpoint'] = 'gmedia';
@@ -127,6 +129,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
             if(isset($_POST['GmediaHashID_salt'])){
                 update_option('GmediaHashID_salt', (string) $_POST['GmediaHashID_salt']);
             }
+	        gmedia_delete_transients( 'gm_cache' );
             if($flush_rewrite_rules){
                 flush_rewrite_rules(false);
             }
@@ -208,6 +211,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
                     $gmDB->set_capability('administrator', $cap);
                 }
             }
+	        gmedia_delete_transients( 'gm_cache' );
             $this->msg[] .= __('All settings set to default', 'grand-media');
         }
 

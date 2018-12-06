@@ -298,11 +298,11 @@ var GmediaLibrary = {
 
         // Date/Time picker
         var gmedia_date_temp;
-        jQuery('.input-group.gmedia_date').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss', focusOnShow: false}).on('dp.show', function() {
+        jQuery('.input-group.gmedia_date').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss', focusOnShow: true, ignoreReadonly: true, allowInputToggle: true}).on('dp.show', function() {
             gmedia_date_temp = jQuery('input', this).val();
         }).on('dp.hide', function() {
-            if(gmedia_date_temp != jQuery('input', this).val()) {
-                jQuery('input', this).trigger('change');
+          if(jQuery('input', this).val() !== gmedia_date_temp) {
+              jQuery('input', this).trigger('modified');
             }
         });
 
@@ -1288,7 +1288,7 @@ var GmediaFunction = {
                 return !!jQuery(this).val();
             });
 
-            var qform = decodeURIComponent(qform.serialize());
+            qform = decodeURIComponent(qform.serialize());
             console.log(qform);
             jQuery('#build_query_field').val(qform);
             jQuery('#buildQuery').modal('hide');
@@ -1371,7 +1371,7 @@ var GmediaFunction = {
         });
 
 
-        gmedia_DOM.on('change', 'form.edit-gmedia :input:not([name="doaction[]"])', function() {
+        gmedia_DOM.on('change modified', 'form.edit-gmedia :input:not([name="doaction[]"])', function() {
             if(jQuery(this).hasClass('edit-gmedia-ignore')) {
                 return;
             }

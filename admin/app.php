@@ -84,10 +84,10 @@ function gmediaApp(){
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-xs-6">
-                            <!--<p><?php echo 'Server address: ' . $_SERVER['SERVER_ADDR'];
+                            <p><?php echo 'Server address: ' . $_SERVER['SERVER_ADDR'];
                             echo '<br>Remote address: ' . $_SERVER['REMOTE_ADDR'];
-                            echo '<br>HTTP X Real IP: ' . isset($_SERVER['HTTP_X_REAL_IP'])? $_SERVER['HTTP_X_REAL_IP'] : '';
-                            ?></p>-->
+                            echo '<br>HTTP X Real IP: ' . ( isset($_SERVER['HTTP_X_REAL_IP'])? $_SERVER['HTTP_X_REAL_IP'] : '' );
+                            ?></p>
                             <div class="gmapp-description">
                                 <div style="text-align:center; margin-bottom:30px;">
                                     <a target="_blank" href="https://itunes.apple.com/ua/app/gmedia/id947515626?mt=8"><img style="vertical-align:middle; max-width:100%; margin:0 30px; max-height:88px;" src="<?php echo $gmCore->gmedia_url; ?>/admin/assets/img/icon-128x128.png" alt=""/></a>

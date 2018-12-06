@@ -17,7 +17,6 @@ class GmediaCore {
      *
      */
     function __construct(){
-        global $gmGallery;
 
         $this->upload     = $this->gm_upload_dir();
         $this->gmedia_url = plugins_url(GMEDIA_FOLDER);
@@ -33,7 +32,7 @@ class GmediaCore {
 //        add_action( 'updated_gmedia_term_meta', array( &$this, 'clear_cache' ) );
 //        add_action( 'deleted_gmedia_meta', array( &$this, 'clear_cache' ) );
 //        add_action( 'deleted_gmedia_term_meta', array( &$this, 'clear_cache' ) );
-        add_action('created_gmedia_term', array(&$this, 'clear_cache'));
+//        add_action('created_gmedia_term', array(&$this, 'clear_cache'));
         add_action('edited_gmedia_term', array(&$this, 'clear_cache'));
         add_action('deleted_gmedia_term', array(&$this, 'clear_cache'));
 //        add_action( 'gmedia_clean_object_term_cache', array( &$this, 'clear_cache' ) );
@@ -3746,6 +3745,9 @@ class GmediaCore {
      * Clear the caches!
      */
     function clear_cache(){
+	    // Delete cache transients.
+	    gmedia_delete_transients('gm_cache');
+
         // if W3 Total Cache is being used, clear the cache
         if(function_exists('w3tc_pgcache_flush')){
             w3tc_pgcache_flush();
