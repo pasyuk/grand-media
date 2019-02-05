@@ -18,6 +18,7 @@ function gmedia_default_options(){
     $gm['mobile_app']       = 0;
 
     $gm['modules_update']   = 0;
+    $gm['modules_new']      = 0;
     $gm['cache_expiration'] = 24;
     $gm['disable_ads']      = '0';
 
@@ -57,7 +58,7 @@ function gmedia_default_options(){
     $gm['in_album_orderby']      = 'ID';
     $gm['in_album_order']        = 'DESC';
     $gm['in_album_status']       = 'publish';
-    $gm['default_gmedia_module'] = 'phantom';
+    $gm['default_gmedia_module'] = 'amron';
 
     $gm['isolation_mode'] = '0';
     $gm['shortcode_raw']  = '0';

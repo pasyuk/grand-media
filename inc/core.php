@@ -3137,6 +3137,7 @@ class GmediaCore {
 
         $gmGallery->options                   = get_option('gmediaOptions');
         $gmGallery->options['modules_update'] = $modules_update_count;
+        $gmGallery->options['modules_new']    = isset($modules['out'])? count($modules['out']) : 0;
 
         update_option('gmediaOptions', $gmGallery->options);
     }
@@ -3666,6 +3667,8 @@ class GmediaCore {
      */
     function modules_order(){
         return array(
+	        'photoblog'         => '',
+	        'cicerone'          => '',
 	        'albumsListMasonry' => '',
 	        'albumsList'        => '',
 	        'woowslider'        => '',
@@ -3681,13 +3684,15 @@ class GmediaCore {
 	        'realslider'        => '',
 	        'mosaic'            => '',
 	        'photobox'          => '',
+	        'amron'             => '',
 	        'wavesurfer'        => '',
-	        'phantom'           => '',
 	        'flipgrid'          => '',
+	        'phantom'           => '',
 	        'cubik-lite'        => '',
 	        'photomania'        => '',
 	        'jq-mplayer'        => '',
 	        'wp-videoplayer'    => '',
+
 	        'photo-pro'         => '',
 	        'optima'            => '',
 	        'afflux'            => '',
@@ -3711,7 +3716,7 @@ class GmediaCore {
         global $gmDB, $gmGallery;
 
         if( !$set_module_callback){
-            $set_module_callback = 'phantom';
+            $set_module_callback = 'amron';
         }
         if( !$module){
             return $this->getModulePreset($gmGallery->options['default_gmedia_module'], $set_module_callback);
@@ -3949,7 +3954,7 @@ class GmediaCore {
                 'log_author' => (int) $user_ID,
                 'log_date'   => current_time('mysql'),
                 'log_data'   => '1',
-                'ip_address' => $this->ip()
+                'ip_address' => preg_replace('/(?!\d{1,3}\.\d{1,3}\.)\d/', '*', $this->ip())
             );
             $id   = $wpdb->insert($wpdb->prefix . 'gmedia_log', $data);
         }
@@ -3971,7 +3976,7 @@ class GmediaCore {
                 'log_author' => (int) $user_ID,
                 'log_date'   => current_time('mysql'),
                 'log_data'   => '1',
-                'ip_address' => $this->ip()
+                'ip_address' => preg_replace('/(?!\d{1,3}\.\d{1,3}\.)\d/', '*', $this->ip())
             );
             $wpdb->insert($wpdb->prefix . 'gmedia_log', $data);
         }
@@ -3994,7 +3999,7 @@ class GmediaCore {
                 'log_author' => (int) $user_ID,
                 'log_date'   => current_time('mysql'),
                 'log_data'   => $val,
-                'ip_address' => $this->ip()
+                'ip_address' => preg_replace('/(?!\d{1,3}\.\d{1,3}\.)\d/', '*', $this->ip())
             );
             $wpdb->insert($wpdb->prefix . 'gmedia_log', $data);
         }

@@ -886,6 +886,7 @@ function gmedia_quite_update(){
             $gmCore->app_service('app_updatecron');
         }
 
+        $gmCore->delete_folder($gmCore->upload['path'] . '/module/amron');
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/phantom');
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/jq-mplayer');
         $gmCore->delete_folder($gmCore->upload['path'] . '/module/wp-videoplayer');

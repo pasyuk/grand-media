@@ -1448,12 +1448,12 @@ div#wp-link-wrap label {
   *border-left-color:#ffffff;
 }
 /* custom badge colors */
-.badge-error {background-color: #b94a48;}
-.badge-error:hover {background-color: #953b39;}
+.badge-error {background-color: #b94a48 !important; color: #fff !important;}
+.badge-error:hover {background-color: #953b39 !important; color: #fff !important;}
 .badge-warning {background-color: #f89406;}
 .badge-warning:hover {background-color: #c67605;}
-.badge-success {background-color: #468847;}
-.badge-success:hover {background-color: #356635; }
+.badge-success {background-color: #468847 !important; color: #fff !important;}
+.badge-success:hover {background-color: #356635 !important; color: #fff !important;}
 .badge-info {background-color: #3a87ad;}
 .badge-info:hover {background-color: #2d6987;}
 .badge-inverse {background-color: #333333;}
@@ -1634,6 +1634,10 @@ select[multiple].input-group-xs > .input-group-btn > .btn {
 
 .gm-message-plus ul li div p{
   margin: 2px 0 0 0
+}
+
+.gm-module-count-0 {
+  display: none;
 }
 
 /* Spectrum */

@@ -27,13 +27,24 @@ function jetpack_photon_skip_gmedia($skip, $src){
  * @return bool
  */
 function jetpack_no_lazy_for_gmedia( $skip, $attributes ) {
-	if ( isset( $attributes['src'] ) && strpos( 'grand-media', $attributes['src'] ) ) {
+	if ( isset( $attributes['src'] ) && strpos( $attributes['src'], 'grand-media' ) ) {
 		return true;
 	}
 
 	return $skip;
 }
 add_filter( 'jetpack_lazy_images_skip_image_with_attributes', 'jetpack_no_lazy_for_gmedia', 10, 2 );
+
+/**
+ * Skip Gmedia images for a3 Lazy Load.
+ * @param string $classes
+ *
+ * @return string
+ */
+function a3_no_lazy_for_gmedia( $classes ) {
+	return 'noLazy,' . $classes;
+}
+add_filter( 'a3_lazy_load_skip_images_classes', 'a3_no_lazy_for_gmedia', 10 );
 
 /**
  * WP-SpamShield plugin compatibility

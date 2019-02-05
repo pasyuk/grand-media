@@ -66,7 +66,7 @@ if ( $set_module && $user_ID && current_user_can( 'gmedia_gallery_manage' ) ) {
 }
 
 if ( ! $gmedia_module ) {
-	$gmedia_module = 'phantom';
+	$gmedia_module = 'amron';
 }
 
 $module = $gmCore->get_module_path( $gmedia_module );
@@ -77,6 +77,9 @@ if ( is_file( $module['path'] . "/template/functions.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
 	include_once( $module['path'] . "/template/functions.php" );
 }
+
+global $posts;
+$posts = array();
 
 if ( is_file( $module['path'] . "/template/{$gmedia_type}.php" ) ) {
 	/** @noinspection PhpIncludeInspection */

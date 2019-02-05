@@ -29,11 +29,11 @@ function gmedia_module_action_buttons($module){
 		    $buttons['update2'] = '<a class="btn btn-warning" target="_blank" href="' . esc_url( $module['buy'] ) . '">' . __( 'Download Update (no license required)', 'grand-media' ) . " (v{$module['update']})</a>";
 	    }
     }
-    if(('remote' != $module['place']) && ('phantom' != $module['name']) && gm_user_can('module_manage')){
+    if(('remote' != $module['place']) && ('amron' != $module['name']) && gm_user_can('module_manage')){
         $buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url($gmCore->get_admin_url(array('delete_module' => $module['name']), array(), $gmProcessor->url), 'gmedia_module_delete', '_wpnonce_module_delete') . '">' . __('Delete Module', 'grand-media') . '</a>';
     }
     if(!empty($module['download'])){
-        $buttons['download'] = '<a class="btn btn-link" href="' . $module['download'] . '" download="true">' . __('Download module ZIP', 'grand-media') . '</a>';
+        $buttons['download'] = '<a class="btn btn-link" href="' . $module['download'] . '" download="' . $module['name'] . '">' . __('Download module ZIP', 'grand-media') . '</a>';
     }
 
     return $buttons;
@@ -56,7 +56,7 @@ function gmedia_module_preset_more_data(&$item){
         $item->taxonomy    = 'gmedia_module';
         $item->description = array();
         $item->global      = $user_ID;
-        $item->status      = $gmCore->_get('preset_module', 'phantom');
+        $item->status      = $gmCore->_get('preset_module', 'amron');
     } else{
         if(($preset_module = $gmCore->_get('preset_module')) && $item->status != $preset_module){
             $item = new stdClass();

@@ -441,7 +441,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                             },
                             gallery: {
                                 enabled: true,
-                                arrowMarkup: '<div title="%title%" type="button" class="mfp-button mfp-arrow mfp-arrow-%dir%"></div>',
+                                arrowMarkup: '<div title="%title%" class="mfp-button mfp-arrow mfp-arrow-%dir%"></div>',
                                 tCounter: '%curr% / %total%'
                             },
 
@@ -887,9 +887,9 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                             var img = $('.gmPhantom_Thumb > img', this);
                             var thumb_ratio = $(this).data('ratio');
                             if(opt.ratio <= thumb_ratio) {
-                                img.attr('class', 'landscape');
+                              img.removeClass('portrait').addClass('landscape');
                             } else {
-                                img.attr('class', 'portrait');
+                              img.removeClass('landscape').addClass('portrait');
                                 if(1 != thumb_ratio) {
                                     img.css('margin', Math.floor((opt.thumbWidth / thumb_ratio - opt.thumbHeight) / opt.thumbHeight * 10) + '% 0 0 0');
                                 }

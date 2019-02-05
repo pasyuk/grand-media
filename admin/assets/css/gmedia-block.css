@@ -1,0 +1,46 @@
+form.gmedia-preview {
+	position: relative;
+	overflow: hidden;
+	box-sizing: border-box;
+	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	flex-direction: row-reverse;
+	justify-content: center;
+}
+
+form.gmedia-preview .form-fields {
+	flex: 1;
+	min-width: 30%;
+}
+
+form.gmedia-preview input,
+form.gmedia-preview select {
+	display: block;
+	width: 100%;
+	margin: 5px 0 10px;
+	box-sizing: border-box;
+}
+
+.gmedia-required {
+	border-color: red !important;
+}
+
+img.gmedia-module-screenshot {
+	object-fit: contain;
+	flex: 1;
+	width: 320px !important;
+	height: 240px !important;
+	margin: 0 20px 0 0;
+}
+
+.gmedia-shortcode {
+	font-size: 12px;
+	font-family: Courier, sans-serif;
+	padding: 4px 10px;
+	background-color: #fafafa;
+	width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}

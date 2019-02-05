@@ -3,7 +3,7 @@ Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: gallery, image gallery, photo gallery, albums gallery, wordpress gallery plugin
 Requires at least: 3.7
-Tested up to: 4.9.1
+Tested up to: 5.0.3
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -26,6 +26,7 @@ Handle any file format and link any files with images in few clicks. You can imp
 
 #### Demos:
 
+*   [MultiSlider (3 in 1)](https://codeasily.com/portfolio/gmedia-gallery-modules/multislider/) - Image Slider with a lot of options and 3 different layouts.
 *   [PhotoBlog Style Gallery](https://codeasily.com/portfolio/gmedia-gallery-modules/photoblog/) - Pinterest style gallery with global search and photo proofing.
 *   [AlbumsList Masonry](https://codeasily.com/portfolio/gmedia-gallery-modules/albumslist-masonry/) - Splash Slider with custom lightbox and masonry collection view.
 *   [AlbumsList](https://codeasily.com/portfolio/gmedia-gallery-modules/albumslist/) - Splash Slider with custom lightbox.
@@ -119,19 +120,11 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 == Screenshots ==
 
-1. Module - WaveSurfer Music Gallery
-2. iOS App - Home page
-3. iOS App - Album View
-4. iOS App - Image Edit
-5. iOS App - List of Albums
-6. Admin Area - Gmedia Library Edit Mode
-7. Admin Area - Create Gallery with Afflux Module
-8. Admin Area - Add shortcode to Post - Gmedia MetaBox
-9. Admin Area - Upload images to Gmedia Library
-10. Admin Area - Import galleries from Flagallery plugin
-11. Admin Area - Process of import galleries from Flagallery plugin
-12. Admin Area - Gmedia Library
-13. Admin Area - Gmedia Library Filters
+1. Module - Amron Module
+2. Module - Amron Module Lightbox
+3. Module - WaveSurfer Music Gallery
+4. Admin Area - Gmedia Library Filters
+5. Admin Area - Gmedia Library Edit Mode
 
 = Minimum requirements for Gmedia Gallery =
 
@@ -142,6 +135,33 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.15.2 =
+* Few minor fixes
+
+= v1.15.1 =
+* Make Terms Relation "OR" by default
+
+= v1.15.0 =
+* Added new default free module - Amron
+* Small fixes and improvements
+
+= v1.14.7 =
+* Fixed conflict with Lazy load plugins
+* Added badge count for new modules
+* Changed Modules page
+* Updated twitter widget
+* Fixed module preview PHP Notice with Enfold theme
+
+= v1.14.5 =
+* Fixed CSS for Gutenberg editor
+
+= v1.14.4 =
+* Added compatibility with Gutenberg
+* Added Gutenberg blocks for Galleries, Albums, Categories and Tags
+* Fixed related gmedia images by tags for WP Posts
+* Fixed compatibility with some themes
+* Changed: the full IP address now not saved to database in logger
 
 = v1.14.2 =
 * Added option to disable WoowBox Banner

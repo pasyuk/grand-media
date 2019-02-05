@@ -350,6 +350,24 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 			include( $module['path'] . '/init.php' );
 			$module_content = ob_get_contents();
 			ob_end_clean();
+
+			$matches = array();
+			preg_match_all( '/<img[\s\r\n]+.*?>/is', $module_content, $matches );
+			$search  = array();
+			$replace = array();
+			foreach ( $matches[0] as $img_html ) {
+				// add the noLazy class to the img element.
+				if ( preg_match( '/class=["\']/i', $img_html ) ) {
+					$replace_html = preg_replace( '/class=(["\'])(.*?)["\']/is', 'class=$1noLazy $2$1', $img_html );
+				} else {
+					$replace_html = preg_replace( '/<img/is', '<img class="noLazy"', $img_html );
+				}
+				array_push( $search, $img_html );
+				array_push( $replace, $replace_html );
+			}
+			$search         = array_unique( $search );
+			$replace        = array_unique( $replace );
+			$module_content = str_replace( $search, $replace, $module_content );
 		}
 
 		if ( $moduleCSS || $customCSS ) {

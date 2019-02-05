@@ -37,8 +37,8 @@ if(isset($modules['error'])){
                     <a href="#installModuleModal" class="btn btn-primary pull-right<?php echo current_user_can('manage_options')? '' : ' disabled'; ?>" data-toggle="modal"><?php _e('Install Module ZIP'); ?></a>
 
                     <div class="btn-group pull-left filter-modules" style="margin-right: 10px;">
-                        <button type="button" data-filter="installed" class="btn btn-primary"><?php _e('Modules', 'grand-media'); ?></button>
-                        <button type="button" data-filter="not-installed" class="btn btn-default"><?php _e('Add New', 'grand-media'); ?></button>
+                        <button type="button" data-filter="collection" class="btn btn-primary"><?php _e('All Modules', 'grand-media'); ?> <span class="badge badge-error gm-module-count-<?php echo $gmGallery->options['modules_update']; ?>" title="<?php _e( 'Modules Updates', 'grand-media' ); ?>"><?php echo $gmGallery->options['modules_update']; ?></span></button>
+                        <button type="button" data-filter="not-installed" class="btn btn-default"><?php _e('New Modules', 'grand-media'); ?> <span class="badge badge-success gm-module-count-<?php echo $gmGallery->options['modules_new']; ?>" title="<?php _e( 'New Modules', 'grand-media' ); ?>"><?php echo $gmGallery->options['modules_new']; ?></span></button>
                         <button type="button" data-filter="tag-trend" class="btn btn-default"><?php _e('Trends', 'grand-media'); ?></button>
                     </div>
 
@@ -67,7 +67,7 @@ if(isset($modules['error'])){
                 if( !empty($modules['in'])){
                     foreach($modules['in'] as $module){
                         $module['screenshot_url'] = $module['module_url'] . '/screenshot.png';
-                        $module['mclass']         = ' module-filtered module-installed';
+                        $module['mclass']         = ' module-filtered module-collection module-installed';
                         if($module['update']){
                             $module['mclass'] .= ' module-update';
                         }
@@ -85,7 +85,7 @@ if(isset($modules['error'])){
                     //$out_dirpath = dirname($gmGallery->options['modules_xml']);
                     $out_dirpath = 'https://codeasily.com/gmedia_modules';
                     foreach($modules['out'] as $module){
-                        $module['mclass'] = ' module-not-installed';
+                        $module['mclass'] = ' module-filtered module-collection module-not-installed';
                         if($module['update']){
                             $module['mclass'] .= ' module-update';
                         }
@@ -101,7 +101,7 @@ if(isset($modules['error'])){
                 wp_nonce_field('GmediaGallery');
                 ?>
                 <div class="media nomodules nomodule-not-installed">
-                    <h4 class="media-heading"><?php _e('No uninstalled modules', 'grand-media'); ?></h4>
+                    <h4 class="media-heading"><?php _e('No modules to show', 'grand-media'); ?></h4>
                 </div>
                 <div class="media nomodules nomodule-tag">
                     <h4 class="media-heading"><?php _e('No modules to show', 'grand-media'); ?></h4>

@@ -95,9 +95,9 @@ function get_gmedia_modules($including_remote = true){
                         $modules['in'][ $name ] = array_merge($modules['in'][ $name ], $xml_module);
                         if(version_compare($modules['xml'][ $name ]['version'], $modules['in'][ $name ]['version'], '>')){
                             $modules['in'][ $name ]['update'] = $modules['xml'][ $name ]['version'];
-                            $modules['xml'][ $name ]['place'] = 'remote';
-                            $modules['xml'][ $name ]['update'] = true;
-                            $modules['out'][ $name ]          = $modules['xml'][ $name ];
+                            //$modules['xml'][ $name ]['place'] = 'remote';
+                            //$modules['xml'][ $name ]['update'] = true;
+                            //$modules['out'][ $name ]          = $modules['xml'][ $name ];
                         }
                     } else{
                         $modules['xml'][ $name ]['place'] = 'remote';
@@ -289,7 +289,7 @@ function gmedia_gallery_more_data(&$item){
     $item->custom            = array();
     $item->meta              = array('_edited' => '&#8212;',
                                      '_query'  => array(),
-                                     '_module' => $gmCore->_get('gallery_module', 'phantom')
+                                     '_module' => $gmCore->_get('gallery_module', 'amron')
     );
     $item->meta['_settings'] = array($item->meta['_module'] => array());
 

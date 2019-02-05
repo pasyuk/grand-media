@@ -126,7 +126,7 @@ global $user_ID, $gmDB, $gmCore
 					<div class="row">
 						<div class="col-xs-4">
 							<select name="terms_relation" class="form-control input-sm">
-								<option <?php selected($query_data['terms_relation'], ''); ?> value=""><?php _e('Default (AND)'); ?></option>
+								<option <?php selected($query_data['terms_relation'], ''); ?> value=""><?php _e('Default (OR)'); ?></option>
 								<option <?php selected($query_data['terms_relation'], 'AND'); ?> value="AND"><?php _e('AND'); ?></option>
 								<option <?php selected($query_data['terms_relation'], 'OR'); ?> value="OR"><?php _e('OR'); ?></option>
 							</select>
