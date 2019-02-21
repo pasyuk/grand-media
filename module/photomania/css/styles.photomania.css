@@ -143,8 +143,6 @@
 .gmpm_big_button_wrap ul .gmpm_twitter:hover { background-color:#00aced!important; }
 .gmpm_big_button_wrap ul .gmpm_pinterest { background:#262626 url('../img/pinterest@2x.png')!important; background-size:22px 22px!important; }
 .gmpm_big_button_wrap ul .gmpm_pinterest:hover { background-color:#cc2127!important; }
-.gmpm_big_button_wrap ul .gmpm_google { background:#262626 url('../img/google@2x.png')!important; background-size:22px 22px!important; }
-.gmpm_big_button_wrap ul .gmpm_google:hover { background-color:#d64a2d!important; }
 .gmpm_big_button_wrap ul .gmpm_stumbleupon { background:#262626 url('../img/stumbleupon@2x.png')!important; background-size:22px 22px!important; }
 .gmpm_big_button_wrap ul .gmpm_stumbleupon:hover { background-color:#ea4b24!important; }
 .gmpm_big_button_wrap .gmpm_sharelizers:before { position:absolute; z-index:1; top:100%; right:9px; border-top:10px solid #aaa; border-left:10px solid transparent; border-right:10px solid transparent; content:""; display:block; }
@@ -181,8 +179,6 @@
 .gmpm_focus_actions ul .gmpm_twitter:hover { background-color:#00aced; }
 .gmpm_focus_actions ul .gmpm_pinterest { background:#262626 url('../img/pinterest@2x.png'); background-size:22px 22px; }
 .gmpm_focus_actions ul .gmpm_pinterest:hover { background-color:#cc2127; }
-.gmpm_focus_actions ul .gmpm_google { background:#262626 url('../img/google@2x.png'); background-size:22px 22px; }
-.gmpm_focus_actions ul .gmpm_google:hover { background-color:#d64a2d; }
 .gmpm_focus_actions ul .gmpm_stumbleupon { background:#262626 url('../img/stumbleupon@2x.png'); background-size:22px 22px; }
 .gmpm_focus_actions ul .gmpm_stumbleupon:hover { background-color:#ea4b24; }
 .gmpm_focus_actions .gmpm_focus_share .gmpm_sharelizers .gmpm_button { background-repeat:no-repeat; background-position:center center; }

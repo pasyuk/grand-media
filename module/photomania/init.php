@@ -206,7 +206,6 @@ if ( ! $is_bot ) {
                                     <li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
                                     <li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
                                     <li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
-                                    <li style="list-style:none;"><a class="gmpm_button gmpm_google gmpm_sharelizer"><?php _e( 'Google+', 'grand-media' ); ?></a></li>
                                     <li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
                                 </ul>
                             </li>
@@ -265,7 +264,6 @@ if ( ! $is_bot ) {
                                             <li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
                                             <li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
                                             <li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
-                                            <li style="list-style:none;"><a class="gmpm_button gmpm_google gmpm_sharelizer"><?php _e( 'Google+', 'grand-media' ); ?></a></li>
                                             <li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
                                         </ul>
                                     </div>

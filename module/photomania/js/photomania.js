@@ -516,10 +516,6 @@
                     sharelink = 'https://pinterest.com/pin/create/button/?url=' + encodeURIComponent(url) + '&media=' + encodeURIComponent(imgsrc) + '&description=' + encodeURIComponent(title);
                     window.open(sharelink, '_blank');
                 }
-                if ($(this).hasClass('gmpm_google')) {
-                    sharelink = 'https://plus.google.com/share?url=' + encodeURIComponent(url);
-                    window.open(sharelink, '_blank');
-                }
                 if ($(this).hasClass('gmpm_stumbleupon')) {
                     sharelink = 'http://www.stumbleupon.com/submit?url=' + encodeURIComponent(url) + '&title=' + encodeURIComponent(title);
                     window.open(sharelink, '_blank');
