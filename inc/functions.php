@@ -253,6 +253,8 @@ function gmedia_term_item_more_data(&$item){
 			        $item->post_link = (string) get_permalink($item->meta['_post_ID'][0]);
 		        }
 	        }
+        } else {
+	        $item->post_date = '';
         }
     }
     $item->cloud_link = $gmCore->gmcloudlink($item->term_id, $item->taxterm);

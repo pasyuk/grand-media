@@ -53,17 +53,17 @@ if(!isset($shortcode_raw)){
     <div class="gmPhantom_Container noLightbox" <?php echo $is_bot? '' : 'style="opacity:0"'; ?>>
         <?php
         $thumbsWrapper_class = (int)$allsettings['thumbScale']? ' gmPhantom_ThumbScale' : '';
-        if('label' == $allsettings['thumbsInfo']){
+        if('label' == $allsettings['thumbsinfo']){
             if((int)$allsettings['labelOnHover']){
                 $thumbsWrapper_class .= ' gmPhantom_LabelHover';
             } else{
                 $thumbsWrapper_class .= ' gmPhantom_LabelInside';
             }
-        } elseif('label_bottom' == $allsettings['thumbsInfo']){
+        } elseif('label_bottom' == $allsettings['thumbsinfo']){
             $thumbsWrapper_class .= ' gmPhantom_LabelBottom';
-        } elseif('tooltip' == $allsettings['thumbsInfo']){
+        } elseif('tooltip' == $allsettings['thumbsinfo']){
             $thumbsWrapper_class .= ' gmPhantom_LabelTooltip';
-        } elseif('none' == $allsettings['thumbsInfo']){
+        } elseif('none' == $allsettings['thumbsinfo']){
             $thumbsWrapper_class .= ' gmPhantom_LabelNone';
         }
         ?>
@@ -144,7 +144,7 @@ if(!isset($shortcode_raw)){
             <div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo(!in_array($type, array('image'))? " mfp-iframe" : ''); ?>"<?php echo $item_data_html; ?>>
                 <a href="<?php echo (!empty($allsettings['thumb2link']) && $item->link)? $item->link : $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php esc_attr_e($alttext); ?>"/></a>
                 <?php
-                if(in_array($allsettings['thumbsInfo'], array('label', 'label_bottom'))){ ?>
+                if(in_array($allsettings['thumbsinfo'], array('label', 'label_bottom'))){ ?>
                     <div class="gmPhantom_ThumbLabel"><span class="gmPhantom_ThumbLabel_title"><?php echo $title; ?></span></div>
                     <?php
                 } ?>
@@ -393,10 +393,12 @@ if(!$is_bot){
     }
     ?>
     <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function(){
         jQuery(function() {
             var settings = <?php echo json_encode($settings); ?>;
             jQuery('#GmediaGallery_<?php echo $id; ?>').gmPhantom([settings]);
         });
+      });
     </script><?php
     if($shortcode_raw){
         echo '</pre>';

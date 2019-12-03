@@ -636,9 +636,8 @@ var GmediaTerms = {
 
         // Date/Time picker
         if(jQuery.fn.datetimepicker){
-            jQuery('.input-group.gmedia_date').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss', focusOnShow: false});
+            jQuery('.input-group.gmedia_date').datetimepicker({format: 'YYYY-MM-DD HH:mm:ss', focusOnShow: true, ignoreReadonly: true, allowInputToggle: true});
         }
-
     }
 };
 

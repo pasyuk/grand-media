@@ -149,13 +149,17 @@ function gmedia_alter_query_author( $query ) {
 /** Add related media for tags and categories
  *
  * @param $posts
- * @param $query
+ * @param WP_Query $query
  *
  * @return mixed
  */
 function gmedia_the_posts_filter_taxonomy( $posts, $query ) {
 
-	$paged = ( get_query_var( 'paged' ) ) ? get_query_var( 'paged' ) : 1;
+	if( ! $query ) {
+		return $posts;
+	}
+
+	$paged = ( $query->get( 'paged' ) ) ? $query->get( 'paged' ) : 1;
 	if ( $paged != 1 ) {
 		return $posts;
 	}
@@ -439,7 +443,7 @@ function gmedia_post_type__the_content( $content ) {
 
 										<div class="gmsingle_location_info">
 											<a href='https://www.google.com/maps/place/<?php echo $loc; ?>'
-												target='_blank'><img
+												target='_blank'><img class="noLazy"
 													src='//maps.googleapis.com/maps/api/staticmap?key=<?php esc_attr_e( $gmGallery->options['google_api_key'] ); ?>&size=320x240&zoom=10&scale=2&maptype=roadmap&markers=<?php echo $loc; ?>'
 													alt='' width='320' height='240'/></a>
 										</div>

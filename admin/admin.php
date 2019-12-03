@@ -135,7 +135,7 @@ class GmediaAdmin {
 			if ( $gmGallery->options['modules_update'] ) {
 				$count .= " <span class='update-plugins count-{$gmGallery->options['modules_update']}' style='background-color: #bb391b;'><span class='plugin-count gm-module-count gm-modules-update-count' title='" . __( 'Modules Updates', 'grand-media' ) . "'>{$gmGallery->options['modules_update']}</span></span>";
 			}
-			if ( $gmGallery->options['modules_new'] ) {
+			if ( $gmGallery->options['modules_new'] && !empty( $gmGallery->options['notify_new_modules'] ) ) {
 				$count .= " <span class='update-plugins count-{$gmGallery->options['modules_new']}' style='background-color: #367236;'><span class='plugin-count gm-module-count gm-modules-new-count' title='" . __( 'New Modules', 'grand-media' ) . "'>{$gmGallery->options['modules_new']}</span></span>";
 			}
 		}
@@ -154,7 +154,7 @@ class GmediaAdmin {
 			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Galleries', 'grand-media' ), __( 'Galleries', 'grand-media' ), 'gmedia_gallery_manage', 'GrandMedia_Galleries', array( &$this, 'shell' ) );
 			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Modules', 'grand-media' ), __( 'Modules', 'grand-media' ), 'gmedia_gallery_manage', 'GrandMedia_Modules', array( &$this, 'shell' ) );
 			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Settings', 'grand-media' ), __( 'Settings', 'grand-media' ), 'manage_options', 'GrandMedia_Settings', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'iOS Application', 'grand-media' ), __( 'iOS Application', 'grand-media' ), 'gmedia_settings', 'GrandMedia_App', array( &$this, 'shell' ) );
+			//$this->pages[] = add_submenu_page( 'GrandMedia', __( 'iOS Application', 'grand-media' ), __( 'iOS Application', 'grand-media' ), 'gmedia_settings', 'GrandMedia_App', array( &$this, 'shell' ) );
 			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'WordPress Media Library', 'grand-media' ), __( 'WP Media Library', 'grand-media' ), 'gmedia_import', 'GrandMedia_WordpressLibrary', array( &$this, 'shell' ) );
 			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Logs', 'grand-media' ), __( 'Gmedia Logs', 'grand-media' ), 'manage_options', 'GrandMedia_Logs', array( &$this, 'shell' ) );
 			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Support', 'grand-media' ), __( 'Support', 'grand-media' ), 'manage_options', 'GrandMedia_Support', array( &$this, 'shell' ) );
@@ -245,7 +245,7 @@ class GmediaAdmin {
 						if ( (int) $gmGallery->options['twitter'] ) {
 							?>
 							<div class="row panel visible-lg-block">
-								<a class="twitter-timeline" href="https://twitter.com/CodEasily/timelines/648240437141086212?ref_src=twsrc%5Etfw">#GmediaGallery - Curated tweets by CodEasily</a>
+								<a class="twitter-timeline" data-height="600" href="https://twitter.com/CodEasily/timelines/648240437141086212?ref_src=twsrc%5Etfw">#GmediaGallery - Curated tweets by CodEasily</a>
 								<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 							</div>
 							<?php
@@ -284,7 +284,9 @@ class GmediaAdmin {
 			}
 			$menuData = '';
 			if ( $menuItem[2] == 'GrandMedia_Modules' && gm_user_can( 'module_manage' ) ) {
-				$menuData = '<span class="badge badge-success pull-right gm-module-count-' . $gmGallery->options['modules_new'] . '" title="' . __( 'New Modules', 'grand-media' ) . '">' . $gmGallery->options['modules_new'] . '</span>';
+				if ( !empty( $gmGallery->options['notify_new_modules'] ) ) {
+					$menuData .= '<span class="badge badge-success pull-right gm-module-count-' . $gmGallery->options['modules_new'] . '" title="' . __( 'New Modules', 'grand-media' ) . '">' . $gmGallery->options['modules_new'] . '</span>';
+				}
 				$menuData .= '<span class="badge badge-error pull-right gm-module-count-' . $gmGallery->options['modules_update'] . '" title="' . __( 'Modules Updates', 'grand-media' ) . '">' . $gmGallery->options['modules_update'] . '</span>';
 			}
 
@@ -308,7 +310,6 @@ class GmediaAdmin {
 					<img src="<?php echo plugins_url( '/grand-media/admin/assets/img/icon-128x128.png' ) ?>" width="90" height="90">
 				</div>
 				<?php printf( __( '<p>Hey %s,<br>Please help us improve <b>Gmedia Gallery</b>! If you opt-in, some data about your usage of <b>Gmedia Gallery</b> will be sent to <a href="https://codeasily.com/" target="_blank" tabindex="1">codeasily.com</a>.
-                    These data also required if you will use Gmedia iOS application on your iPhone.
                     If you skip this, that\'s okay! <b>Gmedia Gallery</b> will still work just fine.</p>', 'grand-media' ), $current_user->display_name ); ?>
 			</div>
 			<div class="gm-message-actions">

@@ -3,7 +3,7 @@ Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: gallery, image gallery, photo gallery, albums gallery, wordpress gallery plugin
 Requires at least: 3.7
-Tested up to: 5.0.3
+Tested up to: 5.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -16,16 +16,14 @@ Gmedia Gallery - photo gallery with comments, show EXIF & Metadata, gallery with
 
 Manage files, show image galleries and photo slideshows, play music on your site with Gmedia Gallery plugin. Gmedia Gallery plugin provides a comprehensive interface for handling galleries, images, video & audio files.
 
-> #### Gallery iOS application client
->
-> Now You can upload and manage your Gmedia Library (images, tags, albums) anywhere!!!
-> Get new **[Gmedia Gallery application for iPhone](https://codeasily.com/gmedia-ios-app/)**
-
 With Gmedia Gallery plugin you can upload an unlimited number of photo and audio files, create dozens of galleries and playlists, group pictures and other files in albums, add tags for each file.
 Handle any file format and link any files with images in few clicks. You can import images with captions from Worpress Media Library, Flagallery plugin and from NextGen Gallery plugin right to Gmedia Library.
 
 #### Demos:
 
+*   [Amron](https://codeasily.com/amron/) - bundled FREE lightweight and fast gllery which will fit any website.
+*   [UltraBox](https://codeasily.com/portfolio/gmedia-gallery-modules/ultrabox/) - Grid/Justify/Massonry gallery with Related Images support in lightbox + EXIF/GPS info, global search, tag filter.
+*   [GmediaSlider](https://codeasily.com/portfolio/gmedia-gallery-modules/gmediaslider/) - Responsive Image Slider with slideshow.
 *   [MultiSlider (3 in 1)](https://codeasily.com/portfolio/gmedia-gallery-modules/multislider/) - Image Slider with a lot of options and 3 different layouts.
 *   [PhotoBlog Style Gallery](https://codeasily.com/portfolio/gmedia-gallery-modules/photoblog/) - Pinterest style gallery with global search and photo proofing.
 *   [AlbumsList Masonry](https://codeasily.com/portfolio/gmedia-gallery-modules/albumslist-masonry/) - Splash Slider with custom lightbox and masonry collection view.
@@ -135,6 +133,46 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.17.1 =
+* Updated Amron gallery module
+* Fixed download original image in Amron module
+
+= v1.16.9 =
+* Fixed queries with meta_query
+
+= v1.16.8 =
+* Optimize also images with small resolution for less file size.
+
+= v1.16.7 =
+* Updated Amron module.
+* Added Albums Order option in Build Query popup.
+
+= v1.16.6 =
+* Updated Amron module.
+* Small fixes.
+
+= v1.16.5 =
+* Fixed PHP warning on some themes.
+* Updated bundled modules.
+
+= v1.16.4 =
+* Added option to disable menu label with quantity of new modules.
+* Fixed import from WP Library not save image author.
+* iOS app page removed. (No money to pay for Apple developers license)
+
+
+= v1.16.3 =
+* Added code for support future module's features
+
+= v1.16.2 =
+* Updated free Amron gallery module. Added filter images by tags
+
+= v1.16.0 =
+* Fixed conflict with Swiper JS library on some themes
+
+= v1.15.4 =
+* Fixed datetime picker on album edit page
 
 = v1.15.3 =
 * Removed Google Plus share from bundled modules

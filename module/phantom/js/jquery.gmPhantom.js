@@ -16,7 +16,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                 opt_str = {
                     'thumbsNavigation': 'scroll', // Thumbnails Navigation (mouse, scroll). Default value: mouse. Set how you navigate through the thumbnails.
                     'thumbsAlign': 'center', // Thumbnails align. Default value: left.
-                    'thumbsInfo': 'label', // Info Thumbnails Display (none, tooltip, label). Default value: tooltip. Display a small info text on the thumbnails, a tooltip or a label on bottom.
+                    'thumbsinfo': 'label', // Info Thumbnails Display (none, tooltip, label). Default value: tooltip. Display a small info text on the thumbnails, a tooltip or a label on bottom.
                     'mfp_css': '',
                     'module_dirurl': '',
                 },
@@ -168,7 +168,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         }
 
                         $('.gmPhantom_thumbsWrapper', Container).addClass(browser_class);
-                        if(opt.thumbsInfo == 'tooltip' && !prototypes.isTouchDevice()) {
+                        if(opt.thumbsinfo == 'tooltip' && !prototypes.isTouchDevice()) {
                             $('.gmPhantom_Container', Container).append('<div class="gmPhantom_Tooltip"></div>');
                         }
 
@@ -688,7 +688,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                         }
                         methods.initContainer();
                         methods.initThumbs();
-                        if(opt.thumbsInfo == 'tooltip' && !prototypes.isTouchDevice()) {
+                        if(opt.thumbsinfo == 'tooltip' && !prototypes.isTouchDevice()) {
                             methods.initTooltip();
                         }
 
@@ -765,7 +765,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
 
                     initThumbs: function() {//Init Thumbnails
                         var thumb_container = $('.gmPhantom_ThumbContainer', Container);
-                        if(opt.thumbsInfo == 'tooltip') {
+                        if(opt.thumbsinfo == 'tooltip') {
                             if(!prototypes.isTouchDevice()) {
                                 thumb_container.hover(function() {
                                         methods.showTooltip($(this));

@@ -366,6 +366,7 @@ if ( ! $is_bot ) {
 }
 ?>
     <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function(){
         jQuery(function($) {
             var settings = <?php echo json_encode($settings); ?>;
             var content = <?php echo json_encode($content); ?>;
@@ -373,6 +374,7 @@ if ( ! $is_bot ) {
             container.photomania(settings, content);
             window.GmediaGallery_<?php echo $id; ?> = container.data('photomania');
         });
+      });
     </script><?php if ( $shortcode_raw ) {
     echo '</pre>';
 } ?>

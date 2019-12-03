@@ -165,6 +165,15 @@ if(!defined('ABSPATH')){
 
     <hr />
     <div class="form-group">
+        <label><?php _e('Notifications', 'grand-media'); ?></label>
+        <div class="checkbox" style="margin:0;">
+            <input type="hidden" name="set[notify_new_modules]" value="0"/>
+            <label><input type="checkbox" name="set[notify_new_modules]" value="1" <?php checked($gmGallery->options['notify_new_modules'], '1'); ?> /> <?php _e('Show notification label about new modules (green conter)', 'grand-media'); ?> </label>
+        </div>
+    </div>
+
+    <hr />
+    <div class="form-group">
         <label><?php _e('Choose what to show on Author Profile pages', 'grand-media'); ?></label>
         <div class="checkbox" style="margin:0;">
             <input type="hidden" name="set[wp_author_related_gmedia]" value="0"/>

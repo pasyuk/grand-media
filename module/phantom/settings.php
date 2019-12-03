@@ -22,7 +22,7 @@ $default_options = array(
     'thumbBorderSize'         => '1',
     'thumbBorderColor'        => 'cccccc',
     'thumbPadding'            => '2',
-    'thumbsInfo'              => 'label',
+    'thumbsinfo'              => 'label',
     'labelOnHover'            => '1',
     'labelTextColor'          => 'ffffff',
     'labelLinkColor'          => 'e7e179',
@@ -317,7 +317,7 @@ $options_tree    = array(
     array(
         'label'  => __('Thumbnails Title', 'grand-media'),
         'fields' => array(
-            'thumbsInfo'         => array(
+            'thumbsinfo'         => array(
                 'label'   => __('Display Thumbnails Title', 'grand-media'),
                 'tag'     => 'select',
                 'attr'    => 'data-watch="change"',

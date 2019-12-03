@@ -38,7 +38,7 @@ function gmediacloud_meta_generator(){
         if(did_action('gmedia_shortcode') && count($gmGallery->shortcode)){
             $og_imgs = array();
             $shortcode = reset($gmGallery->shortcode);
-            $query = array_merge($shortcode['query'], array('status' => 'publish', 'mime_type' => 'image', 'nopaging' => true, 'limit' => 3));
+            $query = array_merge(array('status' => 'publish', 'nopaging' => true), $shortcode['query']);
             $gmedias = $gmDB->get_gmedias($query);
             foreach($gmedias as $item){
                 $og_imgs[] = $gmCore->gm_get_media_image($item->ID);

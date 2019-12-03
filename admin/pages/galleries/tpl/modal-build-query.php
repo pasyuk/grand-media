@@ -53,10 +53,12 @@ global $user_ID, $gmDB, $gmCore
 						}
 						$gm_album_terms      = array_merge(array($no_term), $gm_album_terms);
 						$query_gmedia_albums = array();
-						if(!empty($query_data['album__in'])) {
+						$exclude_albums      = false;
+						if(!empty($query_data['album__in']) || (is_string($query_data['album__in']) && '0' === $query_data['album__in'])) {
 							$query_gmedia_albums = wp_parse_id_list($query_data['album__in']);
-						} elseif(!empty($query_data['album__not_in'])) {
+						} elseif(!empty($query_data['album__not_in']) || (is_string($query_data['album__not_in']) && '0' === $query_data['album__not_in'])) {
 							$query_gmedia_albums = wp_parse_id_list($query_data['album__not_in']);
+							$exclude_albums      = true;
 						}
 						?>
 						<label><?php _e('Albums', 'grand-media'); ?> </label>
@@ -66,7 +68,24 @@ global $user_ID, $gmDB, $gmCore
 								<input id="query_album__" name="album__in" data-include="album__in" data-exclude="album__not_in" class="form-control gm-selectize input-sm" value="<?php echo implode(',', $query_gmedia_albums) ?>" placeholder="<?php esc_attr_e(__('Any Album...', 'grand-media')); ?>"/>
 							</div>
 							<div class="col-xs-4">
-								<div class="checkbox"><label><input class="query_switch" data-target="query_album__" type="checkbox"<?php echo (empty($query_data['album__in']) && !empty($query_data['album__not_in']))? ' checked="checked"' : ''; ?> /> <?php _e('Exclude selected Albums', 'grand-media'); ?></label></div>
+								<div class="checkbox"><label><input class="query_switch" data-target="query_album__" type="checkbox"<?php echo $exclude_albums? ' checked="checked"' : ''; ?> /> <?php _e('Exclude selected Albums', 'grand-media'); ?></label></div>
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-xs-8">
+								<?php _e('To show all albums just select `No Album` in dropdown above then tick `Exclude selected Albums`, so it exclude all images without Album and show other images.', 'grand-media'); ?>
+							</div>
+							<div class="col-xs-4">
+								<label><?php _e('Albums Order', 'grand-media'); ?> </label>
+								<select name="albums_order" class="form-control input-sm">
+									<option <?php selected($query_data['albums_order'], ''); ?> value=""><?php _e('No Order'); ?></option>
+									<option <?php selected($query_data['albums_order'], 'id'); ?> value="id"><?php _e('By ID (ASC)'); ?></option>
+									<option <?php selected($query_data['albums_order'], 'id_desc'); ?> value="desc"><?php _e('By ID (DESC)'); ?></option>
+									<option <?php selected($query_data['albums_order'], 'name'); ?> value="name"><?php _e('By Name (ASC)'); ?></option>
+									<option <?php selected($query_data['albums_order'], 'name_desc'); ?> value="name_desc"><?php _e('By Name (DESC)'); ?></option>
+									<option <?php selected($query_data['albums_order'], 'date'); ?> value="date"><?php _e('By Date (ASC)'); ?></option>
+									<option <?php selected($query_data['albums_order'], 'date_desc'); ?> value="date_desc"><?php _e('By Date (DESC)'); ?></option>
+								</select>
 							</div>
 						</div>
 					</div>

@@ -28,7 +28,7 @@ if(!defined('ABSPATH')) {
                         echo '(' . __('no author', 'grand-media') . ')';
                     }
                     ?></span>
-                <br/><span class="term_id">ID: <?php echo $item->term_id; ?></span>
+                <br/><span class="term_id">ID: <?php echo $item->term_id; ?></span> <date class="term_date"><?php echo $item->post_date; ?></date>
 
                 <div class="object-actions">
                     <?php $action_links = gmedia_term_item_actions($item);

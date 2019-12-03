@@ -1811,6 +1811,7 @@ function gmedia_import_handler(){
             foreach($wpMediaLib as $item){
                 $wp_media[] = array(
                     'file'        => get_attached_file($item->ID),
+                    'author'      => $item->author,
                     'title'       => $item->post_title,
                     'description' => $item->post_content
                 );

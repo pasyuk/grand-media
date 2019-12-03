@@ -59,6 +59,7 @@ function gmedia_default_options(){
     $gm['in_album_order']        = 'DESC';
     $gm['in_album_status']       = 'publish';
     $gm['default_gmedia_module'] = 'amron';
+    $gm['notify_new_modules']    = '1';
 
     $gm['isolation_mode'] = '0';
     $gm['shortcode_raw']  = '0';

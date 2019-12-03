@@ -164,7 +164,7 @@ $_module_preset = !empty($term->meta['_module_preset'][0])? $term->meta['_module
 
                             <div class="input-group gmedia_date input-group-sm" data-date-format="YYYY-MM-DD HH:mm:ss">
                                 <input name="term[post_date]" type="text" readonly="readonly" class="form-control input-sm" value="<?php echo $term->post_date; ?>" tabindex="-1"/>
-                                <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+                                <span class="input-group-addon btn-primary"><span class="glyphicon glyphicon-calendar"></span></span>
                             </div>
                         </div>
                     <?php } ?>

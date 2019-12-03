@@ -869,6 +869,7 @@ class GmediaDB{
                       'meta_value',
                       's',
                       'fields',
+                      'limit',
                       'robots'
         );
 
@@ -1512,8 +1513,10 @@ class GmediaDB{
                 $q['orderby'] = 'meta_value_num';
                 $join .= " LEFT JOIN {$wpdb->prefix}gmedia_meta ON ({$wpdb->prefix}gmedia.ID = {$wpdb->prefix}gmedia_meta.gmedia_id AND " . $wpdb->prepare("{$wpdb->prefix}gmedia_meta.meta_key = %s", $q['meta_key']) . ")";
             }
-            if(!empty($q['meta_key'])){
-                $allowed_keys[] = $q['meta_key'];
+            if(!empty($q['meta_key']) || !empty($q['meta_query'])){
+            	if(!empty($q['meta_key'])) {
+		            $allowed_keys[] = $q['meta_key'];
+	            }
                 $allowed_keys[] = 'meta_value';
                 $allowed_keys[] = 'meta_value_num';
             }
@@ -1762,7 +1765,7 @@ class GmediaDB{
                 $q['cat']  = '';
                 $req_cats  = array();
                 foreach((array)$cat_array as $cat){
-                    $cat        = intval($cat);
+                    $cat        = intval($cat, 10);
                     $req_cats[] = $cat;
                     $in         = ($cat >= 0);
                     $cat        = abs($cat);
@@ -1817,7 +1820,21 @@ class GmediaDB{
     function gmedias_album_stuff(&$q){
         global $wpdb;
 
-        if(isset($q['album_name']) && !empty($q['album_name'])){
+	    $date_order = false;
+	    if ( ! empty( $q['albums_order'] ) ) {
+		    $order_by       = explode( '_', $q['albums_order'] );
+		    $albums_orderby = $order_by[0];
+		    if ( 'date' === $albums_orderby ) {
+			    $albums_orderby = 'id';
+			    $date_order     = true;
+		    }
+		    $albums_order = ( isset( $order_by[1] ) && 'desc' === $order_by[1] ) ? 'DESC' : 'ASC';
+	    } else {
+		    $albums_orderby = 'include';
+		    $albums_order   = 'ASC';
+	    }
+
+	    if(isset($q['album_name']) && !empty($q['album_name'])){
             $q['album_name'] = "'" . esc_sql($q['album_name']) . "'";
             $alb             = $wpdb->get_var("
 					SELECT term_id
@@ -1838,7 +1855,7 @@ class GmediaDB{
                 $q['alb']  = '';
                 $req_albs  = array();
                 foreach((array)$alb_array as $alb){
-                    if(!($alb = intval($alb))){
+                    if(!($alb = intval($alb, 10))){
                         continue;
                     }
                     $in  = ($alb >= 0);
@@ -1868,7 +1885,15 @@ class GmediaDB{
             $q['album__in'] = wp_parse_id_list($q['album__in']);
             $without_album  = in_array(0, $q['album__in'])? true : false;
             if(isset($q['album__status'])){
-                $q['album__in'] = $this->get_terms('gmedia_album', array('fields' => 'ids', 'orderby' => 'include', 'include' => $q['album__in'], 'status' => $q['album__status']));
+                $q['album__in'] = $this->get_terms('gmedia_album', array('fields' => 'ids', 'orderby' => $albums_orderby, 'order' => $albums_order, 'include' => $q['album__in'], 'status' => $q['album__status']));
+            } elseif('include' !== $albums_orderby && 'id' !== $albums_orderby) {
+	            $q['album__in'] = $this->get_terms('gmedia_album', array('fields' => 'ids', 'orderby' => $albums_orderby, 'order' => $albums_order, 'include' => $q['album__in']));
+            } elseif('id' === $albums_orderby) {
+            	if('ASC' === $albums_order) {
+		            sort( $q['album__in'] );
+	            } else {
+		            rsort( $q['album__in'] );
+	            }
             }
             if($without_album){
                 $q['album__in']     = array_filter($q['album__in']);
@@ -1885,9 +1910,9 @@ class GmediaDB{
             if(in_array(0, $q['album__not_in'])){
                 $q['album__not_in'] = array_filter($q['album__not_in']);
                 if(isset($q['album__status'])){
-                    $q['album__in'] = array_diff($this->get_terms('gmedia_album', array('fields' => 'ids', 'status' => $q['album__status'])), $q['album__not_in']);
+                    $q['album__in'] = array_diff($this->get_terms('gmedia_album', array('fields' => 'ids', 'orderby' => $albums_orderby, 'order' => $albums_order, 'status' => $q['album__status'])), $q['album__not_in']);
                 } else{
-                    $q['album__in'] = array_diff($this->get_terms('gmedia_album', array('fields' => 'ids')), $q['album__not_in']);
+                    $q['album__in'] = array_diff($this->get_terms('gmedia_album', array('fields' => 'ids', 'orderby' => $albums_orderby, 'order' => $albums_order)), $q['album__not_in']);
                 }
                 $q['within_album'] = true;
                 if(!empty($q['album__not_in'])){
@@ -1896,6 +1921,25 @@ class GmediaDB{
                 $q['album__not_in'] = array();
             }
         }
+
+	    if ( $date_order && ! empty( $q['album__in'] ) ) {
+		    $gmedia_albums  = get_posts( array(
+			    'posts_per_page'   => -1,
+			    'post_type'        => 'gmedia_album',
+			    'post_status'      => 'any',
+			    'order_by'         => 'post_date',
+			    'order'            => $albums_order,
+			    'meta_key'         => '_gmedia_term_ID',
+			    'meta_compare'     => 'IN',
+			    'meta_value'       => $q['album__in'],
+			    'suppress_filters' => true,
+		    ) );
+		    $alb_in_by_date = array();
+		    foreach ( $gmedia_albums as $gm_alb ) {
+			    $alb_in_by_date[] = (int) get_post_meta( $gm_alb->ID, '_gmedia_term_ID', true );
+		    }
+		    $q['album__in'] = array_unique( array_merge( $alb_in_by_date, $q['album__in'] ) );
+	    }
     }
 
     /**

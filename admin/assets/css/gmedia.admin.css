@@ -116,6 +116,10 @@ div.gmedia-modal .row {
   padding: 0;
 }
 
+div#gmedia-container form.row {
+  padding: 15px 0;
+}
+
 body.gmedia-blank div#gmedia-container {
   margin:0;
   position:static;
@@ -322,7 +326,7 @@ div#gm-list-table::before {
   padding-left:0;
   padding-right:0;
 }
-.list-group-item.d-row {
+div.list-group-item.d-row {
   position:relative;
   color:inherit;
   z-index:1;
@@ -734,6 +738,18 @@ p.thumbnail.gmedia-related-image img.gmedia-thumb {
 }
 .term_id {
   font-size:80%;
+}
+.term_date {
+  font-size:80%;
+}
+.term_date:empty {
+  display: none;
+}
+.term_date:before {
+  content: '[';
+}
+.term_date:after {
+  content: ']';
 }
 #gm-list-table .hidden {
   display:none !important;
@@ -1567,6 +1583,13 @@ select[multiple].input-group-xs > .input-group-btn > .btn {
 .input-group-btn:last-child > .dropdown-toggle {
   border-bottom-left-radius:0;
   border-top-left-radius:0;
+}
+
+.input-group-addon.btn-primary {
+  color: #fff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+  cursor: pointer;
 }
 
 .notice.updated.gm-message {

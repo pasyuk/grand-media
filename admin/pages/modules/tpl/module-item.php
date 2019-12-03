@@ -8,7 +8,7 @@ if(!defined('ABSPATH')){
  * Module List Item
  */
 
-global $gmDB, $gmCore, $user_ID;
+global $gmGallery, $gmDB, $gmCore, $user_ID;
 ?>
 <div class="media<?php echo $module['mclass']; ?>">
     <div class="row">
@@ -34,12 +34,16 @@ global $gmDB, $gmCore, $user_ID;
             </p>
         </div>
         <?php
-        if($module['place'] !== 'remote'){
+        if( 'remote' !== $module['place'] ){
             ?>
             <div class="col-sm-4">
                 <div id="module_presets_list" class="module_presets module_presets_<?php echo $module['name'] ?>">
                     <h4 class="media-heading" style="margin-bottom:10px;">
-                        <a href="<?php echo $gmCore->get_admin_url(array('page' => 'GrandMedia_Modules', 'preset_module' => $module['name']), array(), admin_url('admin.php')); ?>" class="addpreset pull-right"><span class="label label-success">+</span></a>
+	                    <?php if ( 'free' === $module['status'] || ! empty( $gmGallery->options['license_name'] ) || ! empty( $module['buy'] ) ) { ?>
+	                        <a href="<?php echo $gmCore->get_admin_url(array('page' => 'GrandMedia_Modules', 'preset_module' => $module['name']), array(), admin_url('admin.php')); ?>" class="addpreset pull-right"><span class="label label-success">+</span></a>
+	                    <?php } else { ?>
+		                    <a href="https://codeasily.com/gmedia-premium/" title="<?php _e( 'Get Premium', 'grand-media' ); ?>" class="addpreset pull-right"><span class="label label-success">+</span></a>
+	                    <?php } ?>
                         <?php _e('Presets', 'grand-media'); ?></h4>
                     <?php
                     $presets = $gmDB->get_terms('gmedia_module', array('status' => $module['name']));

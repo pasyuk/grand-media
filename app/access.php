@@ -1267,6 +1267,11 @@ function gmedia_ios_app_processor($action, $data, $filter = true, $cache = true)
                 }
                 unset($meta['_rating']);
 
+                if(isset($meta['_related'][0])){
+                    $gmedias[ $i ]->meta['related'] = maybe_unserialize($meta['_related'][0]);
+                }
+                unset($meta['_related']);
+
                 if(!empty($data['meta']) && !empty($meta)){
                     foreach($meta as $key => $val){
                         if('_peaks' == $key){
