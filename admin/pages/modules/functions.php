@@ -7,7 +7,7 @@ function gmedia_module_action_buttons( $module ) {
 	global $gmCore, $gmProcessor, $gmGallery;
 
 	$buttons = [];
-	if ( ( 'remote' == $module['place'] ) && ! empty( $module['buy'] ) ) {
+	if ( ( 'remote' === $module['place'] ) && ! empty( $module['buy'] ) ) {
 		//$sale = !empty($module['sale'])? 'onsale' : '';
 		$buttons['buy'] = '<a class="btn btn-primary" href="' . $module['buy'] . '" target="_blank">' . __( 'Buy Now (no license required)', 'grand-media' ) . ' <span>' . $module['price'] . '</span></a>';
 	}
@@ -15,21 +15,21 @@ function gmedia_module_action_buttons( $module ) {
 	if ( ( ! empty( $module['status'] ) && 'premium' === $module['status'] ) && empty( $module['buy'] ) && empty( $gmGallery->options['license_name'] ) ) {
 		$buttons['premium'] = '<a class="btn btn-success" style="font-weight: bold;" target="_blank" href="https://codeasily.com/gmedia-premium/">' . __( 'Get Premium', 'grand-media' ) . '</a>';
 	} else {
-		if ( 'remote' == $module['place'] && ! empty( $module['download'] ) ) {
+		if ( 'remote' === $module['place'] && ! empty( $module['download'] ) ) {
 			if ( ( ! empty( $module['status'] ) && 'premium' === $module['status'] ) && empty( $gmGallery->options['license_name'] ) ) {
 				$buttons['premium'] = '<a class="btn btn-success" style="font-weight: bold;" target="_blank" href="https://codeasily.com/gmedia-premium/">' . __( 'Get Premium', 'grand-media' ) . '</a>';
 			} else {
 				$buttons['install'] = '<a class="btn btn-primary ' . ( gm_user_can( 'module_manage' ) ? 'module_install' : 'disabled' ) . '" data-module="' . $module['name'] . '" data-loading-text="' . __( 'Loading...', 'grand-media' ) . '" href="' . esc_url( $module['download'] ) . '">' . __( 'Install Module', 'grand-media' ) . '</a>';
 			}
-		} elseif ( 'remote' != $module['place'] ) {
+		} elseif ( 'remote' !== $module['place'] ) {
 			$buttons['create'] = '<a class="btn btn-success" href="' . $gmCore->get_admin_url( [ 'page' => 'GrandMedia_Galleries', 'gallery_module' => $module['name'] ], [], true ) . '">' . __( 'Create Gallery', 'grand-media' ) . '</a>';
 		}
 	}
 
-	if ( ! empty( $module['demo'] ) && $module['demo'] != '#' ) {
+	if ( ! empty( $module['demo'] ) && $module['demo'] !== '#' ) {
 		$buttons['demo'] = '<a class="btn btn-default" target="_blank" href="' . $module['demo'] . '">' . __( 'View Demo', 'grand-media' ) . '</a>';
 	}
-	if ( ! empty( $module['update'] ) && 'remote' != $module['place'] ) {
+	if ( ! empty( $module['update'] ) && 'remote' !== $module['place'] ) {
 		if ( empty( $module['buy'] ) ) {
 			if ( 'free' === $module['status'] || ! empty( $gmGallery->options['license_name'] ) ) {
 				$buttons['update'] = '<a class="btn btn-warning module_install" data-module="' . $module['name'] . '" data-loading-text="' . __( 'Loading...', 'grand-media' ) . '" href="' . esc_url( $module['download'] ) . '">' . __( 'Update Module', 'grand-media' ) . " (v{$module['update']})</a>";
@@ -41,7 +41,7 @@ function gmedia_module_action_buttons( $module ) {
 			$buttons['update2'] = '<a class="btn btn-warning" target="_blank" href="' . esc_url( $module['buy'] ) . '">' . __( 'Download Update (no license required)', 'grand-media' ) . " (v{$module['update']})</a>";
 		}
 	}
-	if ( ( 'remote' != $module['place'] ) && ( 'amron' != $module['name'] ) && gm_user_can( 'module_manage' ) ) {
+	if ( ( 'remote' !== $module['place'] ) && ( 'amron' !== $module['name'] ) && gm_user_can( 'module_manage' ) ) {
 		$buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url( $gmCore->get_admin_url( [ 'delete_module' => $module['name'] ], [], $gmProcessor->url ), 'gmedia_module_delete', '_wpnonce_module_delete' ) . '">' . __( 'Delete Module', 'grand-media' ) . '</a>';
 	}
 	if ( ! empty( $module['download'] ) && ( 'free' === $module['status'] || ! empty( $gmGallery->options['license_name'] ) ) ) {
@@ -70,7 +70,7 @@ function gmedia_module_preset_more_data( &$item ) {
 		$item->global      = $user_ID;
 		$item->status      = $gmCore->_get( 'preset_module', 'amron' );
 	} else {
-		if ( ( $preset_module = $gmCore->_get( 'preset_module' ) ) && $item->status != $preset_module ) {
+		if ( ( $preset_module = $gmCore->_get( 'preset_module' ) ) && $item->status !== $preset_module ) {
 			$item = new stdClass();
 			gmedia_module_preset_more_data( $item );
 
@@ -84,7 +84,7 @@ function gmedia_module_preset_more_data( &$item ) {
 
 	$module_info = [ 'type' => '&#8212;' ];
 	if ( is_file( $item->module['path'] . '/index.php' ) ) {
-		include( $item->module['path'] . '/index.php' );
+		include $item->module['path'] . '/index.php';
 
 		$item->module['info'] = $module_info;
 	} else {

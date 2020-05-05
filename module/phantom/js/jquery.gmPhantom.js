@@ -297,7 +297,7 @@ if(typeof jQuery.fn.gmPhantom == 'undefined') {
                                             }
                                         });
                                     }
-                                    this.toggleArrows.call(this);
+                                    $.magnificPopup.instance.toggleArrows();
                                 },
                                 close: function() {
                                     $(document.body).removeClass('mfp-gmedia-open gmedia-phantom');

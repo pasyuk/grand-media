@@ -15,6 +15,7 @@ $default_options = array(
     //Thumbnails
 	'collectionThumbHoverColor' => 'rgba(0, 0, 0, .7)',
 	'collectionThumbContentBGColor' => 'rgba(245,245,245,1)',
+	'collectionThumbContentBGColor' => 'rgba(245,245,245,1)',
 	'collectionThumbTitleShow' => '1',
 	'collectionThumbTitleColor' => 'rgba(0,0,0,1)',
 	'collectionThumbFontSize' => '18',
@@ -30,7 +31,6 @@ $default_options = array(
 	'modaBgColor'=> 'rgba(0,0,0,0.9)',
 	'modalInfoBoxBgColor' => 'rgba(255,255,255,1)',
 	'modalInfoBoxTitleTextColor' => '000000',
-	'shareTitlePlaceHolder' => 'Share',
 	'modalInfoBoxTextColor' => '333333',
 	'infoBarCountersEnable'=> '1',
 	'infoBarDateInfoEnable'=> '1',
@@ -104,7 +104,7 @@ $options_tree = array(
             ),
             'tagCloudAll' => array('label' => 'Tag ALL - name',
                 'tag' => 'input',
-                'attr' => '',
+                'attr' => 'data-tagsFilter="is:1"',
                 'text' => ''
             ),
             'tagCloudTextColor' => array('label' => 'Text color',
@@ -136,6 +136,11 @@ $options_tree = array(
 				'attr' => 'type="text" data-type="rgba"',
 				'text' => ''
 			),
+			'collectionThumbContentBGColor' => array('label' => 'Description bar background color',
+                'tag' => 'input',
+                'attr' => 'type="text" data-type="rgba"',
+                'text' => ''
+            ),
 			'collectionThumbTitleShow' => array('label' => 'Title',
 				'tag' => 'checkbox',
 				'attr' => 'data-watch="change"',
@@ -208,11 +213,6 @@ $options_tree = array(
 			'modalInfoBoxTitleTextColor' => array('label' => 'Info Bar Title text Color',
 				'tag' => 'input',
 				'attr' => 'type="text" data-type="color"',
-				'text' => ''
-			),
-			'shareTitlePlaceHolder' => array('label' => 'Share bar name',
-				'tag' => 'input',
-				'attr' => '',
 				'text' => ''
 			),
 			'modalInfoBoxTextColor' => array('label' => 'Info Bar Text Color',

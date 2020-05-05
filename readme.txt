@@ -3,7 +3,7 @@ Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: gallery, image gallery, photo gallery, albums gallery, wordpress gallery plugin
 Requires at least: 3.7
-Tested up to: 5.2
+Tested up to: 5.4.0
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -133,6 +133,44 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.18.6 =
+* Added: import image tags when importing from NextGen galleries
+
+= v1.18.5 =
+* Security fix (Thanks to Fortinet Fortiguard Labs)
+
+= v1.18.4 =
+* Fix PHP Notice in Query Builder
+
+= v1.18.3 =
+* Fix for update terms
+* Fix WP Media import author notice
+
+= v1.18.2 =
+* Security fix (Thanks to Fortinet Fortiguard Labs)
+
+= v1.18.0 =
+* Fixed compatibility with Elementor Swiper.js library.
+* Added Exif saving for thumbnails
+* Updated Gutenberg blocks for Gmedia
+* Updated Photomania, Phototravlr, Desire, AlbumStripes modules
+* Be sure you have latest versions of modules listed above.
+
+= v1.17.6 =
+* Updated Amron gallery module (Tags Filter)
+
+= v1.17.5 =
+* Fixed conflict with Envira Gallery
+* Updated Amron gallery module
+
+= v1.17.4 =
+* Fixed cache for logged in users
+* Disabled cache for gallery preview in admin
+* Updated Amron gallery module
+
+= v1.17.2 =
+* Fixed GmediaCloud social buttons
 
 = v1.17.1 =
 * Updated Amron gallery module
@@ -428,6 +466,9 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 * Updated: PhotoMania gallery module
 
 == Upgrade Notice ==
+
+= v1.18.0 =
+Update Gallery modules to the latest version: PhotoMania, PhotoTravlr, Desire !!!
 
 = v1.8.0 =
 Database changed. Backup before updating.

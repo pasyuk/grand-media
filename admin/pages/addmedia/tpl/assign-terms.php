@@ -5,71 +5,71 @@
  * @var $gmDB
  */
 
-// don't load directly
-if(!defined('ABSPATH')) {
-    die('-1');
+// don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
 }
 
-if(gm_user_can('terms')) {
-    global $gmCore;
-    ?>
-    <div class="form-group">
-        <?php
-        $term_type = 'gmedia_album';
-        $global    = gm_user_can('edit_others_media')? '' : array(0, $user_ID);
-        $gm_terms  = $gmDB->get_terms($term_type, array('global' => $global, 'orderby' => 'global_desc_name'));
+if ( gm_user_can( 'terms' ) ) {
+	global $gmCore;
+	?>
+	<div class="form-group">
+		<?php
+		$term_type = 'gmedia_album';
+		$global    = gm_user_can( 'edit_others_media' ) ? '' : [ 0, $user_ID ];
+		$gm_terms  = $gmDB->get_terms( $term_type, [ 'global' => $global, 'orderby' => 'global_desc_name' ] );
 
-        $terms_album = '';
-        if(count($gm_terms)) {
-            $selected = (int) $gmCore->_get('album');
-            foreach($gm_terms as $term) {
-                $author_name = '';
-                if($term->global) {
-                    if(gm_user_can('edit_others_media')) {
-                        $author_name .= ' &nbsp; ' . sprintf(__('by %s', 'grand-media'), get_the_author_meta('display_name', $term->global));
-                    }
-                } else {
-                    $author_name .= ' &nbsp; (' . __('shared', 'grand-media') . ')';
-                }
-                if('publish' != $term->status) {
-                    $author_name .= ' [' . $term->status . ']';
-                }
-                $terms_album .= '<option value="' . $term->term_id . '" data-name="' . esc_html($term->name) . '" data-meta="' . $author_name . '"' . selected($selected, $term->term_id, false) . '>' . esc_html($term->name) . $author_name . '</option>' . "\n";
-            }
-        }
-        ?>
-        <label><?php _e('Add to Album', 'grand-media'); ?> </label>
-        <select id="combobox_gmedia_album" name="terms[gmedia_album]" data-create="<?php echo gm_user_can('album_manage')? 'true' : 'false'; ?>" class="form-control input-sm" placeholder="<?php _e('Album Name...', 'grand-media'); ?>">
-            <option value=""></option>
-            <?php echo $terms_album; ?>
-        </select>
-    </div>
+		$terms_album = '';
+		if ( count( $gm_terms ) ) {
+			$selected = (int) $gmCore->_get( 'album' );
+			foreach ( $gm_terms as $term ) {
+				$author_name = '';
+				if ( $term->global ) {
+					if ( gm_user_can( 'edit_others_media' ) ) {
+						$author_name .= ' &nbsp; ' . sprintf( __( 'by %s', 'grand-media' ), esc_html( get_the_author_meta( 'display_name', $term->global ) ) );
+					}
+				} else {
+					$author_name .= ' &nbsp; (' . __( 'shared', 'grand-media' ) . ')';
+				}
+				if ( 'publish' !== $term->status ) {
+					$author_name .= ' [' . $term->status . ']';
+				}
+				$terms_album .= '<option value="' . $term->term_id . '" data-name="' . esc_html( $term->name ) . '" data-meta="' . $author_name . '" ' . selected( $selected, $term->term_id, false ) . '>' . esc_html( $term->name ) . $author_name . '</option>' . "\n";
+			}
+		}
+		?>
+		<label><?php _e( 'Add to Album', 'grand-media' ); ?> </label>
+		<select id="combobox_gmedia_album" name="terms[gmedia_album]" data-create="<?php echo esc_attr( gm_user_can( 'album_manage' ) ? 'true' : 'false' ); ?>" class="form-control input-sm" placeholder="<?php _e( 'Album Name...', 'grand-media' ); ?>">
+			<option value=""></option>
+			<?php echo $terms_album; ?>
+		</select>
+	</div>
 
-    <div class="form-group">
-        <?php
-        $term_type = 'gmedia_category';
-        $gm_category_terms  = $gmDB->get_terms($term_type, array('fields' => 'id=>names'));
-        $selected = (int) $gmCore->_get('category');
-        $selected = isset($gm_category_terms[$selected])? $gm_category_terms[$selected] : '';
-        ?>
-        <label><?php _e('Assign Categories', 'grand-media'); ?></label>
-        <input id="combobox_gmedia_category" name="terms[gmedia_category]" data-create="<?php echo gm_user_can('category_manage')? 'true' : 'false'; ?>" class="form-control input-sm" value="<?php echo $selected ?>" placeholder="<?php _e('Uncategorized', 'grand-media'); ?>"/>
-    </div>
+	<div class="form-group">
+		<?php
+		$term_type         = 'gmedia_category';
+		$gm_category_terms = $gmDB->get_terms( $term_type, [ 'fields' => 'id=>names' ] );
+		$selected          = (int) $gmCore->_get( 'category' );
+		$selected          = isset( $gm_category_terms[ $selected ] ) ? $gm_category_terms[ $selected ] : '';
+		?>
+		<label><?php _e( 'Assign Categories', 'grand-media' ); ?></label>
+		<input id="combobox_gmedia_category" name="terms[gmedia_category]" data-create="<?php echo esc_attr( gm_user_can( 'category_manage' ) ? 'true' : 'false' ); ?>" class="form-control input-sm" value="<?php echo esc_attr( $selected ); ?>" placeholder="<?php _e( 'Uncategorized', 'grand-media' ); ?>"/>
+	</div>
 
-    <div class="form-group">
-        <?php
-        $term_type = 'gmedia_tag';
-        $gm_tag_terms  = $gmDB->get_terms($term_type, array('fields' => 'id=>names'));
-        $selected = (int) $gmCore->_get('tag');
-        $selected = isset($gm_tag_terms[$selected])? $gm_tag_terms[$selected] : '';
-        ?>
-        <label><?php _e('Add Tags', 'grand-media'); ?> </label>
-        <input id="combobox_gmedia_tag" name="terms[gmedia_tag]" data-create="<?php echo gm_user_can('tag_manage')? 'true' : 'false'; ?>" class="form-control input-sm" value="<?php echo $selected ?>" placeholder="<?php _e('Add Tags...', 'grand-media'); ?>"/>
-    </div>
-    <script type="text/javascript">
-        var gmedia_categories = <?php echo json_encode(array_values($gm_category_terms)); ?>;
-        var gmedia_tags = <?php echo json_encode(array_values($gm_tag_terms)); ?>;
-    </script>
+	<div class="form-group">
+		<?php
+		$term_type    = 'gmedia_tag';
+		$gm_tag_terms = $gmDB->get_terms( $term_type, [ 'fields' => 'id=>names' ] );
+		$selected     = (int) $gmCore->_get( 'tag' );
+		$selected     = isset( $gm_tag_terms[ $selected ] ) ? $gm_tag_terms[ $selected ] : '';
+		?>
+		<label><?php _e( 'Add Tags', 'grand-media' ); ?> </label>
+		<input id="combobox_gmedia_tag" name="terms[gmedia_tag]" data-create="<?php echo esc_attr( gm_user_can( 'tag_manage' ) ? 'true' : 'false' ); ?>" class="form-control input-sm" value="<?php echo esc_attr( $selected ); ?>" placeholder="<?php _e( 'Add Tags...', 'grand-media' ); ?>"/>
+	</div>
+	<script type="text/javascript">
+		var gmedia_categories = <?php echo wp_json_encode( array_values( $gm_category_terms ) ); ?>;
+		var gmedia_tags = <?php echo wp_json_encode( array_values( $gm_tag_terms ) ); ?>;
+	</script>
 <?php } else { ?>
-    <p><?php _e('You are not allowed to assign terms', 'grand-media') ?></p>
+	<p><?php _e( 'You are not allowed to assign terms', 'grand-media' ) ?></p>
 <?php } ?>

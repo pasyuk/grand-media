@@ -1,6 +1,6 @@
-<?php // don't load directly
-if(!defined('ABSPATH')) {
-    die('-1');
+<?php // don't load directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	die( '-1' );
 }
 
 /**
@@ -8,8 +8,8 @@ if(!defined('ABSPATH')) {
  */
 ?>
 <div class="list-group-item">
-    <div class="well well-lg text-center">
-        <h4><?php _e('No items to show.', 'grand-media'); ?></h4>
-    </div>
+	<div class="well well-lg text-center">
+		<h4><?php _e( 'No items to show.', 'grand-media' ); ?></h4>
+	</div>
 </div>
 

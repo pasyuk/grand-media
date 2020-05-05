@@ -4,110 +4,118 @@
  * GmediaProcessor_Settings
  */
 class GmediaProcessor_Settings extends GmediaProcessor {
-    private static $me = null;
+	private static $me = null;
 
-    protected function processor(){
-        global $gmCore, $gmGallery, $gmDB;
+	public static function getMe() {
+		if ( self::$me === null ) {
+			self::$me = new GmediaProcessor_Settings();
+		}
 
-        if( !$gmCore->caps['gmedia_settings']){
-            wp_die(__('You are not allowed to change gmedia settings', 'grand-media'));
-        }
-        $lk_check = isset($_POST['license-key-activate']);
-        if(isset($_POST['gmedia_settings_save'])){
-            check_admin_referer('gmedia_settings', '_wpnonce_settings');
+		return self::$me;
+	}
 
-            $set = $gmCore->_post('set', array());
+	protected function processor() {
+		global $gmCore, $gmGallery, $gmDB;
 
-            if( !empty($set['purchase_key']) && (empty($set['license_key']) || empty($set['license_key2']))){
-                $lk_check = true;
-            }
-            if(empty($set['purchase_key']) && ( !empty($set['license_key']) || !empty($set['license_key2']))){
-                $set['license_name'] = '';
-                $set['purchase_key'] = '';
-                $set['license_key']  = '';
-                $set['license_key2'] = '';
-                $this->error[]       = __('License Key empty...', 'grand-media');
-            }
+		if ( ! $gmCore->caps['gmedia_settings'] ) {
+			wp_die( __( 'You are not allowed to change gmedia settings', 'grand-media' ) );
+		}
+		$lk_check = isset( $_POST['license-key-activate'] );
+		if ( isset( $_POST['gmedia_settings_save'] ) ) {
+			check_admin_referer( 'gmedia_settings', '_wpnonce_settings' );
 
-            $set['google_api_key'] = trim($set['google_api_key']);
+			$set = $gmCore->_post( 'set', [] );
 
-            $flush_rewrite_rules = false;
-            if(empty($set['endpoint'])){
-                $set['endpoint'] = 'gmedia';
-            }
-            if(
-                $set['endpoint'] !== $gmGallery->options['endpoint']
-                || $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug']
-                || $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug']
-                || $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']
-                || $set['gmedia_has_archive'] !== $gmGallery->options['gmedia_has_archive']
-                || $set['gmedia_album_has_archive'] !== $gmGallery->options['gmedia_album_has_archive']
-                || $set['gmedia_gallery_has_archive'] !== $gmGallery->options['gmedia_gallery_has_archive']
-            ){
-                $flush_rewrite_rules        = true;
-                $set['flush_rewrite_rules'] = true;
-            }
+			if ( ! empty( $set['purchase_key'] ) && ( empty( $set['license_key'] ) || empty( $set['license_key2'] ) ) ) {
+				$lk_check = true;
+			}
+			if ( empty( $set['purchase_key'] ) && ( ! empty( $set['license_key'] ) || ! empty( $set['license_key2'] ) ) ) {
+				$set['license_name'] = '';
+				$set['purchase_key'] = '';
+				$set['license_key']  = '';
+				$set['license_key2'] = '';
+				$this->error[]       = __( 'License Key empty...', 'grand-media' );
+			}
 
-            foreach($set as $key => $val){
-                $gmGallery->options[ $key ] = $val;
-            }
+			$set['google_api_key'] = trim( $set['google_api_key'] );
 
-            $capabilities = $gmCore->_post('capability', array());
-            if( !empty($capabilities) && current_user_can('manage_options')){
-                global $wp_roles;
-                $_roles = $wp_roles->roles;
-                $_roles = array_keys(apply_filters('editable_roles', $_roles));
-                $roles  = array_flip($_roles);
+			$flush_rewrite_rules = false;
+			if ( empty( $set['endpoint'] ) ) {
+				$set['endpoint'] = 'gmedia';
+			}
+			if (
+				$set['endpoint'] !== $gmGallery->options['endpoint']
+				|| $set['gmedia_post_slug'] !== $gmGallery->options['gmedia_post_slug']
+				|| $set['gmedia_album_post_slug'] !== $gmGallery->options['gmedia_album_post_slug']
+				|| $set['gmedia_gallery_post_slug'] !== $gmGallery->options['gmedia_gallery_post_slug']
+				|| $set['gmedia_has_archive'] !== $gmGallery->options['gmedia_has_archive']
+				|| $set['gmedia_album_has_archive'] !== $gmGallery->options['gmedia_album_has_archive']
+				|| $set['gmedia_gallery_has_archive'] !== $gmGallery->options['gmedia_gallery_has_archive']
+			) {
+				$flush_rewrite_rules        = true;
+				$set['flush_rewrite_rules'] = true;
+			}
 
-                // upload cap.
-                if($roles[ $capabilities['gmedia_upload'] ] < $roles[ $capabilities['gmedia_import'] ]){
-                    $capabilities['gmedia_import'] = $capabilities['gmedia_upload'];
-                }
-                // edit/delete cap.
-                if($roles[ $capabilities['gmedia_edit_media'] ] < $roles[ $capabilities['gmedia_edit_others_media'] ]){
-                    $capabilities['gmedia_edit_others_media'] = $capabilities['gmedia_edit_media'];
-                }
-                if($roles[ $capabilities['gmedia_edit_media'] ] < $roles[ $capabilities['gmedia_delete_media'] ]){
-                    $capabilities['gmedia_delete_media'] = $capabilities['gmedia_edit_media'];
-                }
-                if($roles[ $capabilities['gmedia_delete_media'] ] < $roles[ $capabilities['gmedia_delete_others_media'] ]){
-                    $capabilities['gmedia_delete_others_media'] = $capabilities['gmedia_delete_media'];
-                }
-                if($roles[ $capabilities['gmedia_edit_others_media'] ] < $roles[ $capabilities['gmedia_delete_others_media'] ]){
-                    $capabilities['gmedia_delete_others_media'] = $capabilities['gmedia_edit_others_media'];
-                }
-                if($roles[ $capabilities['gmedia_show_others_media'] ] < $roles[ $capabilities['gmedia_edit_others_media'] ]){
-                    $capabilities['gmedia_edit_others_media'] = $capabilities['gmedia_show_others_media'];
-                }
-                if($roles[ $capabilities['gmedia_show_others_media'] ] < $roles[ $capabilities['gmedia_delete_others_media'] ]){
-                    $capabilities['gmedia_delete_others_media'] = $capabilities['gmedia_show_others_media'];
-                }
-                // terms cap.
-                if($roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_album_manage'] ]){
-                    $capabilities['gmedia_album_manage'] = $capabilities['gmedia_terms'];
-                }
-                if($roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_category_manage'] ]){
-                    $capabilities['gmedia_category_manage'] = $capabilities['gmedia_terms'];
-                }
-                if($roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_tag_manage'] ]){
-                    $capabilities['gmedia_tag_manage'] = $capabilities['gmedia_terms'];
-                }
-                if($roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_terms_delete'] ]){
-                    $capabilities['gmedia_terms_delete'] = $capabilities['gmedia_terms'];
-                } else{
-                    $rolekey = max($roles[ $capabilities['gmedia_album_manage'] ], $roles[ $capabilities['gmedia_tag_manage'] ]);
-                    $role    = $_roles[ $rolekey ];
-                    if($role < $roles[ $capabilities['gmedia_terms_delete'] ]){
-                        $capabilities['gmedia_terms_delete'] = $role;
-                    }
-                }
+			foreach ( $set as $key => $val ) {
+				$gmGallery->options[ $key ] = $val;
+			}
 
-                foreach($capabilities as $key => $val){
-                    $gmDB->set_capability($val, $key);
-                }
-            }
+			$capabilities = $gmCore->_post( 'capability', [] );
+			if ( ! empty( $capabilities ) && current_user_can( 'manage_options' ) ) {
+				global $wp_roles;
+				$_roles = $wp_roles->roles;
+				$_roles = array_keys( apply_filters( 'editable_roles', $_roles ) );
+				$roles  = array_flip( $_roles );
 
-            if(isset($set['delete_originals']) && (int) $set['delete_originals']){
+				// upload cap.
+				if ( $roles[ $capabilities['gmedia_upload'] ] < $roles[ $capabilities['gmedia_import'] ] ) {
+					$capabilities['gmedia_import'] = $capabilities['gmedia_upload'];
+				}
+				// edit/delete cap.
+				if ( $roles[ $capabilities['gmedia_edit_media'] ] < $roles[ $capabilities['gmedia_edit_others_media'] ] ) {
+					$capabilities['gmedia_edit_others_media'] = $capabilities['gmedia_edit_media'];
+				}
+				if ( $roles[ $capabilities['gmedia_edit_media'] ] < $roles[ $capabilities['gmedia_delete_media'] ] ) {
+					$capabilities['gmedia_delete_media'] = $capabilities['gmedia_edit_media'];
+				}
+				if ( $roles[ $capabilities['gmedia_delete_media'] ] < $roles[ $capabilities['gmedia_delete_others_media'] ] ) {
+					$capabilities['gmedia_delete_others_media'] = $capabilities['gmedia_delete_media'];
+				}
+				if ( $roles[ $capabilities['gmedia_edit_others_media'] ] < $roles[ $capabilities['gmedia_delete_others_media'] ] ) {
+					$capabilities['gmedia_delete_others_media'] = $capabilities['gmedia_edit_others_media'];
+				}
+				if ( $roles[ $capabilities['gmedia_show_others_media'] ] < $roles[ $capabilities['gmedia_edit_others_media'] ] ) {
+					$capabilities['gmedia_edit_others_media'] = $capabilities['gmedia_show_others_media'];
+				}
+				if ( $roles[ $capabilities['gmedia_show_others_media'] ] < $roles[ $capabilities['gmedia_delete_others_media'] ] ) {
+					$capabilities['gmedia_delete_others_media'] = $capabilities['gmedia_show_others_media'];
+				}
+				// terms cap.
+				if ( $roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_album_manage'] ] ) {
+					$capabilities['gmedia_album_manage'] = $capabilities['gmedia_terms'];
+				}
+				if ( $roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_category_manage'] ] ) {
+					$capabilities['gmedia_category_manage'] = $capabilities['gmedia_terms'];
+				}
+				if ( $roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_tag_manage'] ] ) {
+					$capabilities['gmedia_tag_manage'] = $capabilities['gmedia_terms'];
+				}
+				if ( $roles[ $capabilities['gmedia_terms'] ] < $roles[ $capabilities['gmedia_terms_delete'] ] ) {
+					$capabilities['gmedia_terms_delete'] = $capabilities['gmedia_terms'];
+				} else {
+					$rolekey = max( $roles[ $capabilities['gmedia_album_manage'] ], $roles[ $capabilities['gmedia_tag_manage'] ] );
+					$role    = $_roles[ $rolekey ];
+					if ( $role < $roles[ $capabilities['gmedia_terms_delete'] ] ) {
+						$capabilities['gmedia_terms_delete'] = $role;
+					}
+				}
+
+				foreach ( $capabilities as $key => $val ) {
+					$gmDB->set_capability( $val, $key );
+				}
+			}
+
+			if ( isset( $set['delete_originals'] ) && (int) $set['delete_originals'] ) {
 //                if (($handle = opendir($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original']))) {
 //                    while (false !== ($file = readdir($handle))) {
 //                        // do something with the file
@@ -116,114 +124,106 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 //                    }
 //                    closedir($handle);
 //                }
-                $files = glob($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT);
-                if( !empty($files)){
-                    foreach($files as $file){
-                        @unlink($file);
-                    }
-                }
+				$files = glob( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT );
+				if ( ! empty( $files ) ) {
+					foreach ( $files as $file ) {
+						@unlink( $file );
+					}
+				}
 
-            }
+			}
 
-            update_option('gmediaOptions', $gmGallery->options);
-            if(isset($_POST['GmediaHashID_salt'])){
-                update_option('GmediaHashID_salt', (string) $_POST['GmediaHashID_salt']);
-            }
-	        gmedia_delete_transients( 'gm_cache' );
-            if($flush_rewrite_rules){
-                flush_rewrite_rules(false);
-            }
-            $this->msg[] .= __('Settings saved', 'grand-media');
-        }
+			update_option( 'gmediaOptions', $gmGallery->options );
+			if ( isset( $_POST['GmediaHashID_salt'] ) ) {
+				update_option( 'GmediaHashID_salt', (string) $_POST['GmediaHashID_salt'] );
+			}
+			gmedia_delete_transients( 'gm_cache' );
+			if ( $flush_rewrite_rules ) {
+				flush_rewrite_rules( false );
+			}
+			$this->msg[] .= __( 'Settings saved', 'grand-media' );
+		}
 
-        if($lk_check){
-            check_admin_referer('gmedia_settings', '_wpnonce_settings');
-            $license_key = $gmCore->_post('set');
-            if( !empty($license_key['purchase_key'])){
-                global $wp_version;
-                $gmedia_ua = "WordPress/{$wp_version} | ";
-                $gmedia_ua .= 'Gmedia/' . constant('GMEDIA_VERSION');
+		if ( $lk_check ) {
+			check_admin_referer( 'gmedia_settings', '_wpnonce_settings' );
+			$license_key = $gmCore->_post( 'set' );
+			if ( ! empty( $license_key['purchase_key'] ) ) {
+				global $wp_version;
+				$gmedia_ua = "WordPress/{$wp_version} | ";
+				$gmedia_ua .= 'Gmedia/' . constant( 'GMEDIA_VERSION' );
 
-                $response = wp_remote_post('https://codeasily.com/rest/gmedia-key.php', array(
-                    'body'        => array('key' => $license_key['purchase_key'], 'site' => site_url()),
-                    'headers'     => array(
-                        'Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option('blog_charset'),
-                        'Host'         => 'codeasily.com',
-                        'User-Agent'   => $gmedia_ua
-                    ),
-                    'httpversion' => '1.0',
-                    'timeout'     => 45
-                ));
+				$response = wp_remote_post( 'https://codeasily.com/rest/gmedia-key.php', [
+					'body'        => [ 'key' => $license_key['purchase_key'], 'site' => site_url() ],
+					'headers'     => [
+						'Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option( 'blog_charset' ),
+						'Host'         => 'codeasily.com',
+						'User-Agent'   => $gmedia_ua,
+					],
+					'httpversion' => '1.0',
+					'timeout'     => 45,
+				] );
 
-                if(is_wp_error($response)){
-                    $this->error[] = $response->get_error_message();
-                    $this->error[] = __('Use Help Screen (top right button) for more info', 'grand-media');
-                } else{
-                    $result = json_decode($response['body']);
-                    if(isset($result->error)){
-                        if($result && $result->error->code == 200){
-                            $gmGallery->options['license_name'] = $result->content;
-                            $gmGallery->options['purchase_key'] = $result->dkey;
-                            $gmGallery->options['license_key']  = $result->key;
-                            $gmGallery->options['license_key2'] = $result->key2;
-                            $this->msg[]                        = sprintf(__('License Key activated successfully. You can see all activated websites with this key on your account page %s', 'grand-media'), '<a href="http://codeasily.com/my-account/" target="_blank">http://codeasily.com/my-account/</a>');
-                        } else{
-                            $gmGallery->options['license_name'] = '';
-                            $gmGallery->options['purchase_key'] = '';
-                            $gmGallery->options['license_key']  = '';
-                            $gmGallery->options['license_key2'] = '';
-                            $this->error[]                      = __('Error', 'grand-media') . ': ' . $result->error->message;
-                        }
-                        update_option('gmediaOptions', $gmGallery->options);
-                    } else{
-                        $this->error[] = __('Something went wrong.. Try again later or use Help Screen (top right button) for more info', 'grand-media');
-                    }
-                }
-            } else{
-                $this->error[] = __('Empty License Key', 'grand-media');
-            }
-        }
+				if ( is_wp_error( $response ) ) {
+					$this->error[] = $response->get_error_message();
+					$this->error[] = __( 'Use Help Screen (top right button) for more info', 'grand-media' );
+				} else {
+					$result = json_decode( $response['body'] );
+					if ( isset( $result->error ) ) {
+						if ( $result && $result->error->code === 200 ) {
+							$gmGallery->options['license_name'] = $result->content;
+							$gmGallery->options['purchase_key'] = $result->dkey;
+							$gmGallery->options['license_key']  = $result->key;
+							$gmGallery->options['license_key2'] = $result->key2;
+							$this->msg[]                        = sprintf( __( 'License Key activated successfully. You can see all activated websites with this key on your account page %s', 'grand-media' ), '<a href="http://codeasily.com/my-account/" target="_blank">http://codeasily.com/my-account/</a>' );
+						} else {
+							$gmGallery->options['license_name'] = '';
+							$gmGallery->options['purchase_key'] = '';
+							$gmGallery->options['license_key']  = '';
+							$gmGallery->options['license_key2'] = '';
+							$this->error[]                      = __( 'Error', 'grand-media' ) . ': ' . $result->error->message;
+						}
+						update_option( 'gmediaOptions', $gmGallery->options );
+					} else {
+						$this->error[] = __( 'Something went wrong.. Try again later or use Help Screen (top right button) for more info', 'grand-media' );
+					}
+				}
+			} else {
+				$this->error[] = __( 'Empty License Key', 'grand-media' );
+			}
+		}
 
-        if(isset($_POST['gmedia_settings_reset'])){
-            check_admin_referer('gmedia_settings', '_wpnonce_settings');
-            include_once(GMEDIA_ABSPATH . 'config/setup.php');
-            $_temp_options      = $gmGallery->options;
-            $gmGallery->options = gmedia_default_options();
-            // don't reset license
-            $gmGallery->options['license_name'] = $_temp_options['license_name'];
-            $gmGallery->options['purchase_key'] = $_temp_options['purchase_key'];
-            $gmGallery->options['license_key']  = $_temp_options['license_key'];
-            $gmGallery->options['license_key2'] = $_temp_options['license_key2'];
-            // don't reset mobile app
-            $gmGallery->options['site_ID']        = $_temp_options['site_ID'];
-            $gmGallery->options['mobile_app']     = (int)$_temp_options['mobile_app'];
-            if($gmGallery->options['mobile_app'] && isset($_temp_options['gmedia_service'])){
-                $gmGallery->options['gmedia_service'] = $_temp_options['gmedia_service'];
-            }
-            delete_metadata('user', 0, 'gm_screen_options', '', true);
-            update_option('gmediaOptions', $gmGallery->options);
+		if ( isset( $_POST['gmedia_settings_reset'] ) ) {
+			check_admin_referer( 'gmedia_settings', '_wpnonce_settings' );
+			include_once GMEDIA_ABSPATH . 'config/setup.php';
+			$_temp_options      = $gmGallery->options;
+			$gmGallery->options = gmedia_default_options();
+			// don't reset license
+			$gmGallery->options['license_name'] = $_temp_options['license_name'];
+			$gmGallery->options['purchase_key'] = $_temp_options['purchase_key'];
+			$gmGallery->options['license_key']  = $_temp_options['license_key'];
+			$gmGallery->options['license_key2'] = $_temp_options['license_key2'];
+			// don't reset mobile app
+			$gmGallery->options['site_ID']    = $_temp_options['site_ID'];
+			$gmGallery->options['mobile_app'] = (int) $_temp_options['mobile_app'];
+			if ( $gmGallery->options['mobile_app'] && isset( $_temp_options['gmedia_service'] ) ) {
+				$gmGallery->options['gmedia_service'] = $_temp_options['gmedia_service'];
+			}
+			delete_metadata( 'user', 0, 'gm_screen_options', '', true );
+			update_option( 'gmediaOptions', $gmGallery->options );
 
-            if($gmCore->_post('capability') && current_user_can('manage_options')){
-                $capabilities = $gmCore->plugin_capabilities();
-                $capabilities = apply_filters('gmedia_capabilities', $capabilities);
-                //$role = get_role('administrator');
-                foreach($capabilities as $cap){
-                    $gmDB->set_capability('administrator', $cap);
-                }
-            }
-	        gmedia_delete_transients( 'gm_cache' );
-            $this->msg[] .= __('All settings set to default', 'grand-media');
-        }
+			if ( $gmCore->_post( 'capability' ) && current_user_can( 'manage_options' ) ) {
+				$capabilities = $gmCore->plugin_capabilities();
+				$capabilities = apply_filters( 'gmedia_capabilities', $capabilities );
+				//$role = get_role('administrator');
+				foreach ( $capabilities as $cap ) {
+					$gmDB->set_capability( 'administrator', $cap );
+				}
+			}
+			gmedia_delete_transients( 'gm_cache' );
+			$this->msg[] .= __( 'All settings set to default', 'grand-media' );
+		}
 
-    }
-
-    public static function getMe(){
-        if(self::$me == null){
-            self::$me = new GmediaProcessor_Settings();
-        }
-
-        return self::$me;
-    }
+	}
 }
 
 global $gmProcessorSettings;

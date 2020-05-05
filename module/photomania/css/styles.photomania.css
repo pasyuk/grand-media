@@ -65,7 +65,7 @@
 .gmpm_photo_show .gmpm_photo_header { position:static; top:0; border-top:1px solid #f2f3f5; border-bottom:1px solid #f2f3f5; padding-bottom:20px; margin-bottom:20px; }
 .gmpm_photo_show.gmpm_focus_maximized .gmpm_photo_header { top:-90px; }
 .gmedia-template .gmpm_photo_show .gmpm_photo_header { padding-left:20px; padding-right:20px; }
-.gmpm_photo_header .gmpm_name_wrap { float:left; padding:20px 0 2px 62px; max-width:100%; overflow:hidden; white-space:nowrap; position:relative; }
+.gmpm_photo_header .gmpm_name_wrap { float:left; padding:20px 0 2px 62px; max-width:100%; overflow:hidden; white-space:nowrap; position:relative; min-height: 70px; }
 .gmpm_photo_header .gmpm_name_wrap.gmpm_no_avatar { padding-left:0; }
 .gmpm_photo_header .gmpm_name_wrap .gmpm_user_avatar { position:absolute; top:20px; left:0; }
 .gmpm_photo_header .gmpm_name_wrap .gmpm_user_avatar a.gmpm_user_avatar_link { display:block; text-decoration:none; }

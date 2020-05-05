@@ -4,8 +4,8 @@
  * GmediaAdmin - Admin Section for GRAND Media
  */
 class GmediaAdmin {
-	var $pages = array();
-	var $body_classes = array();
+	var $pages = [];
+	var $body_classes = [];
 
 	/**
 	 * constructor
@@ -13,19 +13,19 @@ class GmediaAdmin {
 	function __construct() {
 		global $pagenow;
 
-		add_action( 'admin_head', array( &$this, 'admin_head' ) );
+		add_action( 'admin_head', [ &$this, 'admin_head' ] );
 
 		// Add the admin menu
-		add_action( 'admin_menu', array( &$this, 'add_menu' ) );
+		add_action( 'admin_menu', [ &$this, 'add_menu' ] );
 
 		// Add the script and style files
-		add_action( 'admin_enqueue_scripts', array( &$this, 'load_scripts' ), 20 );
-		add_action( 'admin_print_scripts-widgets.php', array( &$this, 'gmedia_widget_scripts' ) );
+		add_action( 'admin_enqueue_scripts', [ &$this, 'load_scripts' ], 20 );
+		add_action( 'admin_print_scripts-widgets.php', [ &$this, 'gmedia_widget_scripts' ] );
 
-		add_action( 'enqueue_block_editor_assets', array( &$this, 'gutenberg_assets' ) );
+		add_action( 'enqueue_block_editor_assets', [ &$this, 'gutenberg_assets' ] );
 
-		add_filter( 'screen_settings', array( &$this, 'screen_settings' ), 10, 2 );
-		add_filter( 'set-screen-option', array( &$this, 'screen_settings_save' ), 11, 3 );
+		add_filter( 'screen_settings', [ &$this, 'screen_settings' ], 10, 2 );
+		add_filter( 'set-screen-option', [ &$this, 'screen_settings_save' ], 11, 3 );
 
 		if ( isset( $_GET['page'] ) && ( false !== strpos( $_GET['page'], 'GrandMedia' ) ) ) {
 			$this->body_classes[] = 'grand-media-admin-page';
@@ -40,11 +40,11 @@ class GmediaAdmin {
 				}
 			}
 
-			if ( ( 'admin.php' == $pagenow ) && isset( $_GET['gmediablank'] ) ) {
-				add_action( 'admin_init', array( &$this, 'gmedia_blank_page' ) );
+			if ( ( 'admin.php' === $pagenow ) && isset( $_GET['gmediablank'] ) ) {
+				add_action( 'admin_init', [ &$this, 'gmedia_blank_page' ] );
 			}
 
-			add_action( 'admin_footer', array( &$this, 'admin_footer' ) );
+			add_action( 'admin_footer', [ &$this, 'admin_footer' ] );
 		}
 
 	}
@@ -53,7 +53,7 @@ class GmediaAdmin {
 	 * admin_head
 	 */
 	function admin_head() {
-		add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
+		add_filter( 'admin_body_class', [ &$this, 'admin_body_class' ] );
 
 		if ( isset( $_GET['page'] ) && ( false !== strpos( $_GET['page'], 'GrandMedia' ) ) ) {
 			?>
@@ -96,28 +96,28 @@ class GmediaAdmin {
 		echo '<div id="gmedia-container">';
 		switch ( $gmediablank ) {
 			case 'update_plugin':
-				require_once( dirname( dirname( __FILE__ ) ) . '/config/update.php' );
+				require_once dirname( dirname( __FILE__ ) ) . '/config/update.php';
 				gmedia_do_update();
 				break;
 			case 'image_editor':
-				require_once( dirname( dirname( __FILE__ ) ) . '/inc/image-editor.php' );
+				require_once dirname( dirname( __FILE__ ) ) . '/inc/image-editor.php';
 				gmedia_image_editor();
 				break;
 			case 'map_editor':
-				require_once( dirname( dirname( __FILE__ ) ) . '/inc/map-editor.php' );
+				require_once dirname( dirname( __FILE__ ) ) . '/inc/map-editor.php';
 				gmedia_map_editor();
 				break;
 			case 'library':
 				echo '<div id="gmedia_iframe_content">';
 				echo '<div id="gm-message">' . $gmCore->alert( 'success', $gmProcessor->msg ) . $gmCore->alert( 'danger', $gmProcessor->error ) . '</div>';
-				include( GMEDIA_ABSPATH . 'admin/pages/library/library.php' );
+				include GMEDIA_ABSPATH . 'admin/pages/library/library.php';
 				echo '</div>';
 				break;
 			case 'comments':
-				require_once( dirname( __FILE__ ) . '/tpl/comments.php' );
+				require_once dirname( __FILE__ ) . '/tpl/comments.php';
 				break;
 			case 'module_preview':
-				require_once( dirname( __FILE__ ) . '/tpl/module-preview.php' );
+				require_once dirname( __FILE__ ) . '/tpl/module-preview.php';
 				break;
 		}
 		echo '</div>';
@@ -126,7 +126,7 @@ class GmediaAdmin {
 		exit;
 	}
 
-	// integrate the menu
+	// integrate the menu.
 	function add_menu() {
 
 		$count = '';
@@ -135,33 +135,33 @@ class GmediaAdmin {
 			if ( $gmGallery->options['modules_update'] ) {
 				$count .= " <span class='update-plugins count-{$gmGallery->options['modules_update']}' style='background-color: #bb391b;'><span class='plugin-count gm-module-count gm-modules-update-count' title='" . __( 'Modules Updates', 'grand-media' ) . "'>{$gmGallery->options['modules_update']}</span></span>";
 			}
-			if ( $gmGallery->options['modules_new'] && !empty( $gmGallery->options['notify_new_modules'] ) ) {
+			if ( $gmGallery->options['modules_new'] && ! empty( $gmGallery->options['notify_new_modules'] ) ) {
 				$count .= " <span class='update-plugins count-{$gmGallery->options['modules_new']}' style='background-color: #367236;'><span class='plugin-count gm-module-count gm-modules-new-count' title='" . __( 'New Modules', 'grand-media' ) . "'>{$gmGallery->options['modules_new']}</span></span>";
 			}
 		}
 
-		$this->pages   = array();
-		$this->pages[] = add_menu_page( __( 'Gmedia Library', 'grand-media' ), "Gmedia{$count}", 'gmedia_library', 'GrandMedia', array(
+		$this->pages   = [];
+		$this->pages[] = add_menu_page( __( 'Gmedia Library', 'grand-media' ), "Gmedia{$count}", 'gmedia_library', 'GrandMedia', [
 			&$this,
 			'shell',
-		), 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjAgMjAiIHhtbDpzcGFjZT0icHJlc2VydmUiPiAgPGltYWdlIGlkPSJpbWFnZTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeD0iMCIgeT0iMCIKICAgIHhsaW5rOmhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQlFBQUFBVUNBTUFBQUM2ViswL0FBQUFCR2RCVFVFQUFMR1BDL3hoQlFBQUFDQmpTRkpOCkFBQjZKZ0FBZ0lRQUFQb0FBQUNBNkFBQWRUQUFBT3BnQUFBNm1BQUFGM0NjdWxFOEFBQUJrbEJNVkVVeFpua3haM2d4WjNoQ2RJTnUKbEtBK2NZQnBrSjJRcmJhb3Y4YTV5OUdadEx5UnJyZG1qcHMzYTN4WmhKS0txYktPckxXcndjaW52c1dWc2JxM3l0Q1hzcnRWZ1k5UwpmNDZndWNGN25hZzdibjVFZFlWeGxxS01xclN3eGN1aHVzS2Z1TUMrejlSMm1xWTZibjZ1dzhyNy9QekYxTm0weU03dDh2UHo5dmVGCnBhL2Y1K3BiaHBSSWVJZCtvS3FOcTdTZHQ3OWhpcGN5YUhuSDF0clMzdUZIZDRiSzJOMzUrL3YzK2ZxOXp0UmFoWk5QZll5Qm9xeUMKbzYwOGIzOUdkb1poaTVoT2ZJdnE3L0dwdjhiLy8vLzIrUG45L2YzQjBkWkFjb0tZczd3emFIbSt6OVZxa1oxWGc1SFQzK0xZNHVaNgpuYWh3bGFGRGRJVFAzT0JLZVloTWU0bnc5UFhoNmV2eDlmYkwyZDFUZ0k1em1LTXphWHJUM3VLWXM3dlAyOS9WNE9PY3RyN2c2T3VVCnNMbE5mSXU0eTlEbzd2QkZkb1YzbTZibTdlODViWDNJMXR1RHBLN1EzT0JZaEpHUHJMWEMwdGVsdmNSSmVZamI1ZWpOMnQ1eWw2S1cKc3JyYjVPZUFvYXhqakpuZTUrbDJtcVhFMDlpSHByQnRrNTl5bDZOOG5xazRiSDNXNGVUVTMrUFIzZUdxd01jY1RNSnpBQUFBQW5SUwpUbE51MlhMaTRXRUFBQUFCWWt0SFJFVDV0SmpCQUFBQUNYQklXWE1BQUFzVEFBQUxFd0VBbXB3WUFBQUFCM1JKVFVVSDRBc0NDRGNJCmw0WXhCZ0FBQVIxSlJFRlVHTk5qWUdCa1FnT01ESmhpSUZFNGs1bUZGY2FFQzdLeGMzQnljZlB3SWd2eWNmRUxDQW9KYzRxSThvdEIKQmNVRkpDU2xtS1JsWklYbDVCVVVsVUNDeWlxcWF1b2FtbHJhT3N4TXVucjZCb1pBUVNOakUxTW1Kak56QzBzQkt5WW1hMTBiUHFDZwpyWWFkdllLRG81T3ppNnVidTRlOHA1QVhVTkJiMGNmWHo5OHVJRkNDS1VneE9NUk9DR2hScUdaWU9MTmRSR1JVZ0FFVGsxU0VYMVEwCkUwTk1ySGRjZklKVVlwSzdiRExRMHBUVXRIUW1ob3pNTEgzVGhPd2MzY3pjUExEelRMU1lHUElMbUR3S2k0cExtRXFUSWQ3Z0tHUmkKWUF1elk3SXJpeXV2cUlTSVNWVlZBeTJxQ2ErdERtU3BxMk1KckZkcXlNbjN5MjRFQ25weEp6UWxOUHZGeHBxMDVBWUh4N2Z5SW9VUwpNc0FleU5paUF3Q3FwalN3RnBqcGxnQUFBQ1YwUlZoMFpHRjBaVHBqY21WaGRHVUFNakF4TmkweE1TMHdNbFF3T0RvMU5Ub3dPQzB3Ck56b3dNSWl4dXBvQUFBQWxkRVZZZEdSaGRHVTZiVzlrYVdaNUFESXdNVFl0TVRFdE1ESlVNRGc2TlRVNk1EZ3RNRGM2TURENTdBSW0KQUFBQUFFbEZUa1N1UW1DQyIgLz4KPC9zdmc+Cg==', 11 );
-		$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Library', 'grand-media' ), __( 'Gmedia Library', 'grand-media' ), 'gmedia_library', 'GrandMedia', array( &$this, 'shell' ) );
+		], 'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjAgMjAiIHhtbDpzcGFjZT0icHJlc2VydmUiPiAgPGltYWdlIGlkPSJpbWFnZTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeD0iMCIgeT0iMCIKICAgIHhsaW5rOmhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQlFBQUFBVUNBTUFBQUM2ViswL0FBQUFCR2RCVFVFQUFMR1BDL3hoQlFBQUFDQmpTRkpOCkFBQjZKZ0FBZ0lRQUFQb0FBQUNBNkFBQWRUQUFBT3BnQUFBNm1BQUFGM0NjdWxFOEFBQUJrbEJNVkVVeFpua3haM2d4WjNoQ2RJTnUKbEtBK2NZQnBrSjJRcmJhb3Y4YTV5OUdadEx5UnJyZG1qcHMzYTN4WmhKS0txYktPckxXcndjaW52c1dWc2JxM3l0Q1hzcnRWZ1k5UwpmNDZndWNGN25hZzdibjVFZFlWeGxxS01xclN3eGN1aHVzS2Z1TUMrejlSMm1xWTZibjZ1dzhyNy9QekYxTm0weU03dDh2UHo5dmVGCnBhL2Y1K3BiaHBSSWVJZCtvS3FOcTdTZHQ3OWhpcGN5YUhuSDF0clMzdUZIZDRiSzJOMzUrL3YzK2ZxOXp0UmFoWk5QZll5Qm9xeUMKbzYwOGIzOUdkb1poaTVoT2ZJdnE3L0dwdjhiLy8vLzIrUG45L2YzQjBkWkFjb0tZczd3emFIbSt6OVZxa1oxWGc1SFQzK0xZNHVaNgpuYWh3bGFGRGRJVFAzT0JLZVloTWU0bnc5UFhoNmV2eDlmYkwyZDFUZ0k1em1LTXphWHJUM3VLWXM3dlAyOS9WNE9PY3RyN2c2T3VVCnNMbE5mSXU0eTlEbzd2QkZkb1YzbTZibTdlODViWDNJMXR1RHBLN1EzT0JZaEpHUHJMWEMwdGVsdmNSSmVZamI1ZWpOMnQ1eWw2S1cKc3JyYjVPZUFvYXhqakpuZTUrbDJtcVhFMDlpSHByQnRrNTl5bDZOOG5xazRiSDNXNGVUVTMrUFIzZUdxd01jY1RNSnpBQUFBQW5SUwpUbE51MlhMaTRXRUFBQUFCWWt0SFJFVDV0SmpCQUFBQUNYQklXWE1BQUFzVEFBQUxFd0VBbXB3WUFBQUFCM1JKVFVVSDRBc0NDRGNJCmw0WXhCZ0FBQVIxSlJFRlVHTk5qWUdCa1FnT01ESmhpSUZFNGs1bUZGY2FFQzdLeGMzQnljZlB3SWd2eWNmRUxDQW9KYzRxSThvdEIKQmNVRkpDU2xtS1JsWklYbDVCVVVsVUNDeWlxcWF1b2FtbHJhT3N4TXVucjZCb1pBUVNOakUxTW1Kak56QzBzQkt5WW1hMTBiUHFDZwpyWWFkdllLRG81T3ppNnVidTRlOHA1QVhVTkJiMGNmWHo5OHVJRkNDS1VneE9NUk9DR2hScUdaWU9MTmRSR1JVZ0FFVGsxU0VYMVEwCkUwTk1ySGRjZklKVVlwSzdiRExRMHBUVXRIUW1ob3pNTEgzVGhPd2MzY3pjUExEelRMU1lHUElMbUR3S2k0cExtRXFUSWQ3Z0tHUmkKWUF1elk3SXJpeXV2cUlTSVNWVlZBeTJxQ2ErdERtU3BxMk1KckZkcXlNbjN5MjRFQ25weEp6UWxOUHZGeHBxMDVBWUh4N2Z5SW9VUwpNc0FleU5paUF3Q3FwalN3RnBqcGxnQUFBQ1YwUlZoMFpHRjBaVHBqY21WaGRHVUFNakF4TmkweE1TMHdNbFF3T0RvMU5Ub3dPQzB3Ck56b3dNSWl4dXBvQUFBQWxkRVZZZEdSaGRHVTZiVzlrYVdaNUFESXdNVFl0TVRFdE1ESlVNRGc2TlRVNk1EZ3RNRGM2TURENTdBSW0KQUFBQUFFbEZUa1N1UW1DQyIgLz4KPC9zdmc+Cg==', 11 );
+		$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Library', 'grand-media' ), __( 'Gmedia Library', 'grand-media' ), 'gmedia_library', 'GrandMedia', [ &$this, 'shell' ] );
 		if ( current_user_can( 'gmedia_library' ) ) {
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Add Media Files', 'grand-media' ), __( 'Add/Import Files', 'grand-media' ), 'gmedia_upload', 'GrandMedia_AddMedia', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Tags', 'grand-media' ), __( 'Tags', 'grand-media' ), 'gmedia_tag_manage', 'GrandMedia_Tags', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Categories', 'grand-media' ), __( 'Categories', 'grand-media' ), 'gmedia_category_manage', 'GrandMedia_Categories', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Albums', 'grand-media' ), __( 'Albums', 'grand-media' ), 'gmedia_album_manage', 'GrandMedia_Albums', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Galleries', 'grand-media' ), __( 'Galleries', 'grand-media' ), 'gmedia_gallery_manage', 'GrandMedia_Galleries', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Modules', 'grand-media' ), __( 'Modules', 'grand-media' ), 'gmedia_gallery_manage', 'GrandMedia_Modules', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Settings', 'grand-media' ), __( 'Settings', 'grand-media' ), 'manage_options', 'GrandMedia_Settings', array( &$this, 'shell' ) );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Add Media Files', 'grand-media' ), __( 'Add/Import Files', 'grand-media' ), 'gmedia_upload', 'GrandMedia_AddMedia', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Tags', 'grand-media' ), __( 'Tags', 'grand-media' ), 'gmedia_tag_manage', 'GrandMedia_Tags', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Categories', 'grand-media' ), __( 'Categories', 'grand-media' ), 'gmedia_category_manage', 'GrandMedia_Categories', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Albums', 'grand-media' ), __( 'Albums', 'grand-media' ), 'gmedia_album_manage', 'GrandMedia_Albums', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Galleries', 'grand-media' ), __( 'Galleries', 'grand-media' ), 'gmedia_gallery_manage', 'GrandMedia_Galleries', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Modules', 'grand-media' ), __( 'Modules', 'grand-media' ), 'gmedia_gallery_manage', 'GrandMedia_Modules', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Settings', 'grand-media' ), __( 'Settings', 'grand-media' ), 'manage_options', 'GrandMedia_Settings', [ &$this, 'shell' ] );
 			//$this->pages[] = add_submenu_page( 'GrandMedia', __( 'iOS Application', 'grand-media' ), __( 'iOS Application', 'grand-media' ), 'gmedia_settings', 'GrandMedia_App', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'WordPress Media Library', 'grand-media' ), __( 'WP Media Library', 'grand-media' ), 'gmedia_import', 'GrandMedia_WordpressLibrary', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Logs', 'grand-media' ), __( 'Gmedia Logs', 'grand-media' ), 'manage_options', 'GrandMedia_Logs', array( &$this, 'shell' ) );
-			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Support', 'grand-media' ), __( 'Support', 'grand-media' ), 'manage_options', 'GrandMedia_Support', array( &$this, 'shell' ) );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'WordPress Media Library', 'grand-media' ), __( 'WP Media Library', 'grand-media' ), 'gmedia_import', 'GrandMedia_WordpressLibrary', [ &$this, 'shell' ] );
+			$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Logs', 'grand-media' ), __( 'Gmedia Logs', 'grand-media' ), 'manage_options', 'GrandMedia_Logs', [ &$this, 'shell' ] );
+			//$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Support', 'grand-media' ), __( 'Support', 'grand-media' ), 'manage_options', 'GrandMedia_Support', array( &$this, 'shell' ) );
 		}
 
 		foreach ( $this->pages as $page ) {
-			add_action( "load-$page", array( &$this, 'screen_help' ) );
+			add_action( "load-$page", [ &$this, 'screen_help' ] );
 		}
 	}
 
@@ -175,8 +175,8 @@ class GmediaAdmin {
 		$sideLinks = $this->sideLinks();
 
 		// check for upgrade
-		if ( get_option( 'gmediaDbVersion' ) != GMEDIA_DBVERSION ) {
-			if ( get_transient( 'gmediaUpgrade' ) || ( isset( $_GET['do_update'] ) && ( 'gmedia' == $_GET['do_update'] ) ) ) {
+		if ( get_option( 'gmediaDbVersion' ) !== GMEDIA_DBVERSION ) {
+			if ( get_transient( 'gmediaUpgrade' ) || ( isset( $_GET['do_update'] ) && ( 'gmedia' === $_GET['do_update'] ) ) ) {
 				$sideLinks['grandTitle'] = __( 'Updating GmediaGallery Plugin', 'grand-media' );
 				$sideLinks['sideLinks']  = '';
 				$gmProcessor->page       = 'GrandMedia_Update';
@@ -204,11 +204,11 @@ class GmediaAdmin {
 				<div id="gmedia-logo">Gmedia
 					<small> by CodEasily.com</small>
 				</div>
-				<h2><?php echo $sideLinks['grandTitle']; ?></h2>
+				<h2><?php echo esc_html( $sideLinks['grandTitle'] ); ?></h2>
 				<?php
 				if ( ! is_plugin_active( 'woowbox/woowbox.php' ) && empty( $gmGallery->options['disable_ads'] ) ) {
 					?>
-					<div class="promote-woowbox"><a href="https://bit.ly/woowbox" target="_blank"><img src="<?php echo plugins_url( '/grand-media/admin/assets/img/woowbox-promote.png' ) ?>" alt="Try WoowBox Gallery plugin"/></a></div>
+					<div class="promote-woowbox"><a href="https://bit.ly/woowbox" target="_blank"><img src="<?php echo esc_url( plugins_url( '/grand-media/admin/assets/img/woowbox-promote.png' ) ); ?>" alt="Try WoowBox Gallery plugin"/></a></div>
 					<?php
 				}
 				?>
@@ -276,15 +276,15 @@ class GmediaAdmin {
 			$content['sideLinks'] .= "\n" . '<a class="list-group-item list-group-item-premium" target="_blank" href="https://codeasily.com/product/one-site-license/">' . __( 'Get Gmedia Premium', 'grand-media' ) . '</a></li><li>';
 		}
 		foreach ( $submenu['GrandMedia'] as $menuKey => $menuItem ) {
-			if ( $menuItem[2] == $gmProcessor->page ) {
+			if ( $menuItem[2] === $gmProcessor->page ) {
 				$iscur                 = ' active';
 				$content['grandTitle'] = $menuItem[3];
 			} else {
 				$iscur = '';
 			}
 			$menuData = '';
-			if ( $menuItem[2] == 'GrandMedia_Modules' && gm_user_can( 'module_manage' ) ) {
-				if ( !empty( $gmGallery->options['notify_new_modules'] ) ) {
+			if ( $menuItem[2] === 'GrandMedia_Modules' && gm_user_can( 'module_manage' ) ) {
+				if ( ! empty( $gmGallery->options['notify_new_modules'] ) ) {
 					$menuData .= '<span class="badge badge-success pull-right gm-module-count-' . $gmGallery->options['modules_new'] . '" title="' . __( 'New Modules', 'grand-media' ) . '">' . $gmGallery->options['modules_new'] . '</span>';
 				}
 				$menuData .= '<span class="badge badge-error pull-right gm-module-count-' . $gmGallery->options['modules_update'] . '" title="' . __( 'Modules Updates', 'grand-media' ) . '">' . $gmGallery->options['modules_update'] . '</span>';
@@ -292,6 +292,7 @@ class GmediaAdmin {
 
 			$content['sideLinks'] .= "\n" . '<a class="list-group-item' . $iscur . '" href="' . admin_url( 'admin.php?page=' . $menuItem[2] ) . '">' . $menuItem[0] . $menuData . '</a>';
 		}
+		$content['sideLinks'] .= "\n" . '<a class="list-group-item" target="_blank" href="https://wordpress.org/support/plugin/grand-media/">' . __( 'Support', 'grand-media' ) . '</a>';
 		$content['sideLinks'] .= '
 				</li></ul>
 			</div>
@@ -307,14 +308,14 @@ class GmediaAdmin {
 		<div class="notice updated gm-message gmedia-service__message">
 			<div class="gm-message-content">
 				<div class="gm-plugin-icon">
-					<img src="<?php echo plugins_url( '/grand-media/admin/assets/img/icon-128x128.png' ) ?>" width="90" height="90">
+					<img src="<?php echo esc_url( plugins_url( '/grand-media/admin/assets/img/icon-128x128.png' ) ); ?>" width="90" height="90">
 				</div>
 				<?php printf( __( '<p>Hey %s,<br>Please help us improve <b>Gmedia Gallery</b>! If you opt-in, some data about your usage of <b>Gmedia Gallery</b> will be sent to <a href="https://codeasily.com/" target="_blank" tabindex="1">codeasily.com</a>.
                     If you skip this, that\'s okay! <b>Gmedia Gallery</b> will still work just fine.</p>', 'grand-media' ), $current_user->display_name ); ?>
 			</div>
 			<div class="gm-message-actions">
-				<button class="button button-secondary gm_service_action" data-action="skip" data-nonce="<?php echo $nonce; ?>"><?php _e( 'Skip', 'grand-media' ); ?></button>
-				<button class="button button-primary gm_service_action" data-action="allow" data-nonce="<?php echo $nonce; ?>"><?php _e( 'Allow &amp; Continue', 'grand-media' ); ?></button>
+				<button class="button button-secondary gm_service_action" data-action="skip" data-nonce="<?php echo esc_attr( $nonce ); ?>"><?php _e( 'Skip', 'grand-media' ); ?></button>
+				<button class="button button-primary gm_service_action" data-action="allow" data-nonce="<?php echo esc_attr( $nonce ); ?>"><?php _e( 'Allow &amp; Continue', 'grand-media' ); ?></button>
 			</div>
 			<div class="gm-message-plus gm-closed">
 				<a class="gm-mp-trigger" href="#" onclick="jQuery('.gm-message-plus').toggleClass('gm-closed gm-opened'); return false;"><?php _e( 'What permissions are being granted?', 'grand-media' ); ?></a>
@@ -343,6 +344,75 @@ class GmediaAdmin {
 		<?php
 	}
 
+	function controller() {
+
+		global $gmProcessor;
+		switch ( $gmProcessor->page ) {
+			case 'GrandMedia_AddMedia':
+				include_once dirname( __FILE__ ) . '/pages/addmedia/addmedia.php';
+				break;
+			case 'GrandMedia_Albums':
+				if ( isset( $_GET['edit_term'] ) ) {
+					include_once dirname( __FILE__ ) . '/pages/terms/edit-term.php';
+				} else {
+					include_once dirname( __FILE__ ) . '/pages/terms/terms.php';
+				}
+				break;
+			case 'GrandMedia_Categories':
+				if ( isset( $_GET['edit_term'] ) ) {
+					include_once dirname( __FILE__ ) . '/pages/terms/edit-term.php';
+				} else {
+					include_once dirname( __FILE__ ) . '/pages/terms/terms.php';
+				}
+				break;
+			case 'GrandMedia_Tags':
+				include_once dirname( __FILE__ ) . '/pages/terms/terms.php';
+				break;
+			case 'GrandMedia_Galleries':
+				if ( isset( $_GET['gallery_module'] ) || isset( $_GET['edit_term'] ) ) {
+					include_once dirname( __FILE__ ) . '/pages/galleries/edit-gallery.php';
+				} else {
+					include_once dirname( __FILE__ ) . '/pages/galleries/galleries.php';
+				}
+				break;
+			case 'GrandMedia_Modules':
+				if ( isset( $_GET['preset_module'] ) || isset( $_GET['preset'] ) ) {
+					include_once dirname( __FILE__ ) . '/pages/modules/edit-preset.php';
+				} else {
+					include_once dirname( __FILE__ ) . '/pages/modules/modules.php';
+				}
+				break;
+			case 'GrandMedia_Settings':
+				include_once dirname( __FILE__ ) . '/pages/settings/settings.php';
+				break;
+			case 'GrandMedia_App':
+				include_once dirname( __FILE__ ) . '/app.php';
+				gmediaApp();
+				break;
+			case 'GrandMedia_WordpressLibrary':
+				include_once dirname( __FILE__ ) . '/wpmedia.php';
+				grandWPMedia();
+				break;
+			case 'GrandMedia_Logs':
+				include_once dirname( __FILE__ ) . '/logs.php';
+				break;
+			case 'GrandMedia_Support':
+				include_once dirname( __FILE__ ) . '/support.php';
+				gmediaSupport();
+				break;
+			case 'GrandMedia_Update':
+				include_once GMEDIA_ABSPATH . 'config/update.php';
+				gmedia_upgrade_progress_panel();
+				break;
+			case 'GrandMedia':
+				include_once dirname( __FILE__ ) . '/pages/library/library.php';
+				break;
+			default:
+				do_action( 'gmedia_admin_page-' . $gmProcessor->page );
+				break;
+		}
+	}
+
 	function admin_footer() {
 		$ajax_operations = get_option( 'gmedia_ajax_long_operations' );
 		if ( empty( $ajax_operations ) || ! is_array( $ajax_operations ) ) {
@@ -358,96 +428,27 @@ class GmediaAdmin {
 		$nonce = wp_create_nonce( 'gmedia_ajax_long_operations' );
 		?>
 		<script type="text/javascript">
-          jQuery(document).ready(function($) {
-            var header = $('#gmedia-header');
-            header.append('<div id="ajax-long-operation"><div class="progress"><div class="progress-bar progress-bar-info" style="width: 0%;"></div><div class="progress-bar-indicator">0%</div></div></div>');
-            gmAjaxLongOperation = function() {
-              jQuery.post(ajaxurl, {action: '<?php echo $ajax; ?>', _wpnonce_ajax_long_operations: '<?php echo $nonce; ?>'}, function(r) {
-                if(r.data) {
-                  jQuery('.progress-bar-info', header).width(r.data.progress);
-                  var indicator = r.data.info ? r.data.info + ' ' + r.data.progress : r.data.progress;
-                  jQuery('.progress-bar-indicator', header).html(indicator);
+			jQuery(document).ready(function($) {
+				var header = $('#gmedia-header');
+				header.append('<div id="ajax-long-operation"><div class="progress"><div class="progress-bar progress-bar-info" style="width: 0%;"></div><div class="progress-bar-indicator">0%</div></div></div>');
+				gmAjaxLongOperation = function() {
+					jQuery.post(ajaxurl, {action: '<?php echo $ajax; ?>', _wpnonce_ajax_long_operations: '<?php echo $nonce; ?>'}, function(r) {
+						if (r.data) {
+							jQuery('.progress-bar-info', header).width(r.data.progress);
+							var indicator = r.data.info ? r.data.info + ' ' + r.data.progress : r.data.progress;
+							jQuery('.progress-bar-indicator', header).html(indicator);
 
-                  if(r.data.done) {
-                    return;
-                  }
-                }
-                gmAjaxLongOperation();
-              });
-            };
-            gmAjaxLongOperation();
-          });
+							if (r.data.done) {
+								return;
+							}
+						}
+						gmAjaxLongOperation();
+					});
+				};
+				gmAjaxLongOperation();
+			});
 		</script>
 		<?php
-	}
-
-	function controller() {
-
-		global $gmProcessor;
-		switch ( $gmProcessor->page ) {
-			case 'GrandMedia_AddMedia':
-				include_once( dirname( __FILE__ ) . '/pages/addmedia/addmedia.php' );
-				break;
-			case 'GrandMedia_Albums':
-				if ( isset( $_GET['edit_term'] ) ) {
-					include_once( dirname( __FILE__ ) . '/pages/terms/edit-term.php' );
-				} else {
-					include_once( dirname( __FILE__ ) . '/pages/terms/terms.php' );
-				}
-				break;
-			case 'GrandMedia_Categories':
-				if ( isset( $_GET['edit_term'] ) ) {
-					include_once( dirname( __FILE__ ) . '/pages/terms/edit-term.php' );
-				} else {
-					include_once( dirname( __FILE__ ) . '/pages/terms/terms.php' );
-				}
-				break;
-			case 'GrandMedia_Tags':
-				include_once( dirname( __FILE__ ) . '/pages/terms/terms.php' );
-				break;
-			case 'GrandMedia_Galleries':
-				if ( isset( $_GET['gallery_module'] ) || isset( $_GET['edit_term'] ) ) {
-					include_once( dirname( __FILE__ ) . '/pages/galleries/edit-gallery.php' );
-				} else {
-					include_once( dirname( __FILE__ ) . '/pages/galleries/galleries.php' );
-				}
-				break;
-			case 'GrandMedia_Modules':
-				if ( isset( $_GET['preset_module'] ) || isset( $_GET['preset'] ) ) {
-					include_once( dirname( __FILE__ ) . '/pages/modules/edit-preset.php' );
-				} else {
-					include_once( dirname( __FILE__ ) . '/pages/modules/modules.php' );
-				}
-				break;
-			case 'GrandMedia_Settings':
-				include_once( dirname( __FILE__ ) . '/pages/settings/settings.php' );
-				break;
-			case 'GrandMedia_App':
-				include_once( dirname( __FILE__ ) . '/app.php' );
-				gmediaApp();
-				break;
-			case 'GrandMedia_WordpressLibrary':
-				include_once( dirname( __FILE__ ) . '/wpmedia.php' );
-				grandWPMedia();
-				break;
-			case 'GrandMedia_Logs':
-				include_once( dirname( __FILE__ ) . '/logs.php' );
-				break;
-			case 'GrandMedia_Support':
-				include_once( dirname( __FILE__ ) . '/support.php' );
-				gmediaSupport();
-				break;
-			case 'GrandMedia_Update':
-				include_once( GMEDIA_ABSPATH . 'config/update.php' );
-				gmedia_upgrade_progress_panel();
-				break;
-			case 'GrandMedia':
-				include_once( dirname( __FILE__ ) . '/pages/library/library.php' );
-				break;
-			default:
-				do_action( 'gmedia_admin_page-' . $gmProcessor->page );
-				break;
-		}
 	}
 
 	/**
@@ -456,7 +457,7 @@ class GmediaAdmin {
 	function load_scripts( $hook ) {
 		global $gmCore, $gmProcessor, $gmGallery;
 		// no need to go on if it's not a plugin page
-		if ( 'admin.php' != $hook && strpos( $gmCore->_get( 'page' ), 'GrandMedia' ) === false ) {
+		if ( 'admin.php' !== $hook && strpos( $gmCore->_get( 'page' ), 'GrandMedia' ) === false ) {
 			return;
 		}
 
@@ -464,7 +465,7 @@ class GmediaAdmin {
 			global $wp_scripts, $wp_styles;
 			foreach ( $wp_scripts->registered as $handle => $wp_script ) {
 				if ( ( ( false !== strpos( $wp_script->src, '/plugins/' ) ) || ( false !== strpos( $wp_script->src, '/themes/' ) ) ) && ( false === strpos( $wp_script->src, GMEDIA_FOLDER ) ) ) {
-					if ( in_array( $handle, $wp_scripts->queue ) ) {
+					if ( in_array( $handle, $wp_scripts->queue, true ) ) {
 						wp_dequeue_script( $handle );
 					}
 					wp_deregister_script( $handle );
@@ -472,7 +473,7 @@ class GmediaAdmin {
 			}
 			foreach ( $wp_styles->registered as $handle => $wp_style ) {
 				if ( ( ( false !== strpos( $wp_style->src, '/plugins/' ) ) || ( false !== strpos( $wp_style->src, '/themes/' ) ) ) && ( false === strpos( $wp_style->src, GMEDIA_FOLDER ) ) ) {
-					if ( in_array( $handle, $wp_styles->queue ) ) {
+					if ( in_array( $handle, $wp_styles->queue, true ) ) {
 						wp_dequeue_style( $handle );
 					}
 					wp_deregister_style( $handle );
@@ -483,58 +484,58 @@ class GmediaAdmin {
 		wp_enqueue_style( 'gmedia-bootstrap' );
 		wp_enqueue_script( 'gmedia-bootstrap' );
 
-		wp_register_script( 'selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.min.js', array( 'jquery' ), '0.12.1' );
-		wp_register_style( 'selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.bootstrap3.css', array( 'gmedia-bootstrap' ), '0.12.1', 'screen' );
+		wp_register_script( 'selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.min.js', [ 'jquery' ], '0.12.1' );
+		wp_register_style( 'selectize', $gmCore->gmedia_url . '/assets/selectize/selectize.bootstrap3.css', [ 'gmedia-bootstrap' ], '0.12.1', 'screen' );
 
-		wp_register_style( 'spectrum', $gmCore->gmedia_url . '/assets/spectrum/spectrum.min.css', array(), '1.8.0' );
-		wp_register_script( 'spectrum', $gmCore->gmedia_url . '/assets/spectrum/spectrum.min.js', array( 'jquery' ), '1.8.0', true );
+		wp_register_style( 'spectrum', $gmCore->gmedia_url . '/assets/spectrum/spectrum.min.css', [], '1.8.0' );
+		wp_register_script( 'spectrum', $gmCore->gmedia_url . '/assets/spectrum/spectrum.min.js', [ 'jquery' ], '1.8.0', true );
 
 		if ( isset( $_GET['page'] ) ) {
 			switch ( $_GET['page'] ) {
 				case "GrandMedia" :
 					if ( $gmCore->caps['gmedia_edit_media'] ) {
-						if ( $gmCore->_get( 'gmediablank' ) == 'image_editor' ) {
-							wp_enqueue_script( 'camanjs', $gmCore->gmedia_url . '/assets/image-editor/camanjs/caman.full.min.js', array(), '4.1.2' );
+						if ( $gmCore->_get( 'gmediablank' ) === 'image_editor' ) {
+							wp_enqueue_script( 'camanjs', $gmCore->gmedia_url . '/assets/image-editor/camanjs/caman.full.min.js', [], '4.1.2' );
 
-							wp_enqueue_style( 'nouislider', $gmCore->gmedia_url . '/assets/image-editor/js/jquery.nouislider.css', array( 'gmedia-bootstrap' ), '6.1.0' );
-							wp_enqueue_script( 'nouislider', $gmCore->gmedia_url . '/assets/image-editor/js/jquery.nouislider.min.js', array( 'jquery' ), '6.1.0' );
+							wp_enqueue_style( 'nouislider', $gmCore->gmedia_url . '/assets/image-editor/js/jquery.nouislider.css', [ 'gmedia-bootstrap' ], '6.1.0' );
+							wp_enqueue_script( 'nouislider', $gmCore->gmedia_url . '/assets/image-editor/js/jquery.nouislider.min.js', [ 'jquery' ], '6.1.0' );
 
-							wp_enqueue_style( 'gmedia-image-editor', $gmCore->gmedia_url . '/assets/image-editor/style.css', array( 'gmedia-bootstrap' ), '0.9.16', 'screen' );
-							wp_enqueue_script( 'gmedia-image-editor', $gmCore->gmedia_url . '/assets/image-editor/image-editor.js', array( 'jquery', 'camanjs' ), '0.9.16' );
+							wp_enqueue_style( 'gmedia-image-editor', $gmCore->gmedia_url . '/assets/image-editor/style.css', [ 'gmedia-bootstrap' ], '0.9.16', 'screen' );
+							wp_enqueue_script( 'gmedia-image-editor', $gmCore->gmedia_url . '/assets/image-editor/image-editor.js', [ 'jquery', 'camanjs' ], '0.9.16' );
 							break;
 						}
-						if ( $gmProcessor->mode == 'edit' ) {
-							wp_enqueue_script( 'alphanum', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.alphanum.js', array( 'jquery' ), '1.0.16' );
+						if ( $gmProcessor->mode === 'edit' ) {
+							wp_enqueue_script( 'alphanum', $gmCore->gmedia_url . '/assets/jq-plugins/jquery.alphanum.js', [ 'jquery' ], '1.0.16' );
 
 							wp_enqueue_script( 'jquery-ui-sortable' );
 
-							wp_enqueue_script( 'moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', array( 'jquery' ), '2.22.2' );
-							wp_enqueue_style( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', array( 'gmedia-bootstrap' ), '4.17.47' );
-							wp_enqueue_script( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js', array(
+							wp_enqueue_script( 'moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', [ 'jquery' ], '2.22.2' );
+							wp_enqueue_style( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', [ 'gmedia-bootstrap' ], '4.17.47' );
+							wp_enqueue_script( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js', [
 								'jquery',
 								'moment',
 								'gmedia-bootstrap',
-							), '4.17.47' );
+							], '4.17.47' );
 						}
 					}
-					wp_enqueue_script( 'wavesurfer', $gmCore->gmedia_url . '/assets/wavesurfer/wavesurfer.min.js', array( 'jquery' ), '1.1.5' );
+					wp_enqueue_script( 'wavesurfer', $gmCore->gmedia_url . '/assets/wavesurfer/wavesurfer.min.js', [ 'jquery' ], '1.1.5' );
 					break;
 				case "GrandMedia_WordpressLibrary" :
 					break;
 				case "GrandMedia_Albums" :
 					if ( isset( $_GET['edit_term'] ) ) {
 						if ( $gmCore->caps['gmedia_album_manage'] ) {
-							wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen' );
-							wp_enqueue_script( 'jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', array(), '1.10.2' );
+							wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', [], '1.10.2', 'screen' );
+							wp_enqueue_script( 'jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', [], '1.10.2' );
 						}
 
-						wp_enqueue_script( 'moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', array( 'jquery' ), '2.5.1' );
-						wp_enqueue_style( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', array( 'gmedia-bootstrap' ), '2.1.32' );
-						wp_enqueue_script( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js', array(
+						wp_enqueue_script( 'moment', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/moment.min.js', [ 'jquery' ], '2.5.1' );
+						wp_enqueue_style( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css', [ 'gmedia-bootstrap' ], '2.1.32' );
+						wp_enqueue_script( 'datetimepicker', $gmCore->gmedia_url . '/assets/bootstrap-datetimepicker/bootstrap-datetimepicker.min.js', [
 							'jquery',
 							'moment',
 							'gmedia-bootstrap',
-						), '2.1.32' );
+						], '2.1.32' );
 					}
 					break;
 				case "GrandMedia_Categories" :
@@ -542,17 +543,17 @@ class GmediaAdmin {
 				case "GrandMedia_AddMedia" :
 					if ( $gmCore->caps['gmedia_upload'] ) {
 						$tab = $gmCore->_get( 'tab', 'upload' );
-						if ( $tab == 'upload' ) {
-							wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen' );
-							wp_enqueue_script( 'jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', array(), '1.10.2' );
+						if ( $tab === 'upload' ) {
+							wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', [], '1.10.2', 'screen' );
+							wp_enqueue_script( 'jquery-ui-full', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/jquery-ui.min.js', [], '1.10.2' );
 
-							wp_enqueue_script( 'gmedia-plupload', $gmCore->gmedia_url . '/assets/plupload/plupload.full.min.js', array( 'jquery', 'jquery-ui-full' ), '2.1.2' );
+							wp_enqueue_script( 'gmedia-plupload', $gmCore->gmedia_url . '/assets/plupload/plupload.full.min.js', [ 'jquery', 'jquery-ui-full' ], '2.1.2' );
 
-							wp_enqueue_style( 'jquery.ui.plupload', $gmCore->gmedia_url . '/assets/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css', array( 'jquery-ui-smoothness' ), '2.1.2', 'screen' );
-							wp_enqueue_script( 'jquery.ui.plupload', $gmCore->gmedia_url . '/assets/plupload/jquery.ui.plupload/jquery.ui.plupload.min.js', array(
+							wp_enqueue_style( 'jquery.ui.plupload', $gmCore->gmedia_url . '/assets/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css', [ 'jquery-ui-smoothness' ], '2.1.2', 'screen' );
+							wp_enqueue_script( 'jquery.ui.plupload', $gmCore->gmedia_url . '/assets/plupload/jquery.ui.plupload/jquery.ui.plupload.min.js', [
 								'gmedia-plupload',
 								'jquery-ui-full',
-							), '2.1.2' );
+							], '2.1.2' );
 
 						}
 					}
@@ -564,13 +565,13 @@ class GmediaAdmin {
 				case "GrandMedia_Galleries" :
 					if ( $gmCore->caps['gmedia_gallery_manage'] && ( isset( $_GET['gallery_module'] ) || isset( $_GET['edit_term'] ) ) ) {
 
-						wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen' );
+						wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', [], '1.10.2', 'screen' );
 						wp_enqueue_script( 'jquery-ui-resizable' );
 
 						wp_enqueue_script( 'jquery-ui-sortable' );
 
-						wp_enqueue_style( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.css', array( 'gmedia-bootstrap' ), '0.9.13' );
-						wp_enqueue_script( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.js', array( 'jquery' ), '0.9.13' );
+						wp_enqueue_style( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.css', [ 'gmedia-bootstrap' ], '0.9.13' );
+						wp_enqueue_script( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.js', [ 'jquery' ], '0.9.13' );
 
 						wp_enqueue_style( 'spectrum' );
 						wp_enqueue_script( 'spectrum' );
@@ -579,13 +580,13 @@ class GmediaAdmin {
 				case "GrandMedia_Modules" :
 					if ( isset( $_GET['preset_module'] ) || isset( $_GET['preset'] ) ) {
 
-						wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', array(), '1.10.2', 'screen' );
+						wp_enqueue_style( 'jquery-ui-smoothness', '//ajax.googleapis.com/ajax/libs/jqueryui/1.10.2/themes/smoothness/jquery-ui.min.css', [], '1.10.2', 'screen' );
 						wp_enqueue_script( 'jquery-ui-resizable' );
 
 						wp_enqueue_script( 'jquery-ui-sortable' );
 
-						wp_enqueue_style( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.css', array( 'gmedia-bootstrap' ), '0.9.13' );
-						wp_enqueue_script( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.js', array( 'jquery' ), '0.9.13' );
+						wp_enqueue_style( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.css', [ 'gmedia-bootstrap' ], '0.9.13' );
+						wp_enqueue_script( 'jquery.minicolors', $gmCore->gmedia_url . '/assets/minicolors/jquery.minicolors.js', [ 'jquery' ], '0.9.13' );
 
 						wp_enqueue_style( 'spectrum' );
 						wp_enqueue_script( 'spectrum' );
@@ -611,11 +612,11 @@ class GmediaAdmin {
 	function gutenberg_assets() {
 		global $gmGallery, $gmDB, $gmCore;
 
-		wp_enqueue_style( 'gmedia-block-editor', $gmCore->gmedia_url . '/admin/assets/css/gmedia-block.css', array(), $gmGallery->version );
+		wp_enqueue_style( 'gmedia-block-editor', $gmCore->gmedia_url . '/admin/assets/css/gmedia-block.css', [], $gmGallery->version );
 		wp_register_script(
 			'gmedia-block-editor',
 			$gmCore->gmedia_url . '/admin/assets/js/gmedia-block.js',
-			array( 'wp-blocks', 'wp-element' ),
+			[ 'wp-blocks', 'wp-element' ],
 			$gmGallery->version
 		);
 
@@ -624,13 +625,13 @@ class GmediaAdmin {
 		$default_module = $default_preset['module'];
 
 		$modules_data    = get_gmedia_modules( false );
-		$modules         = array();
-		$modules_options = array();
+		$modules         = [];
+		$modules_options = [];
 		if ( ! empty( $modules_data['in'] ) ) {
 			foreach ( $modules_data['in'] as $module_name => $module_data ) {
 
-				$presets                = $gmDB->get_terms( 'gmedia_module', array( 'status' => $module_name ) );
-				$option                 = array();
+				$presets                = $gmDB->get_terms( 'gmedia_module', [ 'status' => $module_name ] );
+				$option                 = [];
 				$option[ $module_name ] = $module_data['title'] . ' - ' . __( 'Default Settings' );
 				foreach ( $presets as $preset ) {
 					if ( ! (int) $preset->global && '[' . $module_name . ']' === $preset->name ) {
@@ -648,19 +649,19 @@ class GmediaAdmin {
 						$option[ $preset->term_id ] = $module_data['title'] . $by_author . ' - ' . $preset_name;
 					}
 				}
-				$modules_options[ $module_name ] = array( 'title' => $module_data['title'], 'options' => $option );
+				$modules_options[ $module_name ] = [ 'title' => $module_data['title'], 'options' => $option ];
 
-				$modules[ $module_name ] = array(
+				$modules[ $module_name ] = [
 					'name'       => $module_data['title'],
 					'screenshot' => $module_data['module_url'] . '/screenshot.png',
-				);
+				];
 			}
 		}
 
-		$gm_galleries  = array();
-		$gm_albums     = array();
-		$gm_categories = array();
-		$gm_tags       = array();
+		$gm_galleries  = [];
+		$gm_albums     = [];
+		$gm_categories = [];
+		$gm_tags       = [];
 
 		$gm_terms = $gmDB->get_terms( 'gmedia_gallery' );
 		if ( count( $gm_terms ) ) {
@@ -669,7 +670,7 @@ class GmediaAdmin {
 				unset( $_term->taxonomy );
 				$_term->module_name = $gmDB->get_metadata( 'gmedia_term', $_term->term_id, '_module', true );
 				if ( $_term->global ) {
-					$display_name = sprintf( __( 'by %s', 'grand-media' ), get_the_author_meta( 'display_name', $_term->global ) );
+					$display_name = sprintf( __( 'by %s', 'grand-media' ), esc_html( get_the_author_meta( 'display_name', $_term->global ) ) );
 					$_term->name  .= 'by ' === $display_name ? '' : ' ' . $display_name;
 				}
 				if ( $_term->status && 'publish' !== $_term->status ) {
@@ -678,12 +679,12 @@ class GmediaAdmin {
 				$gm_galleries[ $_term->term_id ] = $_term;
 			}
 		}
-		$gm_galleries = array(
-			                0 => array(
+		$gm_galleries = [
+			                0 => [
 				                'term_id' => 0,
 				                'name'    => __( ' - select gallery - ', 'grand-media' ),
-			                ),
-		                ) + $gm_galleries;
+			                ],
+		                ] + $gm_galleries;
 
 		$gm_terms = $gmDB->get_terms( 'gmedia_album' );
 		if ( count( $gm_terms ) ) {
@@ -698,7 +699,7 @@ class GmediaAdmin {
 					$_term->module_name = '';
 				}
 				if ( $_term->global ) {
-					$display_name = sprintf( __( 'by %s', 'grand-media' ), get_the_author_meta( 'display_name', $_term->global ) );
+					$display_name = sprintf( __( 'by %s', 'grand-media' ), esc_html( get_the_author_meta( 'display_name', $_term->global ) ) );
 					$_term->name  .= 'by ' === $display_name ? '' : ' ' . $display_name;
 				}
 				if ( $_term->status && 'publish' !== $_term->status ) {
@@ -708,12 +709,12 @@ class GmediaAdmin {
 				$gm_albums[ $_term->term_id ] = $_term;
 			}
 		}
-		$gm_albums = array(
-			             0 => array(
+		$gm_albums = [
+			             0 => [
 				             'term_id' => 0,
 				             'name'    => __( ' - select album - ', 'grand-media' ),
-			             ),
-		             ) + $gm_albums;
+			             ],
+		             ] + $gm_albums;
 
 		$gm_terms = $gmDB->get_terms( 'gmedia_category' );
 		if ( count( $gm_terms ) ) {
@@ -726,12 +727,12 @@ class GmediaAdmin {
 				$gm_categories[ $_term->term_id ] = $_term;
 			}
 		}
-		$gm_categories = array(
-			                 0 => array(
+		$gm_categories = [
+			                 0 => [
 				                 'term_id' => 0,
 				                 'name'    => __( ' - select category - ', 'grand-media' ),
-			                 ),
-		                 ) + $gm_categories;
+			                 ],
+		                 ] + $gm_categories;
 
 		$gm_terms = $gmDB->get_terms( 'gmedia_tag' );
 		if ( count( $gm_terms ) ) {
@@ -744,14 +745,14 @@ class GmediaAdmin {
 				$gm_tags[ $_term->term_id ] = $_term;
 			}
 		}
-		$gm_tags = array(
-			           0 => array(
+		$gm_tags = [
+			           0 => [
 				           'term_id' => 0,
 				           'name'    => __( ' - select tag - ', 'grand-media' ),
-			           ),
-		           ) + $gm_tags;
+			           ],
+		           ] + $gm_tags;
 
-		$data = array(
+		$data = [
 			'modules'         => $modules,
 			'default_module'  => $default_module,
 			'modules_options' => $modules_options,
@@ -760,7 +761,7 @@ class GmediaAdmin {
 			'albums'          => $gm_albums,
 			'categories'      => $gm_categories,
 			'tags'            => $gm_tags,
-		);
+		];
 
 		wp_localize_script( 'gmedia-block-editor', 'gmedia_data', $data );
 		wp_enqueue_script( 'gmedia-block-editor' );
@@ -771,7 +772,7 @@ class GmediaAdmin {
 		$screen_id = explode( 'page_', $screen->id, 2 );
 		$screen_id = $screen_id[1];
 
-		$screen->add_help_tab( array(
+		$screen->add_help_tab( [
 			'id'      => 'help_' . $screen_id . '_support',
 			'title'   => __( 'Support' ),
 			'content' => __( '<h4>First steps</h4>
@@ -786,14 +787,14 @@ class GmediaAdmin {
 	| <a href="https://codeasily.com/portfolio/gmedia-gallery-modules/" target="_blank">' . __( 'Demo', 'grand-media' ) . '</a>
 	| <a href="https://codeasily.com/product/one-site-license/" target="_blank">' . __( 'Premium', 'grand-media' ) . '</a>
 </p>',
-		) );
+		] );
 
 		switch ( $screen_id ) {
 			case 'GrandMedia' :
 				break;
 			case 'GrandMedia_Settings' :
 				if ( current_user_can( 'manage_options' ) ) {
-					$screen->add_help_tab( array(
+					$screen->add_help_tab( [
 						'id'      => 'help_' . $screen_id . '_license',
 						'title'   => __( 'License Key' ),
 						'content' => sprintf( __( '<h4>Should I buy it, to use plugin?</h4>
@@ -802,16 +803,16 @@ class GmediaAdmin {
 <p>Note: License Key will remove backlinks from all current and future premium modules, so you can use all available modules on one website.</p>
 <p>Do not purchase license key before testing module you like. Only if everything works fine and you satisfied with functionality you are good to purchase license. Otherwise use <a href="%1$s" target="_blank">Gmedia Support Forum</a>.</p>
 <h4>I have license key but I can\'t activate it</h4>
-<p>Contact developer <a href="mailto:%2$s">%2$s</a> with your problem and wait for additional instructions and code for manual activation</p>', 'grand-media' ), 'https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/', 'gmediafolder@gmail.com' )
+<p>Contact developer <a href="mailto:%2$s">%2$s</a> with your problem and wait for additional instructions and code for manual activation</p>', 'grand-media' ), 'https://wordpress.org/support/plugin/grand-media/', 'gmediafolder@gmail.com' )
 						             . '<div><a class="btn btn-default" href="' . admin_url( 'admin.php?page=' . $screen_id . '&license_activate=manual' ) . '">' . __( 'Manual Activation', 'grand-media' ) . '</a></div>',
-					) );
+					] );
 				}
 				break;
 			case 'GrandMedia_App' :
 				$gm_options = get_option( 'gmediaOptions' );
 				$nonce      = wp_create_nonce( 'GmediaService' );
 				if ( current_user_can( 'manage_options' ) && (int) $gm_options['mobile_app'] ) {
-					$screen->add_help_tab( array(
+					$screen->add_help_tab( [
 						'id'      => 'help_' . $screen_id . '_optout',
 						'title'   => __( 'Opt Out' ),
 						'content' => __( '<h4>We appreciate your help in making the plugin better by letting us track some usage data.</h4>
@@ -819,14 +820,14 @@ class GmediaAdmin {
 <p>By clicking "Opt Out", we will no longer be sending any data from <strong>Gmedia Gallery</strong> to <a href="https://codeasily.com" target="_blank">codeasily.com</a>.</p>
 <p>You\'ll also not be able to use Gmedia iOS application.</p>', 'grand-media' )
 						             . '<p><button class="button button-default gm_service_action"  data-action="app_deactivate" data-nonce="' . $nonce . '">' . __( 'Opt Out', 'grand-media' ) . '</button><span class="spinner" style="float: none;"></span></p>'
-						             . '<div style="display:none;">Test: 
+						             . '<div style="display:none;">Test:
 <button type="button" data-action="app_updateinfo" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Update</button>
 <button type="button" data-action="app_updatecron" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">CronJob</button> &nbsp;&nbsp;
 <button type="button" data-action="app_deactivateplugin" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Deactivate Plugin</button>
 <button type="button" data-action="app_uninstallplugin" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Uninstall Plugin</button>
 </div>
 ',
-					) );
+					] );
 				}
 				break;
 		}
@@ -840,7 +841,7 @@ class GmediaAdmin {
 	 */
 	function screen_settings( $current, $screen ) {
 		global $gmProcessor, $gmCore;
-		if ( in_array( $screen->id, $this->pages ) ) {
+		if ( in_array( $screen->id, $this->pages, true ) ) {
 
 			$gm_screen_options = $gmProcessor->user_options;
 
@@ -882,7 +883,7 @@ class GmediaAdmin {
 							</select> <span>' . __( 'sort order', 'grand-media' ) . '</span>
 						</div>
 					';
-					if ( 'edit' == $gmCore->_get( 'mode' ) ) {
+					if ( 'edit' === $gmCore->_get( 'mode' ) ) {
 						$settings .= '
 						<div class="form-group">
 							<select name="gm_screen_options[library_edit_quicktags]" class="form-control input-sm">
@@ -898,8 +899,8 @@ class GmediaAdmin {
 					break;
 				case 'GrandMedia_AddMedia' :
 					$tab = $gmCore->_get( 'tab', 'upload' );
-					if ( 'upload' == $tab ) {
-						$html4_hide = ( 'html4' == $gm_screen_options['uploader_runtime'] ) ? ' hide' : '';
+					if ( 'upload' === $tab ) {
+						$html4_hide = ( 'html4' === $gm_screen_options['uploader_runtime'] ) ? ' hide' : '';
 						$settings   = '
 						<div class="form-inline pull-left">
 							<div id="uploader_runtime" class="form-group"><span>' . __( 'Uploader runtime:', 'grand-media' ) . ' </span>
@@ -1105,7 +1106,7 @@ class GmediaAdmin {
 	 */
 	function screen_settings_save( $status, $option, $value ) {
 		global $user_ID;
-		if ( 'gm_screen_options' == $option ) {
+		if ( 'gm_screen_options' === $option ) {
 			/*
 			global $gmGallery;
 			foreach ( $_POST['gm_screen_options'] as $key => $val ) {
@@ -1115,7 +1116,7 @@ class GmediaAdmin {
 			*/
 			$gm_screen_options = get_user_meta( $user_ID, 'gm_screen_options', true );
 			if ( ! is_array( $gm_screen_options ) ) {
-				$gm_screen_options = array();
+				$gm_screen_options = [];
 			}
 			$value = array_merge( $gm_screen_options, $_POST['gm_screen_options'] );
 
@@ -1128,5 +1129,5 @@ class GmediaAdmin {
 }
 
 global $gmAdmin;
-// Start GmediaAdmin
+// Start GmediaAdmin.
 $gmAdmin = new GmediaAdmin();

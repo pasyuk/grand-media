@@ -304,7 +304,7 @@ if ( ! $is_bot ) {
                     <?php } ?>
                     <?php if ( ! empty( $allsettings['show_download_button'] ) ) { ?>
                         <div class="gmpm_big_button_wrap">
-                            <a class="gmpm_big_button gmpm_download_button" href="<?php echo $content['data'][ $iSlide ]['download']; ?>" download="<?php esc_attr_e( $content['data'][ $iSlide ]['file'] ); ?>">
+                            <a class="gmpm_big_button gmpm_download_button" href="<?php echo $content['data'][ $iSlide ]['download']; ?>" download="<?php echo esc_attr( $content['data'][ $iSlide ]['file'] ); ?>">
                                 <span class="gmpm_icon"></span>
                                 <span class="gmpm_label"><?php echo $allsettings['download_button_text']; ?></span>
                             </a>
@@ -370,9 +370,9 @@ if ( ! $is_bot ) {
         jQuery(function($) {
             var settings = <?php echo json_encode($settings); ?>;
             var content = <?php echo json_encode($content); ?>;
-            var container = $('#GmediaGallery_<?php echo $id; ?>');
+            var container = $('#GmediaGallery_<?php echo absint( $id ); ?>');
             container.photomania(settings, content);
-            window.GmediaGallery_<?php echo $id; ?> = container.data('photomania');
+            window.GmediaGallery_<?php echo absint( $id ); ?> = container.data('photomania');
         });
       });
     </script><?php if ( $shortcode_raw ) {

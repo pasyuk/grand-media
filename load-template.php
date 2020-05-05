@@ -12,14 +12,14 @@ global $gmedia, $gmedia_id, $gmedia_type, $gmedia_module, $gmedia_shortcode_cont
 $gmedia_hashid = urldecode( $wp->query_vars[ $endpoint ] );
 $type          = isset( $wp->query_vars['t'] ) ? $wp->query_vars['t'] : 'g';
 
-$template = array(
+$template = [
 	'g' => 'gallery',
 	'a' => 'album',
 	't' => 'tag',
 	's' => 'single',
 	'k' => 'category',
-	'u' => 'author'
-);
+	'u' => 'author',
+];
 if ( ! isset( $template[ $type ] ) ) {
 	locate_template( '404', true );
 	exit();
@@ -38,7 +38,7 @@ switch ( $gmedia_type ) {
 	case 'gallery':
 		$gmedia        = $gmDB->get_term( $gmedia_id );
 		$gmedia_module = $gmDB->get_metadata( 'gmedia_term', $gmedia_id, '_module', true );
-	break;
+		break;
 	case 'album':
 	case 'tag':
 	case 'category':
@@ -50,14 +50,14 @@ switch ( $gmedia_type ) {
 		if ( $gmCore->is_digit( $gmedia_module ) ) {
 			$preset        = $gmDB->get_term( $gmedia_module );
 			$gmedia_module = '';
-			if($preset && !is_wp_error($preset)) {
+			if ( $preset && ! is_wp_error( $preset ) ) {
 				$gmedia_module = $preset->status;
 			}
 		}
-	break;
+		break;
 	case 'single':
 		$gmedia = $gmDB->get_gmedia( $gmedia_id );
-	break;
+		break;
 }
 
 $set_module = $gmCore->_get( 'gmedia_module' );
@@ -71,30 +71,30 @@ if ( ! $gmedia_module ) {
 
 $module = $gmCore->get_module_path( $gmedia_module );
 /** @noinspection PhpIncludeInspection */
-require_once( GMEDIA_ABSPATH . 'template/functions.php' );
+require_once GMEDIA_ABSPATH . 'template/functions.php';
 
 if ( is_file( $module['path'] . "/template/functions.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
-	include_once( $module['path'] . "/template/functions.php" );
+	include_once $module['path'] . "/template/functions.php";
 }
 
 global $posts;
-$posts = array();
+$posts = [];
 
 if ( is_file( $module['path'] . "/template/{$gmedia_type}.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
-	require_once( $module['path'] . "/template/{$gmedia_type}.php" );
-} elseif ( in_array( $gmedia_type, array( 'album', 'tag', 'category' ) ) && is_file( $module['path'] . "/template/gallery.php" ) ) {
+	require_once $module['path'] . "/template/{$gmedia_type}.php";
+} elseif ( in_array( $gmedia_type, [ 'album', 'tag', 'category' ], true ) && is_file( $module['path'] . "/template/gallery.php" ) ) {
 	/** @noinspection PhpIncludeInspection */
-	require_once( $module['path'] . "/template/gallery.php" );
+	require_once $module['path'] . "/template/gallery.php";
 } else {
 	/* only for default template */
 	add_action( 'gmedia_head', 'gmedia_default_template_styles' );
 	if ( is_file( GMEDIA_ABSPATH . "template/{$gmedia_type}.php" ) ) {
 		/** @noinspection PhpIncludeInspection */
-		require_once( GMEDIA_ABSPATH . "template/{$gmedia_type}.php" );
+		require_once GMEDIA_ABSPATH . "template/{$gmedia_type}.php";
 	} else {
 		/** @noinspection PhpIncludeInspection */
-		require_once( GMEDIA_ABSPATH . "template/gallery.php" );
+		require_once GMEDIA_ABSPATH . "template/gallery.php";
 	}
 }

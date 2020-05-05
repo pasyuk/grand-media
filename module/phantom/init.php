@@ -142,7 +142,7 @@ if(!isset($shortcode_raw)){
                 }
                 ?>
             <div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo(!in_array($type, array('image'))? " mfp-iframe" : ''); ?>"<?php echo $item_data_html; ?>>
-                <a href="<?php echo (!empty($allsettings['thumb2link']) && $item->link)? $item->link : $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php esc_attr_e($alttext); ?>"/></a>
+                <a href="<?php echo (!empty($allsettings['thumb2link']) && $item->link)? $item->link : $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php echo esc_attr($alttext); ?>"/></a>
                 <?php
                 if(in_array($allsettings['thumbsinfo'], array('label', 'label_bottom'))){ ?>
                     <div class="gmPhantom_ThumbLabel"><span class="gmPhantom_ThumbLabel_title"><?php echo $title; ?></span></div>
@@ -396,7 +396,7 @@ if(!$is_bot){
       document.addEventListener('DOMContentLoaded', function(){
         jQuery(function() {
             var settings = <?php echo json_encode($settings); ?>;
-            jQuery('#GmediaGallery_<?php echo $id; ?>').gmPhantom([settings]);
+            jQuery('#GmediaGallery_<?php echo absint( $id ); ?>').gmPhantom([settings]);
         });
       });
     </script><?php
