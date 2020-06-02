@@ -206,9 +206,9 @@ class GmediaAdmin {
 				</div>
 				<h2><?php echo esc_html( $sideLinks['grandTitle'] ); ?></h2>
 				<?php
-				if ( ! is_plugin_active( 'woowbox/woowbox.php' ) && empty( $gmGallery->options['disable_ads'] ) ) {
+				if ( ! is_plugin_active( 'woowgallery/woowgallery.php' ) && empty( $gmGallery->options['disable_ads'] ) ) {
 					?>
-					<div class="promote-woowbox"><a href="https://bit.ly/woowbox" target="_blank"><img src="<?php echo esc_url( plugins_url( '/grand-media/admin/assets/img/woowbox-promote.png' ) ); ?>" alt="Try WoowBox Gallery plugin"/></a></div>
+					<div class="promote-woowbox"><a href="https://bit.ly/gm-woowgallery" target="_blank"><img src="<?php echo esc_url( plugins_url( '/grand-media/admin/assets/img/woowbox-promote.png' ) ); ?>" alt="Try WoowGallery plugin"/></a></div>
 					<?php
 				}
 				?>

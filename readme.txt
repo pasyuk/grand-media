@@ -134,6 +134,9 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= v1.18.7 =
+* WoowGallery plugin promote
+
 = v1.18.6 =
 * Added: import image tags when importing from NextGen galleries
 
