@@ -563,7 +563,13 @@ function gmedia_ios_app_term_data_extend( &$term, $share_link_base, $logic = 0, 
 		'category' => 'k',
 	];
 	$gmedia_hashid   = gmedia_hash_id_encode( $term->term_id, $taxterm );
-	$term->sharelink = str_replace( [ '$1', '$2' ], [ urlencode( $gmedia_hashid ), $t[ $taxterm ] ], $share_link_base );
+	$term->sharelink = str_replace( [ '$1', '$2' ], [ rawurlencode( $gmedia_hashid ), $t[ $taxterm ] ], $share_link_base );
+	if ( 'album' === $taxterm ) {
+		$post_id = isset( $term_meta['_post_ID'][0] ) ? (int) $term_meta['_post_ID'][0] : 0;
+		if ( $post_id ) {
+			$term->sharelink = (string) get_permalink( $post_id );
+		}
+	}
 
 	$term->cap = ( 4 === $cap ) ? 4 : 0;
 }
