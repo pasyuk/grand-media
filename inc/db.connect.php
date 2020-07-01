@@ -3279,8 +3279,9 @@ class GmediaDB {
 					}
 				} else {
 					if ( in_array( $taxonomy, [ 'gmedia_album' ], true ) && ! current_user_can( 'gmedia_edit_others_media' ) ) {
-						$alb = $this->get_term( $term_id );
-						if ( $alb->global && ( $alb->global !== get_current_user_id() ) ) {
+						$alb         = $this->get_term( $term_id );
+						$alb_user_id = (int) $alb->global;
+						if ( $alb_user_id && ( get_current_user_id() !== $alb_user_id ) ) {
 							continue;
 						}
 					}

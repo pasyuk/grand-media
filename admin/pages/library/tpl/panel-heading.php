@@ -64,8 +64,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<div class="btn-group">
 			<?php // todo: !!!!!
 			$curr_mime = explode( ',', $gmCore->_get( 'mime_type', 'total' ) );
-			if ( ( 'show' === $gmCore->_get( 'stack' ) || 'selected' === $gmCore->_get( 'filter' ) ) && isset( $gmedia_filter['gmedia__in'] ) ) {
-				if ( $gmProcessor->selected_items === $gmedia_filter['gmedia__in'] || $gmProcessor->stack_items === $gmedia_filter['gmedia__in'] ) {
+			if ( isset( $gmedia_filter['gmedia__in'] ) ) {
+				if ( ( 'show' === $gmCore->_get( 'stack' ) || 'selected' === $gmCore->_get( 'filter' ) ) ) {
+					if ( $gmProcessor->selected_items === $gmedia_filter['gmedia__in'] || $gmProcessor->stack_items === $gmedia_filter['gmedia__in'] ) {
+						unset( $gmedia_filter['gmedia__in'] );
+					}
+				} elseif ( $gmProcessor->edit_term ) {
 					unset( $gmedia_filter['gmedia__in'] );
 				}
 			}

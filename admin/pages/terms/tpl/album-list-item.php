@@ -29,7 +29,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 					}
 					?></span>
 				<br/><span class="term_id">ID: <?php echo absint( $item->term_id ); ?></span>
-				<date class="term_date"><?php echo $item->post_date; ?></date>
+				<?php if ( ! empty( $item->post_date ) ) { ?>
+					<date class="term_date"><?php echo $item->post_date; ?></date>
+				<?php } ?>
 
 				<div class="object-actions">
 					<?php $action_links = gmedia_term_item_actions( $item );
