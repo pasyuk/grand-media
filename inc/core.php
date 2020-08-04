@@ -1286,7 +1286,7 @@ class GmediaCore {
 
 						$webimg['resize'] = ( ( $webimg['width'] < $size[0] ) || ( $webimg['height'] < $size[1] ) ) ? true : false;
 
-						if ( $webimg['resize'] ) {
+						if ( $webimg['resize'] && 'GIF' !== $extensions[ $size[2] ]) {
 							rename( $fileinfo['filepath'], $fileinfo['filepath_original'] );
 						} else {
 							copy( $fileinfo['filepath'], $fileinfo['filepath_original'] );
@@ -1314,92 +1314,98 @@ class GmediaCore {
 
 						$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] > $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] > $size[1] ) ) ) ? false : true;
 
-						$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
-						if ( is_wp_error( $editor ) ) {
-							@unlink( $fileinfo['filepath'] );
-							@unlink( $fileinfo['filepath_original'] );
-							$return = [
-								"error" => [ "code" => $editor->get_error_code(), "message" => $editor->get_error_message() ],
-								"id"    => $fileinfo['basename'],
-								"tip"   => 'wp_get_image_editor',
-							];
-
-							return $return;
-						}
-
-						if ( $angle ) {
-							$editor->rotate( $angle );
-						}
-
-						$editor->set_quality( $webimg['quality'] );
-
-						if ( $webimg['resize'] ) {
-							$resized = $editor->resize( $webimg['width'], $webimg['height'], $webimg['crop'] );
-							if ( is_wp_error( $resized ) ) {
+						if( 'GIF' !== $extensions[ $size[2] ] || $thumbimg['resize'] ) {
+							$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
+							if ( is_wp_error( $editor ) ) {
 								@unlink( $fileinfo['filepath'] );
 								@unlink( $fileinfo['filepath_original'] );
 								$return = [
-									"error" => [ "code" => $resized->get_error_code(), "message" => $resized->get_error_message() ],
+									"error" => [ "code" => $editor->get_error_code(), "message" => $editor->get_error_message() ],
 									"id"    => $fileinfo['basename'],
-									"tip"   => "editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})",
+									"tip"   => 'wp_get_image_editor',
 								];
 
 								return $return;
 							}
-						}
 
-						$saved = $editor->save( $fileinfo['filepath'] );
-						if ( is_wp_error( $saved ) ) {
-							@unlink( $fileinfo['filepath'] );
-							@unlink( $fileinfo['filepath_original'] );
-							$return = [
-								"error" => [ "code" => $saved->get_error_code(), "message" => $saved->get_error_message() ],
-								"id"    => $fileinfo['basename'],
-								"tip"   => 'editor->save->webimage',
-							];
+							if( 'GIF' !== $extensions[ $size[2] ] ) {
+								if ( $angle ) {
+									$editor->rotate( $angle );
+								}
 
-							return $return;
-						}
+								$editor->set_quality( $webimg['quality'] );
 
-						// Thumbnail.
-						$editor->set_quality( $thumbimg['quality'] );
-						if ( $thumbimg['resize'] ) {
-							$ed_size  = $editor->get_size();
-							$ed_ratio = $ed_size['width'] / $ed_size['height'];
-							if ( 1 > $ed_ratio ) {
-								$resized = $editor->resize( $thumbimg['width'], 0, $thumbimg['crop'] );
-							} else {
-								$resized = $editor->resize( 0, $thumbimg['height'], $thumbimg['crop'] );
+								if ( $webimg['resize'] ) {
+									$resized = $editor->resize( $webimg['width'], $webimg['height'], $webimg['crop'] );
+									if ( is_wp_error( $resized ) ) {
+										@unlink( $fileinfo['filepath'] );
+										@unlink( $fileinfo['filepath_original'] );
+										$return = [
+											"error" => [ "code" => $resized->get_error_code(), "message" => $resized->get_error_message() ],
+											"id"    => $fileinfo['basename'],
+											"tip"   => "editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})",
+										];
+
+										return $return;
+									}
+								}
+
+								$saved = $editor->save( $fileinfo['filepath'] );
+								if ( is_wp_error( $saved ) ) {
+									@unlink( $fileinfo['filepath'] );
+									@unlink( $fileinfo['filepath_original'] );
+									$return = [
+										"error" => [ "code" => $saved->get_error_code(), "message" => $saved->get_error_message() ],
+										"id"    => $fileinfo['basename'],
+										"tip"   => 'editor->save->webimage',
+									];
+
+									return $return;
+								}
 							}
-							if ( is_wp_error( $resized ) ) {
+
+							// Thumbnail.
+							$editor->set_quality( $thumbimg['quality'] );
+							if ( $thumbimg['resize'] ) {
+								$ed_size  = $editor->get_size();
+								$ed_ratio = $ed_size['width'] / $ed_size['height'];
+								if ( 1 > $ed_ratio ) {
+									$resized = $editor->resize( $thumbimg['width'], 0, $thumbimg['crop'] );
+								} else {
+									$resized = $editor->resize( 0, $thumbimg['height'], $thumbimg['crop'] );
+								}
+								if ( is_wp_error( $resized ) ) {
+									@unlink( $fileinfo['filepath'] );
+									@unlink( $fileinfo['filepath_original'] );
+									$return = [
+										"error" => [ "code" => $resized->get_error_code(), "message" => $resized->get_error_message() ],
+										"id"    => $fileinfo['basename'],
+										"tip"   => "editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})",
+									];
+
+									return $return;
+								}
+							}
+
+							$saved = $editor->save( $fileinfo['filepath_thumb'] );
+							if ( is_wp_error( $saved ) ) {
 								@unlink( $fileinfo['filepath'] );
 								@unlink( $fileinfo['filepath_original'] );
 								$return = [
-									"error" => [ "code" => $resized->get_error_code(), "message" => $resized->get_error_message() ],
+									"error" => [ "code" => $saved->get_error_code(), "message" => $saved->get_error_message() ],
 									"id"    => $fileinfo['basename'],
-									"tip"   => "editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})",
+									"tip"   => 'editor->save->thumb',
 								];
 
 								return $return;
 							}
-						}
 
-						$saved = $editor->save( $fileinfo['filepath_thumb'] );
-						if ( is_wp_error( $saved ) ) {
-							@unlink( $fileinfo['filepath'] );
-							@unlink( $fileinfo['filepath_original'] );
-							$return = [
-								"error" => [ "code" => $saved->get_error_code(), "message" => $saved->get_error_message() ],
-								"id"    => $fileinfo['basename'],
-								"tip"   => 'editor->save->thumb',
-							];
-
-							return $return;
-						}
-
-						if ( ( 'JPG' === $extensions[ $size[2] ] ) && ! ( extension_loaded( 'imagick' ) || class_exists( "Imagick" ) ) ) {
-							$this->copy_exif( $fileinfo['filepath_original'], $fileinfo['filepath'] );
-							$this->copy_exif( $fileinfo['filepath_original'], $fileinfo['filepath_thumb'] );
+							if ( ( 'JPG' === $extensions[ $size[2] ] ) && ! ( extension_loaded( 'imagick' ) || class_exists( "Imagick" ) ) ) {
+								$this->copy_exif( $fileinfo['filepath_original'], $fileinfo['filepath'] );
+								$this->copy_exif( $fileinfo['filepath_original'], $fileinfo['filepath_thumb'] );
+							}
+						} else{
+							copy($fileinfo['filepath'], $fileinfo['filepath_thumb']);
 						}
 
 						$is_webimage = true;
@@ -2979,7 +2985,7 @@ class GmediaCore {
 							$editor->rotate( $angle );
 						}
 
-						if ( $webimg['resize'] || $angle ) {
+						if ( 'GIF' !== $extensions[ $size[2] ] && ( $webimg['resize'] || $angle ) ) {
 							// Web-image.
 							$editor->set_quality( $webimg['quality'] );
 

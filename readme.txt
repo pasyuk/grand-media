@@ -134,6 +134,9 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
+= v1.19.0 =
+* Fixed animated GIF upload
+
 = v1.18.9 =
 * Fixed assign albums
 * Fixed PHP Notice on albums page
