@@ -1312,7 +1312,7 @@ class GmediaCore {
 							}
 						}
 
-						$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] > $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] > $size[1] ) ) ) ? false : true;
+						$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] < $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] < $size[1] ) ) ) ? true : false;
 
 						if( 'GIF' !== $extensions[ $size[2] ] || $thumbimg['resize'] ) {
 							$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
@@ -2634,7 +2634,7 @@ class GmediaCore {
 						}
 					}
 
-					$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] > $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] > $size[1] ) ) ) ? false : true;
+					$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] < $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] < $size[1] ) ) ) ? true : false;
 
 					if ( $webimg['resize'] || $thumbimg['resize'] || $angle ) {
 						$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
@@ -2970,7 +2970,7 @@ class GmediaCore {
 					$webimg['resize'] = false;
 				}
 
-				$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] > $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] > $size[1] ) ) ) ? false : true;
+				$thumbimg['resize'] = ( ( ( 1 >= $size_ratio ) && ( $thumbimg['width'] < $size[0] ) ) || ( ( 1 <= $size_ratio ) && ( $thumbimg['height'] < $size[1] ) ) ) ? true : false;
 
 				if ( $webimg['resize'] || $thumbimg['resize'] || $angle ) {
 
