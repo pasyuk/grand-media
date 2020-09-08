@@ -4141,6 +4141,9 @@ class GmediaDB {
 		$wpdb->update( $table, $data, $where );
 
 		wp_cache_delete( $object_id, $meta_type . '_meta' );
+		if ( 'gmedia' === $meta_type ) {
+			do_action( 'clean_gmedia_cache', $object_id );
+		}
 
 		do_action( "{$meta_type}_updated_meta", $meta_id, $object_id, $meta_key, $_meta_value );
 
@@ -4224,6 +4227,9 @@ class GmediaDB {
 
 			// Clear the caches.
 			wp_cache_delete( $object_id, $meta_type . '_meta' );
+			if ( 'gmedia' === $meta_type ) {
+				do_action( 'clean_gmedia_cache', $object_id );
+			}
 
 			do_action( "{$meta_type}_deleted_meta", (array) $meta_id, $object_id, $meta->meta_key, $meta->meta_value );
 
@@ -4302,6 +4308,9 @@ class GmediaDB {
 
 			// Clear the caches.
 			wp_cache_delete( $object_id, $meta_type . '_meta' );
+			if ( 'gmedia' === $meta_type ) {
+				do_action( 'clean_gmedia_cache', $object_id );
+			}
 
 			do_action( "{$meta_type}_updated_meta", $meta_id, $object_id, $meta_key, $_meta_value );
 

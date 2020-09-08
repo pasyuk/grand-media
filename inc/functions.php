@@ -535,8 +535,14 @@ function gmedia_delete_transients_from_keys( $transients ) {
 	}
 
 	// Return an array of total number, and number deleted.
-	return array(
+	return [
 		'total'   => count( $results ),
 		'deleted' => array_sum( $results ),
-	);
+	];
+}
+
+function gm_print_r( $var ) {
+	if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+		echo '<pre>' . print_r( $var, true ) . '</pre>';
+	}
 }

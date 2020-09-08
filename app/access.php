@@ -1313,8 +1313,9 @@ function gmedia_ios_app_processor( $action, $data, $filter = true, $cache = true
 					$gmedias[ $i ]->meta['related'] = maybe_unserialize( $meta['_related'][0] );
 				}
 				unset( $meta['_related'] );
+				unset( $meta['_created_timestamp'], $meta['_hash'], $meta['_image_alt'] );
 
-				if ( ! empty( $data['meta'] ) && ! empty( $meta ) ) {
+				if ( ! empty( $meta ) ) {
 					foreach ( $meta as $key => $val ) {
 						if ( '_peaks' === $key ) {
 							$gmedias[ $i ]->meta[ $key ] = json_decode( $val[0] );

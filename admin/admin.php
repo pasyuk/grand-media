@@ -26,6 +26,7 @@ class GmediaAdmin {
 
 		add_filter( 'screen_settings', [ &$this, 'screen_settings' ], 10, 2 );
 		add_filter( 'set-screen-option', [ &$this, 'screen_settings_save' ], 11, 3 );
+		add_filter( 'set_screen_option_gm_screen_options', [ &$this, 'screen_settings_save' ], 11, 3 );
 
 		if ( isset( $_GET['page'] ) && ( false !== strpos( $_GET['page'], 'GrandMedia' ) ) ) {
 			$this->body_classes[] = 'grand-media-admin-page';
