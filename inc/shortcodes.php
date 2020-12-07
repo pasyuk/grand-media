@@ -88,7 +88,7 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 	$id     = isset( $atts['id'] ) ? (int) $atts['id'] : 0;
 	$userid = get_current_user_id();
 	if ( $id && ( $term = gmedia_shortcode_id_data( $id ) ) ) {
-		$is_gallery_visible = ( 'publish' !== $term->status && ! $userid ) || ( 'draft' === $term->status && $userid !== $term->global && ! is_super_admin() );
+		$is_gallery_visible = ( 'publish' !== $term->status && ! $userid ) || ( 'draft' === $term->status && ! ( $userid === $term->global || current_user_can( 'manage_options' ) ) );
 		if ( apply_filters( 'is_gmedia_gallery_visible', $is_gallery_visible ) ) {
 			return '';
 		}
@@ -179,6 +179,11 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 		$protected_query_args['status'][] = 'private';
 	}
 	$query = array_merge( apply_filters( 'gmedia_shortcode_query', $query, $id ), $protected_query_args );
+
+	$limitation = empty( $gmGallery->options['license_key'] ) && in_array( $_module, [ 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ], true );
+	if ( $limitation && ( empty( $query['limit'] ) || $query['limit'] > 40 ) ) {
+		$query['limit'] = 40;
+	}
 
 	include $module['path'] . '/index.php';
 	include $module['path'] . '/settings.php';

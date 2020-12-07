@@ -818,8 +818,7 @@ class GmediaAdmin {
 						'title'   => __( 'Opt Out' ),
 						'content' => __( '<h4>We appreciate your help in making the plugin better by letting us track some usage data.</h4>
 <p>Usage tracking is done in the name of making <strong>Gmedia Gallery</strong> better. Making a better user experience, prioritizing new features, and more good things.</p>
-<p>By clicking "Opt Out", we will no longer be sending any data from <strong>Gmedia Gallery</strong> to <a href="https://codeasily.com" target="_blank">codeasily.com</a>.</p>
-<p>You\'ll also not be able to use Gmedia iOS application.</p>', 'grand-media' )
+<p>By clicking "Opt Out", we will no longer be sending any data from <strong>Gmedia Gallery</strong> to <a href="https://codeasily.com" target="_blank">codeasily.com</a>.</p>', 'grand-media' )
 						             . '<p><button class="button button-default gm_service_action"  data-action="app_deactivate" data-nonce="' . $nonce . '">' . __( 'Opt Out', 'grand-media' ) . '</button><span class="spinner" style="float: none;"></span></p>'
 						             . '<div style="display:none;">Test:
 <button type="button" data-action="app_updateinfo" data-nonce="' . $nonce . '" class="btn btn-sm btn-primary gm_service_action">Update</button>

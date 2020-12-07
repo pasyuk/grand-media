@@ -3,7 +3,7 @@ Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: best gallery plugin, gallery, image gallery, photo gallery, wordpress gallery plugin
 Requires at least: 3.7
-Tested up to: 5.5
+Tested up to: 5.6
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -65,7 +65,6 @@ Friendly for iPad and iPhone. Doesn’t slow down your website. **Unlimited gall
 *   **Integration with WordPress Search. Gmedia items looks like a regular post with comments. Also you can search for albums and galleries**
 *   **Music player & WaveForm for music. Create and save music waveforms & display them nicely with WaveSurfer music module**
 *   **Duplicate item in Gmedia Library**
-*   **iOS application "Gmedia" - [iOS manage application](https://itunes.apple.com/ua/app/gmedia/id947515626?mt=8) to manage your Library with your iPhone**
 *   **Full Page Gallery Template - "GmediaCloud" pages with permalink support**
 *   **Share Images, Albums, Tags, Galleries via admin panel**
 *   **Create custom gallery query filters with selected parameters**
@@ -133,6 +132,12 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.19.5 =
+* Compatibility with WordPress 5.6
+
+= v1.19.4 =
+* Fixed bug in gallery modules for shortcode with query parameter
 
 = v1.19.3 =
 * Added Custom fields to ajax response

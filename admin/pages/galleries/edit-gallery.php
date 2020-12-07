@@ -117,6 +117,15 @@ $reset_settings = $gmCore->array_diff_keyval_recursive( $default_options, $galle
 do_action( 'gmedia_gallery_before_panel' );
 ?>
 
+<?php
+$limitation = empty( $gmGallery->options['license_key'] ) && in_array( $term->module['name'], [ 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ], true );
+if ( $limitation ) {
+	?>
+	<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php _e( 'Note: Free version allows you to show maximum 40 images per gallery on the frontend. Purchase license key <a href="https://codeasily.com/gmedia-premium/" target="_blank">here</a>. It\'s a one time payment.', 'grand-media' ); ?></div>
+	<?php
+}
+?>
+
 <div class="panel panel-default panel-fixed-header">
 
 	<?php

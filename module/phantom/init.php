@@ -396,7 +396,7 @@ if(!$is_bot){
       document.addEventListener('DOMContentLoaded', function(){
         jQuery(function() {
             var settings = <?php echo json_encode($settings); ?>;
-            jQuery('#GmediaGallery_<?php echo absint( $id ); ?>').gmPhantom([settings]);
+            jQuery('#GmediaGallery_<?php echo esc_attr( $id ); ?>').gmPhantom([settings]);
         });
       });
     </script><?php

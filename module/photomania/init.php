@@ -372,7 +372,7 @@ if ( ! $is_bot ) {
             var content = <?php echo json_encode($content); ?>;
             var container = $('#GmediaGallery_<?php echo absint( $id ); ?>');
             container.photomania(settings, content);
-            window.GmediaGallery_<?php echo absint( $id ); ?> = container.data('photomania');
+            window.GmediaGallery_<?php echo esc_attr( $id ); ?> = container.data('photomania');
         });
       });
     </script><?php if ( $shortcode_raw ) {

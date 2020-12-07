@@ -1164,7 +1164,7 @@ function gmedia_ios_app_processor( $action, $data, $filter = true, $cache = true
 			foreach ( $gmedias as $i => $item ) {
 
 				//if((!$logged_in && 'publish' !== $item->status) || (!$is_admin && ('draft' === $item->status) && ((int)$user_ID !== (int)$item->author))) {
-				if ( ( ! $is_admin || ( $is_admin && ! current_user_can( 'gmedia_edit_others_media' ) ) ) && ( ( 'draft' === $item->status ) && ( (int) $user_ID !== (int) $item->author ) ) ) {
+				if ( ( ! $is_admin || ( $is_admin && ! current_user_can( 'gmedia_edit_others_media' ) ) ) && ( ( 'draft' === $item->status ) && ! ( (int) $user_ID === (int) $item->author || current_user_can( 'manage_options' ) ) ) ) {
 					unset( $gmedias[ $i ] );
 					$properties['total_count'] --;
 					$properties['items_count'] --;
