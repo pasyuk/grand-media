@@ -3,7 +3,7 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.19.5
+ * Version: 1.19.6
  * Author: Rattus
  * Author URI: https://codeasily.com/
  * Requires at least: 3.7
@@ -42,7 +42,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 	 */
 	class Gmedia {
 
-		var $version = '1.19.5';
+		var $version = '1.19.6';
 		var $dbversion = '1.8.0';
 		var $minium_WP = '3.7';
 		var $options = '';
@@ -352,7 +352,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			] );
 
 			wp_register_style( 'grand-media', $gmCore->gmedia_url . '/admin/assets/css/gmedia.admin.css', [], '1.15.4', 'all' );
-			wp_register_script( 'grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', [ 'jquery', 'gmedia-global-backend' ], '1.15.4' );
+			wp_register_script( 'grand-media', $gmCore->gmedia_url . '/admin/assets/js/gmedia.admin.js', [ 'jquery', 'gmedia-global-backend' ], '1.19.6' );
 			wp_localize_script( 'grand-media', 'grandMedia', [
 				'error3'   => __( 'Disable your Popup Blocker and try again.', 'grand-media' ),
 				'download' => __( 'downloading...', 'grand-media' ),
@@ -398,8 +398,11 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			}
 
 			if ( ! wp_script_is( 'swiper', 'registered' ) ) {
-				wp_register_style( 'swiper', $gmCore->gmedia_url . '/assets/swiper/swiper.min.css', [], '5.3.6', 'screen' );
 				wp_register_script( 'swiper', $gmCore->gmedia_url . '/assets/swiper/swiper.min.js', [ 'jquery' ], '5.3.6', true );
+			}
+
+			if ( ! wp_style_is( 'swiper', 'registered' ) ) {
+				wp_register_style( 'swiper', $gmCore->gmedia_url . '/assets/swiper/swiper.min.css', [], '5.3.6', 'screen' );
 			}
 
 			if ( ! wp_script_is( 'magnific-popup', 'registered' ) || version_compare( $wp_scripts->registered['magnific-popup']->ver, '1.1.0', '<' ) ) {

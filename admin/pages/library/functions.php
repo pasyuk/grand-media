@@ -48,6 +48,7 @@ function gmedia_item_actions( $item ) {
 			$info = "<span class='action-inactive'>$info_icon</span>";
 		}
 
+		$db_delete   = '';
 		$delete_icon = '<span class="glyphicon glyphicon-trash"></span>';
 		if ( ( gm_user_can( 'delete_media' ) && ( (int) $item->author === get_current_user_id() ) ) || gm_user_can( 'delete_others_media' ) ) {
 			$delete = '<a class="text-danger" href="' . wp_nonce_url( gm_get_admin_url( [

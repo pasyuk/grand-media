@@ -1680,7 +1680,7 @@ function GmediaInit() {
   });
 }
 
-jQuery(document).on('ready', function() {
+jQuery(function() {
   GmediaInit();
 });
 
