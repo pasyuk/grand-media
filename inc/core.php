@@ -1132,24 +1132,26 @@ class GmediaCore {
 			}
 		}
 		// Remove old temp files.
-		if ( $cleanup_dir && is_dir( $fileinfo['dirpath'] ) && ( $_dir = opendir( $fileinfo['dirpath'] ) ) ) {
-			while ( ( $_file = readdir( $_dir ) ) !== false ) {
-				$tmpfilePath = $fileinfo['dirpath'] . DIRECTORY_SEPARATOR . $_file;
+		if ( $cleanup_dir ) {
+			if ( is_dir( $fileinfo['dirpath'] ) && ( $_dir = opendir( $fileinfo['dirpath'] ) ) ) {
+				while ( ( $_file = readdir( $_dir ) ) !== false ) {
+					$tmpfilePath = $fileinfo['dirpath'] . DIRECTORY_SEPARATOR . $_file;
 
-				// Remove temp file if it is older than the max age and is not the current file.
-				if ( preg_match( '/\.part$/', $_file ) && ( filemtime( $tmpfilePath ) < time() - $file_age ) && ( $tmpfilePath !== $fileinfo['filepath'] . '.part' ) ) {
-					@unlink( $tmpfilePath );
+					// Remove temp file if it is older than the max age and is not the current file.
+					if ( preg_match( '/\.part$/', $_file ) && ( filemtime( $tmpfilePath ) < time() - $file_age ) && ( $tmpfilePath !== $fileinfo['filepath'] . '.part' ) ) {
+						@unlink( $tmpfilePath );
+					}
 				}
+
+				closedir( $_dir );
+			} else {
+				$return = [
+					"error" => [ "code" => 100, "message" => sprintf( __( 'Failed to open directory: %s', 'grand-media' ), $fileinfo['dirpath'] ) ],
+					"id"    => $fileinfo['basename_original'],
+				];
+
+				return $return;
 			}
-
-			closedir( $_dir );
-		} else {
-			$return = [
-				"error" => [ "code" => 100, "message" => sprintf( __( 'Failed to open directory: %s', 'grand-media' ), $fileinfo['dirpath'] ) ],
-				"id"    => $fileinfo['basename_original'],
-			];
-
-			return $return;
 		}
 
 		// Open temp file.
@@ -1609,7 +1611,7 @@ class GmediaCore {
 			return false;
 		}
 
-		list( , , $sourceImageType ) = getimagesize( $file );
+		[ , , $sourceImageType ] = getimagesize( $file );
 
 		$meta = [];
 
@@ -1938,7 +1940,7 @@ class GmediaCore {
 				$coordinate[ $i ] = 0;
 			}
 		}
-		list( $degrees, $minutes, $seconds ) = $coordinate;
+		[ $degrees, $minutes, $seconds ] = $coordinate;
 		$sign = ( $hemisphere === 'W' || $hemisphere === 'S' ) ? - 1 : 1;
 
 		return $sign * ( $degrees + $minutes / 60 + $seconds / 3600 );
@@ -1955,12 +1957,12 @@ class GmediaCore {
 		if ( $size ) {
 			require_once dirname( __FILE__ ) . '/pel/autoload.php';
 			try {
-				Pel::setJPEGQuality( 100 );
+				lsolesen\pel\Pel::setJPEGQuality( 100 );
 				/*
                  * We want the raw JPEG data from $scaled. Luckily, one can create a
                  * PelJpeg object from an image resource directly:
                  */
-				$input_jpeg = new PelJpeg( $from_file );
+				$input_jpeg = new lsolesen\pel\PelJpeg( $from_file );
 				/* Retrieve the original Exif data in $jpeg (if any). */
 				$input_exif = $input_jpeg->getExif();
 				/* If no Exif data was present, then $input_exif is null. */
@@ -1975,17 +1977,17 @@ class GmediaCore {
 						return;
 					}
 
-					$input_exif_ifd  = $input_ifd0->getSubIfd( PelIfd::EXIF );
-					$input_inter_ifd = $input_ifd0->getSubIfd( PelIfd::INTEROPERABILITY );
+					$input_exif_ifd  = $input_ifd0->getSubIfd( lsolesen\pel\PelIfd::EXIF );
+					$input_inter_ifd = $input_ifd0->getSubIfd( lsolesen\pel\PelIfd::INTEROPERABILITY );
 
-					$orientation = $input_ifd0->getEntry( PelTag::ORIENTATION );
+					$orientation = $input_ifd0->getEntry( lsolesen\pel\PelTag::ORIENTATION );
 					if ( $orientation !== null ) {
 						$orientation->setValue( 1 );
 					}
 
 					if ( ! empty( $input_ifd0 ) ) {
-						/*$x_resolution = $input_ifd0->getEntry( PelTag::X_RESOLUTION );
-                        $y_resolution = $input_ifd0->getEntry( PelTag::Y_RESOLUTION );
+						/*$x_resolution = $input_ifd0->getEntry( lsolesen\pel\PelTag::X_RESOLUTION );
+                        $y_resolution = $input_ifd0->getEntry( lsolesen\pel\PelTag::Y_RESOLUTION );
                         if ( $x_resolution !== null && $y_resolution !== null ) {
                             //$x_res = $x_resolution->getValue();
                             //$y_res = $y_resolution->getValue();
@@ -1993,37 +1995,37 @@ class GmediaCore {
                             $y_resolution->setValue( $x_res );
                         }*/
 
-						$image_width  = $input_ifd0->getEntry( PelTag::IMAGE_WIDTH );
-						$image_length = $input_ifd0->getEntry( PelTag::IMAGE_LENGTH );
+						$image_width  = $input_ifd0->getEntry( lsolesen\pel\PelTag::IMAGE_WIDTH );
+						$image_length = $input_ifd0->getEntry( lsolesen\pel\PelTag::IMAGE_LENGTH );
 						if ( $image_width !== null && $image_length !== null ) {
 							$image_width->setValue( $size[0] );
 							$image_length->setValue( $size[1] );
 						}
 					}
 					if ( ! empty( $input_exif_ifd ) ) {
-						$x_dimention = $input_exif_ifd->getEntry( PelTag::PIXEL_X_DIMENSION );
-						$y_dimention = $input_exif_ifd->getEntry( PelTag::PIXEL_Y_DIMENSION );
+						$x_dimention = $input_exif_ifd->getEntry( lsolesen\pel\PelTag::PIXEL_X_DIMENSION );
+						$y_dimention = $input_exif_ifd->getEntry( lsolesen\pel\PelTag::PIXEL_Y_DIMENSION );
 						if ( $x_dimention !== null && $y_dimention !== null ) {
 							$x_dimention->setValue( $size[0] );
 							$y_dimention->setValue( $size[1] );
 						}
 					}
 					if ( ! empty( $input_inter_ifd ) ) {
-						$rel_image_width  = $input_inter_ifd->getEntry( PelTag::RELATED_IMAGE_WIDTH );
-						$rel_image_length = $input_inter_ifd->getEntry( PelTag::RELATED_IMAGE_LENGTH );
+						$rel_image_width  = $input_inter_ifd->getEntry( lsolesen\pel\PelTag::RELATED_IMAGE_WIDTH );
+						$rel_image_length = $input_inter_ifd->getEntry( lsolesen\pel\PelTag::RELATED_IMAGE_LENGTH );
 						if ( $rel_image_width !== null && $rel_image_length !== null ) {
 							$rel_image_width->setValue( $size[0] );
 							$rel_image_length->setValue( $size[1] );
 						}
 					}
 
-					$output_jpeg = new PelJpeg( $to_file );
+					$output_jpeg = new lsolesen\pel\PelJpeg( $to_file );
 					$output_jpeg->setExif( $input_exif );
 
 					/* We can now save the image with input_exif. */
 					$output_jpeg->saveFile( $to_file );
 				}
-			} catch ( PelException $e ) {
+			} catch ( lsolesen\pel\PelException $e ) {
 			}
 		}
 	}
@@ -2110,7 +2112,7 @@ class GmediaCore {
 			$fileinfo['title'] = $this->mb_ucwords_utf8( $fileinfo['title'] );
 		}
 		$fileinfo['mime_type'] = ( empty( $filetype['type'] ) ) ? 'application/' . $fileinfo['extension'] : $filetype['type'];
-		list( $dirname ) = explode( '/', $fileinfo['mime_type'] );
+		[ $dirname ] = explode( '/', $fileinfo['mime_type'] );
 		$fileinfo['dirname']           = $dirname;
 		$fileinfo['dirpath']           = $this->upload['path'] . '/' . $gmGallery->options['folder'][ $dirname ];
 		$fileinfo['dirpath_original']  = $this->upload['path'] . '/' . $gmGallery->options['folder'][ $dirname ];

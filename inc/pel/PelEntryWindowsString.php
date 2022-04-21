@@ -23,19 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
-/**
- * Classes used to hold bytes, both signed and unsigned.
- * The {@link
- * PelEntryWindowsString} class is used to manipulate strings in the
- * format Windows XP needs.
- *
- * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public
- *          License (GPL)
- * @package PEL
- */
-
 /**
  * Class used to manipulate strings in the format Windows XP uses.
  *
@@ -70,8 +57,12 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelEntryWindowsString extends PelEntry
 {
+
+    const ZEROES = "\x0\x0";
 
     /**
      * The string hold by this entry.
@@ -93,17 +84,18 @@ class PelEntryWindowsString extends PelEntry
      *            {@link PelTag::XP_AUTHOR}, {@link PelTag::XP_KEYWORD}, and {@link
      *            PelTag::XP_SUBJECT} tags. If another tag is used, then this
      *            entry will be incorrectly reloaded as a {@link PelEntryByte}.
-     *
      * @param string $str
      *            the string that this entry will represent. It will
      *            be passed to {@link setValue} and thus has to obey its
      *            requirements.
+     * @param bool $from_exif
+     *            internal use only, tells that string is UCS-2LE encoded, as PHP fails to detect this encoding
      */
-    public function __construct($tag, $str = '')
+    public function __construct($tag, $str = '', $from_exif = false)
     {
-        $this->tag    = $tag;
+        $this->tag = $tag;
         $this->format = PelFormat::BYTE;
-        $this->setValue($str);
+        $this->setValue($str, $from_exif);
     }
 
     /**
@@ -113,21 +105,31 @@ class PelEntryWindowsString extends PelEntry
      * retrieved later with the {@link getValue} method.
      *
      * @param string $str
-     *            the new value of the entry. This should be use the
-     *            Latin-1 encoding and be given without any extra NULL characters.
+     *            the new value of the entry.
+     * @param bool $from_exif
+     *            internal use only, tells that string is UCS-2LE encoded, as PHP fails to detect this encoding
      */
-    public function setValue($str)
+    public function setValue($str, $from_exif = false)
     {
-        $l = strlen($str);
-
-        $this->components = 2 * ($l + 1);
-        $this->str        = $str;
-        $this->bytes      = '';
-        for ($i = 0; $i < $l; $i++) {
-            $this->bytes .= $str{$i} . chr(0x00);
+        $zlen = strlen(static::ZEROES);
+        if (false !== $from_exif) {
+            $s = $str;
+            if (substr($str, - $zlen, $zlen) == static::ZEROES) {
+                $str = substr($str, 0, - $zlen);
+            }
+            $str = mb_convert_encoding($str, 'UTF-8', 'UCS-2LE');
+        } else {
+            $s = mb_convert_encoding($str, 'UCS-2LE', 'auto');
         }
 
-        $this->bytes .= chr(0x00) . chr(0x00);
+        if (substr($s, - $zlen, $zlen) != static::ZEROES) {
+            $s .= static::ZEROES;
+        }
+        $l = strlen($s);
+
+        $this->components = $l;
+        $this->str = $str;
+        $this->bytes = $s;
     }
 
     /**
@@ -149,7 +151,6 @@ class PelEntryWindowsString extends PelEntry
      *
      * @param boolean $brief
      *            not used.
-     *
      * @return string the string held, without any extra NULL
      *         characters. The string will be the same as the one given to
      *         {@link setValue} or to the {@link __construct constructor}.

@@ -19,7 +19,7 @@
 				<img class="gmedia-image" src="<?php echo esc_url( $gmCore->gm_get_media_image( $gmedia->ID ) ); ?>">
 
 				<div class="gmedia-text">
-					<h2 class="single-title"><?php echo $gmedia->title; ?></h2>
+					<h2 class="single-title"><?php echo wp_strip_all_tags( $gmedia->title ); ?></h2>
 
 					<div class="image-description"><?php echo wpautop( $gmedia->description ); ?></div>
 				</div>

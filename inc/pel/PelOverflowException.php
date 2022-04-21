@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes for dealing with Exif entries.
  *
@@ -46,6 +45,8 @@
  * @package PEL
  * @subpackage Exception
  */
+namespace lsolesen\pel;
+
 class PelOverflowException extends PelException
 {
 
@@ -54,10 +55,8 @@ class PelOverflowException extends PelException
      *
      * @param int $v
      *            the value that is out of range.
-     *
      * @param int $min
      *            the minimum allowed value.
-     *
      * @param int $max
      *            the maximum allowed value.
      */

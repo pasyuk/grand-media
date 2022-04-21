@@ -1,6 +1,5 @@
 <?php
-
-/**
+/*
  * PEL: PHP Exif Library.
  * A library with support for reading and
  * writing all Exif headers in JPEG and TIFF images using PHP.
@@ -23,15 +22,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
-/**
- * Classes representing JPEG data.
- *
- * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL)
- * @package PEL
- */
-
 /**
  * Exception thrown when an invalid marker is found.
  *
@@ -39,21 +29,22 @@
  * PelJpegMarker} and instead finds a byte that isn't a known marker.
  *
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
+ * @license http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL)
  * @package PEL
  * @subpackage Exception
  */
+namespace lsolesen\pel;
+
 class PelJpegInvalidMarkerException extends PelException
 {
 
     /**
      * Construct a new invalid marker exception.
-     *
      * The exception will contain a message describing the error,
      * including the byte found and the offset of the offending byte.
      *
      * @param int $marker
      *            the byte found.
-     *
      * @param int $offset
      *            the offset in the data.
      */

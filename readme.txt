@@ -2,8 +2,8 @@
 Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: best gallery plugin, gallery, image gallery, photo gallery, wordpress gallery plugin
-Requires at least: 3.7
-Tested up to: 5.8
+Requires at least: 4.2
+Tested up to: 5.9
 Stable tag: trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -125,13 +125,21 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Minimum requirements for Gmedia Gallery =
 
-    WordPress 3.7+
-    PHP 5.3+
+    WordPress 4.2+
+    PHP 5.6+
 
 == Changelog ==
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.20.0 =
+* Fixed XSS security issue
+* Updated PEL library
+* Fixed upload issue for PHP 8
+
+= v1.19.7 =
+* Updated uploader assets
 
 = v1.19.6 =
 * Fixed CSS conflict with Elementor

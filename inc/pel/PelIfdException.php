@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes for dealing with Exif IFDs.
  *
@@ -40,6 +39,8 @@
  * @package PEL
  * @subpackage Exception
  */
+namespace lsolesen\pel;
+
 class PelIfdException extends PelException
 {
     // do nothing

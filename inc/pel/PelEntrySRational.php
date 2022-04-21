@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes used to manipulate rational numbers.
  *
@@ -48,19 +47,20 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelEntrySRational extends PelEntrySLong
 {
 
     /**
      * Make a new entry that can hold a signed rational.
      *
-     * @param
-     *            PelTag the tag which this entry represents. This should
+     * @param int $tag
+     *            the tag which this entry represents. This should
      *            be one of the constants defined in {@link PelTag}, e.g., {@link
      *            PelTag::SHUTTER_SPEED_VALUE}, or any other tag which can have
      *            format {@link PelFormat::SRATIONAL}.
-     *
-     * @param array $value ...
+     * @param array $value
      *            the rational(s) that this entry will
      *            represent. The arguments passed must obey the same rules as the
      *            argument to {@link setValue}, namely that each argument should be
@@ -71,11 +71,11 @@ class PelEntrySRational extends PelEntrySLong
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag       = $tag;
-        $this->format    = PelFormat::SRATIONAL;
+        $this->tag = $tag;
+        $this->format = PelFormat::SRATIONAL;
         $this->dimension = 2;
-        $this->min       = -2147483648;
-        $this->max       = 2147483647;
+        $this->min = - 2147483648;
+        $this->max = 2147483647;
 
         $value = func_get_args();
         array_shift($value);
@@ -89,12 +89,10 @@ class PelEntrySRational extends PelEntrySLong
      * between the numerator and denominator. Care is taken to display
      * '-1/2' instead of the ugly but mathematically equivalent '1/-2'.
      *
-     * @param
-     *            array the rational which will be formatted.
-     *
-     * @param
-     *            boolean not used.
-     *
+     * @param array $number
+     *            the rational which will be formatted.
+     * @param boolean $brief
+     *            not used.
      * @return string the rational formatted as a string suitable for
      *         display.
      */
@@ -102,7 +100,7 @@ class PelEntrySRational extends PelEntrySLong
     {
         if ($number[1] < 0) {
             /* Turn output like 1/-2 into -1/2. */
-            return (-$number[0]) . '/' . (-$number[1]);
+            return (- $number[0]) . '/' . (- $number[1]);
         } else {
             return $number[0] . '/' . $number[1];
         }
@@ -115,10 +113,9 @@ class PelEntrySRational extends PelEntrySLong
      * e.g., rationals will be returned as 'x/y', ASCII strings will be
      * returned as themselves etc.
      *
-     * @param
-     *            boolean some values can be returned in a long or more
+     * @param boolean $brief
+     *            some values can be returned in a long or more
      *            brief form, and this parameter controls that.
-     *
      * @return string the value as text.
      */
     public function getText($brief = false)
@@ -129,13 +126,11 @@ class PelEntrySRational extends PelEntrySLong
 
         switch ($this->tag) {
             case PelTag::SHUTTER_SPEED_VALUE:
-
                 // CC (e->components, 1, v);
                 // if (!v_srat.denominator) return (NULL);
                 return Pel::fmt('%.0f/%.0f sec. (APEX: %d)', $v[0], $v[1], pow(sqrt(2), $v[0] / $v[1]));
 
             case PelTag::BRIGHTNESS_VALUE:
-
                 // CC (e->components, 1, v);
                 //
                 // TODO: figure out the APEX thing, or remove this so that it is
@@ -144,7 +139,6 @@ class PelEntrySRational extends PelEntrySLong
             // FIXME: How do I calculate the APEX value?
 
             case PelTag::EXPOSURE_BIAS_VALUE:
-
                 // CC (e->components, 1, v);
                 // if (!v_srat.denominator) return (NULL);
                 return sprintf('%s%.01f', $v[0] * $v[1] > 0 ? '+' : '', $v[0] / $v[1]);

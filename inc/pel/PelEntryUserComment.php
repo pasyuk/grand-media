@@ -23,22 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
-/**
- * Classes used to hold data for Exif tags of format undefined.
- *
- * This file contains the base class {@link PelEntryUndefined} and
- * the subclasses {@link PelEntryUserComment} which should be used
- * to manage the {@link PelTag::USER_COMMENT} tag, and {@link
- * PelEntryVersion} which is used to manage entries with version
- * information.
- *
- * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public
- *          License (GPL)
- * @package PEL
- */
-
 /**
  * Class for a user comment.
  *
@@ -66,6 +50,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelEntryUserComment extends PelEntryUndefined
 {
 
@@ -88,11 +74,10 @@ class PelEntryUserComment extends PelEntryUndefined
     /**
      * Make a new entry for holding a user comment.
      *
-     * @param
-     *            string the new user comment.
-     *
-     * @param
-     *            string the encoding of the comment. This should be either
+     * @param string $comment
+     *            the new user comment.
+     * @param string $encoding
+     *            the encoding of the comment. This should be either
      *            'ASCII', 'JIS', 'Unicode', or the empty string specifying an
      *            undefined encoding.
      */
@@ -105,17 +90,16 @@ class PelEntryUserComment extends PelEntryUndefined
     /**
      * Set the user comment.
      *
-     * @param
-     *            string the new user comment.
-     *
-     * @param
-     *            string the encoding of the comment. This should be either
+     * @param string $comment
+     *            the new user comment.
+     * @param string $encoding
+     *            the encoding of the comment. This should be either
      *            'ASCII', 'JIS', 'Unicode', or the empty string specifying an
      *            unknown encoding.
      */
     public function setValue($comment = '', $encoding = 'ASCII')
     {
-        $this->comment  = $comment;
+        $this->comment = $comment;
         $this->encoding = $encoding;
         parent::setValue(str_pad($encoding, 8, chr(0)) . $comment);
     }

@@ -28,13 +28,13 @@
  * @param $class
  */
 function gmedia_pel_autoloader($class) {
-    if(substr_compare($class, 'Pel', 0, 3) === 0) {
-        $load = realpath(dirname(__FILE__) . '/' . $class . '.php');
-        if($load !== false) {
-            /** @noinspection PhpIncludeInspection */
-            include_once realpath($load);
-        }
-    }
+	if (substr_compare($class, 'lsolesen\\pel\\', 0, 13) === 0) {
+		$classname = str_replace('lsolesen\\pel\\', '', $class);
+		$load = realpath(__DIR__ . DIRECTORY_SEPARATOR . $classname . '.php');
+		if ($load !== false) {
+			include_once realpath($load);
+		}
+	}
 }
 
 /**

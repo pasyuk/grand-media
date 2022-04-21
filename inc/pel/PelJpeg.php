@@ -23,24 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
-/**
- * Classes representing JPEG data.
- *
- * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public License (GPL)
- * @package PEL
- */
-
-
-// require_once ('PelJpegComment.php');
-// require_once ('PelJpegContent.php');
-// require_once ('PelDataWindow.php');
-// require_once ('PelJpegMarker.php');
-// require_once ('PelException.php');
-// require_once ('PelExif.php');
-// require_once ('Pel.php');
-
 /**
  * Class for handling JPEG data.
  *
@@ -76,6 +58,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelJpeg
 {
 
@@ -94,7 +78,7 @@ class PelJpeg
      *
      * @var array
      */
-    private $sections = array();
+    protected $sections = [];
 
     /**
      * The JPEG image data.
@@ -123,29 +107,47 @@ class PelJpeg
      * $jpeg->setExif($exif);
      * </code>
      *
-     * @param
-     *            mixed the data that this JPEG. This can either be a
+     * @param boolean|string|PelDataWindow|resource|\GDImage $data
+     *            the data that this JPEG. This can either be a
      *            filename, a {@link PelDataWindow} object, or a PHP image resource
      *            handle.
+     * @throws PelInvalidArgumentException
      */
     public function __construct($data = false)
     {
         if ($data === false) {
             return;
-        }
-
-        if (is_string($data)) {
+        } elseif (is_string($data)) {
             Pel::debug('Initializing PelJpeg object from %s', $data);
             $this->loadFile($data);
         } elseif ($data instanceof PelDataWindow) {
             Pel::debug('Initializing PelJpeg object from PelDataWindow.');
             $this->load($data);
-        } elseif (is_resource($data) && get_resource_type($data) == 'gd') {
+        } elseif ((is_resource($data) && get_resource_type($data) == 'gd') || (PHP_VERSION_ID >= 80000 && is_object($data) && $data instanceof \GDImage)) {
             Pel::debug('Initializing PelJpeg object from image resource.');
             $this->load(new PelDataWindow($data));
         } else {
             throw new PelInvalidArgumentException('Bad type for $data: %s', gettype($data));
         }
+    }
+
+    /**
+     * JPEG sections start with 0xFF.
+     * The first byte that is not
+     * 0xFF is a marker (hopefully).
+     *
+     * @param PelDataWindow $d
+     *
+     * @return integer
+     */
+    protected static function getJpgSectionStart($d)
+    {
+        for ($i = 0; $i < 7; $i ++) {
+            if ($d->getByte($i) != 0xFF) {
+                break;
+            }
+        }
+        return $i;
     }
 
     /**
@@ -161,8 +163,8 @@ class PelJpeg
      * into one object will accumulate the sections, but there will only
      * be one {@link PelJpegMarker::SOS} section at any given time.
      *
-     * @param
-     *            PelDataWindow the data that will be turned into JPEG
+     * @param PelDataWindow $d
+     *            the data that will be turned into JPEG
      *            sections.
      */
     public function load(PelDataWindow $d)
@@ -179,15 +181,7 @@ class PelJpeg
          * no data left in the window.
          */
         while ($d->getSize() > 0) {
-            /*
-             * JPEG sections start with 0xFF. The first byte that is not
-             * 0xFF is a marker (hopefully).
-             */
-            for ($i = 0; $i < 7; $i++) {
-                if ($d->getByte($i) != 0xFF) {
-                    break;
-                }
-            }
+            $i = $this->getJpgSectionStart($d);
 
             $marker = $d->getByte($i);
 
@@ -217,10 +211,10 @@ class PelJpeg
                 $d->setWindowStart(2);
 
                 if ($marker == PelJpegMarker::APP1) {
-                    try{
+                    try {
                         $content = new PelExif();
                         $content->load($d->getClone(0, $len));
-                    } catch (PelInvalidDataException $e){
+                    } catch (PelInvalidDataException $e) {
                         /*
                          * We store the data as normal JPEG content if it could
                          * not be parsed as Exif data.
@@ -253,7 +247,7 @@ class PelJpeg
 
                         $length = $d->getSize();
                         while ($d->getByte($length - 2) != 0xFF || $d->getByte($length - 1) != PelJpegMarker::EOI) {
-                            $length--;
+                            $length --;
                         }
 
                         $this->jpeg_data = $d->getClone(0, $length - 2);
@@ -284,12 +278,19 @@ class PelJpeg
     /**
      * Load data from a file into a JPEG object.
      *
-     * @param
-     *            string the filename. This must be a readable file.
+     * @param string $filename.
+     *            This must be a readable file.
+     * @return void
+     * @throws PelException if file could not be loaded
      */
     public function loadFile($filename)
     {
-        $this->load(new PelDataWindow(file_get_contents($filename)));
+        $content = @file_get_contents($filename);
+        if ($content === false) {
+            throw new PelException('Can not open file "%s"', $filename);
+        } else {
+            $this->load(new PelDataWindow($content));
+        }
     }
 
     /**
@@ -298,20 +299,22 @@ class PelJpeg
      * Use this to set the Exif data in the image. This will overwrite
      * any old Exif information in the image.
      *
-     * @param
-     *            PelExif the Exif data.
+     * @param PelExif $exif
+     *            the Exif data.
      */
     public function setExif(PelExif $exif)
     {
         $app0_offset = 1;
-        $app1_offset = -1;
+        $app1_offset = - 1;
 
         /* Search through all sections looking for APP0 or APP1. */
-        for ($i = 0; $i < count($this->sections); $i++) {
+        $sections_count = count($this->sections);
+        for ($i = 0; $i < $sections_count; $i ++) {
             if (! empty($this->sections[$i][0])) {
-                if ($this->sections[$i][0] == PelJpegMarker::APP0) {
+                $section = $this->sections[$i];
+                if ($section[0] == PelJpegMarker::APP0) {
                     $app0_offset = $i;
-                } elseif ($this->sections[$i][0] == PelJpegMarker::APP1) {
+                } elseif (($section[0] == PelJpegMarker::APP1) && ($section[1] instanceof PelExif)) {
                     $app1_offset = $i;
                     break;
                 }
@@ -336,16 +339,17 @@ class PelJpeg
      * Use this to set the ICC data in the image. This will overwrite
      * any old ICC information in the image.
      *
-     * @param
-     *            PelJpegContent the ICC data.
+     * @param PelJpegContent $icc
+     *            the ICC data.
      */
     public function setICC(PelJpegContent $icc)
     {
         $app1_offset = 1;
-        $app2_offset = -1;
+        $app2_offset = - 1;
 
         /* Search through all sections looking for APP0 or APP1. */
-        for ($i = 0; $i < count($this->sections); $i++) {
+        $count_sections = count($this->sections);
+        for ($i = 0; $i < $count_sections; $i ++) {
             if (! empty($this->sections[$i][0])) {
                 if ($this->sections[$i][0] == PelJpegMarker::APP1) {
                     $app1_offset = $i;
@@ -369,20 +373,22 @@ class PelJpeg
     }
 
     /**
-     * Get Exif data.
+     * Get first valid APP1 Exif section data.
      *
      * Use this to get the @{link PelExif Exif data} stored.
      *
-     * @return PelExif the Exif data found or null if the image has no
+     * @return PelExif|null the Exif data found or null if the image has no
      *         Exif data.
      */
     public function getExif()
     {
-        $exif = $this->getSection(PelJpegMarker::APP1);
-        if ($exif instanceof PelExif) {
-            return $exif;
+        $sections_count = count($this->sections);
+        for ($i = 0; $i < $sections_count; $i ++) {
+            $section = $this->getSection(PelJpegMarker::APP1, $i);
+            if ($section instanceof PelExif) {
+                return $section;
+            }
         }
-
         return null;
     }
 
@@ -391,32 +397,30 @@ class PelJpeg
      *
      * Use this to get the @{link PelJpegContent ICC data} stored.
      *
-     * @return PelJpegContent the ICC data found or null if the image has no
+     * @return PelJpegContent|null the ICC data found or null if the image has no
      *         ICC data.
      */
     public function getICC()
     {
         $icc = $this->getSection(PelJpegMarker::APP2);
-        if ($icc instanceof PelJpegContent) {
-            return $icc;
-        }
-
-        return null;
+        return $icc;
     }
 
     /**
      * Clear any Exif data.
      *
-     * This method will only clear the first @{link PelJpegMarker::APP1}
-     * section found (there should normally be just one).
+     * This method will only clear @{link PelJpegMarker::APP1} EXIF sections found.
      */
     public function clearExif()
     {
-        for ($i = 0; $i < count($this->sections); $i++) {
-            if ($this->sections[$i][0] == PelJpegMarker::APP1) {
-                unset($this->sections[$i]);
-
-                return;
+        $idx = 0;
+        while ($idx < count($this->sections)) {
+            $s = $this->sections[$idx];
+            if (($s[0] == PelJpegMarker::APP1) && ($s[1] instanceof PelExif)) {
+                array_splice($this->sections, $idx, 1);
+                $idx --;
+            } else {
+                ++ $idx;
             }
         }
     }
@@ -432,18 +436,17 @@ class PelJpeg
      * information to an image as that function will know the right
      * place to insert the data.
      *
-     * @param
-     *            PelJpegMarker the marker identifying the new section.
-     *
-     * @param
-     *            PelJpegContent the content of the new section.
+     * @param integer $marker
+     *            the marker identifying the new section.
+     * @param PelJpegContent $content
+     *            the content of the new section.
      */
     public function appendSection($marker, PelJpegContent $content)
     {
-        $this->sections[] = array(
+        $this->sections[] = [
             $marker,
             $content
-        );
+        ];
     }
 
     /**
@@ -453,25 +456,23 @@ class PelJpeg
      * information to an image as that function will know the right
      * place to insert the data.
      *
-     * @param
-     *            PelJpegMarker the marker for the new section.
-     *
-     * @param
-     *            PelJpegContent the content of the new section.
-     *
-     * @param
-     *            int the offset where the new section will be inserted ---
+     * @param integer $marker
+     *            the marker for the new section.
+     * @param PelJpegContent $content
+     *            the content of the new section.
+     * @param integer $offset
+     *            the offset where the new section will be inserted ---
      *            use 0 to insert it at the very beginning, use 1 to insert it
      *            between sections 1 and 2, etc.
      */
     public function insertSection($marker, PelJpegContent $content, $offset)
     {
-        array_splice($this->sections, $offset, 0, array(
-            array(
+        array_splice($this->sections, $offset, 0, [
+            [
                 $marker,
                 $content
-            )
-        ));
+            ]
+        ]);
     }
 
     /**
@@ -490,14 +491,12 @@ class PelJpeg
      * $dht3 = $jpeg->getSection(PelJpegMarker::DHT, 2);
      * </code>
      *
-     * @param
-     *            PelJpegMarker the marker identifying the section.
-     *
-     * @param
-     *            int the number of sections to be skipped. This must be a
+     * @param integer $marker
+     *            the marker identifying the section.
+     * @param integer $skip
+     *            the number of sections to be skipped. This must be a
      *            non-negative integer.
-     *
-     * @return PelJpegContent the content found, or null if there is no
+     * @return PelJpegContent|\lsolesen\pel\PelExif the content found, or null if there is no
      *         content available.
      */
     public function getSection($marker, $skip = 0)
@@ -505,7 +504,7 @@ class PelJpeg
         foreach ($this->sections as $s) {
             if ($s[0] == $marker) {
                 if ($skip > 0) {
-                    $skip--;
+                    $skip --;
                 } else {
                     return $s[1];
                 }
@@ -523,10 +522,8 @@ class PelJpeg
      *         PelJpegMarker} as the first element and the {@link
      *         PelJpegContent} as the second element, so the return type is an
      *         array of arrays.
-     *
      *         So to loop through all the sections in a given JPEG image do
      *         this:
-     *
      *         <code>
      *         foreach ($jpeg->getSections() as $section) {
      *         $marker = $section[0];
@@ -534,15 +531,12 @@ class PelJpeg
      *         // Use $marker and $content here.
      *         }
      *         </code>
-     *
      *         instead of this:
-     *
      *         <code>
      *         foreach ($jpeg->getSections() as $marker => $content) {
      *         // Does not work the way you would think...
      *         }
      *         </code>
-     *
      *         The problem is that there could be several sections with the same
      *         marker, and thus a simple associative array does not suffice.
      */
@@ -587,20 +581,21 @@ class PelJpeg
                 $bytes .= $this->jpeg_data->getBytes();
             }
         }
-
         return $bytes;
     }
 
     /**
      * Save the JPEG object as a JPEG image in a file.
      *
-     * @param
-     *            string the filename to save in. An existing file with the
+     * @param string $filename
+     *            the filename to save in. An existing file with the
      *            same name will be overwritten!
+     * @return integer|FALSE The number of bytes that were written to the
+     *         file, or FALSE on failure.
      */
     public function saveFile($filename)
     {
-        file_put_contents($filename, $this->getBytes());
+        return file_put_contents($filename, $this->getBytes());
     }
 
     /**
@@ -614,7 +609,8 @@ class PelJpeg
     public function __toString()
     {
         $str = Pel::tra("Dumping JPEG data...\n");
-        for ($i = 0; $i < count($this->sections); $i++) {
+        $count_sections = count($this->sections);
+        for ($i = 0; $i < $count_sections; $i ++) {
             $m = $this->sections[$i][0];
             $c = $this->sections[$i][1];
             $str .= Pel::fmt("Section %d (marker 0x%02X - %s):\n", $i, $m, PelJpegMarker::getName($m));
@@ -645,12 +641,10 @@ class PelJpeg
      * those bytes. This means that the check is more like a heuristic
      * than a rigorous check.
      *
-     * @param
-     *            PelDataWindow the bytes that will be checked.
-     *
+     * @param PelDataWindow $d
+     *            the bytes that will be checked.
      * @return boolean true if the bytes look like the beginning of a
      *         JPEG image, false otherwise.
-     *
      * @see PelTiff::isValid()
      */
     public static function isValid(PelDataWindow $d)
@@ -658,11 +652,7 @@ class PelJpeg
         /* JPEG data is stored in big-endian format. */
         $d->setByteOrder(PelConvert::BIG_ENDIAN);
 
-        for ($i = 0; $i < 7; $i++) {
-            if ($d->getByte($i) != 0xFF) {
-                break;
-            }
-        }
+        $i = self::getJpgSectionStart($d);
 
         return $d->getByte($i) == PelJpegMarker::SOI;
     }

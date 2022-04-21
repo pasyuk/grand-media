@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Class with miscellaneous static methods.
  *
@@ -34,8 +33,9 @@
  * true or false to {@link Pel::$debug}.
  *
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @package PEL
  */
+namespace lsolesen\pel;
+
 class Pel
 {
 
@@ -43,7 +43,7 @@ class Pel
      * Flag that controls if dgettext can be used.
      * Is set to true or fals at the first access
      *
-     * @var unknown
+     * @var boolean|NULL
      */
     private static $hasdgetext = null;
 
@@ -80,7 +80,7 @@ class Pel
      * When {@link Pel::$strict} is set to false exceptions will be
      * accumulated here instead of being thrown.
      */
-    private static $exceptions = array();
+    private static $exceptions = [];
 
     /**
      * Quality setting for encoding JPEG images.
@@ -163,7 +163,7 @@ class Pel
      */
     public static function clearExceptions()
     {
-        self::$exceptions = array();
+        self::$exceptions = [];
     }
 
     /**
@@ -252,17 +252,16 @@ class Pel
      *
      * @param string $format
      *            the format string.
-     *
-     * @param mixed $args,...
+     * @param mixed ...$args
      *            any number of arguments can be given. The
      *            arguments will be available for the format string as usual with
      *            sprintf().
      */
-    public static function debug()
+    public static function debug($format)
     {
         if (self::$debug) {
             $args = func_get_args();
-            $str  = array_shift($args);
+            $str = array_shift($args);
             vprintf($str . "\n", $args);
         }
     }
@@ -277,17 +276,16 @@ class Pel
      *
      * @param string $format
      *            the format string.
-     *
-     * @param mixed $args,...
+     * @param mixed ...$args
      *            any number of arguments can be given. The
      *            arguments will be available for the format string as usual with
      *            sprintf().
      */
-    public static function warning()
+    public static function warning($format)
     {
         if (self::$debug) {
             $args = func_get_args();
-            $str  = array_shift($args);
+            $str = array_shift($args);
             vprintf('Warning: ' . $str . "\n", $args);
         }
     }
@@ -302,7 +300,6 @@ class Pel
      *
      * @param string $str
      *            the string that should be translated.
-     *
      * @return string the translated string, or the original string if
      *         no translation could be found.
      */
@@ -324,20 +321,17 @@ class Pel
      * @param string $format
      *            the format string. This will be translated
      *            before being used as a format string.
-     *
-     * @param mixed $args,...
+     * @param mixed ...$args
      *            any number of arguments can be given. The
      *            arguments will be available for the format string as usual with
      *            sprintf().
-     *
      * @return string the translated string, or the original string if
      *         no translation could be found.
      */
-    public static function fmt()
+    public static function fmt($format)
     {
         $args = func_get_args();
-        $str  = array_shift($args);
-
+        $str = array_shift($args);
         return vsprintf(self::dgettextWrapper('pel', $str), $args);
     }
 
@@ -347,7 +341,6 @@ class Pel
      *
      * @param string $domain
      * @param string $str
-     *
      * @return string
      */
     private static function dgettextWrapper($domain, $str)
@@ -355,7 +348,7 @@ class Pel
         if (self::$hasdgetext === null) {
             self::$hasdgetext = function_exists('dgettext');
             if (self::$hasdgetext === true) {
-                bindtextdomain('pel', dirname(__FILE__) . '/locale');
+                bindtextdomain('pel', __DIR__ . '/locale');
             }
         }
         if (self::$hasdgetext) {

@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes for dealing with Exif entries.
  *
@@ -46,6 +45,8 @@
  * @package PEL
  * @subpackage Exception
  */
+namespace lsolesen\pel;
+
 class PelEntryException extends PelException
 {
 
@@ -59,7 +60,7 @@ class PelEntryException extends PelException
     /**
      * The tag of the entry (if known).
      *
-     * @var PelTag
+     * @var int
      */
     protected $tag;
 
@@ -78,7 +79,7 @@ class PelEntryException extends PelException
     /**
      * Get the tag associated with the exception.
      *
-     * @return PelTag the tag. If no tag is set, null is returned.
+     * @return int the tag. If no tag is set, null is returned.
      */
     public function getTag()
     {

@@ -23,23 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
-/**
- * Classes for dealing with Exif entries.
- *
- * This file defines two exception classes and the abstract class
- * {@link PelEntry} which provides the basic methods that all Exif
- * entries will have. All Exif entries will be represented by
- * descendants of the {@link PelEntry} class --- the class itself is
- * abstract and so it cannot be instantiated.
- *
- * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public
- *          License (GPL)
- * @package PEL
- */
-
-
 /**
  * Exception indicating that an unexpected number of components was
  * found.
@@ -53,7 +36,11 @@
  * @package PEL
  * @subpackage Exception
  */
-class PelWrongComponentCountException extends PelEntryException
+namespace lsolesen\pel;
+
+use lsolesen\pel\PelTag;
+
+class PelWrongComponentCountException extends \lsolesen\pel\PelEntryException
 {
 
     /**
@@ -62,20 +49,17 @@ class PelWrongComponentCountException extends PelEntryException
      *
      * @param int $type
      *            the type of IFD.
-     *
-     * @param PelTag $tag
+     * @param int $tag
      *            the tag for which the violation was found.
-     *
      * @param int $found
      *            the number of components found.
-     *
      * @param int $expected
      *            the expected number of components.
      */
     public function __construct($type, $tag, $found, $expected)
     {
         parent::__construct('Wrong number of components found for %s tag: %d. ' . 'Expected %d.', PelTag::getName($type, $tag), $found, $expected);
-        $this->tag  = $tag;
+        $this->tag = $tag;
         $this->type = $type;
     }
 }

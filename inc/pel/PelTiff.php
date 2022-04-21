@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes for dealing with TIFF data.
  *
@@ -59,6 +58,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelTiff
 {
 
@@ -88,7 +89,7 @@ class PelTiff
      *
      * Use {@link setIfd()} to explicitly set the IFD.
      *
-     * @param boolean|string|PelDataWindow $data ;
+     * @param boolean|string|PelDataWindow $data;
      */
     public function __construct($data = false)
     {
@@ -113,9 +114,8 @@ class PelTiff
      * will be built. If the data cannot be parsed correctly, a {@link
      * PelInvalidDataException} is thrown, explaining the problem.
      *
-     * @param
-     *            d
-     *            PelDataWindow the data from which the object will be
+     * @param PelDataWindow $d
+     *            the data from which the object will be
      *            constructed. This should be valid TIFF data, coming either
      *            directly from a TIFF image or from the Exif data in a JPEG image.
      */
@@ -204,11 +204,10 @@ class PelTiff
      * little-endian} or {@link PelConvert::BIG_ENDIAN big-endian} byte
      * order, and so this method takes an argument specifying that.
      *
-     * @param PelByteOrder $order
+     * @param boolean $order
      *            the desired byte order of the TIFF data.
      *            This should be one of {@link PelConvert::LITTLE_ENDIAN} or {@link
      *            PelConvert::BIG_ENDIAN}.
-     *
      * @return string the bytes representing this object.
      */
     public function getBytes($order = PelConvert::LITTLE_ENDIAN)
@@ -222,7 +221,7 @@ class PelTiff
         /* TIFF magic number --- fixed value. */
         $bytes .= PelConvert::shortToBytes(self::TIFF_HEADER, $order);
 
-        if ($this->ifd != null) {
+        if ($this->ifd !== null) {
             /*
              * IFD 0 offset. We will always start IDF 0 at an offset of 8
              * bytes (2 bytes for byte order, another 2 bytes for the TIFF
@@ -246,6 +245,20 @@ class PelTiff
     }
 
     /**
+     * Save the TIFF object as a TIFF image in a file.
+     *
+     * @param string $filename
+     *            the filename to save in. An existing file with the
+     *            same name will be overwritten!
+     * @return integer|FALSE The number of bytes that were written to the
+     *         file, or FALSE on failure.
+     */
+    public function saveFile($filename)
+    {
+        return file_put_contents($filename, $this->getBytes());
+    }
+
+    /**
      * Return a string representation of this object.
      *
      * @return string a string describing this object. This is mostly useful
@@ -254,7 +267,7 @@ class PelTiff
     public function __toString()
     {
         $str = Pel::fmt("Dumping TIFF data...\n");
-        if ($this->ifd != null) {
+        if ($this->ifd !== null) {
             $str .= $this->ifd->__toString();
         }
 
@@ -270,10 +283,8 @@ class PelTiff
      *
      * @param PelDataWindow $d
      *            the bytes that will be examined.
-     *
      * @return boolean true if the data looks like valid TIFF data,
      *         false otherwise.
-     *
      * @see PelJpeg::isValid()
      */
     public static function isValid(PelDataWindow $d)
@@ -294,7 +305,6 @@ class PelTiff
         }
 
         /* Verify the TIFF header */
-
         return $d->getShort(2) == self::TIFF_HEADER;
     }
 }

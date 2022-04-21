@@ -153,9 +153,9 @@ function the_gmedia_title( $return = false ) {
 	$title = __( 'GmediaGallery', 'grand-media' );
 	if ( is_object( $gmedia ) && ! is_wp_error( $gmedia ) ) {
 		if ( in_array( $gmedia_type, [ 'gallery', 'album', 'category', 'tag' ], true ) ) {
-			$title = $gmedia->name;
+			$title = wp_strip_all_tags( $gmedia->name );
 		} elseif ( 'single' === $gmedia_type ) {
-			$title = $gmedia->title;
+			$title = wp_strip_all_tags( $gmedia->title );
 		}
 	}
 

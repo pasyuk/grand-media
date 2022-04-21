@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes used to hold longs, both signed and unsigned.
  *
@@ -43,6 +42,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelEntrySLong extends PelEntryNumber
 {
 
@@ -55,12 +56,11 @@ class PelEntrySLong extends PelEntryNumber
      * integer argument is given here, or when an array with just a
      * single integer is given.
      *
-     * @param
-     *            PelTag the tag which this entry represents. This
+     * @param int $tag
+     *            the tag which this entry represents. This
      *            should be one of the constants defined in {@link PelTag}
      *            which have format {@link PelFormat::SLONG}.
-     *
-     * @param int $value ...
+     * @param int $value
      *            the long(s) that this entry will represent
      *            or an array of longs. The argument passed must obey the same
      *            rules as the argument to {@link setValue}, namely that it should
@@ -70,9 +70,9 @@ class PelEntrySLong extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag    = $tag;
-        $this->min    = -2147483648;
-        $this->max    = 2147483647;
+        $this->tag = $tag;
+        $this->min = - 2147483648;
+        $this->max = 2147483647;
         $this->format = PelFormat::SLONG;
 
         $value = func_get_args();
@@ -83,13 +83,11 @@ class PelEntrySLong extends PelEntryNumber
     /**
      * Convert a number into bytes.
      *
-     * @param
-     *            int the number that should be converted.
-     *
-     * @param
-     *            PelByteOrder one of {@link PelConvert::LITTLE_ENDIAN} and
+     * @param int $number
+     *            the number that should be converted.
+     * @param boolean $order
+     *            one of {@link PelConvert::LITTLE_ENDIAN} and
      *            {@link PelConvert::BIG_ENDIAN}, specifying the target byte order.
-     *
      * @return string bytes representing the number given.
      */
     public function numberToBytes($number, $order)

@@ -23,27 +23,21 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
- * Standard PEL exception.
+ * Standard PEL printf() capable exception.
+ * This class is a simple extension of the standard Exception class in
+ * PHP, and all the methods defined there retain their original
+ * meaning.
  *
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @license http://www.gnu.org/licenses/gpl.html GNU General Public
  *          License (GPL)
  * @package PEL
+ * @subpackage PelException
  */
+namespace lsolesen\pel;
 
-/**
- * A printf() capable exception.
- *
- * This class is a simple extension of the standard Exception class in
- * PHP, and all the methods defined there retain their original
- * meaning.
- *
- * @package PEL
- * @subpackage Exception
- */
-class PelException extends Exception
+class PelException extends \Exception
 {
 
     /**
@@ -54,15 +48,14 @@ class PelException extends Exception
      *            will be used as a format string for vprintf(). The remaining
      *            arguments will be available for the format string as usual with
      *            vprintf().
-     *
-     * @param mixed $args,...
+     * @param mixed ...$args
      *            any number of arguments to be used with
      *            the format string.
      */
-    public function __construct()
+    public function __construct($fmt, $args = null)
     {
         $args = func_get_args();
-        $fmt  = array_shift($args);
+        $fmt = array_shift($args);
         parent::__construct(vsprintf($fmt, $args));
     }
 }

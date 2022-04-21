@@ -23,16 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
-/**
- * Classes for dealing with Exif data.
- *
- * @author Martin Geisler <mgeisler@users.sourceforge.net>
- * @license http://www.gnu.org/licenses/gpl.html GNU General Public
- *          License (GPL)
- * @package PEL
- */
-
 /**
  * Class representing Exif data.
  *
@@ -48,6 +38,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelExif extends PelJpegContent
 {
 

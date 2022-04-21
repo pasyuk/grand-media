@@ -45,7 +45,7 @@ function gmogmeta_header() {
 		}
 		?>
 		<!-- Gmedia Open Graph Meta Image -->
-		<meta property="og:title" content="<?php echo esc_attr( $gmedia->title ); ?>"/>
+		<meta property="og:title" content="<?php echo esc_attr( wp_strip_all_tags( $gmedia->title ) ); ?>"/>
 		<meta property="og:description" content="<?php echo esc_attr( $description ); ?>"/>
 		<meta property="og:image" content="<?php echo esc_attr( $image_url ); ?>"/>
 		<!-- End Gmedia Open Graph Meta Image -->
@@ -223,7 +223,7 @@ function gmedia_the_post( $post ) {
 				'post_date'             => $date,
 				'post_date_gmt'         => $date,
 				'post_content'          => "[gm id={$term->term_id}]",
-				'post_title'            => __( 'Related Media', 'grand-media' ) . ': ' . $term->name,
+				'post_title'            => __( 'Related Media', 'grand-media' ) . ': ' . wp_strip_all_tags( $term->name ),
 				'post_excerpt'          => '',
 				'post_status'           => 'publish',
 				'comment_status'        => 'closed',
@@ -324,7 +324,7 @@ function gmedia_post_type__the_content( $content ) {
 					$embed_code  = wp_oembed_get( $gmedia_link );
 				}
 				if ( isset( $gmedia->meta['link_target'][0] ) ) {
-					$link_target = ' target="' . $gmedia->meta['link_target'][0] . '"';
+					$link_target = ' target="' . esc_attr( $gmedia->meta['link_target'][0] ) . '"';
 				}
 			} else {
 				$gmedia_link = $gmedia->url;
@@ -388,7 +388,7 @@ function gmedia_post_type__the_content( $content ) {
 								<script type="text/html" class="gm_script2html">
 									<?php
 									if ( ! empty( $gmedia->album ) ) {
-										$term_name    = $gmedia->album[0]->name;
+										$term_name    = wp_strip_all_tags( $gmedia->album[0]->name );
 										$term_post_id = $gmDB->get_metadata( 'gmedia_term', $gmedia->album[0]->term_id, '_post_ID', true );
 										if ( ! empty( $term_post_id ) ) {
 											$term_url = get_permalink( $term_post_id );
@@ -406,7 +406,7 @@ function gmedia_post_type__the_content( $content ) {
 									if ( ! empty( $gmedia->categories ) ) {
 										$item_cats = [];
 										foreach ( $gmedia->categories as $term ) {
-											$term->slug = $term->name;
+											$term->slug = wp_strip_all_tags( $term->name );
 											$term_url   = get_term_link( $term );
 											//$term_url = $gmCore->gmcloudlink($term->term_id, 'category');
 											$item_cats[] = "<span class='gmsingle_term'><a href='{$term_url}'>{$term->name}</a></span>";
@@ -421,7 +421,7 @@ function gmedia_post_type__the_content( $content ) {
 									if ( ! empty( $gmedia->tags ) ) {
 										$item_tags = [];
 										foreach ( $gmedia->tags as $term ) {
-											$term->slug = $term->name;
+											$term->slug = wp_strip_all_tags( $term->name );
 											$term_url   = get_term_link( $term );
 											//$term_url    = $gmCore->gmcloudlink($term->term_id, 'tag');
 											$item_tags[] = "<span class='gmsingle_term'><a href='{$term_url}'>#{$term->name}</a></span>";
@@ -762,7 +762,7 @@ function gmedia_post_type__the_content( $content ) {
 					echo apply_filters( 'the_gmedia_content', wpautop( $gmedia->description ) );
 
 					if ( ! empty( $gmedia->album ) ) {
-						$term_name    = $gmedia->album[0]->name;
+						$term_name    = wp_strip_all_tags( $gmedia->album[0]->name );
 						$term_post_id = $gmDB->get_metadata( 'gmedia_term', $gmedia->album[0]->term_id, '_post_ID', true );
 						if ( ! empty( $term_post_id ) ) {
 							$term_url = get_permalink( $term_post_id );
@@ -780,7 +780,7 @@ function gmedia_post_type__the_content( $content ) {
 					if ( ! empty( $gmedia->categories ) ) {
 						$item_cats = [];
 						foreach ( $gmedia->categories as $term ) {
-							$term->slug = $term->name;
+							$term->slug = wp_strip_all_tags( $term->name );
 							$term_url   = get_term_link( $term );
 							//$term_url = $gmCore->gmcloudlink($term->term_id, 'category');
 							$item_cats[] = "<span class='gmsingle_term'><a href='{$term_url}'>{$term->name}</a></span>";
@@ -795,7 +795,7 @@ function gmedia_post_type__the_content( $content ) {
 					if ( ! empty( $gmedia->tags ) ) {
 						$item_tags = [];
 						foreach ( $gmedia->tags as $term ) {
-							$term->slug = $term->name;
+							$term->slug = wp_strip_all_tags( $term->name );
 							$term_url   = get_term_link( $term );
 							//$term_url    = $gmCore->gmcloudlink($term->term_id, 'tag');
 							$item_tags[] = "<span class='gmsingle_term'><a href='{$term_url}'>#{$term->name}</a></span>";
@@ -838,7 +838,7 @@ function gmedia_post_type__the_content( $content ) {
 				}
 
 				if ( ! empty( $gmedia->album ) ) {
-					$term_name    = $gmedia->album[0]->name;
+					$term_name    = wp_strip_all_tags( $gmedia->album[0]->name );
 					$term_post_id = $gmDB->get_metadata( 'gmedia_term', $gmedia->album[0]->term_id, '_post_ID', true );
 					if ( ! empty( $term_post_id ) ) {
 						$term_url = get_permalink( $term_post_id );
@@ -856,7 +856,7 @@ function gmedia_post_type__the_content( $content ) {
 				if ( ! empty( $gmedia->categories ) ) {
 					$item_cats = [];
 					foreach ( $gmedia->categories as $term ) {
-						$term->slug = $term->name;
+						$term->slug = wp_strip_all_tags( $term->name );
 						$term_url   = get_term_link( $term );
 						//$term_url = $gmCore->gmcloudlink($term->term_id, 'category');
 						$item_cats[] = "<span class='gmsingle_term'><a href='{$term_url}'>{$term->name}</a></span>";
@@ -871,7 +871,7 @@ function gmedia_post_type__the_content( $content ) {
 				if ( ! empty( $gmedia->tags ) ) {
 					$item_tags = [];
 					foreach ( $gmedia->tags as $term ) {
-						$term->slug = $term->name;
+						$term->slug = wp_strip_all_tags( $term->name );
 						$term_url   = get_term_link( $term );
 						//$term_url    = $gmCore->gmcloudlink($term->term_id, 'tag');
 						$item_tags[] = "<span class='gmsingle_term'><a href='{$term_url}'>#{$term->name}</a></span>";

@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes used to hold data for Exif tags of format undefined.
  *
@@ -47,26 +46,27 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelEntryUndefined extends PelEntry
 {
 
     /**
      * Make a new PelEntry that can hold undefined data.
      *
-     * @param
-     *            PelTag the tag which this entry represents. This
+     * @param integer $tag
+     *            which this entry represents. This
      *            should be one of the constants defined in {@link PelTag},
      *            e.g., {@link PelTag::SCENE_TYPE}, {@link
      *            PelTag::MAKER_NOTE} or any other tag with format {@link
      *            PelFormat::UNDEFINED}.
-     *
-     * @param
-     *            string the data that this entry will be holding. Since
-     *            the format is undefined, no checking will be done on the data.
+     * @param string $data
+     *            the data that this entry will be holding. Since
+     *            the format is undefined, no checking will be done on the data. If no data are given, a empty string will be stored
      */
     public function __construct($tag, $data = '')
     {
-        $this->tag    = $tag;
+        $this->tag = $tag;
         $this->format = PelFormat::UNDEFINED;
         $this->setValue($data);
     }
@@ -74,14 +74,14 @@ class PelEntryUndefined extends PelEntry
     /**
      * Set the data of this undefined entry.
      *
-     * @param
-     *            string the data that this entry will be holding. Since
+     * @param string $data
+     *            the data that this entry will be holding. Since
      *            the format is undefined, no checking will be done on the data.
      */
     public function setValue($data)
     {
         $this->components = strlen($data);
-        $this->bytes      = $data;
+        $this->bytes = $data;
     }
 
     /**
@@ -99,41 +99,37 @@ class PelEntryUndefined extends PelEntry
      *
      * The value will be returned in a format suitable for presentation.
      *
-     * @param
-     *            boolean some values can be returned in a long or more
+     * @param boolean $brief
+     *            some values can be returned in a long or more
      *            brief form, and this parameter controls that.
-     *
      * @return string the value as text.
      */
     public function getText($brief = false)
     {
         switch ($this->tag) {
             case PelTag::FILE_SOURCE:
-
                 // CC (e->components, 1, v);
-                switch (ord($this->bytes{0})) {
+                switch (ord($this->bytes[0])) {
                     case 0x03:
                         return 'DSC';
                     default:
-                        return sprintf('0x%02X', ord($this->bytes{0}));
+                        return sprintf('0x%02X', ord($this->bytes[0]));
                 }
                 break;
             case PelTag::SCENE_TYPE:
-
                 // CC (e->components, 1, v);
-                switch (ord($this->bytes{0})) {
+                switch (ord($this->bytes[0])) {
                     case 0x01:
                         return 'Directly photographed';
                     default:
-                        return sprintf('0x%02X', ord($this->bytes{0}));
+                        return sprintf('0x%02X', ord($this->bytes[0]));
                 }
                 break;
             case PelTag::COMPONENTS_CONFIGURATION:
-
                 // CC (e->components, 4, v);
                 $v = '';
-                for ($i = 0; $i < 4; $i++) {
-                    switch (ord($this->bytes{$i})) {
+                for ($i = 0; $i < 4; $i ++) {
+                    switch (ord($this->bytes[$i])) {
                         case 0:
                             $v .= '-';
                             break;
@@ -163,11 +159,9 @@ class PelEntryUndefined extends PelEntry
                         $v .= ' ';
                     }
                 }
-
                 return $v;
                 break;
             case PelTag::MAKER_NOTE:
-
                 // TODO: handle maker notes.
                 return $this->components . ' bytes unknown MakerNote data';
                 break;

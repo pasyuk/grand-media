@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes used to hold bytes, both signed and unsigned.
  * The {@link
@@ -46,6 +45,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 class PelEntryByte extends PelEntryNumber
 {
 
@@ -56,12 +57,11 @@ class PelEntryByte extends PelEntryNumber
      * getValue} method will always return an array except for when a
      * single integer argument is given here.
      *
-     * @param PelTag $tag
+     * @param int $tag
      *            the tag which this entry represents. This
      *            should be one of the constants defined in {@link PelTag}
      *            which has format {@link PelFormat::BYTE}.
-     *
-     * @param int $value ...
+     * @param int $value...
      *            the byte(s) that this entry will represent.
      *            The argument passed must obey the same rules as the argument to
      *            {@link setValue}, namely that it should be within range of an
@@ -70,9 +70,9 @@ class PelEntryByte extends PelEntryNumber
      */
     public function __construct($tag, $value = null)
     {
-        $this->tag    = $tag;
-        $this->min    = 0;
-        $this->max    = 255;
+        $this->tag = $tag;
+        $this->min = 0;
+        $this->max = 255;
         $this->format = PelFormat::BYTE;
 
         $value = func_get_args();
@@ -81,16 +81,9 @@ class PelEntryByte extends PelEntryNumber
     }
 
     /**
-     * Convert a number into bytes.
      *
-     * @param int $number
-     *            the number that should be converted.
-     *
-     * @param PelByteOrder $order
-     *            one of {@link PelConvert::LITTLE_ENDIAN} and
-     *            {@link PelConvert::BIG_ENDIAN}, specifying the target byte order.
-     *
-     * @return string bytes representing the number given.
+     * {@inheritdoc}
+     * @see \lsolesen\pel\PelEntryNumber::numberToBytes()
      */
     public function numberToBytes($number, $order)
     {

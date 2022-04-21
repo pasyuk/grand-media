@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Classes for dealing with Exif entries.
  *
@@ -62,6 +61,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 abstract class PelEntry
 {
 
@@ -92,14 +93,14 @@ abstract class PelEntry
     /**
      * The {@link PelTag} of this entry.
      *
-     * @var PelTag
+     * @var int
      */
     protected $tag;
 
     /**
      * The {@link PelFormat} of this entry.
      *
-     * @var PelFormat
+     * @var int
      */
     protected $format;
 
@@ -113,7 +114,7 @@ abstract class PelEntry
     /**
      * Return the tag of this entry.
      *
-     * @return PelTag the tag of this entry.
+     * @return int the tag of this entry.
      */
     public function getTag()
     {
@@ -137,8 +138,8 @@ abstract class PelEntry
     /**
      * Update the IFD type.
      *
-     * @param
-     *            int must be one of the constants defined in {@link
+     * @param int $type
+     *            must be one of the constants defined in {@link
      *            PelIfd}: {@link PelIfd::IFD0} for the main image IFD, {@link
      *            PelIfd::IFD1} for the thumbnail image IFD, {@link PelIfd::EXIF}
      *            for the Exif sub-IFD, {@link PelIfd::GPS} for the GPS sub-IFD, or
@@ -153,7 +154,7 @@ abstract class PelEntry
     /**
      * Return the format of this entry.
      *
-     * @return PelFormat the format of this entry.
+     * @return int the format of this entry.
      */
     public function getFormat()
     {
@@ -173,10 +174,9 @@ abstract class PelEntry
     /**
      * Turn this entry into bytes.
      *
-     * @param
-     *            PelByteOrder the desired byte order, which must be either
+     * @param boolean $o
+     *            the desired byte order, which must be either
      *            {@link Convert::LITTLE_ENDIAN} or {@link Convert::BIG_ENDIAN}.
-     *
      * @return string bytes representing this entry.
      */
     public function getBytes($o)
@@ -191,10 +191,9 @@ abstract class PelEntry
      * e.g., rationals will be returned as 'x/y', ASCII strings will be
      * returned as themselves etc.
      *
-     * @param
-     *            boolean some values can be returned in a long or more
+     * @param boolean $brief
+     *            some values can be returned in a long or more
      *            brief form, and this parameter controls that.
-     *
      * @return string the value as text.
      */
     abstract public function getText($brief = false);
@@ -215,9 +214,8 @@ abstract class PelEntry
      *
      * The value should be in the same format as for the constructor.
      *
-     * @param
-     *            mixed the new value.
-     *
+     * @param mixed $value
+     *            the new value.
      * @abstract
      *
      */
@@ -248,7 +246,6 @@ abstract class PelEntry
             $str .= Pel::fmt("    Value     : %s\n", print_r($this->getValue(), true));
         }
         $str .= Pel::fmt("    Text      : %s\n", $this->getText());
-
         return $str;
     }
 }

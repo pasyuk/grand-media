@@ -3389,7 +3389,8 @@ class GmediaDB {
 			return new WP_Error( 'gm_invalid_term_id', __( 'Invalid term ID' ) );
 		}
 
-		if ( '' === trim( $term ) ) {
+		$term = trim( strip_tags( stripslashes( $term )));
+		if ( '' === $term ) {
 			return new WP_Error( 'gm_empty_term_name', __( 'A name is required for this term' ) );
 		}
 
@@ -3523,7 +3524,7 @@ class GmediaDB {
 			}
 		}
 
-		if ( '' === $term = trim( stripslashes( $term ) ) ) {
+		if ( '' === $term = trim( strip_tags( stripslashes( $term ) ) ) ) {
 			return 0;
 		}
 

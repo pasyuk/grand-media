@@ -23,7 +23,6 @@
  * Boston, MA 02110-1301 USA
  */
 
-
 /**
  * Abstract class for numbers.
  *
@@ -41,6 +40,8 @@
  * @author Martin Geisler <mgeisler@users.sourceforge.net>
  * @package PEL
  */
+namespace lsolesen\pel;
+
 abstract class PelEntryNumber extends PelEntry
 {
 
@@ -49,7 +50,7 @@ abstract class PelEntryNumber extends PelEntry
      *
      * @var array
      */
-    protected $value = array();
+    protected $value = [];
 
     /**
      * The minimum allowed value.
@@ -93,13 +94,12 @@ abstract class PelEntryNumber extends PelEntry
      * method will always return an array except for when a single
      * number is given here.
      *
-     * @param int|array $value ...
+     * @param int|array $value...
      *            the new value(s). This can be zero or
      *            more numbers, that is, either integers or arrays. The input will
      *            be checked to ensure that the numbers are within the valid range.
      *            If not, then a {@link PelOverflowException} will be thrown.
-     *
-     * @see getValue
+     * @see PelEntryNumber::getValue
      */
     public function setValue($value)
     {
@@ -115,20 +115,19 @@ abstract class PelEntryNumber extends PelEntry
      * value, and a {@link PelOverflowException} will be thrown if the
      * value is found to be outside the legal range.
      *
-     * @param
-     *            array the new values. The array must contain the new
+     * @param array $values
+     *            the new values. The array must contain the new
      *            numbers.
-     *
-     * @see getValue
+     * @see PelEntryNumber::getValue
      */
-    public function setValueArray($value)
+    public function setValueArray($values)
     {
-        foreach ($value as $v) {
+        foreach ($values as $v) {
             $this->validateNumber($v);
         }
 
-        $this->components = count($value);
-        $this->value      = $value;
+        $this->components = count($values);
+        $this->value = $values;
     }
 
     /**
@@ -153,21 +152,23 @@ abstract class PelEntryNumber extends PelEntry
      * given my {@link getMin()} and {@link getMax()}, inclusive. If
      * not, then a {@link PelOverflowException} is thrown.
      *
-     * @param
-     *            int|array the number in question.
-     *
+     * @param int|array $n
+     *            the number in question.
      * @return void nothing, but will throw a {@link
      *         PelOverflowException} if the number is found to be outside the
      *         legal range and {@link Pel::$strict} is true.
      */
     public function validateNumber($n)
     {
-        if ($this->dimension == 1) {
+        if ($this->dimension == 1 || is_scalar($n)) {
             if ($n < $this->min || $n > $this->max) {
-                Pel::maybeThrow(new PelOverflowException($n, $this->min, $this->max));
+                Pel::maybeThrow(new PelOverflowException((int) $n, $this->min, $this->max));
             }
         } else {
-            for ($i = 0; $i < $this->dimension; $i++) {
+            for ($i = 0; $i < $this->dimension; $i ++) {
+                if (! isset($n[$i])) {
+                    continue;
+                }
                 if ($n[$i] < $this->min || $n[$i] > $this->max) {
                     Pel::maybeThrow(new PelOverflowException($n[$i], $this->min, $this->max));
                 }
@@ -181,14 +182,14 @@ abstract class PelEntryNumber extends PelEntry
      * This appends a number to the numbers already held by this entry,
      * thereby increasing the number of components by one.
      *
-     * @param
-     *            int|array the number to be added.
+     * @param int|array $n
+     *            the number to be added.
      */
     public function addNumber($n)
     {
         $this->validateNumber($n);
         $this->value[] = $n;
-        $this->components++;
+        $this->components ++;
     }
 
     /**
@@ -199,13 +200,11 @@ abstract class PelEntryNumber extends PelEntry
      *
      * The method will be called once for each number held by the entry.
      *
-     * @param
-     *            int the number that should be converted.
-     *
-     * @param
-     *            PelByteOrder one of {@link PelConvert::LITTLE_ENDIAN} and
+     * @param int $number
+     *            the number that should be converted.
+     * @param boolean $order
+     *            one of {@link PelConvert::LITTLE_ENDIAN} and
      *            {@link PelConvert::BIG_ENDIAN}, specifying the target byte order.
-     *
      * @return string bytes representing the number given.
      */
     abstract public function numberToBytes($number, $order);
@@ -213,26 +212,24 @@ abstract class PelEntryNumber extends PelEntry
     /**
      * Turn this entry into bytes.
      *
-     * @param
-     *            PelByteOrder the desired byte order, which must be either
+     * @param boolean $o
+     *            the desired byte order, which must be either
      *            {@link PelConvert::LITTLE_ENDIAN} or {@link
      *            PelConvert::BIG_ENDIAN}.
-     *
      * @return string bytes representing this entry.
      */
     public function getBytes($o)
     {
         $bytes = '';
-        for ($i = 0; $i < $this->components; $i++) {
+        for ($i = 0; $i < $this->components; $i ++) {
             if ($this->dimension == 1) {
                 $bytes .= $this->numberToBytes($this->value[$i], $o);
             } else {
-                for ($j = 0; $j < $this->dimension; $j++) {
+                for ($j = 0; $j < $this->dimension; $j ++) {
                     $bytes .= $this->numberToBytes($this->value[$i][$j], $o);
                 }
             }
         }
-
         return $bytes;
     }
 
@@ -244,13 +241,11 @@ abstract class PelEntryNumber extends PelEntry
      * sophisticated behavior than the default, which is to just return
      * the number as is.
      *
-     * @param
-     *            int the number which will be formatted.
-     *
-     * @param
-     *            boolean it could be that there is both a verbose and a
+     * @param int $number
+     *            the number which will be formatted.
+     * @param boolean $brief
+     *            it could be that there is both a verbose and a
      *            brief formatting available, and this argument controls that.
-     *
      * @return string the number formatted as a string suitable for
      *         display.
      */
@@ -262,11 +257,10 @@ abstract class PelEntryNumber extends PelEntry
     /**
      * Get the numeric value of this entry as text.
      *
-     * @param
-     *            boolean use brief output? The numbers will be separated
+     * @param boolean $brief
+     *            use brief output? The numbers will be separated
      *            by a single space if brief output is requested, otherwise a space
      *            and a comma will be used.
-     *
      * @return string the numbers(s) held by this entry.
      */
     public function getText($brief = false)
@@ -276,7 +270,7 @@ abstract class PelEntryNumber extends PelEntry
         }
 
         $str = $this->formatNumber($this->value[0]);
-        for ($i = 1; $i < $this->components; $i++) {
+        for ($i = 1; $i < $this->components; $i ++) {
             $str .= ($brief ? ' ' : ', ');
             $str .= $this->formatNumber($this->value[$i]);
         }
