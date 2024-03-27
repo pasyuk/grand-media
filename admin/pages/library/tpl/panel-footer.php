@@ -1,11 +1,12 @@
 <?php
-// don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
-?>
-<div class="panel-footer clearfix">
-	<?php echo $gmedia_pager; ?>
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
-	<a href="#top" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-arrow-up"></span> <?php _e( 'Back to top', 'grand-media' ); ?></a>
+/**
+ * @var $gmedia_pager
+ * @var $gm_allowed_tags
+ */?>
+<div class="card-footer clearfix">
+	<?php echo wp_kses( $gmedia_pager, $gm_allowed_tags ); ?>
+
+	<a href="#top" class="btn btn-secondary btn-sm"><i class='fa-solid fa-arrow-up'></i> <?php esc_html_e( 'Back to top', 'grand-media' ); ?></a>
 </div>

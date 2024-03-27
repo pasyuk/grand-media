@@ -4,7 +4,6 @@
 //
 // Cory S.N. LaViska
 // A Beautiful Site (http://abeautifulsite.net/)
-// 24 March 2008
 //
 // Visit http://abeautifulsite.net/notebook.php?article=58 for more information
 //
@@ -22,13 +21,13 @@
 //
 // History:
 //
-// 1.01 - updated to work with foreign characters in directory/file names (12 April 2008)
-// 1.00 - released (24 March 2008)
+// 1.01 - updated to work with foreign characters in directory/file names
+// 1.00 - released
 //
 // TERMS OF USE
 // 
 // This plugin is dual-licensed under the GNU General Public License and the MIT License and
-// is copyright 2008 A Beautiful Site, LLC. 
+// is copyright A Beautiful Site, LLC.
 //
 if(jQuery) (function($){
 

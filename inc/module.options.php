@@ -1,6 +1,5 @@
-<?php if ( ! defined( 'GMEDIA_VERSION' ) ) {
-	exit( 'No direct script access allowed' );
-}
+<?php
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 /**
  * @param $options_tree
@@ -9,8 +8,8 @@ function gmedia_gallery_options_nav( $options_tree ) {
 	$i = 0;
 	foreach ( $options_tree as $section ) {
 		$i ++;
-		$active_class = ( 1 === $i ) ? ' class="active"' : '';
-		echo '<li' . $active_class . '><a href="#gallery_settings' . $i . '" data-toggle="tab">' . $section['label'] . '</a></li..>';
+		$active_class = ( 1 === $i ) ? ' active' : '';
+		echo '<li class="nav-item"><a class="nav-link text-dark' . esc_attr( $active_class ) . '" href="#gallery_settings' . intval( $i ) . '" data-bs-toggle="tab">' . esc_html( $section['label'] ) . '</a></li..>';
 	}
 }
 
@@ -19,20 +18,20 @@ function gmedia_gallery_options_nav( $options_tree ) {
  * @param       $default
  * @param array $value
  */
-function gmedia_gallery_options_fieldset( $options_tree, $default, $value = [] ) {
+function gmedia_gallery_options_fieldset( $options_tree, $default, $value = array() ) {
 	$i = 0;
 	foreach ( $options_tree as $section ) {
 		$i ++;
 		$pane_class = ( 1 === $i ) ? 'tab-pane active' : 'tab-pane';
 		?>
-		<fieldset id="gallery_settings<?php echo $i; ?>" class="<?php echo esc_attr( $pane_class ); ?>">
+		<fieldset id="gallery_settings<?php echo intval( $i ); ?>" class="<?php echo esc_attr( $pane_class ); ?>">
 			<?php
 			foreach ( $section['fields'] as $name => $field ) {
 				if ( 'textblock' === $field['tag'] ) {
-					$args = [
+					$args = array(
 						'id'    => $name,
 						'field' => $field,
-					];
+					);
 				} else {
 					if ( isset( $section['key'] ) ) {
 						$key = $section['key'];
@@ -40,25 +39,25 @@ function gmedia_gallery_options_fieldset( $options_tree, $default, $value = [] )
 							$default[ $key ][ $name ] = false;
 						}
 						$val  = isset( $value[ $key ][ $name ] ) ? $value[ $key ][ $name ] : $default[ $key ][ $name ];
-						$args = [
+						$args = array(
 							'id'      => strtolower( "{$key}_{$name}" ),
 							'name'    => "module[{$key}][{$name}]",
 							'field'   => $field,
 							'value'   => $val,
 							'default' => $default[ $key ][ $name ],
-						];
+						);
 					} else {
 						if ( ! isset( $default[ $name ] ) ) {
 							$default[ $name ] = false;
 						}
 						$val  = isset( $value[ $name ] ) ? $value[ $name ] : $default[ $name ];
-						$args = [
+						$args = array(
 							'id'      => strtolower( $name ),
 							'name'    => "module[{$name}]",
 							'field'   => $field,
 							'value'   => $val,
 							'default' => $default[ $name ],
-						];
+						);
 					}
 				}
 				gmedia_gallery_options_formgroup( $args );
@@ -84,47 +83,56 @@ function gmedia_gallery_options_formgroup( $args ) {
 	if ( 'input' === $field['tag'] ) {
 		?>
 		<div class="form-group" id="div_<?php echo absint( $id ); ?>">
-			<label><?php echo $field['label']; ?></label>
-			<input <?php echo $field['attr']; ?> id="<?php echo absint( $id ); ?>" class="form-control input-sm" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" data-value="<?php echo esc_attr( $default ); ?>" placeholder="<?php echo esc_attr( $default ); ?>"/>
-			<?php if ( ! empty( $field['text'] ) ) {
-				echo "<p class='help-block'>{$field['text']}</p>";
-			} ?>
+			<label><?php echo esc_html( $field['label'] ); ?></label>
+			<input <?php echo wp_kses_data( $field['attr'] ); ?> id="<?php echo absint( $id ); ?>" class="form-control input-sm" name="<?php echo esc_attr( $name ); ?>" value="<?php echo esc_attr( $value ); ?>" data-value="<?php echo esc_attr( $default ); ?>" placeholder="<?php echo esc_attr( $default ); ?>"/>
+			<?php
+			if ( ! empty( $field['text'] ) ) {
+				echo wp_kses_post( "<p class='help-block'>{$field['text']}</p>" );
+			}
+			?>
 		</div>
 	<?php } elseif ( 'checkbox' === $field['tag'] ) { ?>
 		<div class="form-group" id="div_<?php echo absint( $id ); ?>">
 			<div class="checkbox">
 				<input type="hidden" name="<?php echo esc_attr( $name ); ?>" value="0"/>
-				<label><input type="checkbox" <?php echo $field['attr']; ?> id="<?php echo absint( $id ); ?>" name="<?php echo esc_attr( $name ); ?>" value="1" data-value="<?php echo esc_attr( $default ); ?>" <?php echo checked( $value, '1' ); ?>/> <?php echo $field['label']; ?>
+				<label><input type="checkbox" <?php echo wp_kses_data( $field['attr'] ); ?> id="<?php echo absint( $id ); ?>" name="<?php echo esc_attr( $name ); ?>" value="1" data-value="<?php echo esc_attr( $default ); ?>" <?php checked( $value, '1' ); ?>/>
+					<?php echo esc_html( $field['label'] ); ?>
 				</label>
-				<?php if ( ! empty( $field['text'] ) ) {
-					echo "<p class='help-block'>{$field['text']}</p>";
-				} ?>
+				<?php
+				if ( ! empty( $field['text'] ) ) {
+					echo wp_kses_post( "<p class='help-block'>{$field['text']}</p>" );
+				}
+				?>
 			</div>
 		</div>
 	<?php } elseif ( 'select' === $field['tag'] ) { ?>
 		<div class="form-group" id="div_<?php echo absint( $id ); ?>">
-			<label><?php echo $field['label']; ?></label>
-			<select <?php echo $field['attr']; ?> id="<?php echo absint( $id ); ?>" class="form-control input-sm" name="<?php echo esc_attr( $name ); ?>" data-value="<?php echo esc_attr( $default ); ?>">
+			<label><?php echo esc_html( $field['label'] ); ?></label>
+			<select <?php echo wp_kses_data( $field['attr'] ); ?> id="<?php echo absint( $id ); ?>" class="form-control input-sm" name="<?php echo esc_attr( $name ); ?>" data-value="<?php echo esc_attr( $default ); ?>">
 				<?php foreach ( $field['choices'] as $choice ) { ?>
-					<option value="<?php echo esc_attr( $choice['value'] ); ?>" <?php echo selected( $value, $choice['value'] ); ?>><?php echo $choice['label']; ?></option>
+					<option value="<?php echo esc_attr( $choice['value'] ); ?>" <?php selected( $value, $choice['value'] ); ?>><?php echo esc_html( $choice['label'] ); ?></option>
 				<?php } ?>
 			</select>
-			<?php if ( ! empty( $field['text'] ) ) {
-				echo "<p class='help-block'>{$field['text']}</p>";
-			} ?>
+			<?php
+			if ( ! empty( $field['text'] ) ) {
+				echo wp_kses_post( "<p class='help-block'>{$field['text']}</p>" );
+			}
+			?>
 		</div>
 	<?php } elseif ( 'textarea' === $field['tag'] ) { ?>
 		<div class="form-group" id="div_<?php echo absint( $id ); ?>">
-			<label><?php echo $field['label']; ?></label>
-			<textarea <?php echo $field['attr']; ?> id="<?php echo absint( $id ); ?>" class="form-control input-sm" name="<?php echo esc_attr( $name ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
-			<?php if ( ! empty( $field['text'] ) ) {
-				echo "<p class='help-block'>{$field['text']}</p>";
-			} ?>
+			<label><?php echo esc_html( $field['label'] ); ?></label>
+			<textarea <?php echo wp_kses_data( $field['attr'] ); ?> id="<?php echo absint( $id ); ?>" class="form-control input-sm" name="<?php echo esc_attr( $name ); ?>"><?php echo esc_textarea( $value ); ?></textarea>
+			<?php
+			if ( ! empty( $field['text'] ) ) {
+				echo wp_kses_post( "<p class='help-block'>{$field['text']}</p>" );
+			}
+			?>
 		</div>
 	<?php } elseif ( 'textblock' === $field['tag'] ) { ?>
 		<div class="text-block">
-			<?php echo $field['label']; ?>
-			<?php echo $field['text']; ?>
+			<?php echo wp_kses_post( $field['label'] ); ?>
+			<?php echo wp_kses_post( $field['text'] ); ?>
 		</div>
 	<?php } ?>
 	<?php
@@ -137,7 +145,6 @@ function gmedia_gallery_options_formgroup( $args ) {
  *
  * @return    array
  * @uses      apply_filters()
- *
  */
 if ( ! function_exists( 'gm_recognized_font_styles' ) ) {
 
@@ -148,15 +155,18 @@ if ( ! function_exists( 'gm_recognized_font_styles' ) ) {
 	 */
 	function gm_recognized_font_styles( $field_id = '' ) {
 
-		return apply_filters( 'gm_recognized_font_styles', [
-			'normal'  => 'Normal',
-			'italic'  => 'Italic',
-			'oblique' => 'Oblique',
-			'inherit' => 'Inherit',
-		], $field_id );
+		return apply_filters(
+			'gm_recognized_font_styles',
+			array(
+				'normal'  => 'Normal',
+				'italic'  => 'Italic',
+				'oblique' => 'Oblique',
+				'inherit' => 'Inherit',
+			),
+			$field_id
+		);
 
 	}
-
 }
 
 /**
@@ -165,7 +175,6 @@ if ( ! function_exists( 'gm_recognized_font_styles' ) ) {
  *
  * @return    array
  * @uses      apply_filters()
- *
  */
 if ( ! function_exists( 'gm_recognized_font_weights' ) ) {
 
@@ -176,25 +185,28 @@ if ( ! function_exists( 'gm_recognized_font_weights' ) ) {
 	 */
 	function gm_recognized_font_weights( $field_id = '' ) {
 
-		return apply_filters( 'gm_recognized_font_weights', [
-			'normal'  => 'Normal',
-			'bold'    => 'Bold',
-			'bolder'  => 'Bolder',
-			'lighter' => 'Lighter',
-			'100'     => '100',
-			'200'     => '200',
-			'300'     => '300',
-			'400'     => '400',
-			'500'     => '500',
-			'600'     => '600',
-			'700'     => '700',
-			'800'     => '800',
-			'900'     => '900',
-			'inherit' => 'Inherit',
-		], $field_id );
+		return apply_filters(
+			'gm_recognized_font_weights',
+			array(
+				'normal'  => 'Normal',
+				'bold'    => 'Bold',
+				'bolder'  => 'Bolder',
+				'lighter' => 'Lighter',
+				'100'     => '100',
+				'200'     => '200',
+				'300'     => '300',
+				'400'     => '400',
+				'500'     => '500',
+				'600'     => '600',
+				'700'     => '700',
+				'800'     => '800',
+				'900'     => '900',
+				'inherit' => 'Inherit',
+			),
+			$field_id
+		);
 
 	}
-
 }
 
 /**
@@ -203,7 +215,6 @@ if ( ! function_exists( 'gm_recognized_font_weights' ) ) {
  *
  * @return    array
  * @uses      apply_filters()
- *
  */
 if ( ! function_exists( 'gm_recognized_font_variants' ) ) {
 
@@ -214,14 +225,17 @@ if ( ! function_exists( 'gm_recognized_font_variants' ) ) {
 	 */
 	function gm_recognized_font_variants( $field_id = '' ) {
 
-		return apply_filters( 'gm_recognized_font_variants', [
-			'normal'     => 'Normal',
-			'small-caps' => 'Small Caps',
-			'inherit'    => 'Inherit',
-		], $field_id );
+		return apply_filters(
+			'gm_recognized_font_variants',
+			array(
+				'normal'     => 'Normal',
+				'small-caps' => 'Small Caps',
+				'inherit'    => 'Inherit',
+			),
+			$field_id
+		);
 
 	}
-
 }
 
 /**
@@ -232,7 +246,6 @@ if ( ! function_exists( 'gm_recognized_font_variants' ) ) {
  *
  * @return    array
  * @uses      apply_filters()
- *
  */
 if ( ! function_exists( 'gm_recognized_font_families' ) ) {
 
@@ -243,19 +256,22 @@ if ( ! function_exists( 'gm_recognized_font_families' ) ) {
 	 */
 	function gm_recognized_font_families( $field_id = '' ) {
 
-		return apply_filters( 'gm_recognized_font_families', [
-			'arial'     => 'Arial',
-			'georgia'   => 'Georgia',
-			'helvetica' => 'Helvetica',
-			'palatino'  => 'Palatino',
-			'tahoma'    => 'Tahoma',
-			'times'     => '"Times New Roman", sans-serif',
-			'trebuchet' => 'Trebuchet',
-			'verdana'   => 'Verdana',
-		], $field_id );
+		return apply_filters(
+			'gm_recognized_font_families',
+			array(
+				'arial'     => 'Arial',
+				'georgia'   => 'Georgia',
+				'helvetica' => 'Helvetica',
+				'palatino'  => 'Palatino',
+				'tahoma'    => 'Tahoma',
+				'times'     => '"Times New Roman", sans-serif',
+				'trebuchet' => 'Trebuchet',
+				'verdana'   => 'Verdana',
+			),
+			$field_id
+		);
 
 	}
-
 }
 
 

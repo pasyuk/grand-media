@@ -1,7 +1,5 @@
 <?php
-if ( ! defined( 'ABSPATH' ) ) {
-	exit;
-} // Exit if accessed directly.
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 /**
  * gmediaPermalinks class.
@@ -12,22 +10,19 @@ class gmediaPermalinks {
 
 	/**
 	 * __construct function.
-	 *
-	 * @access public
-	 * @return \gmediaPermalinks
 	 */
 	public function __construct() {
-		add_filter( 'rewrite_rules_array', [ $this, 'add_rewrite_rules' ] );
-		add_filter( 'query_vars', [ $this, 'add_query_vars' ] );
-		add_action( 'parse_request', [ $this, 'handler' ] );
-		add_action( 'parse_query', [ $this, 'bridge' ] );
+		add_filter( 'rewrite_rules_array', array( $this, 'add_rewrite_rules' ) );
+		add_filter( 'query_vars', array( $this, 'add_query_vars' ) );
+		add_action( 'parse_request', array( $this, 'handler' ) );
+		add_action( 'parse_query', array( $this, 'bridge' ) );
 
-		add_filter( 'post_thumbnail_html', [ $this, 'gmedia_post_thumbnail' ], 10, 5 );
-		add_filter( 'gmedia_shortcode_query', [ $this, 'gmedia_shortcode_query' ], 10, 2 );
+		add_filter( 'post_thumbnail_html', array( $this, 'gmedia_post_thumbnail' ), 10, 5 );
+		add_filter( 'gmedia_shortcode_query', array( $this, 'gmedia_shortcode_query' ), 10, 2 );
 
-		add_filter( 'show_admin_bar', [ $this, 'comments_admin_bar_hide' ] );
-		add_action( 'single_template', [ $this, 'comments_gmedia_template_redirect' ] );
-		add_filter( 'comment_post_redirect', [ $this, 'redirect_after_comment' ], 10, 2 );
+		add_filter( 'show_admin_bar', array( $this, 'comments_admin_bar_hide' ) );
+		add_action( 'single_template', array( $this, 'comments_gmedia_template_redirect' ) );
+		add_filter( 'comment_post_redirect', array( $this, 'redirect_after_comment' ), 10, 2 );
 
 	}
 
@@ -38,12 +33,12 @@ class gmediaPermalinks {
 	 *
 	 * @return string
 	 */
-	function comments_gmedia_template_redirect( $templates = "" ) {
-		if ( ! ( isset( $_GET['comments'] ) && is_singular( [ 'gmedia', 'gmedia_album', 'gmedia_gallery' ] ) ) ) {
+	public function comments_gmedia_template_redirect( $templates = '' ) {
+		if ( ! ( isset( $_GET['comments'] ) && is_singular( array( 'gmedia', 'gmedia_album', 'gmedia_gallery' ) ) ) ) {
 			return $templates;
 		}
 
-		$templates = locate_template( "gmedia_comments-popup.php", false );
+		$templates = locate_template( 'gmedia_comments-popup.php', false );
 		if ( empty( $templates ) ) {
 			$templates = GMEDIA_ABSPATH . 'template/comments-popup.php';
 		}
@@ -56,8 +51,8 @@ class gmediaPermalinks {
 	 *
 	 * @return string
 	 */
-	function comments_admin_bar_hide( $show_admin_bar ) {
-		if ( ! ( isset( $_GET['comments'] ) && is_singular( [ 'gmedia', 'gmedia_album', 'gmedia_gallery' ] ) ) ) {
+	public function comments_admin_bar_hide( $show_admin_bar ) {
+		if ( ! ( isset( $_GET['comments'] ) && is_singular( array( 'gmedia', 'gmedia_album', 'gmedia_gallery' ) ) ) ) {
 			return $show_admin_bar;
 		}
 
@@ -71,16 +66,21 @@ class gmediaPermalinks {
 	 *
 	 * @return string
 	 */
-	function redirect_after_comment( $location, $comment ) {
+	public function redirect_after_comment( $location, $comment ) {
 		global $wpdb;
 
-		$queryParts = explode( '#', $_SERVER["HTTP_REFERER"], 2 );
+		if ( ! isset( $_SERVER['HTTP_REFERER'] ) ) {
+			return $location;
+		}
+
+		$ref        = esc_url_raw( wp_unslash( $_SERVER['HTTP_REFERER'] ) );
+		$queryParts = explode( '#', $ref, 2 );
 		$queryParts = explode( '?', $queryParts[0], 2 );
 		if ( ! ( isset( $queryParts[1] ) && ! empty( $queryParts[1] ) ) ) {
 			return $location;
 		}
 		$queryParts = explode( '&', $queryParts[1] );
-		$params     = [];
+		$params     = array();
 		foreach ( $queryParts as $param ) {
 			$item               = explode( '=', $param );
 			$params[ $item[0] ] = isset( $item[1] ) ? $item[1] : '';
@@ -91,11 +91,11 @@ class gmediaPermalinks {
 
 		$post = get_post( $comment->comment_post_ID );
 
-		if ( ! in_array( $post->post_type, [ 'gmedia', 'gmedia_album', 'gmedia_gallery' ], true ) ) {
+		if ( ! in_array( $post->post_type, array( 'gmedia', 'gmedia_album', 'gmedia_gallery' ), true ) ) {
 			return $location;
 		}
 
-		return $_SERVER["HTTP_REFERER"] . "#comment-" . $wpdb->insert_id;
+		return $ref . '#comment-' . $wpdb->insert_id;
 	}
 
 	/**
@@ -103,20 +103,18 @@ class gmediaPermalinks {
 	 *
 	 * @return array
 	 */
-	function add_rewrite_rules( $rules ) {
+	public function add_rewrite_rules( $rules ) {
 		global $wp_rewrite, $gmGallery;
 		$this->endpoint = ! empty( $gmGallery->options['endpoint'] ) ? $gmGallery->options['endpoint'] : 'gmedia';
 
 		$this->add_endpoint();
 
-		$new_rules = [
+		$new_rules = array(
 			$this->endpoint . '/(g|s|a|t|k|u)/(.+?)/?$' => 'index.php?' . $this->endpoint . '=' . $wp_rewrite->preg_index( 2 ) . '&t=' . $wp_rewrite->preg_index( 1 ),
 			'gmedia-app/?$'                             => 'index.php?gmedia-app=1',
-		];
+		);
 
-		$new_rules = $new_rules + $rules;
-
-		return $new_rules;
+		return $new_rules + $rules;
 	}
 
 	/**
@@ -161,7 +159,7 @@ class gmediaPermalinks {
 	public function handler( $wp ) {
 		global $gmGallery;
 		$endpoint = ! empty( $gmGallery->options['endpoint'] ) ? $gmGallery->options['endpoint'] : 'gmedia';
-		if ( isset( $wp->query_vars[ $endpoint ] ) && isset( $wp->query_vars['t'] ) && in_array( $wp->query_vars['t'], [ 'g', 'a', 't', 's', 'k', 'u' ], true ) ) {
+		if ( isset( $wp->query_vars[ $endpoint ] ) && isset( $wp->query_vars['t'] ) && in_array( $wp->query_vars['t'], array( 'g', 'a', 't', 's', 'k', 'u' ), true ) ) {
 
 			global $wp_query;
 			$wp_query->is_single  = false;
@@ -182,7 +180,7 @@ class gmediaPermalinks {
 
 			define( 'GMEDIACLOUD_PAGE', true );
 
-			/** @noinspection PhpIncludeInspection */
+			/* @noinspection PhpIncludeInspection */
 			require_once GMEDIA_ABSPATH . 'load-template.php';
 
 			exit();
@@ -217,9 +215,12 @@ class gmediaPermalinks {
 	 * @param $wp - global variable
 	 */
 	public function bridge( $wp ) {
+		// phpcs:ignore
 		if ( isset( $_GET['gmServiceLink'] ) ) {
-			$transient_key = preg_replace( '/[^A-Za-z0-9_]/', '', $_GET['gmServiceLink'] );
-			if ( false !== ( $result = get_transient( $transient_key ) ) ) {
+			// phpcs:ignore
+			$transient_key = preg_replace( '/[^A-Za-z0-9_]/', '', sanitize_text_field( wp_unslash( $_GET['gmServiceLink'] ) ) );
+			$result        = get_transient( $transient_key );
+			if ( false !== $result ) {
 				delete_transient( $transient_key );
 				header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ), true );
 				echo wp_json_encode( $result );
@@ -239,7 +240,7 @@ class gmediaPermalinks {
 	 *
 	 * @return string html output
 	 */
-	function gmedia_post_thumbnail( $html, $post_id = 0, $post_thumbnail_id = 0, $size = 'post-thumbnail', $attr = '' ) {
+	public function gmedia_post_thumbnail( $html, $post_id = 0, $post_thumbnail_id = 0, $size = 'post-thumbnail', $attr = '' ) {
 
 		if ( $post_thumbnail_id ) {
 			$gmedia_id = get_post_meta( $post_thumbnail_id, '_gmedia_image_id', true );
@@ -259,37 +260,38 @@ class gmediaPermalinks {
 	 *
 	 * @return array $query
 	 */
-	function gmedia_shortcode_query( $query, $id = '' ) {
+	public function gmedia_shortcode_query( $query, $id = '' ) {
 		global $gmCore, $gmDB, $gmGallery;
 
 		//$gmCore->replace_array_keys($query, array('album__in' => 'gmedia_album', 'tag__in' => 'gmedia_tag', 'category__in' => 'gmedia_category'));
-		if ( ( $new_query = $gmCore->_get( "gm{$id}" ) ) ) {
+		$new_query = $gmCore->_get( "gm{$id}" );
+		if ( $new_query ) {
 			//$query = array_merge($query, $new_query);
 			$query = $new_query;
 		}
 		if ( empty( $query['orderby'] ) && empty( $query['order'] ) ) {
 			if ( isset( $query['gmedia__in'] ) ) {
-				$query_order = [
+				$query_order = array(
 					'orderby' => 'gmedia__in',
 					'order'   => 'ASC',
-				];
+				);
 				$query       = array_merge( $query_order, $query );
 			}
 			if ( isset( $query['tag__in'] ) && ( ! isset( $query['category__in'] ) && ! isset( $query['album__in'] ) ) ) {
-				$term_query_order = [
+				$term_query_order = array(
 					'orderby' => $gmGallery->options['in_tag_orderby'],
 					'order'   => $gmGallery->options['in_tag_order'],
-				];
+				);
 				$query            = array_merge( $term_query_order, $query );
 			}
 			if ( isset( $query['category__in'] ) && ! isset( $query['album__in'] ) ) {
 				$cat_ids = wp_parse_id_list( $query['category__in'] );
 				if ( 1 === count( $cat_ids ) ) {
 					$cat_meta         = $gmDB->get_metadata( 'gmedia_term', $cat_ids[0] );
-					$term_query_order = [
+					$term_query_order = array(
 						'orderby' => ! empty( $cat_meta['_orderby'][0] ) ? $cat_meta['_orderby'][0] : $gmGallery->options['in_category_orderby'],
 						'order'   => ! empty( $cat_meta['_order'][0] ) ? $cat_meta['_order'][0] : $gmGallery->options['in_category_order'],
-					];
+					);
 					$query            = array_merge( $term_query_order, $query );
 				}
 			}
@@ -297,10 +299,10 @@ class gmediaPermalinks {
 				$alb_ids = wp_parse_id_list( $query['album__in'] );
 				if ( 1 === count( $alb_ids ) ) {
 					$album_meta       = $gmDB->get_metadata( 'gmedia_term', $alb_ids[0] );
-					$term_query_order = [
+					$term_query_order = array(
 						'orderby' => ! empty( $album_meta['_orderby'][0] ) ? $album_meta['_orderby'][0] : $gmGallery->options['in_album_orderby'],
 						'order'   => ! empty( $album_meta['_order'][0] ) ? $album_meta['_order'][0] : $gmGallery->options['in_album_order'],
-					];
+					);
 					$query            = array_merge( $term_query_order, $query );
 				}
 			}

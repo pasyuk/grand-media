@@ -8,7 +8,7 @@ function gmedia_map_editor() {
 	$gmid = $gmCore->_get( 'id' );
 	$meta = $gmDB->get_metadata( 'gmedia', $gmid );
 
-	$latlng       = [ 'lat' => 0, 'lng' => 0 ];
+	$latlng       = array( 'lat' => 0, 'lng' => 0 );
 	$marker       = false;
 	$latlng_reset = '';
 
@@ -25,30 +25,30 @@ function gmedia_map_editor() {
 	//$latlng_literal = json_encode($latlng);
 	?>
 
-	<div class="panel panel-default" id="gmedit">
-		<div class="panel-body">
+	<div class="card m-0 mw-100 p-0" id="gmedit">
+		<div class="card-body">
 			<div id="map-floating-panel">
 				<style>#map-floating-panel input, #map-floating-panel button { font-family: "Roboto", "sans-serif"; font-size: 13px; }</style>
 				<div class="input-group input-group-sm">
-					<input id="geocode_address" type="text" placeholder="<?php _e( 'location address', 'grand-media' ); ?>" value="" class="form-control input-sm gps_map_coordinates">
+					<input id="geocode_address" type="text" placeholder="<?php esc_attr_e( 'location address', 'grand-media' ); ?>" value="" class="form-control input-sm gps_map_coordinates">
 					<span class="input-group-btn">
-                        <button id="geocode_submit" class="btn btn-success" type="button"><?php _e( 'Geocode', 'grand-media' ); ?></button>
-                    </span>
+						<button id="geocode_submit" class="btn btn-lg btn-success" type="button"><?php esc_html_e( 'Geocode', 'grand-media' ); ?></button>
+					</span>
 				</div>
 			</div>
 			<div id="map" style="height:410px;"></div>
 		</div>
-		<div class="panel-footer clearfix">
-			<div class="pull-left well-sm"><?php _e( 'Coordinates:', 'grand-media' ); ?> <span id="latlng">&ndash;</span></div>
-			<div class="btn-toolbar pull-right">
+		<div class="card-footer clearfix">
+			<div class="float-start well-sm"><?php esc_html_e( 'Coordinates:', 'grand-media' ); ?> <span id="latlng">&ndash;</span></div>
+			<div class="btn-toolbar gap-3 float-end">
 				<div class="btn-group">
-					<button type="button" class="btn btn-default gps_cancel"><?php _e( 'Cancel', 'grand-media' ); ?></button>
+					<button type="button" class="btn btn-secondary gps_cancel"><?php esc_html_e( 'Cancel', 'grand-media' ); ?></button>
 				</div>
 				<div class="btn-group">
-					<button type="button" class="btn btn-default gps_reset"><?php _e( 'Reset', 'grand-media' ); ?></button>
+					<button type="button" class="btn btn-secondary gps_reset"><?php esc_html_e( 'Reset', 'grand-media' ); ?></button>
 				</div>
 				<div class="btn-group">
-					<button type="button" class="btn btn-primary gps_save"><?php _e( 'Save', 'grand-media' ); ?></button>
+					<button type="button" class="btn btn-primary gps_save"><?php esc_html_e( 'Save', 'grand-media' ); ?></button>
 				</div>
 				<?php wp_nonce_field( 'gmedia_edit', '_wpnonce_edit' ); ?>
 			</div>
@@ -65,16 +65,16 @@ function gmedia_map_editor() {
 				window.parent.closeModal('gmeditModal');
 			});
 			var parent_doc = window.parent.document;
-			//var gps_field = $('#list-item-<?php echo $gmid; ?> .gps_map_coordinates', parent_doc);
+			//var gps_field = $('#list-item-<?php echo intval( $gmid ); ?> .gps_map_coordinates', parent_doc);
 			$('.gps_reset').on('click', function() {
-				$('#list-item-<?php echo $gmid; ?> .gps_map_coordinates', parent_doc).val('<?php echo $latlng_reset; ?>');
-				parent.jQuery('#list-item-<?php echo $gmid; ?> .gps_map_coordinates').trigger('change');
+				$('#list-item-<?php echo intval( $gmid ); ?> .gps_map_coordinates', parent_doc).val('<?php echo esc_js( $latlng_reset ); ?>');
+				parent.jQuery('#list-item-<?php echo intval( $gmid ); ?> .gps_map_coordinates').trigger('change');
 				window.parent.closeModal('gmeditModal');
 			});
 			$('.gps_save').on('click', function() {
 				if (coord) {
-					$('#list-item-<?php echo $gmid; ?> .gps_map_coordinates', parent_doc).val(coord);
-					parent.jQuery('#list-item-<?php echo $gmid; ?> .gps_map_coordinates').trigger('change');
+					$('#list-item-<?php echo intval( $gmid ); ?> .gps_map_coordinates', parent_doc).val(coord);
+					parent.jQuery('#list-item-<?php echo intval( $gmid ); ?> .gps_map_coordinates').trigger('change');
 				}
 				window.parent.closeModal('gmeditModal');
 			});
@@ -96,7 +96,7 @@ function gmedia_map_editor() {
 
 		function handleApiReady() {
 			console.log('Google Maps API version: ' + google.maps.version);
-			latlng = new google.maps.LatLng(<?php echo "{$latlng['lat']}, {$latlng['lng']}"; ?>);
+			latlng = new google.maps.LatLng(<?php echo esc_js( "{$latlng['lat']}, {$latlng['lng']}" ); ?>);
 			map = new google.maps.Map(document.getElementById('map'), {
 				center: latlng,
 				zoom: <?php echo $marker ? '11' : '2'; ?>,
@@ -112,9 +112,11 @@ function gmedia_map_editor() {
 			google.maps.event.addListener(map, 'click', function(event) {
 				placeMarker(event.latLng);
 			});
-			<?php if ( $marker ) {
-			echo 'placeMarker(latlng);';
-		} ?>
+			<?php
+			if ( $marker ) {
+				echo 'placeMarker(latlng);';
+			}
+			?>
 		}
 
 		function placeMarker(location) {
@@ -147,7 +149,7 @@ function gmedia_map_editor() {
 					placeMarker(results[0].geometry.location);
 				}
 				else {
-					alert('<?php _e( 'Geocode was not successful for the following reason:', 'grand-media' ); ?> ' + status);
+					alert('<?php esc_html_e( 'Geocode was not successful for the following reason:', 'grand-media' ); ?> ' + status);
 				}
 			});
 		}

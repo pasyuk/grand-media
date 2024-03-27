@@ -30,7 +30,7 @@
 function gmedia_pel_autoloader($class) {
 	if (substr_compare($class, 'lsolesen\\pel\\', 0, 13) === 0) {
 		$classname = str_replace('lsolesen\\pel\\', '', $class);
-		$load = realpath(__DIR__ . DIRECTORY_SEPARATOR . $classname . '.php');
+		$load = realpath(__DIR__ . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $classname . '.php');
 		if ($load !== false) {
 			include_once realpath($load);
 		}

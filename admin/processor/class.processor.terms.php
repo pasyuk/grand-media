@@ -6,9 +6,11 @@
 class GmediaProcessor_Terms extends GmediaProcessor {
 
 	public static $cookie_key = false;
+
 	private static $me = null;
-	public $selected_items = [];
-	public $query_args = [];
+
+	public $selected_items = array();
+	public $query_args     = array();
 
 	/**
 	 * GmediaProcessor_Library constructor.
@@ -29,7 +31,7 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 	}
 
 	public static function getMe() {
-		if ( self::$me === null ) {
+		if ( null === self::$me ) {
 			self::$me = new GmediaProcessor_Terms();
 		}
 
@@ -40,10 +42,10 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 		global $user_ID, $gmCore, $gmDB;
 
 		if ( ! $gmCore->caps['gmedia_library'] ) {
-			wp_die( __( 'You are not allowed to be here', 'grand-media' ) );
+			wp_die( esc_html__( 'You are not allowed to be here', 'grand-media' ) );
 		}
 
-		include_once( GMEDIA_ABSPATH . 'admin/pages/terms/functions.php' );
+		include_once GMEDIA_ABSPATH . 'admin/pages/terms/functions.php';
 
 		$this->query_args = $this->query_args();
 
@@ -81,33 +83,33 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 					break;
 				}
 				$term = $gmCore->_post( 'term' );
-				if ( ( $meta = $gmCore->_post( 'meta' ) ) ) {
-					$term = array_merge_recursive( [ 'meta' => $meta ], $term );
+				$meta = $gmCore->_post( 'meta' );
+				if ( $meta ) {
+					$term = array_merge_recursive( array( 'meta' => $meta ), $term );
 				}
 				$term['name'] = trim( $term['name'] );
 				if ( empty( $term['name'] ) ) {
-					$this->error[] = __( 'Term Name is not specified', 'grand-media' );
+					$this->error[] = esc_html__( 'Term Name is not specified', 'grand-media' );
 					break;
 				}
 				if ( $gmCore->is_digit( $term['name'] ) ) {
-					$this->error[] = __( "Term Name can't be only digits", 'grand-media' );
+					$this->error[] = esc_html__( "Term Name can't be only digits", 'grand-media' );
 					break;
 				}
 				$taxonomy = 'gmedia_album';
 				if ( $edit_term && ! $gmDB->term_exists( $edit_term ) ) {
-					$this->error[] = __( 'A term with the id provided does not exists', 'grand-media' );
+					$this->error[] = esc_html__( 'A term with the id provided does not exists', 'grand-media' );
 					$edit_term     = false;
 				}
-				if ( ( $term_id = $gmDB->term_exists( $term['name'], $taxonomy, $term['global'] ) ) ) {
-					if ( $term_id !== $edit_term ) {
-						$this->error[] = __( 'A term with the name provided already exists', 'grand-media' );
-						break;
-					}
+				$term_id = $gmDB->term_exists( $term['name'], $taxonomy, $term['global'] );
+				if ( $term_id && $term_id !== $edit_term ) {
+					$this->error[] = esc_html__( 'A term with the name provided already exists', 'grand-media' );
+					break;
 				}
 				if ( $edit_term ) {
 					$_term = $gmDB->get_term( $edit_term );
 					if ( ( (int) $_term->global !== (int) $user_ID ) && ! current_user_can( 'gmedia_edit_others_media' ) ) {
-						$this->error[] = __( 'You are not allowed to edit others media', 'grand-media' );
+						$this->error[] = esc_html__( 'You are not allowed to edit others media', 'grand-media' );
 						break;
 					}
 					$term_id = $gmDB->update_term( $edit_term, $term );
@@ -122,7 +124,8 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 					$gmDB->update_term_sortorder( $term_id );
 				}
 
-				$this->msg[] = sprintf( __( 'Album `%s` successfully saved', 'grand-media' ), esc_html( $term['name'] ) );
+				// translators: album name.
+				$this->msg[] = sprintf( esc_html__( 'Album `%s` successfully saved', 'grand-media' ), esc_html( $term['name'] ) );
 
 			} while ( 0 );
 		} elseif ( isset( $_POST['gmedia_category_save'] ) ) {
@@ -134,32 +137,32 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 					break;
 				}
 				$term = $gmCore->_post( 'term' );
-				if ( ( $meta = $gmCore->_post( 'meta' ) ) ) {
-					$term = array_merge_recursive( [ 'meta' => $meta ], $term );
+				$meta = $gmCore->_post( 'meta' );
+				if ( $meta ) {
+					$term = array_merge_recursive( array( 'meta' => $meta ), $term );
 				}
 				$term['name'] = trim( $term['name'] );
 				if ( empty( $term['name'] ) ) {
-					$this->error[] = __( 'Term Name is not specified', 'grand-media' );
+					$this->error[] = esc_html__( 'Term Name is not specified', 'grand-media' );
 					break;
 				}
 				if ( $gmCore->is_digit( $term['name'] ) ) {
-					$this->error[] = __( "Term Name can't be only digits", 'grand-media' );
+					$this->error[] = esc_html__( "Term Name can't be only digits", 'grand-media' );
 					break;
 				}
 				$taxonomy = 'gmedia_category';
 				if ( $edit_term && ! $gmDB->term_exists( $edit_term ) ) {
-					$this->error[] = __( 'A term with the id provided does not exists', 'grand-media' );
+					$this->error[] = esc_html__( 'A term with the id provided does not exists', 'grand-media' );
 					$edit_term     = false;
 				}
-				if ( ( $term_id = $gmDB->term_exists( $term['name'], $taxonomy ) ) ) {
-					if ( $term_id !== $edit_term ) {
-						$this->error[] = __( 'A term with the name provided already exists', 'grand-media' );
-						break;
-					}
+				$term_id = $gmDB->term_exists( $term['name'], $taxonomy );
+				if ( $term_id && $term_id !== $edit_term ) {
+					$this->error[] = esc_html__( 'A term with the name provided already exists', 'grand-media' );
+					break;
 				}
 				if ( $edit_term ) {
 					if ( ! current_user_can( 'gmedia_edit_others_media' ) ) {
-						$this->error[] = __( 'You are not allowed to edit others media', 'grand-media' );
+						$this->error[] = esc_html__( 'You are not allowed to edit others media', 'grand-media' );
 						break;
 					}
 					$term_id = $gmDB->update_term( $edit_term, $term );
@@ -171,7 +174,8 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 					break;
 				}
 
-				$this->msg[] = sprintf( __( 'Category `%s` successfully saved', 'grand-media' ), esc_html( $term['name'] ) );
+				// translators: category name.
+				$this->msg[] = sprintf( esc_html__( 'Category `%s` successfully saved', 'grand-media' ), esc_html( $term['name'] ) );
 
 			} while ( 0 );
 		} elseif ( isset( $_POST['gmedia_tag_add'] ) ) {
@@ -183,7 +187,7 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 				$terms_qty   = count( $terms );
 				foreach ( $terms as $term_name ) {
 					if ( $gmCore->is_digit( $term_name ) ) {
-						$this->error['tag_name_digit'] = __( "Term Name can't be only digits", 'grand-media' );
+						$this->error['tag_name_digit'] = esc_html__( "Term Name can't be only digits", 'grand-media' );
 						continue;
 					}
 
@@ -192,14 +196,15 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 						if ( is_wp_error( $term_id ) ) {
 							$this->error[] = $term_id->get_error_message();
 						} else {
-							$this->msg['tag_add'] = sprintf( __( '%d of %d tags successfully added', 'grand-media' ), ++ $terms_added, $terms_qty );
+							// translators: 1 - number, 2 - number.
+							$this->msg['tag_add'] = sprintf( esc_html__( '%1$d of %2$d tags successfully added', 'grand-media' ), ++ $terms_added, $terms_qty );
 						}
 					} else {
-						$this->error['tag_add'] = __( 'Some of provided tags are already exists', 'grand-media' );
+						$this->error['tag_add'] = esc_html__( 'Some of provided tags are already exists', 'grand-media' );
 					}
 				}
 			} else {
-				$this->error[] = __( 'You are not allowed to manage tags', 'grand-media' );
+				$this->error[] = esc_html__( 'You are not allowed to manage tags', 'grand-media' );
 			}
 		}
 
@@ -210,16 +215,17 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 				$ids            = $gmCore->_get( 'ids', 'selected' );
 				$selected_items = ( 'selected' === $ids ) ? $this->selected_items : wp_parse_id_list( $ids );
 				if ( ! $gmCore->caps['gmedia_delete_others_media'] ) {
-					$_selected_items = [];
+					$_selected_items = array();
 					if ( 'gmedia_album' === $taxonomy ) {
-						$_selected_items = $gmDB->get_terms( $taxonomy, [ 'fields' => 'ids', 'global' => $user_ID, 'include' => $selected_items ] );
+						$_selected_items = $gmDB->get_terms( $taxonomy, array( 'fields' => 'ids', 'global' => $user_ID, 'include' => $selected_items ) );
 					}
 					if ( count( $_selected_items ) < count( $selected_items ) ) {
 						$this->error[] = __( 'You are not allowed to delete others media', 'grand-media' );
 					}
 					$selected_items = $_selected_items;
 				}
-				if ( ( $count = count( $selected_items ) ) ) {
+				$count = count( $selected_items );
+				if ( $count ) {
 					foreach ( $selected_items as $item ) {
 						$delete = $gmDB->delete_term( $item );
 						if ( ! $delete ) {
@@ -230,14 +236,15 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 						}
 					}
 					if ( $count ) {
-						$this->msg[] = sprintf( __( '%d item(s) deleted successfully', 'grand-media' ), $count );
+						// translators: number.
+						$this->msg[] = sprintf( esc_html__( '%d item(s) deleted successfully', 'grand-media' ), $count );
 					}
 					setcookie( self::$cookie_key, '', time() - 3600 );
 					unset( $_COOKIE[ self::$cookie_key ] );
-					$this->selected_items = [];
+					$this->selected_items = array();
 				}
 			} else {
-				$this->error[] = __( 'You are not allowed to delete terms', 'grand-media' );
+				$this->error[] = esc_html__( 'You are not allowed to delete terms', 'grand-media' );
 			}
 			if ( ! empty( $this->msg ) ) {
 				set_transient( 'gmedia_action_msg', $this->msg, 30 );
@@ -247,16 +254,16 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 			}
 		}
 		if ( $do_gmedia_terms ) {
-			$_wpnonce = [];
+			$_wpnonce = array();
 			foreach ( $_GET as $key => $value ) {
 				if ( strpos( $key, '_wpnonce' ) !== false ) {
 					$_wpnonce[ $key ] = $value;
 				}
 			}
-			$remove_args = array_merge( [ 'do_gmedia_terms', 'ids' ], $_wpnonce );
+			$remove_args = array_merge( array( 'do_gmedia_terms', 'ids' ), $_wpnonce );
 			$location    = remove_query_arg( $remove_args );
 			$location    = add_query_arg( 'did_gmedia_terms', $do_gmedia_terms, $location );
-			wp_redirect( $location );
+			wp_safe_redirect( $location );
 			exit;
 		}
 		if ( $gmCore->_get( 'did_gmedia_terms' ) ) {

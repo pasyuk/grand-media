@@ -1,9 +1,7 @@
 <?php
-// don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
+global $gmCore;
 /**
  * System info (under construction)
  */
@@ -13,11 +11,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	if ( ( function_exists( 'memory_get_usage' ) ) && ( ini_get( 'memory_limit' ) ) ) {
 		$memory_limit = ini_get( 'memory_limit' );
 		$memory_usage = round( memory_get_usage() / ( 1024 * 1024 ), 1 );
-		echo '<p>' . __( 'PHP Memory Limit: ', 'grand-media' ) . $memory_limit . '</p>';
-		echo '<p>' . __( 'PHP Memory Used: ', 'grand-media' ) . $memory_usage . 'M</p>';
+		echo '<p>' . esc_html( __( 'PHP Memory Limit: ', 'grand-media' ) . $memory_limit ) . '</p>';
+		echo '<p>' . esc_html( __( 'PHP Memory Used: ', 'grand-media' ) . $memory_usage ) . 'M</p>';
 	}
 	?>
-	<p><?php _e( 'Under construction...' ) ?></p>
+	<p><?php esc_html_e( 'Under construction...', 'grand-media' ); ?></p>
 
 	<?php
 	if ( $gmCore->_get( 'showdb' ) ) {
@@ -28,10 +26,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 		$images['grand-media'] = glob( $gmCore->upload['path'] . '/*', GLOB_NOSORT );
 		$images['images']      = glob( $gmCore->upload['path'] . '/image/*', GLOB_NOSORT );
 		$images['thumbs']      = glob( $gmCore->upload['path'] . '/thumb/*', GLOB_NOSORT );
-		echo '<pre style="max-height:400px; overflow:auto;">' . print_r( $gmedia, true ) . '</pre>';
-		echo '<pre style="max-height:400px; overflow:auto;">' . print_r( $images, true ) . '</pre>';
-		echo '<pre style="max-height:400px; overflow:auto;">' . print_r( $terms, true ) . '</pre>';
-		echo '<pre style="max-height:400px; overflow:auto;">' . print_r( $relation, true ) . '</pre>';
+		echo '<pre style="max-height:400px; overflow:auto;">' . esc_html( print_r( $gmedia, true ) ) . '</pre>';
+		echo '<pre style="max-height:400px; overflow:auto;">' . esc_html( print_r( $images, true ) ) . '</pre>';
+		echo '<pre style="max-height:400px; overflow:auto;">' . esc_html( print_r( $terms, true ) ) . '</pre>';
+		echo '<pre style="max-height:400px; overflow:auto;">' . esc_html( print_r( $relation, true ) ) . '</pre>';
 	}
 	?>
 </fieldset>

@@ -7,7 +7,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 	private static $me = null;
 
 	public static function getMe() {
-		if ( self::$me === null ) {
+		if ( null === self::$me ) {
 			self::$me = new GmediaProcessor_Settings();
 		}
 
@@ -18,13 +18,13 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 		global $gmCore, $gmGallery, $gmDB;
 
 		if ( ! $gmCore->caps['gmedia_settings'] ) {
-			wp_die( __( 'You are not allowed to change gmedia settings', 'grand-media' ) );
+			wp_die( esc_html__( 'You are not allowed to change gmedia settings', 'grand-media' ) );
 		}
 		$lk_check = isset( $_POST['license-key-activate'] );
 		if ( isset( $_POST['gmedia_settings_save'] ) ) {
 			check_admin_referer( 'gmedia_settings', '_wpnonce_settings' );
 
-			$set = $gmCore->_post( 'set', [] );
+			$set = $gmCore->_post( 'set', array() );
 
 			if ( ! empty( $set['purchase_key'] ) && ( empty( $set['license_key'] ) || empty( $set['license_key2'] ) ) ) {
 				$lk_check = true;
@@ -34,7 +34,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 				$set['purchase_key'] = '';
 				$set['license_key']  = '';
 				$set['license_key2'] = '';
-				$this->error[]       = __( 'License Key empty...', 'grand-media' );
+				$this->error[]       = esc_html__( 'License Key empty...', 'grand-media' );
 			}
 
 			$set['google_api_key'] = trim( $set['google_api_key'] );
@@ -60,7 +60,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 				$gmGallery->options[ $key ] = $val;
 			}
 
-			$capabilities = $gmCore->_post( 'capability', [] );
+			$capabilities = $gmCore->_post( 'capability', array() );
 			if ( ! empty( $capabilities ) && current_user_can( 'manage_options' ) ) {
 				global $wp_roles;
 				$_roles = $wp_roles->roles;
@@ -116,32 +116,31 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 			}
 
 			if ( isset( $set['delete_originals'] ) && (int) $set['delete_originals'] ) {
-//                if (($handle = opendir($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original']))) {
-//                    while (false !== ($file = readdir($handle))) {
-//                        // do something with the file
-//                        // note that '.' and '..' is returned even
-//                        @unlink($file);
-//                    }
-//                    closedir($handle);
-//                }
+				//if (($handle = opendir($gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original']))) {
+				//    while (false !== ($file = readdir($handle))) {
+				//        // do something with the file
+				//        // note that '.' and '..' is returned even
+				//        @unlink($file);
+				//    }
+				//    closedir($handle);
+				//}
 				$files = glob( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT );
 				if ( ! empty( $files ) ) {
 					foreach ( $files as $file ) {
 						@unlink( $file );
 					}
 				}
-
 			}
 
 			update_option( 'gmediaOptions', $gmGallery->options );
 			if ( isset( $_POST['GmediaHashID_salt'] ) ) {
-				update_option( 'GmediaHashID_salt', (string) $_POST['GmediaHashID_salt'] );
+				update_option( 'GmediaHashID_salt', (string) $gmCore->_post( 'GmediaHashID_salt', '' ) );
 			}
 			gmedia_delete_transients( 'gm_cache' );
 			if ( $flush_rewrite_rules ) {
 				flush_rewrite_rules( false );
 			}
-			$this->msg[] .= __( 'Settings saved', 'grand-media' );
+			$this->msg[] .= esc_html__( 'Settings saved', 'grand-media' );
 		}
 
 		if ( $lk_check ) {
@@ -152,43 +151,47 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 				$gmedia_ua = "WordPress/{$wp_version} | ";
 				$gmedia_ua .= 'Gmedia/' . constant( 'GMEDIA_VERSION' );
 
-				$response = wp_remote_post( 'https://codeasily.com/rest/gmedia-key.php', [
-					'body'        => [ 'key' => $license_key['purchase_key'], 'site' => site_url() ],
-					'headers'     => [
-						'Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option( 'blog_charset' ),
-						'Host'         => 'codeasily.com',
-						'User-Agent'   => $gmedia_ua,
-					],
-					'httpversion' => '1.0',
-					'timeout'     => 45,
-				] );
+				$response = wp_remote_post(
+					'https://codeasily.com/rest/gmedia-key.php',
+					array(
+						'body'        => array( 'key' => $license_key['purchase_key'], 'site' => site_url() ),
+						'headers'     => array(
+							'Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option( 'blog_charset' ),
+							'Host'         => 'codeasily.com',
+							'User-Agent'   => $gmedia_ua,
+						),
+						'httpversion' => '1.0',
+						'timeout'     => 45,
+					)
+				);
 
 				if ( is_wp_error( $response ) ) {
 					$this->error[] = $response->get_error_message();
-					$this->error[] = __( 'Use Help Screen (top right button) for more info', 'grand-media' );
+					$this->error[] = esc_html__( 'Use Help Screen (top right button) for more info', 'grand-media' );
 				} else {
 					$result = json_decode( $response['body'] );
 					if ( isset( $result->error ) ) {
-						if ( $result && $result->error->code === 200 ) {
+						if ( $result && 200 === $result->error->code ) {
 							$gmGallery->options['license_name'] = $result->content;
 							$gmGallery->options['purchase_key'] = $result->dkey;
 							$gmGallery->options['license_key']  = $result->key;
 							$gmGallery->options['license_key2'] = $result->key2;
-							$this->msg[]                        = sprintf( __( 'License Key activated successfully. You can see all activated websites with this key on your account page %s', 'grand-media' ), '<a href="http://codeasily.com/my-account/" target="_blank">http://codeasily.com/my-account/</a>' );
+							// translators: link tag.
+							$this->msg[] = sprintf( esc_html__( 'License Key activated successfully. You can see all activated websites with this key on your account page %s', 'grand-media' ), '<a href="https://codeasily.com/my-account/" target="_blank">https://codeasily.com/my-account/</a>' );
 						} else {
 							$gmGallery->options['license_name'] = '';
 							$gmGallery->options['purchase_key'] = '';
 							$gmGallery->options['license_key']  = '';
 							$gmGallery->options['license_key2'] = '';
-							$this->error[]                      = __( 'Error', 'grand-media' ) . ': ' . $result->error->message;
+							$this->error[]                      = esc_html( __( 'Error', 'grand-media' ) . ': ' . $result->error->message );
 						}
 						update_option( 'gmediaOptions', $gmGallery->options );
 					} else {
-						$this->error[] = __( 'Something went wrong.. Try again later or use Help Screen (top right button) for more info', 'grand-media' );
+						$this->error[] = esc_html__( 'Something went wrong.. Try again later or use Help Screen (top right button) for more info', 'grand-media' );
 					}
 				}
 			} else {
-				$this->error[] = __( 'Empty License Key', 'grand-media' );
+				$this->error[] = esc_html__( 'Empty License Key', 'grand-media' );
 			}
 		}
 
@@ -197,12 +200,12 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 			include_once GMEDIA_ABSPATH . 'config/setup.php';
 			$_temp_options      = $gmGallery->options;
 			$gmGallery->options = gmedia_default_options();
-			// don't reset license
+			// don't reset license.
 			$gmGallery->options['license_name'] = $_temp_options['license_name'];
 			$gmGallery->options['purchase_key'] = $_temp_options['purchase_key'];
 			$gmGallery->options['license_key']  = $_temp_options['license_key'];
 			$gmGallery->options['license_key2'] = $_temp_options['license_key2'];
-			// don't reset mobile app
+			// don't reset mobile app.
 			$gmGallery->options['site_ID']    = $_temp_options['site_ID'];
 			$gmGallery->options['mobile_app'] = (int) $_temp_options['mobile_app'];
 			if ( $gmGallery->options['mobile_app'] && isset( $_temp_options['gmedia_service'] ) ) {
@@ -220,7 +223,7 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 				}
 			}
 			gmedia_delete_transients( 'gm_cache' );
-			$this->msg[] .= __( 'All settings set to default', 'grand-media' );
+			$this->msg[] .= esc_html__( 'All settings set to default', 'grand-media' );
 		}
 
 	}

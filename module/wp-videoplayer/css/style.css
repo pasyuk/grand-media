@@ -58,6 +58,9 @@
 }
 .gmedia-wp-playlist video {
     display:inline-block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3/2;
     max-width:100%;
 }
 .gmedia-wp-playlist audio {
@@ -183,3 +186,9 @@
     padding:5px 15px;
 }
 .wp-videoplayer_module .mejs-mediaelement { overflow:hidden; }
+
+.wp-videoplayer_module div[style*="height:"]{
+    max-width:100%;
+    height:auto !important;
+    aspect-ratio:3/2;
+}

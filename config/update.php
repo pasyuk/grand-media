@@ -1,29 +1,26 @@
-<?php // don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+<?php
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 /**
  * Update Gmedia plugin
  */
-
 function gmedia_upgrade_required_admin_notice() {
 	?>
 	<div id="message" class="updated gmedia-message">
-		<p><?php _e( '<strong>GmediaGallery Database Update Required</strong> &#8211; We need to update your install to the latest version.', 'grand-media' ); ?></p>
+		<p><?php esc_html_e( '<strong>GmediaGallery Database Update Required</strong> &#8211; We need to update your install to the latest version.', 'grand-media' ); ?></p>
 
-		<p><?php _e( '<strong>Important:</strong> &#8211; It is strongly recommended that you backup your database before proceeding.', 'grand-media' ); ?></p>
+		<p><?php esc_html_e( '<strong>Important:</strong> &#8211; It is strongly recommended that you backup your database before proceeding.', 'grand-media' ); ?></p>
 
-		<p><?php _e( 'The update process may take a little while, so please be patient.', 'grand-media' ); ?></p>
+		<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'grand-media' ); ?></p>
 
 		<p class="submit">
-			<a href="<?php echo esc_url( add_query_arg( 'do_update', 'gmedia', admin_url( 'admin.php?page=GrandMedia' ) ) ); ?>" class="gm-update-now button-primary"><?php _e( 'Run the updater', 'grand-media' ); ?></a>
+			<a href="<?php echo esc_url( add_query_arg( 'do_update', 'gmedia', admin_url( 'admin.php?page=GrandMedia' ) ) ); ?>" class="gm-update-now button-primary"><?php esc_html_e( 'Run the updater', 'grand-media' ); ?></a>
 		</p>
 	</div>
 	<script type="text/javascript">
-		jQuery('.gm-update-now').click('click', function() {
-			return confirm('<?php _e( 'It is strongly recommended that you backup your database before proceeding. Are you sure you wish to run the updater now?', 'grand-media' ); ?>');
-		});
+			jQuery('.gm-update-now').click('click', function() {
+				return confirm('<?php echo esc_js( esc_html__( 'It is strongly recommended that you backup your database before proceeding. Are you sure you wish to run the updater now?', 'grand-media' ) ); ?>');
+			});
 	</script>
 	<?php
 
@@ -32,8 +29,8 @@ function gmedia_upgrade_required_admin_notice() {
 function gmedia_upgrade_process_admin_notice() {
 	?>
 	<div id="message" class="updated gmedia-message">
-		<p><?php _e( '<strong>GmediaGallery Database Update Required</strong> &#8211; We need to update your install to the latest version.', 'grand-media' ); ?></p>
-		<p><?php _e( 'The update process may take a little while, so please be patient.', 'grand-media' ); ?></p>
+		<p><?php echo wp_kses_post( __( '<strong>GmediaGallery Database Update Required</strong> &#8211; We need to update your install to the latest version.', 'grand-media' ) ); ?></p>
+		<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'grand-media' ); ?></p>
 	</div>
 	<?php
 
@@ -42,40 +39,40 @@ function gmedia_upgrade_process_admin_notice() {
 function gmedia_upgrade_progress_panel() {
 	gmedia_do_update();
 	?>
-	<div id="gmediaUpdate" class="panel panel-default">
-		<div class="panel-body">
+	<div id="gmediaUpdate" class="card m-0 mw-100 p-0">
+		<div class="card-body">
 			<div id="gmUpdateProgress">
 
 			</div>
 			<div class="gm_upgrade_busy"><img src="<?php echo esc_url( plugin_dir_url( dirname( __FILE__ ) ) . 'admin/assets/img/loading.gif' ); ?>" alt="updating..."/></div>
 		</div>
 		<script type="text/javascript">
-			jQuery(function() {
-				gmUpdateProgress();
-			});
+					jQuery(function() {
+						gmUpdateProgress();
+					});
 
-			function gmUpdateProgress() {
-				jQuery.ajax({
-					type: 'get',
-					dataType: 'json',
-					url: ajaxurl,
-					data: {action: 'gmedia_upgrade_process'}
-				}).done(function(data) {
-					if (data.content) {
-						jQuery('#gmUpdateProgress').html(data.content);
+					function gmUpdateProgress() {
+						jQuery.ajax({
+							type: 'get',
+							dataType: 'json',
+							url: ajaxurl,
+							data: {action: 'gmedia_upgrade_process'},
+						}).done(function(data) {
+							if (data.content) {
+								jQuery('#gmUpdateProgress').html(data.content);
+							}
+							if (data.status === 'done') {
+								jQuery('.gm_upgrade_busy').remove();
+								if ('' === data.content) {
+									jQuery('#gmUpdateProgress').append('<p><a class="btn btn-success" href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia' ) ); ?>"><?php echo esc_js( esc_html__( 'Go to Gmedia Library', 'grand-media' ) ); ?></a></p>');
+								}
+								return;
+							}
+							else {
+								setTimeout(function() { gmUpdateProgress(); }, 2000);
+							}
+						});
 					}
-					if (data.status === 'done') {
-						jQuery('.gm_upgrade_busy').remove();
-						if ('' === data.content) {
-							jQuery('#gmUpdateProgress').append('<p><a class="btn btn-success" href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia' ) ); ?>"><?php _e( 'Go to Gmedia Library', 'grand-media' ) ?></a></p>');
-						}
-						return;
-					}
-					else {
-						setTimeout(function() { gmUpdateProgress(); }, 2000);
-					}
-				});
-			}
 		</script>
 	</div>
 	<?php
@@ -98,7 +95,7 @@ function gmedia_do_update() {
 	@ini_set( 'max_execution_time', 0 );
 
 	// upgrade function changed in WordPress 2.3.
-	require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
+	require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
 	// add charset & collate like wp core.
 	$charset_collate = '';
@@ -116,7 +113,7 @@ function gmedia_do_update() {
 	$gmedia_term               = $wpdb->prefix . 'gmedia_term';
 	$gmedia_term_relationships = $wpdb->prefix . 'gmedia_term_relationships';
 
-	$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+	$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 	$sql .= "
 	CREATE TABLE {$gmedia} (
 		ID BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -160,9 +157,9 @@ function gmedia_do_update() {
 	dbDelta( $sql );
 
 	if ( ! $info ) {
-		$info = [];
+		$info = array();
 	}
-	$info['db_tables'] = __( 'Gmedia database tables updated...', 'grand-media' );
+	$info['db_tables'] = esc_html__( 'Gmedia database tables updated...', 'grand-media' );
 	set_transient( 'gmediaHeavyJob', $info );
 
 	$upgrading = get_transient( 'gmediaUpgrade' );
@@ -236,36 +233,36 @@ function gmedia_db_update__0_9_6() {
 		}
 	}
 
-	$gmedias = $gmDB->get_gmedias( [ 'mime_type' => 'image/*', 'cache_results' => false ] );
-	$files   = [];
+	$gmedias = $gmDB->get_gmedias( array( 'mime_type' => 'image/*', 'cache_results' => false ) );
+	$files   = array();
 	foreach ( $gmedias as $gmedia ) {
-		$files[] = [
+		$files[] = array(
 			'id'   => $gmedia->ID,
 			'file' => $gmCore->upload['path'] . '/image/' . $gmedia->gmuid,
-		];
+		);
 	}
 	if ( ! empty( $files ) ) {
 		gmedia_images_update( $files );
 	}
 	$gmCore->delete_folder( $gmCore->upload['path'] . '/link' );
 
-	// try to make gallery dirs if not exists
+	// Try to make gallery dirs if not exists.
 	foreach ( $gmGallery->options['folder'] as $folder ) {
 		wp_mkdir_p( $gmCore->upload['path'] . '/' . $folder );
 	}
 
-	$wpdb->update( $wpdb->prefix . 'gmedia_term', [ 'taxonomy' => 'gmedia_album' ], [ 'taxonomy' => 'gmedia_category' ] );
-	$wpdb->update( $wpdb->prefix . 'gmedia_term', [ 'taxonomy' => 'gmedia_gallery' ], [ 'taxonomy' => 'gmedia_module' ] );
+	$wpdb->update( $wpdb->prefix . 'gmedia_term', array( 'taxonomy' => 'gmedia_album' ), array( 'taxonomy' => 'gmedia_category' ) );
+	$wpdb->update( $wpdb->prefix . 'gmedia_term', array( 'taxonomy' => 'gmedia_gallery' ), array( 'taxonomy' => 'gmedia_module' ) );
 
-	$gmedias = $gmDB->get_gmedias( [ 'no_found_rows' => true, 'meta_key' => 'link', 'cache_results' => false ] );
+	$gmedias = $gmDB->get_gmedias( array( 'no_found_rows' => true, 'meta_key' => 'link', 'cache_results' => false ) );
 	foreach ( $gmedias as $gmedia ) {
 		$link = $gmDB->get_metadata( 'gmedia', $gmedia->ID, 'link', true );
 		if ( $link ) {
-			$wpdb->update( $wpdb->prefix . 'gmedia', [ 'link' => $link ], [ 'ID' => $gmedia->ID ] );
+			$wpdb->update( $wpdb->prefix . 'gmedia', array( 'link' => $link ), array( 'ID' => $gmedia->ID ) );
 		}
 	}
-	$wpdb->delete( $wpdb->prefix . 'gmedia_meta', [ 'meta_key' => 'link' ] );
-	$wpdb->update( $wpdb->prefix . 'gmedia_meta', [ 'meta_key' => '_cover' ], [ 'meta_key' => 'preview' ] );
+	$wpdb->delete( $wpdb->prefix . 'gmedia_meta', array( 'meta_key' => 'link' ) );
+	$wpdb->update( $wpdb->prefix . 'gmedia_meta', array( 'meta_key' => '_cover' ), array( 'meta_key' => 'preview' ) );
 
 	$info['096_2'] = __( 'Gmedia database data updated...', 'grand-media' );
 	set_transient( 'gmediaHeavyJob', $info );
@@ -280,7 +277,8 @@ function gmedia_db_update__0_9_6() {
 				if ( ! isset( $old_meta['gMediaQuery'] ) ) {
 					continue;
 				}
-				$gmedia_category = $gmedia_tag = [];
+				$gmedia_category = array();
+				$gmedia_tag      = array();
 				foreach ( $old_meta['gMediaQuery'] as $tab ) {
 					if ( isset( $tab['cat'] ) && ! empty( $tab['cat'] ) ) {
 						$gmedia_category[] = $tab['cat'];
@@ -289,17 +287,17 @@ function gmedia_db_update__0_9_6() {
 						$gmedia_tag = array_merge( $gmedia_tag, $tab['tag__in'] );
 					}
 				}
-				$query = [];
+				$query = array();
 				if ( ! empty( $gmedia_category ) ) {
-					$query = [ 'gmedia_album' => $gmedia_category ];
+					$query = array( 'gmedia_album' => $gmedia_category );
 				} elseif ( ! empty( $gmedia_tag ) ) {
-					$query = [ 'gmedia_tag' => $gmedia_tag ];
+					$query = array( 'gmedia_tag' => $gmedia_tag );
 				}
-				$gallery_meta = [
+				$gallery_meta = array(
 					'_edited' => $old_meta['last_edited'],
 					'_module' => $old_meta['module_name'],
 					'_query'  => $query,
-				];
+				);
 				foreach ( $gallery_meta as $key => $value ) {
 					$gmDB->update_metadata( 'gmedia_term', $gallery->term_id, $key, $value );
 				}
@@ -307,7 +305,7 @@ function gmedia_db_update__0_9_6() {
 		}
 	}
 
-	update_option( "gmediaDbVersion", '0.9.6' );
+	update_option( 'gmediaDbVersion', '0.9.6' );
 
 	$info['096_3'] = __( 'Gmedia Galleries updated...', 'grand-media' );
 	set_transient( 'gmediaHeavyJob', $info );
@@ -323,10 +321,10 @@ function gmedia_db_update__1_8_0() {
 	$info  = get_transient( 'gmediaHeavyJob' );
 	$steps = get_transient( 'gmediaUpgradeSteps' );
 	if ( ! isset( $steps['status_update'] ) ) {
-		$wpdb->update( $wpdb->prefix . 'gmedia', [ 'status' => 'publish' ], [ 'status' => 'public' ] );
-		$wpdb->update( $wpdb->prefix . 'gmedia_term', [ 'status' => 'publish' ], [ 'status' => 'public' ] );
-		$wpdb->update( $wpdb->prefix . 'gmedia_term', [ 'global' => 0 ], [ 'taxonomy' => 'gmedia_tag' ] );
-		$wpdb->update( $wpdb->prefix . 'gmedia_term', [ 'global' => 0 ], [ 'taxonomy' => 'gmedia_category' ] );
+		$wpdb->update( $wpdb->prefix . 'gmedia', array( 'status' => 'publish' ), array( 'status' => 'public' ) );
+		$wpdb->update( $wpdb->prefix . 'gmedia_term', array( 'status' => 'publish' ), array( 'status' => 'public' ) );
+		$wpdb->update( $wpdb->prefix . 'gmedia_term', array( 'global' => 0 ), array( 'taxonomy' => 'gmedia_tag' ) );
+		$wpdb->update( $wpdb->prefix . 'gmedia_term', array( 'global' => 0 ), array( 'taxonomy' => 'gmedia_category' ) );
 
 		$info['180_1'] = __( 'Gmedia database data updated...', 'grand-media' );
 		$info['180_2'] = __( 'Adding ability to comment gmedia items...', 'grand-media' );
@@ -345,10 +343,10 @@ function gmedia_db_update__1_8_0() {
 
 		$gmedias = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}gmedia WHERE post_id IS NULL OR post_id = '' OR post_id = 0 LIMIT 20" );
 		if ( ! empty( $gmedias ) ) {
-			$post_data = [
+			$post_data = array(
 				'post_type'      => 'gmedia',
 				'comment_status' => $gm_options['default_gmedia_comment_status'],
-			];
+			);
 			$i         = 0;
 			foreach ( $gmedias as $gmedia ) {
 				$i ++;
@@ -373,9 +371,10 @@ function gmedia_db_update__1_8_0() {
 				$post_ID = wp_insert_post( $post_data );
 				if ( $post_ID ) {
 					add_metadata( 'post', $post_ID, '_gmedia_ID', $gmedia->ID );
-					$wpdb->update( $wpdb->prefix . 'gmedia', [ 'post_id' => $post_ID ], [ 'ID' => $gmedia->ID ] );
+					$wpdb->update( $wpdb->prefix . 'gmedia', array( 'post_id' => $post_ID ), array( 'ID' => $gmedia->ID ) );
 
-					$info['180_3'] = sprintf( __( 'Updated %d items in Gmedia Library...', 'grand-media' ), ( $step * $i ) );
+					// translators: number.
+					$info['180_3'] = sprintf( esc_html__( 'Updated %d items in Gmedia Library...', 'grand-media' ), ( $step * $i ) );
 					set_transient( 'gmediaHeavyJob', $info );
 					set_transient( 'gmediaUpgrade', time() );
 				}
@@ -402,12 +401,13 @@ function gmedia_db_update__1_8_0() {
 
 	if ( isset( $steps['gmedia_posts'] ) && ! isset( $steps['terms_posts'] ) ) {
 		$step                   = $steps['step'];
-		$taxonomies             = [ 'gmedia_album', 'gmedia_gallery' ];
+		$taxonomies             = array( 'gmedia_album', 'gmedia_gallery' );
 		$gmedia_terms_with_post = $wpdb->get_col( "SELECT gmedia_term_id FROM {$wpdb->prefix}gmedia_term_meta WHERE meta_key = '_post_ID' AND meta_value != ''" );
 		$gmedia_terms_exclude   = '';
 		if ( ! empty( $gmedia_terms_with_post ) ) {
 			$gmedia_terms_exclude = "AND term_id NOT IN ('" . implode( "','", $gmedia_terms_with_post ) . "')";
 		}
+		// phpcs:ignore
 		$gmedia_terms = $wpdb->get_results( "SELECT * FROM {$wpdb->prefix}gmedia_term WHERE taxonomy IN('" . implode( "','", $taxonomies ) . "') {$gmedia_terms_exclude} LIMIT 20" );
 		if ( ! empty( $gmedia_terms ) ) {
 			$i = 0;
@@ -415,20 +415,21 @@ function gmedia_db_update__1_8_0() {
 				if ( $gmDB->get_metadata( 'gmedia_term', $term->term_id, '_post_ID', true ) ) {
 					continue;
 				}
-				$post_data = [
+				$post_data = array(
 					'post_author'  => $term->global,
 					'post_content' => $gmCore->mb_convert_encoding_utf8( $term->description ),
 					'post_title'   => $gmCore->mb_convert_encoding_utf8( $term->name ),
 					'post_status'  => $term->status,
 					'post_type'    => $term->taxonomy,
-				];
+				);
 				$post_ID   = wp_insert_post( $post_data );
 				if ( $post_ID ) {
 					add_metadata( 'post', $post_ID, '_gmedia_term_ID', $term->term_id );
 					$gmDB->add_metadata( 'gmedia_term', $term->term_id, '_post_ID', $post_ID );
 
 					$i ++;
-					$info['180_6'] = sprintf( __( 'Updated %d terms (with author)...', 'grand-media' ), ( $step * $i ) );
+					// translators: number.
+					$info['180_6'] = sprintf( esc_html__( 'Updated %d terms (with author)...', 'grand-media' ), ( $step * $i ) );
 					set_transient( 'gmediaHeavyJob', $info );
 					set_transient( 'gmediaUpgrade', time() );
 				}
@@ -452,7 +453,7 @@ function gmedia_db_update__1_8_0() {
 	}
 
 	if ( isset( $steps['terms_posts'] ) ) {
-		update_option( "gmediaDbVersion", '1.8.0' );
+		update_option( 'gmediaDbVersion', '1.8.0' );
 		set_transient( 'gmediaUpgradeSteps', $steps );
 		//wp_schedule_single_event(time() + 2, 'gmedia_db_update');
 		gmedia_db_update();
@@ -461,7 +462,7 @@ function gmedia_db_update__1_8_0() {
 }
 
 /**
- * @param $files
+ * @param array $files
  */
 function gmedia_images_update( $files ) {
 	global $wpdb, $gmCore, $gmGallery;
@@ -481,7 +482,7 @@ function gmedia_images_update( $files ) {
 			if ( isset( $file['file'] ) ) {
 				extract( $file );
 			} else {
-				_e( 'Something went wrong...', 'grand-media' );
+				esc_html_e( 'Something went wrong...', 'grand-media' );
 				die();
 			}
 		}
@@ -495,7 +496,8 @@ function gmedia_images_update( $files ) {
 			if ( is_file( $fileinfo['filepath_original'] ) ) {
 				@rename( $fileinfo['filepath_original'], $fileinfo['filepath'] );
 			} else {
-				$info[ 'img_' . $i ] = $prefix_ko . sprintf( __( 'File not exists: %s', 'grand-media' ), $file ) . $eol;
+				// translators: file name.
+				$info[ 'img_' . $i ] = $prefix_ko . sprintf( esc_html__( 'File not exists: %s', 'grand-media' ), $file ) . $eol;
 				set_transient( 'gmediaHeavyJob', $info );
 				continue;
 			}
@@ -504,51 +506,59 @@ function gmedia_images_update( $files ) {
 		$file_File = $file;
 		$fileinfo  = $gmCore->fileinfo( $file, false );
 
-		if ( $file_File != $fileinfo['filepath'] ) {
+		if ( $file_File !== $fileinfo['filepath'] ) {
 			@rename( $file_File, $fileinfo['filepath'] );
-			$wpdb->update( $wpdb->prefix . 'gmedia', [ 'gmuid' => $fileinfo['basename'] ], [ 'gmuid' => basename( $file_File ) ] );
+			$wpdb->update( $wpdb->prefix . 'gmedia', array( 'gmuid' => $fileinfo['basename'] ), array( 'gmuid' => basename( $file_File ) ) );
 		}
 
-		if ( 'image' == $fileinfo['dirname'] ) {
+		if ( 'image' === $fileinfo['dirname'] ) {
 			$size = @getimagesize( $fileinfo['filepath'] );
 			if ( ! is_file( $fileinfo['filepath_thumb'] ) && file_is_displayable_image( $fileinfo['filepath'] ) ) {
-				if ( function_exists( 'memory_get_usage' ) ) {
-					$extensions = [ '1' => 'GIF', '2' => 'JPG', '3' => 'PNG', '6' => 'BMP' ];
-					switch ( $extensions[ $size[2] ] ) {
-						case 'GIF':
-							$CHANNEL = 1;
-							break;
-						case 'JPG':
-							$CHANNEL = $size['channels'];
-							break;
-						case 'PNG':
-							$CHANNEL = 3;
-							break;
-						case 'BMP':
-						default:
-							$CHANNEL = 6;
-							break;
-					}
-					$MB                = 1048576;  // number of bytes in 1M.
-					$K64               = 65536;    // number of bytes in 64K.
-					$TWEAKFACTOR       = 1.8;     // Or whatever works for you.
-					$memoryNeeded      = round( ( $size[0] * $size[1] * $size['bits'] * $CHANNEL / 8 + $K64 ) * $TWEAKFACTOR );
-					$memoryNeeded      = memory_get_usage() + $memoryNeeded;
-					$current_limit     = @ini_get( 'memory_limit' );
-					$current_limit_int = intval( $current_limit );
-					if ( false !== strpos( $current_limit, 'M' ) ) {
-						$current_limit_int *= $MB;
-					}
-					if ( false !== strpos( $current_limit, 'G' ) ) {
-						$current_limit_int *= 1024;
-					}
+				$extensions = array( '1' => 'GIF', '2' => 'JPG', '3' => 'PNG', '6' => 'BMP', '18' => 'WEBP' );
 
-					if ( - 1 !== $current_limit && $memoryNeeded > $current_limit_int ) {
-						$newLimit = $current_limit_int / $MB + ceil( ( $memoryNeeded - $current_limit_int ) / $MB );
-						if ( $newLimit < 256 ) {
-							$newLimit = 256;
+				if ( function_exists( 'memory_get_usage' ) ) {
+					if ( isset( $extensions[ $size[2] ] ) ) {
+						switch ( $extensions[ $size[2] ] ) {
+							case 'GIF':
+								$CHANNEL = 1;
+								break;
+							case 'JPG':
+								$CHANNEL = isset( $size['channels'] ) ? $size['channels'] : 3; // default to 3 channels for JPG.
+								break;
+							case 'PNG':
+								$CHANNEL = 4;
+								break;
+							case 'BMP':
+								$CHANNEL = 6;
+								break;
+							case 'WEBP':
+								$CHANNEL = isset( $size['channels'] ) ? $size['channels'] : 4; // default to 4 channels for WebP.
+								break;
+							default:
+								$CHANNEL = 3;
+								break;
 						}
-						@ini_set( 'memory_limit', $newLimit . 'M' );
+						$MB                = 1048576;  // number of bytes in 1M.
+						$K64               = 65536;    // number of bytes in 64K.
+						$TWEAKFACTOR       = 1.8;     // Or whatever works for you.
+						$memoryNeeded      = round( ( $size[0] * $size[1] * $size['bits'] * $CHANNEL / 8 + $K64 ) * $TWEAKFACTOR );
+						$memoryNeeded      = memory_get_usage() + $memoryNeeded;
+						$current_limit     = @ini_get( 'memory_limit' );
+						$current_limit_int = intval( $current_limit );
+						if ( false !== strpos( $current_limit, 'M' ) ) {
+							$current_limit_int *= $MB;
+						}
+						if ( false !== strpos( $current_limit, 'G' ) ) {
+							$current_limit_int *= 1024;
+						}
+
+						if ( - 1 !== (int) $current_limit && $memoryNeeded > $current_limit_int ) {
+							$newLimit = $current_limit_int / $MB + ceil( ( $memoryNeeded - $current_limit_int ) / $MB );
+							if ( $newLimit < 256 ) {
+								$newLimit = 256;
+							}
+							@ini_set( 'memory_limit', $newLimit . 'M' );
+						}
 					}
 				}
 
@@ -560,20 +570,23 @@ function gmedia_images_update( $files ) {
 				if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
 					@chmod( $fileinfo['dirpath_thumb'], 0755 );
 					if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
-						$info[ 'img_' . $i ] = $prefix_ko . sprintf( __( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_thumb'] ) . $eol;
+						// translators: dirname.
+						$info[ 'img_' . $i ] = $prefix_ko . sprintf( esc_html__( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_thumb'] ) . $eol;
 						set_transient( 'gmediaHeavyJob', $info );
 						continue;
 					}
 				}
 				if ( ! wp_mkdir_p( $fileinfo['dirpath_original'] ) ) {
-					$info[ 'img_' . $i ] = $prefix_ko . sprintf( __( 'Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol;
+					// translators: dirname.
+					$info[ 'img_' . $i ] = $prefix_ko . sprintf( esc_html__( 'Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol;
 					set_transient( 'gmediaHeavyJob', $info );
 					continue;
 				}
 				if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
 					@chmod( $fileinfo['dirpath_original'], 0755 );
 					if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
-						$info[ 'img_' . $i ] = $prefix_ko . sprintf( __( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol;
+						// translators: dirname.
+						$info[ 'img_' . $i ] = $prefix_ko . sprintf( esc_html__( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol;
 						set_transient( 'gmediaHeavyJob', $info );
 						continue;
 					}
@@ -583,8 +596,8 @@ function gmedia_images_update( $files ) {
 				$webimg   = $gmGallery->options['image'];
 				$thumbimg = $gmGallery->options['thumb'];
 
-				$webimg['resize']   = ( ( $webimg['width'] < $size[0] ) || ( $webimg['height'] < $size[1] ) ) ? true : false;
-				$thumbimg['resize'] = ( ( $thumbimg['width'] < $size[0] ) || ( $thumbimg['height'] < $size[1] ) ) ? true : false;
+				$webimg['resize']   = ( ( $webimg['width'] < $size[0] ) || ( $webimg['height'] < $size[1] ) );
+				$thumbimg['resize'] = ( ( $thumbimg['width'] < $size[0] ) || ( $thumbimg['height'] < $size[1] ) );
 
 				if ( $webimg['resize'] ) {
 					rename( $fileinfo['filepath'], $fileinfo['filepath_original'] );
@@ -594,7 +607,7 @@ function gmedia_images_update( $files ) {
 				if ( $webimg['resize'] || $thumbimg['resize'] ) {
 					$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
 					if ( is_wp_error( $editor ) ) {
-						$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . " (wp_get_image_editor): " . $editor->get_error_message();
+						$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ' (wp_get_image_editor): ' . $editor->get_error_message();
 						set_transient( 'gmediaHeavyJob', $info );
 						continue;
 					}
@@ -604,14 +617,14 @@ function gmedia_images_update( $files ) {
 
 						$resized = $editor->resize( $webimg['width'], $webimg['height'], $webimg['crop'] );
 						if ( is_wp_error( $resized ) ) {
-							$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})): " . $resized->get_error_message() . $eol;
+							$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ' (' . $resized->get_error_code() . " | editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})): " . $resized->get_error_message() . $eol;
 							set_transient( 'gmediaHeavyJob', $info );
 							continue;
 						}
 
 						$saved = $editor->save( $fileinfo['filepath'] );
 						if ( is_wp_error( $saved ) ) {
-							$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->webimage): " . $saved->get_error_message() . $eol;
+							$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ' (' . $saved->get_error_code() . ' | editor->save->webimage): ' . $saved->get_error_message() . $eol;
 							set_transient( 'gmediaHeavyJob', $info );
 							continue;
 						}
@@ -622,14 +635,14 @@ function gmedia_images_update( $files ) {
 
 					$resized = $editor->resize( $thumbimg['width'], $thumbimg['height'], $thumbimg['crop'] );
 					if ( is_wp_error( $resized ) ) {
-						$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . " (" . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
+						$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ' (' . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol;
 						set_transient( 'gmediaHeavyJob', $info );
 						continue;
 					}
 
 					$saved = $editor->save( $fileinfo['filepath_thumb'] );
 					if ( is_wp_error( $saved ) ) {
-						$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . " (" . $saved->get_error_code() . " | editor->save->thumb): " . $saved->get_error_message() . $eol;
+						$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ' (' . $saved->get_error_code() . ' | editor->save->thumb): ' . $saved->get_error_message() . $eol;
 						set_transient( 'gmediaHeavyJob', $info );
 						continue;
 					}
@@ -637,25 +650,26 @@ function gmedia_images_update( $files ) {
 					copy( $fileinfo['filepath'], $fileinfo['filepath_thumb'] );
 				}
 			} else {
-				$info[ 'img_' . $i ] = $prefix . $fileinfo['basename'] . ": " . __( "Ignored", 'grand-media' ) . $eol;
+				$info[ 'img_' . $i ] = $prefix . $fileinfo['basename'] . ': ' . __( 'Ignored', 'grand-media' ) . $eol;
 				set_transient( 'gmediaHeavyJob', $info );
 				continue;
 			}
 		} else {
-			$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ": " . __( "Invalid image.", 'grand-media' ) . $eol;
+			$info[ 'img_' . $i ] = $prefix_ko . $fileinfo['basename'] . ': ' . __( 'Invalid image.', 'grand-media' ) . $eol;
 			set_transient( 'gmediaHeavyJob', $info );
 			continue;
 		}
 
 		global $gmDB;
 		// Save the data.
-		$gmDB->update_metadata( $meta_type = 'gmedia', $id, $meta_key = '_metadata', $gmDB->generate_gmedia_metadata( $id, $fileinfo ) );
+		$gmDB->update_metadata( 'gmedia', $id, '_metadata', $gmDB->generate_gmedia_metadata( $id, $fileinfo ) );
 
-		$info[ 'img_' . $i ] = $prefix . $fileinfo['basename'] . ': <span  style="color:darkgreen;">' . sprintf( __( 'success (ID #%s)', 'grand-media' ), $id ) . '</span>' . $eol;
+		// translators: ID.
+		$info[ 'img_' . $i ] = $prefix . $fileinfo['basename'] . ': <span  style="color:darkgreen;">' . sprintf( esc_html__( 'success (ID #%s)', 'grand-media' ), $id ) . '</span>' . $eol;
 		set_transient( 'gmediaHeavyJob', $info );
 	}
 
-	$info['imgs_done'] = '<p>' . __( 'Image update process complete...', 'grand-media' ) . '</p>';
+	$info['imgs_done'] = '<p>' . esc_html__( 'Image update process complete...', 'grand-media' ) . '</p>';
 	set_transient( 'gmediaHeavyJob', $info );
 
 }
@@ -690,7 +704,7 @@ function gmedia_quite_update() {
 	if ( ( null !== $current_version ) ) {
 		$options = get_option( 'gmediaOptions' );
 		if ( ! is_array( $options ) ) {
-			$options = [];
+			$options = array();
 		}
 		require_once dirname( __FILE__ ) . '/setup.php';
 		$default_options = gmedia_default_options();
@@ -727,28 +741,28 @@ function gmedia_quite_update() {
 		}
 
 		if ( version_compare( $current_version, '1.6.3', '<' ) ) {
-			$wpdb->update( $wpdb->prefix . 'gmedia_meta', [ 'meta_key' => '_cover' ], [ 'meta_key' => 'cover' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_meta', [ 'meta_key' => '_rating' ], [ 'meta_key' => 'rating' ] );
+			$wpdb->update( $wpdb->prefix . 'gmedia_meta', array( 'meta_key' => '_cover' ), array( 'meta_key' => 'cover' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_meta', array( 'meta_key' => '_rating' ), array( 'meta_key' => 'rating' ) );
 		}
 		if ( version_compare( $current_version, '1.6.5', '<' ) ) {
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_key' => '_edited' ], [ 'meta_key' => 'edited' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_key' => '_settings' ], [ 'meta_key' => 'settings' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_key' => '_query' ], [ 'meta_key' => 'query' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_key' => '_module' ], [ 'meta_key' => 'module' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_key' => '_order' ], [ 'meta_key' => 'order' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_key' => '_orderby' ], [ 'meta_key' => 'orderby' ] );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_key' => '_edited' ), array( 'meta_key' => 'edited' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_key' => '_settings' ), array( 'meta_key' => 'settings' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_key' => '_query' ), array( 'meta_key' => 'query' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_key' => '_module' ), array( 'meta_key' => 'module' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_key' => '_order' ), array( 'meta_key' => 'order' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_key' => '_orderby' ), array( 'meta_key' => 'orderby' ) );
 		}
 		if ( version_compare( $current_version, '1.6.6', '<' ) ) {
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_value' => 'ID' ], [ 'meta_key' => '_orderby', 'meta_value' => '' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_value' => 'DESC' ], [ 'meta_key' => '_order', 'meta_value' => '' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_value' => 'title' ], [ 'meta_key' => '_orderby', 'meta_value' => 'title ID' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_value' => 'date' ], [ 'meta_key' => '_orderby', 'meta_value' => 'date ID' ] );
-			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', [ 'meta_value' => 'modified' ], [ 'meta_key' => '_orderby', 'meta_value' => 'modified ID' ] );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_value' => 'ID' ), array( 'meta_key' => '_orderby', 'meta_value' => '' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_value' => 'DESC' ), array( 'meta_key' => '_order', 'meta_value' => '' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_value' => 'title' ), array( 'meta_key' => '_orderby', 'meta_value' => 'title ID' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_value' => 'date' ), array( 'meta_key' => '_orderby', 'meta_value' => 'date ID' ) );
+			$wpdb->update( $wpdb->prefix . 'gmedia_term_meta', array( 'meta_value' => 'modified' ), array( 'meta_key' => '_orderby', 'meta_value' => 'modified ID' ) );
 		}
 		if ( version_compare( $current_version, '1.7.1', '<' ) ) {
-			$gmedia_ids = $gmDB->get_gmedias( [ 'mime_type' => 'audio', 'fields' => 'ids' ] );
+			$gmedia_ids = $gmDB->get_gmedias( array( 'mime_type' => 'audio', 'fields' => 'ids' ) );
 			foreach ( $gmedia_ids as $id ) {
-				$gmDB->update_metadata( $meta_type = 'gmedia', $id, $meta_key = '_metadata', $gmDB->generate_gmedia_metadata( $id ) );
+				$gmDB->update_metadata( 'gmedia', $id, '_metadata', $gmDB->generate_gmedia_metadata( $id ) );
 			}
 		}
 		if ( version_compare( $current_version, '1.7.20', '<' ) ) {
@@ -763,7 +777,7 @@ function gmedia_quite_update() {
 		if ( version_compare( $current_version, '1.8.12', '<' ) ) {
 			$categories = $gmDB->get_terms( 'gmedia_category' );
 			if ( ! empty( $categories ) ) {
-				$cats = [
+				$cats = array(
 					'abstract'              => __( 'Abstract', 'grand-media' ),
 					'animals'               => __( 'Animals', 'grand-media' ),
 					'black-and-white'       => __( 'Black and White', 'grand-media' ),
@@ -791,10 +805,10 @@ function gmedia_quite_update() {
 					'underwater'            => __( 'Underwater', 'grand-media' ),
 					'urban-exploration'     => __( 'Urban Exploration', 'grand-media' ),
 					'wedding'               => __( 'Wedding', 'grand-media' ),
-				];
+				);
 				foreach ( $categories as $c ) {
 					if ( isset( $cats[ $c->name ] ) ) {
-						$wpdb->update( $wpdb->prefix . 'gmedia_term', [ 'name' => $cats[ $c->name ] ], [ 'term_id' => $c->term_id ] );
+						$wpdb->update( $wpdb->prefix . 'gmedia_term', array( 'name' => $cats[ $c->name ] ), array( 'term_id' => $c->term_id ) );
 						$gmDB->clean_term_cache( $c->term_id );
 					}
 				}
@@ -808,10 +822,10 @@ function gmedia_quite_update() {
 			if ( ! empty( $queries ) ) {
 				foreach ( $queries as $query ) {
 					$query['meta_value'] = maybe_unserialize( $query['meta_value'] );
-					$gmCore->replace_array_keys( $query['meta_value'], [ 'album__in' => 'gmedia_album', 'tag__in' => 'gmedia_tag', 'category__in' => 'gmedia_category' ] );
+					$gmCore->replace_array_keys( $query['meta_value'], array( 'album__in' => 'gmedia_album', 'tag__in' => 'gmedia_tag', 'category__in' => 'gmedia_category' ) );
 					foreach ( $query['meta_value'] as $key => $value ) {
-						if ( 'gmedia_filter' == $key ) {
-							$new_query = [];
+						if ( 'gmedia_filter' === $key ) {
+							$new_query = array();
 							foreach ( $value as $filter_id ) {
 								$filter_query = $gmDB->get_metadata( 'gmedia_term', $filter_id, '_query', true );
 								$new_query    = array_merge( $filter_query, $new_query );
@@ -828,7 +842,7 @@ function gmedia_quite_update() {
 							}
 						}
 					}
-					$gmDB->update_metadata_by_mid( $meta_type = 'gmedia_term', $query['meta_id'], $query['meta_value'] );
+					$gmDB->update_metadata_by_mid( 'gmedia_term', $query['meta_id'], $query['meta_value'] );
 				}
 			}
 			$filters = $gmDB->get_terms( 'gmedia_filter' );
@@ -844,8 +858,8 @@ function gmedia_quite_update() {
 				foreach ( $queries as $query ) {
 					$query['meta_value'] = maybe_unserialize( $query['meta_value'] );
 					if ( isset( $query['meta_value']['gmedia__in'] ) ) {
-						$query['meta_value'] = $query['meta_value'] + [ 'order' => 'ASC', 'orderby' => 'gmedia__in' ];
-						$gmDB->update_metadata_by_mid( $meta_type = 'gmedia_term', $query['meta_id'], $query['meta_value'] );
+						$query['meta_value'] = $query['meta_value'] + array( 'order' => 'ASC', 'orderby' => 'gmedia__in' );
+						$gmDB->update_metadata_by_mid( 'gmedia_term', $query['meta_id'], $query['meta_value'] );
 					}
 				}
 			}
@@ -853,7 +867,7 @@ function gmedia_quite_update() {
 		if ( version_compare( $current_version, '1.8.55', '<' ) ) {
 			$wpdb->query( "CREATE INDEX `_hash` ON {$wpdb->prefix}gmedia_meta ( meta_value(32) );" );
 
-			$ajax_operations                      = get_option( 'gmedia_ajax_long_operations', [] );
+			$ajax_operations                      = get_option( 'gmedia_ajax_long_operations', array() );
 			$ajax_operations['gmedia_hash_files'] = 'gmedia_hash_files';
 			update_option( 'gmedia_ajax_long_operations', $ajax_operations );
 		}
@@ -882,24 +896,19 @@ function gmedia_quite_update() {
 			$new_options['modules_xml'] = 'https://www.dropbox.com/s/ysmedfuxyy5ff3w/modules_v2.xml?dl=1';
 		}
 
-
 		$gmGallery->options                      = $gmCore->array_replace_recursive( $options, $new_options );
 		$gmGallery->options['gm_screen_options'] = $default_options['gm_screen_options'];
 
 		update_option( 'gmediaOptions', $gmGallery->options );
-		update_option( "gmediaVersion", GMEDIA_VERSION );
+		update_option( 'gmediaVersion', GMEDIA_VERSION );
 
 		if ( (int) $gmGallery->options['mobile_app'] ) {
 			$gmCore->app_service( 'app_updatecron' );
 		}
 
 		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/amron' );
-		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/phantom' );
 		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/jq-mplayer' );
 		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/wp-videoplayer' );
-		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/cubik-lite' );
-		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/afflux' );
-		$gmCore->delete_folder( $gmCore->upload['path'] . '/module/minima' );
 
 	}
 }

@@ -3,22 +3,19 @@
  * Gmedia AddMedia
  */
 
-// don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
-global $user_ID, $gmGallery, $gmProcessor, $gmCore, $gmDB;
+global $user_ID, $gmGallery, $gmProcessor, $gmCore, $gmDB, $gm_allowed_tags;
 
 $url    = $gmProcessor->url;
 $import = $gmProcessor->import;
 ?>
 
-<div class="panel panel-default">
+<div class="card m-0 mw-100 p-0">
 
-	<?php include dirname( __FILE__ ) . '/tpl/panel-heading.php'; ?>
+	<?php require dirname( __FILE__ ) . '/tpl/panel-heading.php'; ?>
 
-	<div class="panel-body" id="gmedia-msg-panel"></div>
+	<div class="card-body" id="gmedia-msg-panel"></div>
 	<div class="container-fluid gmAddMedia">
 		<?php
 		if ( ! $import ) {

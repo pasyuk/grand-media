@@ -9,20 +9,20 @@ add_action( 'gmedia_footer', 'wp_print_styles' );
 add_action( 'gmedia_footer', 'print_footer_scripts' );
 add_action( 'gmedia_footer', 'wp_print_footer_scripts' );
 
-$gmedia_share_img = [ plugins_url( GMEDIA_FOLDER ) . '/assets/icons/icon_gmedia_180.png' ];
+$gmedia_share_img = array( plugins_url( 'assets/icons/icon_gmedia_180.png', dirname( __FILE__ ) ) );
 
 function gmediacloud_appbaner() {
 	global $gmedia_id, $gmedia_type;
-	if ( in_array( $gmedia_type, [ 'gallery', 'album', 'tag' ] ) ) {
-		echo '<meta name="apple-itunes-app" content="app-id=947515626, app-argument=' . add_query_arg( [ 'type' => $gmedia_type, 'id' => $gmedia_id ], trailingslashit( home_url() ) ) . '">';
+	if ( in_array( $gmedia_type, array( 'gallery', 'album', 'tag' ), true ) ) {
+		echo '<meta name="apple-itunes-app" content="app-id=947515626, app-argument=' . esc_url( add_query_arg( array( 'type' => $gmedia_type, 'id' => $gmedia_id ), trailingslashit( home_url() ) ) ) . '">';
 	}
 
 }
 
 function gmediacloud_meta_generator() {
 	global $gmedia, $gmedia_type, $wp, $gmGallery, $gmCore, $gmedia_share_img, $gmDB;
-	$icon_url    = plugins_url( GMEDIA_FOLDER ) . '/assets/icons';
-	$current_url = home_url( add_query_arg( [], $wp->request ) );
+	$icon_url    = plugins_url( 'assets/icons', dirname( __FILE__ ) );
+	$current_url = home_url( add_query_arg( array(), $wp->request ) );
 	?>
 	<link href="<?php echo esc_url( $icon_url ); ?>/favicon.png" rel="shortcut icon"/>
 	<link href="<?php echo esc_url( $icon_url ); ?>/icon_gmedia_60.png" rel="apple-touch-icon"/>
@@ -34,11 +34,17 @@ function gmediacloud_meta_generator() {
 	<meta property="og:title" content="<?php echo esc_attr( the_gmedia_title( true ) ); ?>"/>
 	<meta property="og:description" content="<?php echo esc_attr( $gmedia->description ); ?>"/>
 	<?php
-	if ( $gmedia_type !== 'single' ) {
+	if ( 'single' !== $gmedia_type ) {
 		if ( did_action( 'gmedia_shortcode' ) && count( $gmGallery->shortcode ) ) {
-			$og_imgs   = [];
+			$og_imgs   = array();
 			$shortcode = reset( $gmGallery->shortcode );
-			$query     = array_merge( [ 'status' => 'publish', 'nopaging' => true ], $shortcode['query'] );
+			$query     = array_merge(
+				array(
+					'status'   => 'publish',
+					'nopaging' => true,
+				),
+				$shortcode['query']
+			);
 			$gmedias   = $gmDB->get_gmedias( $query );
 			foreach ( $gmedias as $item ) {
 				$og_imgs[] = $gmCore->gm_get_media_image( $item->ID );
@@ -49,12 +55,13 @@ function gmediacloud_meta_generator() {
 		array_unshift( $gmedia_share_img, $gmCore->gm_get_media_image( $gmedia->ID ) );
 	}
 	foreach ( $gmedia_share_img as $og_image ) {
-		echo "<meta property=\"og:image\" content=\"{$og_image}\" />\n";
+		echo '<meta property="og:image" content="' . esc_attr( $og_image ) . '" />';
 	}
 	?>
-	<meta property="og:url" content="<?php echo esc_url_raw( $current_url ); ?>"/>
+
+	<meta property="og:url" content="<?php echo esc_url( $current_url ); ?>"/>
 	<!--<meta property="og:type" content="article" />-->
-	<meta property="og:site_name" content="<?php echo esc_attr( get_bloginfo( 'name' ) ) ?>"/>
+	<meta property="og:site_name" content="<?php echo esc_attr( get_bloginfo( 'name' ) ); ?>"/>
 
 	<meta name="msapplication-TileImage" content="<?php echo esc_url( $icon_url ); ?>/icon_gmedia_180.png"/>
 	<meta name="msapplication-TileColor" content="#ffffff"/>
@@ -70,15 +77,17 @@ function gmedia_head() {
 	if ( $gmCore->_get( 'iframe' ) ) {
 		wp_deregister_script( 'swfaddress' );
 	}
-	$wp_styles->queue  = [];
-	$wp_scripts->queue = [];
+	$wp_styles->queue  = array();
+	$wp_scripts->queue = array();
 
-	/*if (is_admin_bar_showing()) {
+	/*
+	if ( is_admin_bar_showing() ) {
 		add_action('gmedia_head', 'wp_admin_bar_header', 0);
 		add_action('gmedia_head', '_admin_bar_bump_cb', 0);
 		add_action('gmedia_head', '_wp_admin_bar_init');
 		add_action('gmedia_footer', 'wp_admin_bar_render', 1000);
-	}*/
+	}
+	*/
 
 	$gmedia_shortcode_content = get_the_gmedia_content( $gmedia_id, $gmedia_type );
 
@@ -92,11 +101,12 @@ function gmedia_footer() {
 
 	if ( ! empty( $gmGallery->options['gmediacloud_footer_css'] ) ) {
 		$css_code = stripslashes( $gmGallery->options['gmediacloud_footer_css'] );
-		echo "\n<style type=\"text/css\">\n{$css_code}\n</style>\n";
+		echo "\n<style>\n" . wp_kses_data( $css_code ) . "\n</style>\n";
 	}
 	if ( ! empty( $gmGallery->options['gmediacloud_footer_js'] ) ) {
 		$js_code = stripslashes( $gmGallery->options['gmediacloud_footer_js'] );
-		echo "\n<script type=\"text/javascript\">\n{$js_code}\n</script>\n";
+		// phpcs:ignore
+		echo "\n<script type=\"text/javascript\">\n" . str_replace('&amp;', '&', wp_kses_post( $js_code ) ) . "\n</script>\n";
 	}
 }
 
@@ -111,7 +121,7 @@ function gmedia_title( $sep = '|', $display = true ) {
 
 	$_title = __( 'GmediaGallery', 'grand-media' );
 	if ( is_object( $gmedia ) && ! is_wp_error( $gmedia ) ) {
-		if ( in_array( $gmedia_type, [ 'gallery', 'album', 'category', 'tag' ], true ) ) {
+		if ( in_array( $gmedia_type, array( 'gallery', 'album', 'category', 'tag' ), true ) ) {
 			$_title = $gmedia->name;
 		} elseif ( 'single' === $gmedia_type ) {
 			$_title = $gmedia->title;
@@ -136,7 +146,7 @@ function gmedia_title( $sep = '|', $display = true ) {
 
 	// Send it out.
 	if ( $display ) {
-		echo $title;
+		echo esc_html( $title );
 	} else {
 		return $title;
 	}
@@ -152,7 +162,7 @@ function the_gmedia_title( $return = false ) {
 
 	$title = __( 'GmediaGallery', 'grand-media' );
 	if ( is_object( $gmedia ) && ! is_wp_error( $gmedia ) ) {
-		if ( in_array( $gmedia_type, [ 'gallery', 'album', 'category', 'tag' ], true ) ) {
+		if ( in_array( $gmedia_type, array( 'gallery', 'album', 'category', 'tag' ), true ) ) {
 			$title = wp_strip_all_tags( $gmedia->name );
 		} elseif ( 'single' === $gmedia_type ) {
 			$title = wp_strip_all_tags( $gmedia->title );
@@ -170,7 +180,7 @@ function the_gmedia_title( $return = false ) {
 	if ( $return ) {
 		return $title;
 	} else {
-		echo $title;
+		echo esc_html( $title );
 	}
 }
 
@@ -181,7 +191,7 @@ function the_gmedia_title( $return = false ) {
  */
 function gmedia_body_class( $classes ) {
 	global $gmedia_type;
-	$classes = array_merge( $classes, [ 'gmedia-template', "gmedia-template-{$gmedia_type}" ] );
+	$classes = array_merge( $classes, array( 'gmedia-template', "gmedia-template-{$gmedia_type}" ) );
 	if ( wp_is_mobile() ) {
 		$classes[] = 'is_mobile';
 	}
@@ -199,10 +209,10 @@ function get_gmedia_header() {
 	global $gmedia_module, $gmCore;
 	$module = $gmCore->get_module_path( $gmedia_module );
 	if ( is_file( $module['path'] . '/template/head.php' ) ) {
-		/** @noinspection PhpIncludeInspection */
+		/* @noinspection PhpIncludeInspection */
 		include_once $module['path'] . '/template/head.php';
 	} else {
-		/** @noinspection PhpIncludeInspection */
+		/* @noinspection PhpIncludeInspection */
 		include_once GMEDIA_ABSPATH . 'template/head.php';
 	}
 }
@@ -211,10 +221,10 @@ function get_gmedia_footer() {
 	global $gmedia_module, $gmCore;
 	$module = $gmCore->get_module_path( $gmedia_module );
 	if ( is_file( $module['path'] . '/template/foot.php' ) ) {
-		/** @noinspection PhpIncludeInspection */
+		/* @noinspection PhpIncludeInspection */
 		include_once $module['path'] . '/template/foot.php';
 	} else {
-		/** @noinspection PhpIncludeInspection */
+		/* @noinspection PhpIncludeInspection */
 		include_once GMEDIA_ABSPATH . 'template/foot.php';
 	}
 }
@@ -229,10 +239,10 @@ function get_gmedia_footer() {
  */
 function get_the_gmedia_content( $gmedia_id, $gmedia_type, $set = null ) {
 	$content = '';
-	if ( in_array( $gmedia_type, [ 'gallery', 'album', 'tag', 'category' ], true ) ) {
-		$atts    = [
+	if ( in_array( $gmedia_type, array( 'gallery', 'album', 'tag', 'category' ), true ) ) {
+		$atts    = array(
 			'id' => $gmedia_id,
-		];
+		);
 		$content = gmedia_shortcode( $atts );
 		do_action( 'gmedia_enqueue_scripts' );
 	}
@@ -242,6 +252,9 @@ function get_the_gmedia_content( $gmedia_id, $gmedia_type, $set = null ) {
 
 function the_gmedia_content() {
 	global $gmedia_shortcode_content;
+
+	// Shortcode content already escaped and doing it twice broke the code.
+	// phpcs:ignore
 	echo $gmedia_shortcode_content;
 }
 
@@ -258,11 +271,11 @@ function gmediacloud_social_sharing() {
 
 	global $wp, $gmedia, $gmedia_share_img;
 
-	$url        = urlencode( esc_url_raw( home_url( add_query_arg( [], $wp->request ) ) ) );
+	$url        = rawurlencode( esc_url_raw( home_url( add_query_arg( array(), $wp->request ) ) ) );
 	$text       = $gmedia->description;
 	$title      = wp_strip_all_tags( the_gmedia_title( true ) );
-	$image      = urlencode( $gmedia_share_img[0] );
-	$title_text = urlencode( $title . ' ' . wp_strip_all_tags( $text ) );
+	$image      = rawurlencode( $gmedia_share_img[0] );
+	$title_text = rawurlencode( $title . ' ' . wp_strip_all_tags( $text ) );
 	$mailbody   = esc_attr( $text . ' ' . $url );
 	?>
 	<style>
@@ -324,32 +337,32 @@ function gmediacloud_social_sharing() {
 	</style>
 	<div class="gmedia-socialsharebuttons">
 		<!-- Facebook -->
-		<a href="http://www.facebook.com/sharer/sharer.php?u=<?php echo $url; ?>&t=<?php echo $title_text; ?>" target="_blank" class="share-btn facebook">
+		<a href="https://www.facebook.com/sharer/sharer.php?u=<?php echo esc_attr( $url ); ?>&t=<?php echo esc_attr( $title_text ); ?>" target="_blank" class="share-btn facebook">
 			<i class="fa fa-facebook"><span>Facebook</span></i>
 		</a>
 		<!-- Twitter -->
-		<a href="http://twitter.com/share?url=<?php echo $url; ?>&text=<?php echo $title_text; ?>" target="_blank" class="share-btn twitter">
+		<a href="https://twitter.com/share?url=<?php echo esc_attr( $url ); ?>&text=<?php echo esc_attr( $title_text ); ?>" target="_blank" class="share-btn twitter">
 			<i class="fa fa-twitter"><span>Twitter</span></i>
 		</a>
 		<!-- Pinterest -->
-		<a href="http://pinterest.com/pin/create/button/?url=<?php echo $url; ?>&description=<?php echo $title_text; ?>&media=<?php echo $image; ?>" target="_blank"
-			class="share-btn pinterest-p">
+		<a href="https://pinterest.com/pin/create/button/?url=<?php echo esc_attr( $url ); ?>&description=<?php echo esc_attr( $title_text ); ?>&media=<?php echo esc_attr( $image ); ?>" target="_blank" class="share-btn pinterest-p">
 			<i class="fa fa-pinterest-p"><span>Pinterest</span></i>
 		</a>
 		<!-- VK -->
-		<a href="http://vk.com/share.php?url=<?php echo $url; ?>" target="_blank" class="share-btn vk">
+		<a href="https://vk.com/share.php?url=<?php echo esc_attr( $url ); ?>" target="_blank" class="share-btn vk">
 			<i class="fa fa-vk"><span>VK</span></i>
 		</a>
 		<!-- Email -->
-		<a href="mailto:?subject=<?php echo $title; ?>&body=<?php echo $mailbody; ?>" target="_blank" class="share-btn email">
+		<a href="mailto:?subject=<?php echo esc_attr( $title ); ?>&body=<?php echo esc_attr( $mailbody ); ?>" target="_blank" class="share-btn email">
 			<i class="fa fa-envelope"><span>Email</span></i>
 		</a>
 	</div>
 	<?php
 }
 
-function gmedia_default_template_styles() { ?>
-	<style type="text/css" media="screen">
+function gmedia_default_template_styles() {
+	?>
+	<style>
 		* {
 			box-sizing: border-box;
 		}
@@ -572,47 +585,49 @@ function gmedia_default_template_styles() { ?>
 			}
 		}
 	</style>
-<?php }
+	<?php
+}
 
 function gmedia_video_head_scripts() {
 	wp_enqueue_style( 'mediaelement' );
 	wp_enqueue_script( 'mediaelement' );
 }
 
-function gmedia_video_foot_scripts() { ?>
+function gmedia_video_foot_scripts() {
+	?>
 	<script type="text/javascript">
-		jQuery(function($) {
-			var video = $('video');
+			jQuery(function($) {
+				var video = $('video');
 
-			function video_responsive() {
-				var vw = video.width(),
-					vh = video.height(),
-					r = vw / vh,
-					bw = $(window).width(),
-					bh = $(window).height(),
-					mar = 0;
-				if (r > bw / bh) {
-					vh = bw / r;
-					vw = bw;
-					mar = (bh - vh) / 2;
-					mar = (mar > 0) ? mar + 'px 0 0 0' : '0';
+				function video_responsive() {
+					var vw = video.width(),
+							vh = video.height(),
+							r = vw / vh,
+							bw = $(window).width(),
+							bh = $(window).height(),
+							mar;
+					if (r > bw / bh) {
+						vh = bw / r;
+						vw = bw;
+						mar = (bh - vh) / 2;
+						mar = (mar > 0) ? mar + 'px 0 0 0' : '0';
+					}
+					else {
+						vw = bh * r;
+						vh = bh;
+						mar = (bh - vh) / 2;
+						mar = (mar > 0) ? '0 0 0 ' + mar + 'px' : '0';
+					}
+					$('body').css({margin: mar});
+					video.attr('width', vw).attr('height', vh);
 				}
-				else {
-					vw = bh * r;
-					vh = bh;
-					mar = (bh - vh) / 2;
-					mar = (mar > 0) ? '0 0 0 ' + mar + 'px' : '0';
-				}
-				$('body').css({margin: mar});
-				video.attr('width', vw).attr('height', vh);
-			}
 
-			video_responsive();
-			$(window).on('resize', function() {
 				video_responsive();
+				$(window).on('resize', function() {
+					video_responsive();
+				});
+				video.mediaelementplayer();
 			});
-			video.mediaelementplayer();
-		});
 	</script>
 	<?php
 }

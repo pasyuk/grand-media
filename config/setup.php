@@ -1,7 +1,5 @@
-<?php // don't load directly
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+<?php
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 /**
  * Setup Gmedia plugin
@@ -49,7 +47,7 @@ function gmedia_default_options() {
 
 	$gm['delete_originals']   = '0';
 	$gm['disable_logs']       = '0';
-	$gm['uninstall_dropdata'] = 'none'; // can be 'all', 'none', 'db'
+	$gm['uninstall_dropdata'] = 'none'; // can be 'all', 'none', 'db'.
 
 	$gm['name2title_capitalize'] = '1';
 	$gm['in_tag_orderby']        = 'ID';
@@ -85,8 +83,8 @@ function gmedia_default_options() {
 	$gm['folder']['application']    = 'application';
 	$gm['folder']['module']         = 'module';
 
-	$gm['thumb'] = [ 'width' => 300, 'height' => 300, 'quality' => 80, 'crop' => 0 ];
-	$gm['image'] = [ 'width' => 2200, 'height' => 2200, 'quality' => 85, 'crop' => 0 ];
+	$gm['thumb'] = array( 'width' => 300, 'height' => 300, 'quality' => 80, 'crop' => 0 );
+	$gm['image'] = array( 'width' => 2200, 'height' => 2200, 'quality' => 85, 'crop' => 0 );
 
 	//$gm['modules_xml']  = 'https://codeasily.com/gmedia_modules/modules_v1.xml';
 	//$gm['modules_xml']  = 'https://www.dropbox.com/s/t7oawbuxy1me5gk/modules_v1.xml?dl=1';
@@ -98,12 +96,12 @@ function gmedia_default_options() {
 
 	$gm['google_api_key'] = '';
 
-	$gm['taxonomies']['gmedia_category'] = [];
-	$gm['taxonomies']['gmedia_tag']      = [];
-	$gm['taxonomies']['gmedia_album']    = [];
+	$gm['taxonomies']['gmedia_category'] = array();
+	$gm['taxonomies']['gmedia_tag']      = array();
+	$gm['taxonomies']['gmedia_album']    = array();
 
-	$gm['taxonomies']['gmedia_gallery'] = []; // not linked with gmedia_term_relationships table
-	$gm['taxonomies']['gmedia_module']  = []; // not linked with gmedia_term_relationships table
+	$gm['taxonomies']['gmedia_gallery'] = array(); // not linked with gmedia_term_relationships table.
+	$gm['taxonomies']['gmedia_module']  = array(); // not linked with gmedia_term_relationships table.
 
 	$gm['gm_screen_options']['per_page_gmedia']            = 30;
 	$gm['gm_screen_options']['orderby_gmedia']             = 'ID';
@@ -138,7 +136,7 @@ function gmedia_default_options() {
 
 	$gm['gm_screen_options']['uploader_runtime']          = 'auto';
 	$gm['gm_screen_options']['uploader_chunking']         = 'true';
-	$gm['gm_screen_options']['uploader_chunk_size']       = 8; // in Mb
+	$gm['gm_screen_options']['uploader_chunk_size']       = 8; // in Mb.
 	$gm['gm_screen_options']['uploader_urlstream_upload'] = 'false';
 
 	$gm['gm_screen_options']['library_edit_quicktags'] = 'true';
@@ -156,11 +154,11 @@ function gmedia_default_options() {
  **/
 function gmedia_capabilities() {
 	global $gmCore;
-	// Set the capabilities for the administrator
+	// Set the capabilities for the administrator.
 	$role = get_role( 'administrator' );
-	// We need this role, no other chance
+	// We need this role, no other chance.
 	if ( empty( $role ) ) {
-		update_option( "gmediaInitCheck", __( 'Sorry, Gmedia Gallery works only with a role called administrator', 'grand-media' ) );
+		update_option( 'gmediaInitCheck', esc_html__( 'Sorry, Gmedia Gallery works only with a role called administrator', 'grand-media' ) );
 
 		return;
 	}
@@ -194,7 +192,7 @@ function gmedia_install() {
 	// check one table again, to be sure.
 	$gmedia = $wpdb->prefix . 'gmedia';
 	if ( $wpdb->get_var( "show tables like '$gmedia'" ) !== $gmedia ) {
-		update_option( "gmediaInitCheck", __( 'GmediaGallery: Tables could not created, please check your database settings', 'grand-media' ) );
+		update_option( 'gmediaInitCheck', esc_html__( 'GmediaGallery: Tables could not created, please check your database settings', 'grand-media' ) );
 
 		return;
 	}
@@ -212,15 +210,14 @@ function gmedia_install() {
 			$installDate = time();
 			add_option( 'gmediaInstallDate', $installDate );
 		}
-		update_option( 'gmediaOptions', $gmGallery->options );
 	} else {
 		$default_options = gmedia_default_options();
 		unset( $gmGallery->options['folder'], $gmGallery->options['taxonomies'] );
 		$new_options                             = $gmCore->array_diff_key_recursive( $default_options, $gmGallery->options );
 		$gmGallery->options                      = $gmCore->array_replace_recursive( $gmGallery->options, $new_options );
 		$gmGallery->options['gm_screen_options'] = $default_options['gm_screen_options'];
-		update_option( 'gmediaOptions', $gmGallery->options );
 	}
+	update_option( 'gmediaOptions', $gmGallery->options );
 
 	// try to make gallery dirs if not exists.
 	foreach ( $gmGallery->options['folder'] as $folder ) {
@@ -261,7 +258,7 @@ function gmedia_db_tables() {
 	$gmedia_log                = $wpdb->prefix . 'gmedia_log';
 
 	if ( $wpdb->get_var( "show tables like '$gmedia'" ) !== $gmedia ) {
-		$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia} (
 			ID BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			author BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
@@ -284,7 +281,7 @@ function gmedia_db_tables() {
 	}
 
 	if ( $wpdb->get_var( "show tables like '$gmedia_meta'" ) !== $gmedia_meta ) {
-		$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_meta} (
 			meta_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			gmedia_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
@@ -299,7 +296,7 @@ function gmedia_db_tables() {
 	}
 
 	if ( $wpdb->get_var( "show tables like '$gmedia_term'" ) !== $gmedia_term ) {
-		$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_term} (
 			term_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			name VARCHAR(200) NOT NULL DEFAULT '',
@@ -316,7 +313,7 @@ function gmedia_db_tables() {
 	}
 
 	if ( $wpdb->get_var( "show tables like '$gmedia_term_meta'" ) !== $gmedia_term_meta ) {
-		$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_term_meta} (
 			meta_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 			gmedia_term_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
@@ -330,7 +327,7 @@ function gmedia_db_tables() {
 	}
 
 	if ( $wpdb->get_var( "show tables like '$gmedia_term_relationships'" ) !== $gmedia_term_relationships ) {
-		$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_term_relationships} (
 			gmedia_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
 			gmedia_term_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
@@ -343,7 +340,7 @@ function gmedia_db_tables() {
 	}
 
 	if ( $wpdb->get_var( "show tables like '$gmedia_log'" ) !== $gmedia_log ) {
-		$sql = "SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;";
+		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_log} (
 			log VARCHAR(200) NOT NULL DEFAULT '',
 			ID BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',

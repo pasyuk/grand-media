@@ -6,8 +6,9 @@
 class GmediaProcessor_AddMedia extends GmediaProcessor {
 
 	private static $me = null;
-	public $url;
+
 	public $import = false;
+	public $url;
 
 	/**
 	 * GmediaProcessor_Library constructor.
@@ -18,12 +19,12 @@ class GmediaProcessor_AddMedia extends GmediaProcessor {
 		global $gmCore;
 
 		$this->import = $gmCore->_get( 'import', false, true );
-		$this->url    = add_query_arg( [ 'import' => $this->import ], $this->url );
+		$this->url    = add_query_arg( array( 'import' => $this->import ), $this->url );
 
 	}
 
 	public static function getMe() {
-		if ( self::$me === null ) {
+		if ( null === self::$me ) {
 			self::$me = new GmediaProcessor_AddMedia();
 		}
 
@@ -34,7 +35,7 @@ class GmediaProcessor_AddMedia extends GmediaProcessor {
 		global $gmCore;
 
 		if ( ! $gmCore->caps['gmedia_upload'] ) {
-			wp_die( __( 'You are not allowed to be here', 'grand-media' ) );
+			wp_die( esc_html__( 'You are not allowed to be here', 'grand-media' ) );
 		}
 
 	}

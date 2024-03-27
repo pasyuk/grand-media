@@ -1,7 +1,5 @@
 <?php
-if ( preg_match( '#' . basename( __FILE__ ) . '#', $_SERVER['PHP_SELF'] ) ) {
-	die( 'You are not allowed to call this page directly.' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 /**
  * Adds the meta box to the post or page edit screen
@@ -14,12 +12,12 @@ function gmedia_add_meta_box( $page, $context ) {
 		return;
 	}
 	$gm_options        = get_option( 'gmediaOptions' );
-	$gmedia_post_types = array_merge( [ 'post', 'page' ], (array) $gm_options['gmedia_post_types_support'] );
+	$gmedia_post_types = array_merge( array( 'post', 'page' ), (array) $gm_options['gmedia_post_types_support'] );
 	// Plugins that use custom post types can use this filter to show the Gmedia UI in their post type.
-	$gm_post_types = apply_filters( 'gmedia-post-types', $gmedia_post_types );
+	$gm_post_types = apply_filters( 'gmedia_post_types', $gmedia_post_types );
 
 	if ( function_exists( 'add_meta_box' ) && ! empty( $gm_post_types ) && in_array( $page, $gm_post_types, true ) && 'side' === $context ) {
-		add_filter( 'media_buttons_context', 'gmedia_media_buttons_context', 4 );
+		add_action( 'media_buttons', 'gmedia_media_buttons_context', 4 );
 		add_action( 'admin_enqueue_scripts', 'gmedia_meta_box_load_scripts', 20 );
 		//add_meta_box('gmedia-MetaBox', __('Gmedia Gallery MetaBox', 'grand-media'), 'gmedia_post_metabox', $page, 'side', 'low');
 		add_action( 'admin_footer', 'gmedia_post_modal_tpl' );
@@ -34,28 +32,23 @@ add_action( 'do_meta_boxes', 'gmedia_add_meta_box', 20, 2 );
 add_action( 'save_post', 'gmedia_related_post_metabox_save', 10, 2 );
 
 /**
- * @param $context
- *
- * @return string
+ * @return void
  */
-function gmedia_media_buttons_context( $context ) {
-	$button = '
+function gmedia_media_buttons_context() {
+	?>
 	<div style="display:inline-block;">
-	    <a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url(' . plugins_url( GMEDIA_FOLDER . '/admin/assets/img/gm-icon.png' ) . ') no-repeat top left;"></span> ' . __( 'Gmedia', 'grand-media' ) . '</a>
-	</div>';
-
-	return $context . $button;
+		<a id="gmedia-modal" title="Gmedia Galleries" class="gmedia_button button" href="#gmedia"><span class="wp-media-buttons-icon" style="background: url('<?php echo esc_url( plugins_url( 'admin/assets/img/gm-icon.png', dirname( __FILE__ ) ) ); ?>') no-repeat top left;"></span> <?php esc_html_e( 'Gmedia', 'grand-media' ); ?></a>
+	</div>
+	<?php
 }
 
 /**
  * @param $hook
  */
 function gmedia_meta_box_load_scripts( $hook ) {
-	if ( ( in_array( $hook, [ 'post.php', 'edit.php' ], true ) && isset( $_GET['post'] ) && isset( $_GET['action'] ) && $_GET['action'] === 'edit' ) || $hook === 'post-new.php' ) {
-		//wp_enqueue_style('wp-jquery-ui-dialog');
-		wp_enqueue_style( 'gmedia-meta-box', plugins_url( GMEDIA_FOLDER ) . '/admin/assets/css/gmedia.metabox.css', [], '1.0.0' );
-		//wp_enqueue_script('gmedia-meta-box', plugins_url(GMEDIA_FOLDER) . '/admin/assets/js/gmedia.metabox.js', array('jquery','jquery-ui-dialog','gmedia-global-backend'), '1.4.2', true);
-		wp_enqueue_script( 'gmedia-meta-box', plugins_url( GMEDIA_FOLDER ) . '/admin/assets/js/gmedia.metabox.js', [ 'jquery', 'gmedia-global-backend' ], '1.4.3', true );
+	if ( ( in_array( $hook, array( 'post.php', 'edit.php' ), true ) && isset( $_GET['post'] ) && isset( $_GET['action'] ) && 'edit' === $_GET['action'] ) || 'post-new.php' === $hook ) {
+		wp_enqueue_style( 'gmedia-meta-box', plugins_url( 'admin/assets/css/gmedia.metabox.css', dirname( __FILE__ ) ), array(), '1.0.0' );
+		wp_enqueue_script( 'gmedia-meta-box', plugins_url( 'admin/assets/js/gmedia.metabox.js', dirname( __FILE__ ) ), array( 'jquery', 'gmedia-global-backend' ), '1.4.3', true );
 	}
 }
 
@@ -69,41 +62,28 @@ function gmedia_post_modal_tpl() {
 
 				<div class="media-modal-content">
 					<div class="media-frame wp-core-ui hide-router hide-toolbar">
-						<div class="media-frame-title"><h1><?php _e( 'Gmedia Collections', 'grand-media' ); ?></h1></div>
+						<div class="media-frame-title"><h1><?php esc_html_e( 'Gmedia Collections', 'grand-media' ); ?></h1></div>
 						<div class="media-frame-menu">
 							<div class="media-menu">
-								<a id="gmedia-modal-terms" class="media-menu-item active" target="gmedia_frame" href="<?php echo esc_url( add_query_arg( [
-									'post_id'    => $post->ID,
-									'tab'        => 'gmedia_terms',
-									'chromeless' => true,
-								], admin_url( 'media-upload.php' ) ) ); ?>"><?php _e( 'Gmedia Collections', 'grand-media' ); ?></a>
-								<a id="gmedia-modal-library" class="media-menu-item" target="gmedia_frame" href="<?php echo esc_url( add_query_arg( [
-									'post_id'    => $post->ID,
-									'tab'        => 'gmedia_library',
-									'chromeless' => true,
-								], admin_url( 'media-upload.php' ) ) ); ?>"><?php _e( 'Gmedia Library', 'grand-media' ); ?></a>
-								<a id="gmedia-modal-galleries" class="media-menu-item" target="gmedia_frame" href="<?php echo esc_url( add_query_arg( [
-									'post_id'    => $post->ID,
-									'tab'        => 'gmedia_galleries',
-									'chromeless' => true,
-								], admin_url( 'media-upload.php' ) ) ); ?>"><?php _e( 'Gmedia Galleries', 'grand-media' ); ?></a>
+								<a id="gmedia-modal-terms" class="media-menu-item active" target="gmedia_frame"
+									href="<?php echo esc_url( add_query_arg( array( 'post_id' => $post->ID, 'tab' => 'gmedia_terms', 'chromeless' => true ), admin_url( 'media-upload.php' ) ) ); ?>">
+									<?php esc_html_e( 'Gmedia Collections', 'grand-media' ); ?></a>
+								<a id="gmedia-modal-library" class="media-menu-item" target="gmedia_frame"
+									href="<?php echo esc_url( add_query_arg( array( 'post_id' => $post->ID, 'tab' => 'gmedia_library', 'chromeless' => true ), admin_url( 'media-upload.php' ) ) ); ?>">
+									<?php esc_html_e( 'Gmedia Library', 'grand-media' ); ?></a>
+								<a id="gmedia-modal-galleries" class="media-menu-item" target="gmedia_frame"
+									href="<?php echo esc_url( add_query_arg( array( 'post_id' => $post->ID, 'tab' => 'gmedia_galleries', 'chromeless' => true ), admin_url( 'media-upload.php' ) ) ); ?>">
+									<?php esc_html_e( 'Gmedia Galleries', 'grand-media' ); ?></a>
 								<?php if ( current_user_can( 'gmedia_upload' ) ) { ?>
-									<a id="gmedia-modal-upload" class="media-menu-item" target="gmedia_frame" href="<?php echo esc_url( add_query_arg( [
-										'post_id'    => $post->ID,
-										'tab'        => 'gmedia_library',
-										'action'     => 'upload',
-										'chromeless' => true,
-									], admin_url( 'media-upload.php' ) ) ); ?>"><?php _e( 'Gmedia Upload', 'grand-media' ); ?></a>
+									<a id="gmedia-modal-upload" class="media-menu-item" target="gmedia_frame"
+										href="<?php echo esc_url( add_query_arg( array( 'post_id' => $post->ID, 'tab' => 'gmedia_library', 'action' => 'upload', 'chromeless' => true ), admin_url( 'media-upload.php' ) ) ); ?>">
+										<?php esc_html_e( 'Gmedia Upload', 'grand-media' ); ?></a>
 								<?php } ?>
 							</div>
 						</div>
 						<div class="media-frame-content">
 							<div class="media-iframe">
-								<iframe name="gmedia_frame" src="<?php echo esc_url( add_query_arg( [
-									'post_id'    => $post->ID,
-									'tab'        => 'gmedia_terms',
-									'chromeless' => true,
-								], admin_url( 'media-upload.php' ) ) ); ?>"></iframe>
+								<iframe name="gmedia_frame" src="<?php echo esc_url( add_query_arg( array( 'post_id' => $post->ID, 'tab' => 'gmedia_terms', 'chromeless' => true ), admin_url( 'media-upload.php' ) ) ); ?>"></iframe>
 							</div>
 						</div>
 					</div>
@@ -125,7 +105,7 @@ function gmedia_post_modal_tpl() {
 
 function gmedia_tinymce_plugin( $plugin_array ) {
 
-$plugin_array['gmedia'] = plugins_url( GMEDIA_FOLDER ) . '/admin/assets/js/gmedia.tinymce.js';
+$plugin_array['gmedia'] = plugins_url( 'admin/assets/js/gmedia.tinymce.js', dirname( __FILE__ ) );
 
 return $plugin_array;
 }
@@ -143,16 +123,16 @@ function gmedia_related_post_metabox( $post ) {
 	?>
 	<div id="gmedia-wraper">
 		<div class="form-group">
-			<label><?php _e( 'Show Related Gmedia based on tags', 'grand-media' ) ?>:</label>
+			<label><?php esc_html_e( 'Show Related Gmedia based on tags', 'grand-media' ); ?>:</label>
 			<select name="_related_gmedia" class="form-control input-sm">
-				<option value="" <?php selected( $related, '' ); ?>><?php _e( 'Global Setting', 'grand-media' ); ?></option>
-				<option value="1" <?php selected( $related, '1' ); ?>><?php _e( 'Enabled', 'grand-media' ); ?></option>
-				<option value="0" <?php selected( $related, '0' ); ?>><?php _e( 'Disabled', 'grand-media' ); ?></option>
+				<option value="" <?php selected( $related, '' ); ?>><?php esc_html_e( 'Global Setting', 'grand-media' ); ?></option>
+				<option value="1" <?php selected( $related, '1' ); ?>><?php esc_html_e( 'Enabled', 'grand-media' ); ?></option>
+				<option value="0" <?php selected( $related, '0' ); ?>><?php esc_html_e( 'Disabled', 'grand-media' ); ?></option>
 			</select>
 		</div>
 		<div class="form-group">
-			<label><?php _e( 'Limit the quantity of displayed items', 'grand-media' ) ?>:</label>
-			<input type="text" name="_related_gmedia_per_page" value="<?php echo esc_attr( $related_per_page ); ?>" placeholder="<?php _e( 'Leave empty for no limit', 'grand-media' ); ?>" class="form-control input-sm"/>
+			<label><?php esc_html_e( 'Limit the quantity of displayed items', 'grand-media' ); ?>:</label>
+			<input type="text" name="_related_gmedia_per_page" value="<?php echo esc_attr( $related_per_page ); ?>" placeholder="<?php esc_attr_e( 'Leave empty for no limit', 'grand-media' ); ?>" class="form-control input-sm"/>
 		</div>
 	</div>
 	<?php
@@ -199,22 +179,24 @@ function gmedia_post_metabox( $post ) {
 	?>
 	<div id="gmedia-wraper">
 		<div id="gmedia-message">
-			<span class="info-init text-info" style="display: none;"><?php _e( 'Initializing...', 'grand-media' ); ?></span>
-			<span class="info-textarea text-warning" style="display: none;"><?php _e( 'Choose text area first', 'grand-media' ); ?></span>
+			<span class="info-init text-info" style="display: none;"><?php esc_html_e( 'Initializing...', 'grand-media' ); ?></span>
+			<span class="info-textarea text-warning" style="display: none;"><?php esc_html_e( 'Choose text area first', 'grand-media' ); ?></span>
 		</div>
 		<div id="gmedia-source">
 			<div id="gmedia-galleries">
 				<div class="title-bar">
-					<span class="gmedia-galleries-title"><?php _e( 'Gmedia Galleries', 'grand-media' ); ?></span><a title="<?php _e( 'Create Gallery', 'grand-media' ); ?>" class="button button-primary button-small gm-add-button" target="_blank" href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia_Modules' ) ); ?>"><?php _e( 'Create Gallery', 'grand-media' ); ?></a>
+					<span class="gmedia-galleries-title"><?php esc_html_e( 'Gmedia Galleries', 'grand-media' ); ?></span>
+					<a title="<?php esc_attr_e( 'Create Gallery', 'grand-media' ); ?>" class="button button-primary button-small gm-add-button" target="_blank" href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia_Modules' ) ); ?>">
+						<?php esc_html_e( 'Create Gallery', 'grand-media' ); ?></a>
 				</div>
 				<div id="gmedia-galleries-wrap">
 					<ul id="gmedia-galleries-list">
 						<?php
 						$taxonomy = 'gmedia_gallery';
 						if ( $gmCore->caps['gmedia_edit_others_media'] ) {
-							$args = [];
+							$args = array();
 						} else {
-							$args = [ 'global' => $user_ID ];
+							$args = array( 'global' => $user_ID );
 						}
 
 						$gmediaTerms = $gmDB->get_terms( $taxonomy, $args );
@@ -228,47 +210,47 @@ function gmedia_post_metabox( $post ) {
 								}
 
 								/** @var $module array */
-								$module_info = [];
-								/** @noinspection PhpIncludeInspection */
+								$module_info = array();
+								/* @noinspection PhpIncludeInspection */
 								include $module_dir['path'] . '/index.php';
 
 								?>
 								<li class="gmedia-gallery-li" id="gmGallery-<?php echo absint( $item->term_id ); ?>">
 									<p class="gmedia-gallery-title">
-										<span class="gmedia-gallery-preview"><img src="<?php echo esc_url( $module_dir['url'] . '/screenshot.png' ); ?>" alt=""/></span><span><?php echo $item->name; ?></span>
+										<span class="gmedia-gallery-preview"><img src="<?php echo esc_url( $module_dir['url'] . '/screenshot.png' ); ?>" alt=""/></span><span><?php echo esc_html( $item->name ); ?></span>
 									</p>
 
 									<p class="gmedia-gallery-source">
-										<span class="gmedia-gallery-module"><?php echo __( 'module', 'grand-media' ) . ': ' . $module_info['title']; ?></span>
+										<span class="gmedia-gallery-module"><?php echo esc_html( __( 'module', 'grand-media' ) . ': ' . $module_info['title'] ); ?></span>
 									</p>
 
 									<div class="gmedia-insert">
 										<div class="gmedia-remove-button">
-											<img src="<?php echo esc_url( $t ); ?>" alt=""/><?php _e( 'click to remove shortcode', 'grand-media' ); ?>
+											<img src="<?php echo esc_url( $t ); ?>" alt=""/><?php esc_html_e( 'click to remove shortcode', 'grand-media' ); ?>
 											<br/>
 											<small>[gmedia id=<?php echo absint( $item->term_id ); ?>]</small>
 										</div>
 										<div class="gmedia-insert-button">
-											<img src="<?php echo esc_url( $t ); ?>" alt=""/><?php _e( 'click to insert shortcode', 'grand-media' ); ?>
+											<img src="<?php echo esc_url( $t ); ?>" alt=""/><?php esc_html_e( 'click to insert shortcode', 'grand-media' ); ?>
 											<br/>
 											<small>[gmedia id=<?php echo absint( $item->term_id ); ?>]</small>
 										</div>
 									</div>
 									<div class="gmedia-selector"></div>
-									<a href="<?php echo esc_url( admin_url( "admin.php?page=GrandMedia_Galleries&amp;edit_term=" . $item->term_id ) ); ?>"
-										title="Edit Gallery #<?php echo absint( $item->term_id ); ?> in New Window" target="_blank" class="gmedia-gallery-gear"><?php _e( 'edit', 'grand-media' ); ?></a>
+									<a href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia_Galleries&amp;edit_term=' . $item->term_id ) ); ?>"
+										title="Edit Gallery #<?php echo absint( $item->term_id ); ?> in New Window" target="_blank" class="gmedia-gallery-gear"><?php esc_html_e( 'edit', 'grand-media' ); ?></a>
 								</li>
 								<?php
 							}
 						} else {
-							echo '<li class="emptydb">' . __( 'No Galleries.', 'grand-media' ) . ' <a target="_blank" href="' . admin_url( 'admin.php?page=GrandMedia_Modules' ) . '">' . __( 'Create', 'grand-media' ) . '</a></li>';
+							echo '<li class="emptydb">' . esc_html__( 'No Galleries.', 'grand-media' ) . ' <a target="_blank" href="' . esc_url( admin_url( 'admin.php?page=GrandMedia_Modules' ) ) . '">' . esc_html__( 'Create', 'grand-media' ) . '</a></li>';
 						}
 						?>
 					</ul>
 				</div>
 			</div>
 			<div id="gmedia-social">
-				<p><a target="_blank" href="http://wordpress.org/extend/plugins/grand-media/"><?php _e( 'Rate Gmedia at Wordpress.org', 'grand-media' ); ?></a></p>
+				<p><a target="_blank" href="https://wordpress.org/extend/plugins/grand-media/"><?php esc_html_e( 'Rate Gmedia at Wordpress.org', 'grand-media' ); ?></a></p>
 			</div>
 		</div>
 	</div>
@@ -284,7 +266,7 @@ function gmedia_post_metabox( $post ) {
  * @return string html output
  */
 function gmedia_admin_post_thumbnail_html( $content, $post_id = null ) {
-	if ( $post_id === null ) {
+	if ( null === $post_id ) {
 		global $post;
 
 		if ( ! is_object( $post ) ) {

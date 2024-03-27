@@ -1,26 +1,29 @@
 <?php
-// don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 /**
  * Module Settings
+ *
+ * @var $term
+ * @var $term_id
+ * @var $default_options
+ * @var $gallery_settings
+ * @var $gallery_link_default
  */
 global $gmGallery;
 ?>
 <div class="row">
 	<div class="col-lg-5 tabable tabs-left">
-		<ul class="nav nav-tabs" id="galleryTabs">
+		<ul class="flex-column nav nav-tabs small" id="galleryTabs" style="max-width: 180px;">
 			<?php if ( isset( $module_info ) ) { ?>
-				<li class="text-center">
-					<strong><?php echo $module_info['title']; ?></strong><a href="#chooseModuleModal" data-toggle="modal" style="padding:5px 0;"><img src="<?php echo esc_url( $term->module['url'] . '/screenshot.png' ); ?>" alt="<?php echo esc_attr( $module_info['title'] ); ?>" width="100" style="height:auto;"/></a>
+				<li class="d-flex flex-column text-center">
+					<strong><?php echo esc_html( $module_info['title'] ); ?></strong><a href="#chooseModuleModal" data-bs-toggle="modal" style="padding:5px 0;"><img src="<?php echo esc_url( $term->module['url'] . '/screenshot.png' ); ?>" alt="<?php echo esc_attr( $module_info['title'] ); ?>" width="100" style="height:auto;"/></a>
 				</li>
 			<?php } else { ?>
-				<li class="text-center"><strong><?php echo $term->module['name']; ?></strong>
+				<li class="text-center"><strong><?php echo esc_html( $term->module['name'] ); ?></strong>
 
-					<p><?php _e( 'This module is broken or outdated. Please, go to Modules page and update/install module or choose another one for this gallery', 'grand-media' ); ?></p>
-					<a href="#chooseModuleModal" data-toggle="modal" style="padding:5px 0;"><img src="<?php echo esc_url( $term->module['url'] . '/screenshot.png' ); ?>" alt="<?php echo esc_attr( $term->module['name'] ); ?>" width="100" style="height:auto;"/></a>
+					<p><?php esc_html_e( 'This module is broken or outdated. Please, go to Modules page and update/install module or choose another one for this gallery', 'grand-media' ); ?></p>
+					<a href="#chooseModuleModal" data-bs-toggle="modal" style="padding:5px 0;"><img src="<?php echo esc_url( $term->module['url'] . '/screenshot.png' ); ?>" alt="<?php echo esc_attr( $term->module['name'] ); ?>" width="100" style="height:auto;"/></a>
 				</li>
 			<?php } ?>
 			<?php
@@ -40,16 +43,17 @@ global $gmGallery;
 
 	</div>
 	<div class="col-lg-7">
-		<?php if ( $term_id || isset( $preset_module ) ) {
+		<?php
+		if ( $term_id || isset( $preset_module ) ) {
 			$bgcolor                    = empty( $gmGallery->options['preview_bgcolor'] ) ? 'ffffff' : $gmGallery->options['preview_bgcolor'];
 			$params['is_admin_preview'] = 1;
 			?>
 			<div class="clearfix">
-				<div class="form-group pull-right" style="margin:-10px 0 5px 0;"><input type="text" data-type="color" class="form-control input-sm" id="preview_color" name="preview_bgcolor" value="<?php echo esc_attr( $bgcolor ); ?>" placeholder="ffffff" size="7"/></div>
-				<b><?php _e( 'Gallery Preview:' ); ?></b>
+				<div class="form-group float-end" style="margin:-10px 0 5px 0;"><input type="text" data-type="color" class="form-control form-control-sm input-sm pt-0 pb-0" id="preview_color" name="preview_bgcolor" value="<?php echo esc_attr( $bgcolor ); ?>" placeholder="ffffff" size="7"/></div>
+				<b><?php esc_html_e( 'Gallery Preview:' ); ?></b>
 			</div>
 			<div class="gallery_preview">
-				<iframe id="gallery_preview" style="background-color:<?php echo "#$bgcolor"; ?>;padding:5px;" name="gallery_preview" src="<?php echo esc_url( add_query_arg( $params, set_url_scheme( $gallery_link_default, 'admin' ) ) ); ?>"></iframe>
+				<iframe id="gallery_preview" style="background-color:<?php echo esc_attr( "#$bgcolor" ); ?>;padding:5px;" name="gallery_preview" src="<?php echo esc_url( add_query_arg( $params, set_url_scheme( $gallery_link_default, 'admin' ) ) ); ?>"></iframe>
 			</div>
 		<?php } ?>
 	</div>
@@ -60,16 +64,15 @@ global $gmGallery;
 		if (hash) {
 			$('#galleryTabs a').eq(hash.replace('#tab-', '')).tab('show');
 		}
-		$('.gallery_preview').resizable();
 		$('#gmedia-edit-term').on('submit', function(e) {
 			if ($('#build_query_field').val() === '') {
-				var conf_txt = "<?php _e( "Warning: Query Args. field is empty! Show in gallery all files from Gmedia Library?" ) ?>";
+				var conf_txt = "<?php esc_attr_e( 'Warning: Query Args. field is empty! Show in gallery all files from Gmedia Library?', 'grand-media' ); ?>";
 				if (!GmediaFunction.confirm(conf_txt)) {
 					e.preventDefault();
 					return false;
 				}
 			}
-			$(this).attr('action', $(this).attr('action') + '#tab-' + $('#galleryTabs li.active').index());
+			$(this).attr('action', $(this).attr('action') + '#tab-' + $('#galleryTabs a.active').parent().index());
 		});
 
 		var main = $('#gallery_options_block');

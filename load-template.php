@@ -10,22 +10,22 @@ if ( ! defined( 'ABSPATH' ) ) {
 global $gmedia, $gmedia_id, $gmedia_type, $gmedia_module, $gmedia_shortcode_content, $gmedia_share_img;
 
 $gmedia_hashid = urldecode( $wp->query_vars[ $endpoint ] );
-$type          = isset( $wp->query_vars['t'] ) ? $wp->query_vars['t'] : 'g';
+$gm_type       = isset( $wp->query_vars['t'] ) ? $wp->query_vars['t'] : 'g';
 
-$template = [
+$gm_template = array(
 	'g' => 'gallery',
 	'a' => 'album',
 	't' => 'tag',
 	's' => 'single',
 	'k' => 'category',
 	'u' => 'author',
-];
-if ( ! isset( $template[ $type ] ) ) {
+);
+if ( ! isset( $gm_template[ $gm_type ] ) ) {
 	locate_template( '404', true );
 	exit();
 }
 
-$gmedia_type = $template[ $type ];
+$gmedia_type = $gm_template[ $gm_type ];
 $gmedia_id   = gmedia_hash_id_decode( $gmedia_hashid, $gmedia_type );
 if ( empty( $gmedia_id ) ) {
 	locate_template( '404', true );
@@ -70,31 +70,31 @@ if ( ! $gmedia_module ) {
 }
 
 $module = $gmCore->get_module_path( $gmedia_module );
-/** @noinspection PhpIncludeInspection */
+/* @noinspection PhpIncludeInspection */
 require_once GMEDIA_ABSPATH . 'template/functions.php';
 
-if ( is_file( $module['path'] . "/template/functions.php" ) ) {
-	/** @noinspection PhpIncludeInspection */
-	include_once $module['path'] . "/template/functions.php";
+if ( is_file( $module['path'] . '/template/functions.php' ) ) {
+	/* @noinspection PhpIncludeInspection */
+	include_once $module['path'] . '/template/functions.php';
 }
 
 global $posts;
-$posts = [];
+$posts = array();
 
 if ( is_file( $module['path'] . "/template/{$gmedia_type}.php" ) ) {
-	/** @noinspection PhpIncludeInspection */
+	/* @noinspection PhpIncludeInspection */
 	require_once $module['path'] . "/template/{$gmedia_type}.php";
-} elseif ( in_array( $gmedia_type, [ 'album', 'tag', 'category' ], true ) && is_file( $module['path'] . "/template/gallery.php" ) ) {
-	/** @noinspection PhpIncludeInspection */
-	require_once $module['path'] . "/template/gallery.php";
+} elseif ( in_array( $gmedia_type, array( 'album', 'tag', 'category' ), true ) && is_file( $module['path'] . '/template/gallery.php' ) ) {
+	/* @noinspection PhpIncludeInspection */
+	require_once $module['path'] . '/template/gallery.php';
 } else {
 	/* only for default template */
 	add_action( 'gmedia_head', 'gmedia_default_template_styles' );
 	if ( is_file( GMEDIA_ABSPATH . "template/{$gmedia_type}.php" ) ) {
-		/** @noinspection PhpIncludeInspection */
+		/* @noinspection PhpIncludeInspection */
 		require_once GMEDIA_ABSPATH . "template/{$gmedia_type}.php";
 	} else {
-		/** @noinspection PhpIncludeInspection */
-		require_once GMEDIA_ABSPATH . "template/gallery.php";
+		/* @noinspection PhpIncludeInspection */
+		require_once GMEDIA_ABSPATH . 'template/gallery.php';
 	}
 }

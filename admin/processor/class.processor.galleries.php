@@ -6,10 +6,12 @@
 class GmediaProcessor_Galleries extends GmediaProcessor {
 
 	public static $cookie_key = false;
+
 	private static $me = null;
+
 	public $taxonomy;
-	public $selected_items = [];
-	public $query_args = [];
+	public $selected_items = array();
+	public $query_args     = array();
 
 	/**
 	 * GmediaProcessor_Library constructor.
@@ -23,7 +25,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 	}
 
 	public static function getMe() {
-		if ( self::$me === null ) {
+		if ( null === self::$me ) {
 			self::$me = new GmediaProcessor_Galleries();
 		}
 
@@ -34,11 +36,11 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 		global $user_ID, $gmCore, $gmDB, $gmGallery;
 
 		if ( ! $gmCore->caps['gmedia_library'] ) {
-			wp_die( __( 'You are not allowed to be here', 'grand-media' ) );
+			wp_die( esc_html__( 'You are not allowed to be here', 'grand-media' ) );
 		}
 
 		if ( ! $gmCore->caps['gmedia_gallery_manage'] ) {
-			wp_die( __( 'You are not allowed to manage gmedia galleries', 'grand-media' ) );
+			wp_die( esc_html__( 'You are not allowed to manage gmedia galleries', 'grand-media' ) );
 		}
 
 		include_once GMEDIA_ABSPATH . 'admin/pages/galleries/functions.php';
@@ -47,8 +49,8 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 
 		if ( isset( $_POST['select_author'] ) ) {
 			$authors  = $gmCore->_post( 'author_ids' );
-			$location = $gmCore->get_admin_url( [ 'author' => (int) $authors ] );
-			wp_redirect( $location );
+			$location = $gmCore->get_admin_url( array( 'author' => (int) $authors ) );
+			wp_safe_redirect( $location );
 			exit;
 		}
 		if ( isset( $_POST['gmedia_gallery_module'] ) && '' !== $_POST['gmedia_gallery_module'] ) {
@@ -57,32 +59,34 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 			$ids            = $gmCore->_get( 'ids', 'selected' );
 			$selected_items = ( 'selected' === $ids ) ? $this->selected_items : wp_parse_id_list( $ids );
 			if ( ! $gmCore->caps['gmedia_delete_others_media'] ) {
-				$_selected_items = $gmDB->get_terms( $taxonomy, [ 'fields' => 'ids', 'global' => $user_ID, 'include' => $selected_items ] );
+				$_selected_items = $gmDB->get_terms( $taxonomy, array( 'fields' => 'ids', 'global' => $user_ID, 'include' => $selected_items ) );
 				if ( count( $_selected_items ) < count( $selected_items ) ) {
-					$this->error[] = __( 'You are not allowed to delete others media', 'grand-media' );
+					$this->error[] = esc_html__( 'You are not allowed to delete others media', 'grand-media' );
 				}
 				$selected_items = $_selected_items;
 			}
-			if ( ( $count = count( $selected_items ) ) ) {
-				$preset       = $gmCore->getModulePreset( $_POST['gmedia_gallery_module'] );
-				$gallery_meta = [
+			$count = count( $selected_items );
+			if ( $count ) {
+				$preset       = $gmCore->getModulePreset( $gmCore->_post( 'gmedia_gallery_module' ) );
+				$gallery_meta = array(
 					'_edited'   => gmdate( 'Y-m-d H:i:s' ),
 					'_module'   => $preset['module'],
 					'_settings' => $preset['settings'],
-				];
+				);
 				foreach ( $selected_items as $term_id ) {
 					foreach ( $gallery_meta as $key => $value ) {
 						$gmDB->update_metadata( 'gmedia_term', $term_id, $key, $value );
 					}
 				}
-				$this->msg[] = sprintf( __( 'Preset "%s" of module "%s" was applied to %d galleries', 'grand-media' ), esc_html( $preset['name'] ), esc_html( $preset['module'] ), $count );
+				// translators: 1 - preset name; 2 - module name; 3 - number.
+				$this->msg[] = sprintf( esc_html__( 'Preset "%1$s" of module "%2$s" was applied to %3$d galleries', 'grand-media' ), esc_html( $preset['name'] ), esc_html( $preset['module'] ), (int) $count );
 			}
 		}
 		if ( isset( $_POST['gmedia_gallery_save'] ) ) {
 			check_admin_referer( 'GmediaGallery' );
 
 			if ( isset( $_POST['preview_bgcolor'] ) ) {
-				$gmGallery->options['preview_bgcolor'] = $gmCore->sanitize_hex_color( $_POST['preview_bgcolor'], 'ffffff' );
+				$gmGallery->options['preview_bgcolor'] = $gmCore->sanitize_hex_color( $gmCore->_post( 'preview_bgcolor' ), 'ffffff' );
 				update_option( 'gmediaOptions', $gmGallery->options );
 			}
 
@@ -90,35 +94,37 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 			do {
 				$term = $gmCore->_post( 'term' );
 				if ( ( (int) $term['global'] !== $user_ID ) && ! $gmCore->caps['gmedia_edit_others_media'] ) {
-					$this->error[] = __( 'You are not allowed to edit others media', 'grand-media' );
+					$this->error[] = esc_html__( 'You are not allowed to edit others media', 'grand-media' );
 					break;
 				}
 				$term['name'] = trim( $term['name'] );
 				if ( empty( $term['name'] ) ) {
-					$this->error[] = __( 'Gallery Name is not specified', 'grand-media' );
+					$this->error[] = esc_html__( 'Gallery Name is not specified', 'grand-media' );
 					break;
 				}
 				if ( $gmCore->is_digit( $term['name'] ) ) {
-					$this->error[] = __( "Gallery name can't be only digits", 'grand-media' );
+					$this->error[] = esc_html__( "Gallery name can't be only digits", 'grand-media' );
 					break;
 				}
 				if ( empty( $term['module'] ) ) {
-					$this->error[] = __( 'Something goes wrong... Choose module, please', 'grand-media' );
+					$this->error[] = esc_html__( 'Something goes wrong... Choose module, please', 'grand-media' );
 					break;
 				}
 				$taxonomy = 'gmedia_gallery';
 				if ( $edit_gallery && ! $gmDB->term_exists( $edit_gallery ) ) {
-					$this->error[] = __( 'A term with the id provided does not exists', 'grand-media' );
+					$this->error[] = esc_html__( 'A term with the id provided does not exists', 'grand-media' );
 					$edit_gallery  = false;
 				}
-				if ( ( $term_id = $gmDB->term_exists( $term['name'], $taxonomy, $term['global'] ) ) ) {
+				$term_id = $gmDB->term_exists( $term['name'], $taxonomy, $term['global'] );
+				if ( $term_id ) {
 					if ( $term_id !== $edit_gallery ) {
-						$this->error[] = __( 'A term with the name provided already exists', 'grand-media' );
+						$this->error[] = esc_html__( 'A term with the name provided already exists', 'grand-media' );
 						break;
 					}
 				}
-				if ( ( $meta = $gmCore->_post( 'meta' ) ) ) {
-					$term = array_merge_recursive( [ 'meta' => $meta ], $term );
+				$meta = $gmCore->_post( 'meta' );
+				if ( $meta ) {
+					$term = array_merge_recursive( array( 'meta' => $meta ), $term );
 				}
 				if ( $edit_gallery ) {
 					$term_id = $gmDB->update_term( $edit_gallery, $term );
@@ -130,14 +136,15 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					break;
 				}
 
-				$module_settings = $gmCore->_post( 'module', [] );
+				$module_settings = $gmCore->_post( 'module', array() );
 				$module_path     = $gmCore->get_module_path( $term['module'] );
-				$default_options = [];
+				$default_options = array();
 				if ( is_file( $module_path['path'] . '/settings.php' ) ) {
 					/** @noinspection PhpIncludeInspection */
 					include $module_path['path'] . '/settings.php';
 				} else {
-					$this->error[] = sprintf( __( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
+					// translators: module name.
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
 					break;
 				}
 				foreach ( $module_settings as &$setting ) {
@@ -147,37 +154,40 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 				}
 				$module_settings = $gmCore->array_replace_recursive( $default_options, $module_settings );
 				wp_parse_str( $term['query'], $_query );
-				$gallery_meta = [
+				$gallery_meta = array(
 					'_edited'   => gmdate( 'Y-m-d H:i:s' ),
 					'_query'    => $_query,
 					'_module'   => $term['module'],
-					'_settings' => [ $term['module'] => $module_settings ],
-				];
+					'_settings' => array( $term['module'] => $module_settings ),
+				);
 				foreach ( $gallery_meta as $key => $value ) {
 					$gmDB->update_metadata( 'gmedia_term', $term_id, $key, $value );
 				}
 				if ( $edit_gallery ) {
-					$this->msg[] = sprintf( __( 'Gallery #%d successfully saved', 'grand-media' ), $term_id );
+					// translators: number.
+					$this->msg[] = sprintf( esc_html__( 'Gallery #%d successfully saved', 'grand-media' ), (int) $term_id );
 				} else {
-					$location = add_query_arg( [ 'edit_term' => $term_id, 'message' => 'save' ], $this->url );
+					$location = add_query_arg( array( 'edit_term' => $term_id, 'message' => 'save' ), $this->url );
 					set_transient( 'gmedia_new_gallery_id', $term_id, 60 );
-					wp_redirect( $location );
+					wp_safe_redirect( $location );
 					exit;
 				}
 			} while ( 0 );
 		}
-		if ( ( 'save' === $gmCore->_get( 'message' ) ) && ( $term_id = $gmCore->_get( 'edit_term' ) ) ) {
+		$term_id = $gmCore->_get( 'edit_term' );
+		if ( ( 'save' === $gmCore->_get( 'message' ) ) && $term_id ) {
 			$gmedia_new_gallery_id = get_transient( 'gmedia_new_gallery_id' );
 			if ( false !== $gmedia_new_gallery_id ) {
 				delete_transient( 'gmedia_new_gallery_id' );
-				$this->msg[] = sprintf( __( 'Gallery #%d successfully saved', 'grand-media' ), $term_id );
+				// translators: number.
+				$this->msg[] = sprintf( esc_html__( 'Gallery #%d successfully saved', 'grand-media' ), (int) $term_id );
 			}
 		}
 
 		if ( isset( $_POST['module_preset_restore_original'] ) ) {
 			$preset_id = intval( $gmCore->_post( 'preset_default', 0 ) );
 			$gmDB->delete_term( $preset_id );
-			$this->msg[] = __( 'Original module settings restored. Click "Reset to default" button to save original module settings for gallery', 'grand-media' );
+			$this->msg[] = esc_html__( 'Original module settings restored. Click "Reset to default" button to save original module settings for gallery', 'grand-media' );
 		}
 
 		if ( isset( $_POST['gmedia_gallery_reset'] ) ) {
@@ -185,13 +195,13 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 			$edit_gallery = (int) $gmCore->_get( 'edit_term' );
 			do {
 				if ( ! $gmDB->term_exists( $edit_gallery ) ) {
-					$this->error[] = __( 'A term with the id provided does not exists', 'grand-media' );
+					$this->error[] = esc_html__( 'A term with the id provided does not exists', 'grand-media' );
 					break;
 				}
 				if ( ! $gmCore->caps['gmedia_edit_others_media'] ) {
 					$term = $gmDB->get_term( $edit_gallery );
 					if ( $term->global !== $user_ID ) {
-						$this->error[] = __( 'You are not allowed to edit others media', 'grand-media' );
+						$this->error[] = esc_html__( 'You are not allowed to edit others media', 'grand-media' );
 						break;
 					}
 				}
@@ -205,7 +215,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 				if ( is_file( $module_path['path'] . '/settings.php' ) ) {
 					/** @noinspection PhpIncludeInspection */
 					include $module_path['path'] . '/settings.php';
-					$preset = $gmDB->get_term( '[' . $gallery_module . ']', [ 'taxonomy' => 'gmedia_module', 'global' => '0' ] );
+					$preset = $gmDB->get_term( '[' . $gallery_module . ']', array( 'taxonomy' => 'gmedia_module', 'global' => '0' ) );
 					if ( $preset ) {
 						$default_preset  = maybe_unserialize( $preset->description );
 						$default_options = $gmCore->array_replace_recursive( $default_options, $default_preset );
@@ -216,18 +226,19 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 						$default_options = $gmCore->array_replace_recursive( $default_options, $default_preset );
 					}
 				} else {
-					$this->error[] = sprintf( __( 'Can\'t load data from `%s` module' ), esc_html( $gallery_module ) );
+					// translators: module name.
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $gallery_module ) );
 					break;
 				}
 
-				$gallery_meta = [
+				$gallery_meta = array(
 					'_edited'   => gmdate( 'Y-m-d H:i:s' ),
-					'_settings' => [ $gallery_module => $default_options ],
-				];
+					'_settings' => array( $gallery_module => $default_options ),
+				);
 				foreach ( $gallery_meta as $key => $value ) {
 					$gmDB->update_metadata( 'gmedia_term', $edit_gallery, $key, $value );
 				}
-				$this->msg[] = __( 'Gallery settings are reset', 'grand-media' );
+				$this->msg[] = esc_html__( 'Gallery settings are reset', 'grand-media' );
 
 			} while ( 0 );
 
@@ -238,17 +249,18 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 			do {
 				$term = $gmCore->_post( 'term' );
 				if ( empty( $term['module'] ) ) {
-					$this->error[] = __( 'Something goes wrong... Choose module, please', 'grand-media' );
+					$this->error[] = esc_html__( 'Something goes wrong... Choose module, please', 'grand-media' );
 					break;
 				}
-				$module_settings = $gmCore->_post( 'module', [] );
+				$module_settings = $gmCore->_post( 'module', array() );
 				$module_path     = $gmCore->get_module_path( $term['module'] );
-				$default_options = [];
+				$default_options = array();
 				if ( is_file( $module_path['path'] . '/settings.php' ) ) {
 					/** @noinspection PhpIncludeInspection */
 					include $module_path['path'] . '/settings.php';
 				} else {
-					$this->error[] = sprintf( __( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
+					// translators: module name.
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
 					break;
 				}
 				$module_settings = $gmCore->array_replace_recursive( $default_options, $module_settings );
@@ -263,7 +275,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					}
 					$preset_name = '[' . $term['module'] . '] ' . $preset_name;
 				}
-				$args                = [];
+				$args                = array();
 				$args['description'] = $module_settings;
 				$args['status']      = $term['module'];
 				$args['global']      = $user_ID;
@@ -282,9 +294,9 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					$this->error[] = $term_id->get_error_message();
 					break;
 				} else {
-					$this->msg[] = sprintf( __( 'Preset `%s` successfully saved', 'grand-media' ), esc_html( $preset_name ) );
+					// translators: preset name.
+					$this->msg[] = sprintf( esc_html__( 'Preset `%s` successfully saved', 'grand-media' ), esc_html( $preset_name ) );
 				}
-
 			} while ( 0 );
 		}
 
@@ -295,17 +307,19 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 			$ids            = $gmCore->_get( 'ids', 'selected' );
 			$selected_items = ( 'selected' === $ids ) ? $this->selected_items : wp_parse_id_list( $ids );
 			if ( ! $gmCore->caps['gmedia_delete_others_media'] ) {
-				$_selected_items = $gmDB->get_terms( $taxonomy, [ 'fields' => 'ids', 'global' => $user_ID, 'include' => $selected_items ] );
+				$_selected_items = $gmDB->get_terms( $taxonomy, array( 'fields' => 'ids', 'global' => $user_ID, 'include' => $selected_items ) );
 				if ( count( $_selected_items ) < count( $selected_items ) ) {
-					$this->error[] = __( 'You are not allowed to delete others media', 'grand-media' );
+					$this->error[] = esc_html__( 'You are not allowed to delete others media', 'grand-media' );
 				}
 				$selected_items = $_selected_items;
 			}
-			if ( ( $count = count( $selected_items ) ) ) {
+			$count = count( $selected_items );
+			if ( $count ) {
 				foreach ( $selected_items as $item ) {
 					$delete = $gmDB->delete_term( $item );
 					if ( ! $delete ) {
-						$this->error[] = sprintf( __( 'Error while delete gallery #%d', 'grand-media' ), $item );
+						// translators: number.
+						$this->error[] = sprintf( esc_html__( 'Error while delete gallery #%d', 'grand-media' ), (int) $item );
 						$count --;
 					} elseif ( is_wp_error( $delete ) ) {
 						$this->error[] = $delete->get_error_message();
@@ -313,11 +327,12 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					}
 				}
 				if ( $count ) {
-					$this->msg[] = sprintf( __( '%d item(s) deleted successfully', 'grand-media' ), $count );
+					// translators: number.
+					$this->msg[] = sprintf( esc_html__( '%d item(s) deleted successfully', 'grand-media' ), (int) $count );
 				}
 				setcookie( self::$cookie_key, '', time() - 3600 );
 				unset( $_COOKIE[ self::$cookie_key ] );
-				$this->selected_items = [];
+				$this->selected_items = array();
 			}
 			if ( ! empty( $this->msg ) ) {
 				set_transient( 'gmedia_action_msg', $this->msg, 30 );
@@ -327,16 +342,16 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 			}
 		}
 		if ( $do_gmedia_terms ) {
-			$_wpnonce = [];
+			$_wpnonce = array();
 			foreach ( $_GET as $key => $value ) {
 				if ( strpos( $key, '_wpnonce' ) !== false ) {
 					$_wpnonce[ $key ] = $value;
 				}
 			}
-			$remove_args = array_merge( [ 'do_gmedia_terms', 'ids' ], $_wpnonce );
+			$remove_args = array_merge( array( 'do_gmedia_terms', 'ids' ), $_wpnonce );
 			$location    = remove_query_arg( $remove_args );
 			$location    = add_query_arg( 'did_gmedia_terms', $do_gmedia_terms, $location );
-			wp_redirect( $location );
+			wp_safe_redirect( $location );
 			exit;
 		}
 		if ( $gmCore->_get( 'did_gmedia_terms' ) ) {

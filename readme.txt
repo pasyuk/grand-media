@@ -2,9 +2,10 @@
 Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: best gallery plugin, gallery, image gallery, photo gallery, wordpress gallery plugin
-Requires at least: 4.2
-Tested up to: 5.9
-Stable tag: trunk
+Requires at least: 5.3.0
+Tested up to: 6.5
+Requires PHP: 5.4
+Stable tag: /trunk
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -101,6 +102,11 @@ Gmedia Gallery is the result of hundreds of hours of working to bring you the ul
 
 **[Translations](https://translate.wordpress.org/projects/wp-plugins/grand-media)**
 
+= PS =
+
+Proud to be ukrainian. Live in Mykolaiv, Ukraine. #NoWar #fckptn
+
+
 == Installation ==
 
 1. To install Gmedia plugin upload `grand-media` folder to the `/wp-content/plugins/` directory or install Gmedia Gallery via WP Dashboard
@@ -132,6 +138,49 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.23.0 =
+* Compatibility with latest WordPress versions
+* Fix some gallery modules not working
+* Fix PHP warnings
+* Special Thanks to supporters
+
+= v1.22.0 =
+* Compatibility with latest WordPress versions
+* Fix upload and import files
+* Fix editing files data
+* Fix image editor
+* Fix some minor issues
+* Fix some security issues
+* Fix some PHP notices and warnings
+
+= v1.21.9 =
+* Fix gallery query saving
+* Improve admin styling
+
+= v1.21.8 =
+* Fix saving title with ampersand
+* Fix display some modues in preview
+* Improve admin styling
+
+= v1.21.7 =
+* Fix media and shortcode insert for Classic Editor
+
+= v1.21.6 =
+* Fix editing gmedia data
+* Fix saving terms data
+* Fix count items in terms
+
+= v1.21.3 =
+* Calling scripts localy from the plugin
+* Including libraries already in core
+* Removed code calling core loading files directly
+* Sanitize input data
+* Escape variables when echo
+* Updated out of date libraries
+* Removed HEREDOC or NOWDOC syntax
+* Fix calling file locations poorly
+* Fix Image Editor
 
 = v1.20.0 =
 * Fixed XSS security issue

@@ -1,21 +1,19 @@
 <?php
-if ( preg_match( '#' . basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) . '#', $_SERVER['PHP_SELF'] ) ) {
-	die( 'You are not allowed to call this page directly.' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
-/** *********************** **/
-/** Shortcodes Declarations **/
-/** *********************** **/
+/** *********************** */
+/** Shortcodes Declarations */
+/** *********************** */
 add_shortcode( 'gmedia', 'gmedia_shortcode' );
 add_shortcode( 'gm', 'gmedia_shortcode' );
 
 //add_filter('the_content', 'do_shortcode');
 add_filter( 'the_content', 'get_gmedia_unformatted_shortcode_blocks', 4 );
 
-/** ******************************* **/
-/** Shortcodes Functions and Markup **/
-/** ******************************* **/
-$gmedia_shortcode_instance = [];
+/** ******************************* */
+/** Shortcodes Functions and Markup */
+/** ******************************* */
+$gmedia_shortcode_instance = array();
 
 /**
  * @param        $atts
@@ -58,11 +56,11 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 
 		return $out;
 	} else {
-		$gmedia_shortcode_instance[ $atts_hash ] = [
+		$gmedia_shortcode_instance[ $atts_hash ] = array(
 			'shortcode' => '',
 			'id'        => '',
 			'copy'      => 0,
-		];
+		);
 	}
 	$shortcode_raw = ( isset( $gmGallery->options['shortcode_raw'] ) && '1' === $gmGallery->options['shortcode_raw'] );
 	if ( ! isset( $_GET['is_admin_preview'] ) ) {
@@ -71,12 +69,12 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 		$cache_expiration = 0;
 	}
 
-	$query = [];
+	$query = array();
 	if ( ! empty( $atts['query'] ) ) {
 		if ( is_string( $atts['query'] ) ) {
 			$atts['query'] = html_entity_decode( $atts['query'] );
 		}
-		$query = wp_parse_args( $atts['query'], [] );
+		$query = wp_parse_args( $atts['query'], array() );
 	}
 
 	$atts_module = ! empty( $atts['module'] );
@@ -94,12 +92,12 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 		}
 
 		$taxterm = str_replace( 'gmedia_', '', $term->taxonomy );
-		if ( $taxterm === 'gallery' ) {
+		if ( 'gallery' === $taxterm ) {
 			if ( ! empty( $term->meta['_query'] ) ) {
 				$query = array_merge( $query, $term->meta['_query'] );
 			}
 		} else {
-			$query = array_merge( $query, [ "{$taxterm}__in" => $term->term_id ] );
+			$query = array_merge( $query, array( "{$taxterm}__in" => $term->term_id ) );
 		}
 
 		if ( ! empty( $term->meta['_module'] ) ) {
@@ -116,16 +114,16 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 			$settings = (array) $term->meta['_settings'];
 		}
 	} elseif ( isset( $atts['library'] ) && ( $quick_gallery = wp_parse_id_list( $atts['library'] ) ) ) {
-		$query = array_merge( $query, [ 'gmedia__in' => $quick_gallery ] );
+		$query = array_merge( $query, array( 'gmedia__in' => $quick_gallery ) );
 		if ( ! isset( $query['orderby'] ) ) {
 			$query['orderby'] = 'gmedia__in';
 		}
 	}
 	if ( empty( $term ) ) {
-		$term = (object) [
+		$term = (object) array(
 			'name'        => '',
 			'description' => '',
-		];
+		);
 	}
 	if ( isset( $atts['orderby'] ) ) {
 		$query['orderby'] = $atts['orderby'];
@@ -134,61 +132,62 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 		$query['order'] = $atts['order'];
 	}
 
-	if ( $userid && current_user_can( 'gmedia_gallery_manage' ) && ( $preview_module = $gmCore->_get( 'gmedia_module' ) ) ) {
-		if ( $preview_module !== $_module ) {
+	if ( $userid && current_user_can( 'gmedia_gallery_manage' ) ) {
+		$preview_module = $gmCore->_get( 'gmedia_module' );
+		if ( $preview_module && ( $preview_module !== $_module ) ) {
 			$_module = $preview_module;
 			$preset  = $gmCore->getModulePreset( $_module );
 			if ( $preset['module'] === $_module ) {
 				$settings = $preset['settings'];
 			} else {
-				$settings = [ $_module => [] ];
+				$settings = array( $_module => array() );
 			}
 		}
 	}
 
-	$gallery = [];
+	$gallery = array();
 	if ( ! $id ) {
 		$id = $atts_hash;
 		// Backward compatibility.
-		$gallery = [
+		$gallery = array(
 			'term_id'     => $id,
 			'name'        => __( 'Gallery', 'grand-media' ),
 			'description' => '',
-		];
+		);
 	}
 
 	$module = $gmCore->get_module_path( $_module );
 	if ( ! $module || ! is_file( $module['path'] . '/index.php' ) || ! is_file( $module['path'] . '/settings.php' ) ) {
-		return '<div class="gmedia_gallery gmediaShortcodeError" data-gmid="' . $id . '" data-error="' . $_module . ': folder missed or module broken">' . $shortcode_post_content . '</div>';
+		return '<div class="gmedia_gallery gmediaShortcodeError" data-gmid="' . esc_attr( $id ) . '" data-error="' . esc_attr( $_module ) . ': folder missed or module broken">' . $shortcode_post_content . '</div>';
 	}
 
 	if ( $_module !== $module['name'] ) {
 		$_module  = $module['name'];
-		$settings = [ $_module => [] ];
+		$settings = array( $_module => array() );
 	}
 
 	if ( ! empty( $atts['preset'] ) ) {
 		$preset = $gmDB->get_term( $atts['preset'], 'gmedia_module' );
 		if ( ! empty( $preset ) && ! is_wp_error( $preset ) && ( $module['name'] === $preset->status ) ) {
-			$settings = [ $module['name'] => (array) maybe_unserialize( $preset->description ) ];
+			$settings = array( $module['name'] => (array) maybe_unserialize( $preset->description ) );
 		}
 	}
 
-	$protected_query_args = [ 'status' => [ 'publish' ] ];
+	$protected_query_args = array( 'status' => array( 'publish' ) );
 	if ( $userid ) {
 		$protected_query_args['status'][] = 'private';
 	}
 	$query = array_merge( apply_filters( 'gmedia_shortcode_query', $query, $id ), $protected_query_args );
 
-	$limitation = empty( $gmGallery->options['license_key'] ) && in_array( $_module, [ 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ], true );
-	if ( $limitation && ( empty( $query['limit'] ) || $query['limit'] > 40 ) ) {
-		$query['limit'] = 40;
+	$limitation = empty( $gmGallery->options['license_key'] ) && in_array( $_module, array( 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ), true );
+	if ( $limitation && ( empty( $query['limit'] ) || $query['limit'] > 100 ) ) {
+		$query['limit'] = 100;
 	}
 
 	include $module['path'] . '/index.php';
 	include $module['path'] . '/settings.php';
-	$module['info']    = isset( $module_info ) ? $module_info : [ 'dependencies' => '' ];
-	$module['options'] = isset( $default_options ) ? $default_options : [];
+	$module['info']    = isset( $module_info ) ? $module_info : array( 'dependencies' => '' );
+	$module['options'] = isset( $default_options ) ? $default_options : array();
 
 	$settings = apply_filters( 'gmedia_shortcode_settings', $gmCore->array_diff_keyval_recursive( (array) $settings[ $module['name'] ], $module['options'], false ) );
 
@@ -200,13 +199,14 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 	$gmGallery->shortcode[ $id ]      = compact( 'id', 'query', 'module', 'settings', 'term', 'current_url' );
 
 	$is_bot = false;
-	if ( ! ( $is_mob = wp_is_mobile() ) ) {
+	$is_mob = wp_is_mobile();
+	if ( ! $is_mob ) {
 		$is_bot = $gmCore->is_bot();
 	}
 	$mob_cache_key = $is_mob ? '_mob' : '';
 
 	if ( $cache_expiration ) {
-		$cache_key   = md5( json_encode( $gmGallery->shortcode[ $id ] ) );
+		$cache_key   = md5( wp_json_encode( $gmGallery->shortcode[ $id ] ) );
 		$cache_value = get_transient( 'gm_cache_' . $cache_key );
 		if ( ! $is_bot ) {
 			$cache_value_m = get_transient( 'gm_cache_m_' . $cache_key . $mob_cache_key );
@@ -218,15 +218,16 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 	unset( $settings['customCSS'] );
 
 	if ( empty( $module['info']['branch'] ) ) {
-		$gmedia = [];
+		$gmedia = array();
 		if ( ! empty( $cache_value ) && is_array( $cache_value ) ) {
+			// phpcs:ignore
 			extract( $cache_value, EXTR_OVERWRITE );
 		} else {
-			$query = [ $id => $query ];
+			$query = array( $id => $query );
 			if ( ! empty( $term ) ) {
-				if ( in_array( $_module, [ 'afflux', 'afflux-mod', 'cube', 'flatwall', 'green-style', 'minima', 'optima', 'photo-blog', 'photo-pro', 'slider', 'sphere' ], true ) ) {
+				if ( in_array( $_module, array( 'afflux', 'afflux-mod', 'cube', 'flatwall', 'green-style', 'minima', 'optima', 'photo-blog', 'photo-pro', 'slider', 'sphere' ), true ) ) {
 					add_filter( 'jetpack_photon_skip_image', 'jetpack_photon_skip_gmedia', 10, 3 );
-					$_query = array_merge( $query[ $id ], [ 'album__status' => $protected_query_args['status'] ] );
+					$_query = array_merge( $query[ $id ], array( 'album__status' => $protected_query_args['status'] ) );
 					$gmDB->gmedias_album_stuff( $_query );
 					if ( ! empty( $_query['album__in'] ) && empty( $_query['album__not_in'] ) ) {
 						$album__in = wp_parse_id_list( $_query['album__in'] );
@@ -237,11 +238,11 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 						}
 						foreach ( $album__in as $alb ) {
 							$album = $gmDB->get_term( $alb );
-							if ( empty( $album ) || is_wp_error( $album ) || $album->count === 0 ) {
+							if ( empty( $album ) || is_wp_error( $album ) || 0 === $album->count ) {
 								continue;
 							}
 							$terms[ $alb ]     = $album;
-							$new_query[ $alb ] = array_merge( $_query, [ 'album__in' => $alb ] );
+							$new_query[ $alb ] = array_merge( $_query, array( 'album__in' => $alb ) );
 						}
 						if ( ! empty( $new_query ) ) {
 							$query = $new_query;
@@ -249,40 +250,43 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 					}
 				}
 				if ( empty( $terms ) ) {
-					$terms = [ $id => $term ];
+					if ( empty( $term->term_id ) ) {
+						$term->term_id = $id;
+					}
+					$terms = array( $id => $term );
 				}
 				$gallery = (array) $term;
 			} else {
-				$terms = [ $id => (object) $gallery ];
+				$terms = array( $id => (object) $gallery );
 			}
 
 			foreach ( $query as $term_id => $args ) {
 				if ( empty( $args['orderby'] ) || empty( $args['order'] ) ) {
 					$term_query_order = null;
 					if ( isset( $args['tag__in'] ) && ( ! isset( $args['category__in'] ) && ! isset( $args['album__in'] ) ) ) {
-						$term_query_order = [
+						$term_query_order = array(
 							'orderby' => $gmGallery->options['in_tag_orderby'],
 							'order'   => $gmGallery->options['in_tag_order'],
-						];
+						);
 					}
 					if ( isset( $args['category__in'] ) && ! isset( $args['album__in'] ) ) {
 						$cat_ids = wp_parse_id_list( $args['category__in'] );
 						if ( 1 === count( $cat_ids ) ) {
 							$cat_meta         = $gmDB->get_metadata( 'gmedia_term', $cat_ids[0] );
-							$term_query_order = [
+							$term_query_order = array(
 								'orderby' => ! empty( $cat_meta['_orderby'][0] ) ? $cat_meta['_orderby'][0] : $gmGallery->options['in_category_orderby'],
 								'order'   => ! empty( $cat_meta['_order'][0] ) ? $cat_meta['_order'][0] : $gmGallery->options['in_category_order'],
-							];
+							);
 						}
 					}
 					if ( isset( $args['album__in'] ) ) {
 						$alb_ids = wp_parse_id_list( $args['album__in'] );
 						if ( 1 === count( $alb_ids ) ) {
 							$album_meta       = $gmDB->get_metadata( 'gmedia_term', $alb_ids[0] );
-							$term_query_order = [
+							$term_query_order = array(
 								'orderby' => ! empty( $album_meta['_orderby'][0] ) ? $album_meta['_orderby'][0] : $gmGallery->options['in_album_orderby'],
 								'order'   => ! empty( $album_meta['_order'][0] ) ? $album_meta['_order'][0] : $gmGallery->options['in_album_order'],
-							];
+							);
 						}
 					}
 					if ( $term_query_order ) {
@@ -293,12 +297,12 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 			}
 
 			if ( $cache_expiration ) {
-				set_transient( 'gm_cache_' . $cache_key, [ 'gallery' => $gallery, 'gmedia' => $gmedia, 'terms' => $terms, 'query' => $query ], $cache_expiration );
+				set_transient( 'gm_cache_' . $cache_key, array( 'gallery' => $gallery, 'gmedia' => $gmedia, 'terms' => $terms, 'query' => $query ), $cache_expiration );
 			}
 		}
 
 		if ( 0 === count( $gmedia ) ) {
-			return '<div class="gmedia_gallery gmedia_gallery_empty" data-gmid="' . esc_attr( $id ) . '" data-module="' . $_module . '">' . __( 'Gallery is empty' ) . '<br />' . $shortcode_post_content . '</div>';
+			return '<div class="gmedia_gallery gmedia_gallery_empty" data-gmid="' . esc_attr( $id ) . '" data-module="' . esc_attr( $_module ) . '">' . esc_html__( 'Gallery is empty', 'grand-media' ) . '<br />' . $shortcode_post_content . '</div>';
 		}
 	} else {
 		if ( ! empty( $cache_value ) && is_array( $cache_value ) ) {
@@ -327,10 +331,10 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 
 	$sc_classes = "gmedia_gallery {$_module}_module";
 	if ( $is_bot ) {
-		$sc_classes .= " is_bot";
+		$sc_classes .= ' is_bot';
 	}
 	if ( $is_mob ) {
-		$sc_classes .= " is_mobile";
+		$sc_classes .= ' is_mobile';
 	}
 	if ( ! empty( $atts['class'] ) ) {
 		$sc_classes .= ' ' . esc_attr( $atts['class'] );
@@ -349,22 +353,22 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 		$out = '<div class="' . $sc_classes . '" id="' . esc_attr( $sc_id ) . '" data-gmid="' . esc_attr( $id ) . '" data-module="' . esc_attr( $_module ) . '"' . $sc_styles . '>';
 
 		if (
-			in_array( $_module, [ 'albums-switcher', 'photocluster', 'albumsview' ], true )
+			in_array( $_module, array( 'albums-switcher', 'photocluster', 'albumsview' ), true )
 			&& empty( $query['album__in'] ) && empty( $query['category__in'] ) && empty( $query['tag__in'] )
 		) {
 			$out            = __( 'This Gmedia gallery module require at least one term (album, category or tag) to be chosen in Query Builder.', 'grand-media' );
 			$module_content = '';
 		} else {
 			ob_start();
-			/** @noinspection PhpIncludeInspection */
+			/* @noinspection PhpIncludeInspection */
 			include $module['path'] . '/init.php';
 			$module_content = ob_get_contents();
 			ob_end_clean();
 
-			$matches = [];
+			$matches = array();
 			preg_match_all( '/<img[\s\r\n]+.*?>/is', $module_content, $matches );
-			$search  = [];
-			$replace = [];
+			$search  = array();
+			$replace = array();
 			foreach ( $matches[0] as $img_html ) {
 				// add the noLazy class to the img element.
 				if ( preg_match( '/class=["\']/i', $img_html ) ) {
@@ -372,8 +376,8 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 				} else {
 					$replace_html = preg_replace( '/<img/is', '<img class="noLazy"', $img_html );
 				}
-				array_push( $search, $img_html );
-				array_push( $replace, $replace_html );
+				$search[]  = $img_html;
+				$replace[] = $replace_html;
 			}
 			$search         = array_unique( $search );
 			$replace        = array_unique( $replace );
@@ -381,7 +385,7 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 		}
 
 		if ( $moduleCSS || $customCSS ) {
-			$out .= "<style type='text/css' class='gmedia_module_style_import'>{$moduleCSS}";
+			$out .= "<style class='gmedia_module_style_import'>{$moduleCSS}";
 			if ( $customCSS ) {
 				$out .= "/**** .{$_module}_module #{$sc_id} ****/{$customCSS}";
 			}
@@ -426,7 +430,7 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 
 	do_action( 'gmedia_shortcode' );
 
-	if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) === 'xmlhttprequest' ) {
+	if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
 		do_action( 'gmedia_enqueue_scripts' );
 	}
 
@@ -440,7 +444,7 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
  * this function removes all existing shortcodes, uses the shortcode parser to grab all [gmedia blocks],
  * calls {@link do_shortcode()}, and then re-registers the old shortcodes.
  *
- * @param string $content Content to parse
+ * @param string $content Content to parse.
  *
  * @return string Content with shortcode parsed
  * @uses add_shortcode()
@@ -515,7 +519,7 @@ function gmedia_raw_shortcode( $atts, $shortcode_post_content = '' ) {
 /**
  * @param $id
  *
- * @return object
+ * @return object|bool
  */
 function gmedia_shortcode_id_data( $id ) {
 	global $gmDB, $gmCore;
@@ -546,8 +550,8 @@ function gmedia_shortcode_id_data( $id ) {
 		}
 	}
 
-	$item->custom_meta = [];
-	$item->meta        = [];
+	$item->custom_meta = array();
+	$item->meta        = array();
 	foreach ( $meta as $key => $value ) {
 		if ( $gmCore->is_protected_meta( $key, 'gmedia_term' ) ) {
 			$item->meta[ $key ] = $value[0];

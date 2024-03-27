@@ -6,12 +6,14 @@
 class GmediaProcessor {
 
 	private static $me = null;
+
+	public $user_options = array();
+
 	public $page;
 	public $gmediablank;
 	public $url;
 	public $msg;
 	public $error;
-	public $user_options = [];
 
 	public $display_mode;
 	public $taxonomy;
@@ -25,15 +27,15 @@ class GmediaProcessor {
 		global $pagenow, $gmCore;
 		// GET variables.
 		$this->page = $gmCore->_get( 'page' );
-		$this->url  = add_query_arg( [ 'page' => $this->page ], admin_url( 'admin.php' ) );
+		$this->url  = add_query_arg( array( 'page' => $this->page ), admin_url( 'admin.php' ) );
 		if ( 'media.php' === $pagenow ) {
-			add_filter( 'wp_redirect', [ $this, 'redirect' ], 10, 2 );
+			add_filter( 'wp_redirect', array( $this, 'redirect' ), 10, 2 );
 		}
 		if ( 'edit-comments.php' === $pagenow ) {
-			add_filter( 'get_comment_text', [ $this, 'gmedia_comment_text' ], 10, 3 );
+			add_filter( 'get_comment_text', array( $this, 'gmedia_comment_text' ), 10, 3 );
 		}
 
-		add_action( 'init', [ $this, 'controller' ] );
+		add_action( 'init', array( $this, 'controller' ) );
 
 		if ( ! $this->page || strpos( $this->page, 'GrandMedia' ) === false ) {
 			return;
@@ -41,7 +43,7 @@ class GmediaProcessor {
 
 		$this->gmediablank = $gmCore->_get( 'gmediablank' );
 		if ( $this->gmediablank ) {
-			$this->url = add_query_arg( [ 'gmediablank' => $this->gmediablank ], $this->url );
+			$this->url = add_query_arg( array( 'gmediablank' => $this->gmediablank ), $this->url );
 		}
 
 		switch ( $this->page ) {
@@ -73,12 +75,14 @@ class GmediaProcessor {
 	 */
 	public static function selected_items( $key, $post_key = 'selected_items' ) {
 
-		$selected_items = [];
+		$selected_items = array();
 		if ( $key ) {
 			if ( isset( $_POST[ $post_key ] ) ) {
-				$selected_items = array_filter( explode( ',', $_POST[ $post_key ] ), 'is_numeric' );
+				$sel_string     = sanitize_text_field( wp_unslash( $_POST[ $post_key ] ) );
+				$selected_items = array_filter( explode( ',', $sel_string ), 'is_numeric' );
 			} elseif ( isset( $_COOKIE[ $key ] ) ) {
-				$selected_items = array_filter( explode( '.', $_COOKIE[ $key ] ), 'is_numeric' );
+				$sel_string     = sanitize_text_field( wp_unslash( $_COOKIE[ $key ] ) );
+				$selected_items = array_filter( explode( '.', $sel_string ), 'is_numeric' );
 			}
 		}
 
@@ -88,20 +92,20 @@ class GmediaProcessor {
 	/**
 	 * @param bool|string|array $author_id_list
 	 *
-	 * @return array|mixed
+	 * @return array
 	 */
 	public static function filter_by_author( $author_id_list = false ) {
 		global $user_ID, $gmCore;
 
-		if ( $author_id_list === false ) {
+		if ( false === $author_id_list ) {
 			$author = false;
 			if ( ! $gmCore->caps['gmedia_show_others_media'] ) {
-				$author = [ $user_ID, 0 ];
+				$author = array( $user_ID, 0 );
 			}
 		} else {
 			$author = wp_parse_id_list( $author_id_list );
 			if ( ! $gmCore->caps['gmedia_show_others_media'] ) {
-				$author = array_intersect( [ $user_ID, 0 ], $author );
+				$author = array_intersect( array( $user_ID, 0 ), $author );
 			}
 		}
 
@@ -112,8 +116,9 @@ class GmediaProcessor {
 	 * Autoloader
 	 */
 	public static function autoload() {
+		global $gmCore;
 		$path_ = GMEDIA_ABSPATH . 'admin/processor/class.processor.';
-		$page  = isset( $_GET['page'] ) ? $_GET['page'] : '';
+		$page  = $gmCore->_get( 'page', '' );
 		switch ( $page ) {
 			case 'GrandMedia':
 				/** @var $gmProcessorLibrary */
@@ -159,7 +164,7 @@ class GmediaProcessor {
 
 				return $gmProcessorWPMedia;
 			default:
-				if ( self::$me === null ) {
+				if ( null === self::$me ) {
 					self::$me = new GmediaProcessor();
 				}
 
@@ -193,7 +198,7 @@ class GmediaProcessor {
 
 		$screen_options = get_user_meta( $user_ID, 'gm_screen_options', true );
 		if ( ! is_array( $screen_options ) ) {
-			$screen_options = [];
+			$screen_options = array();
 		}
 
 		return array_merge( $gmGallery->options['gm_screen_options'], $screen_options );
@@ -202,8 +207,7 @@ class GmediaProcessor {
 	/**
 	 * Do diff process before lib shell
 	 */
-	protected function processor() {
-	}
+	protected function processor() {}
 
 	/**
 	 * @param string $cookie_key
@@ -216,22 +220,23 @@ class GmediaProcessor {
 			unset( $_COOKIE[ $cookie_key ] );
 		}
 
-		return [];
+		return array();
 	}
 
 	/**
 	 * redirect to original referer after update
 	 *
-	 * @param $location
-	 * @param $status
+	 * @param string $location
+	 * @param string $status
 	 *
 	 * @return mixed
 	 */
 	public function redirect( $location, $status ) {
-		global $pagenow;
-		if ( 'media.php' === $pagenow && isset( $_POST['_wp_original_http_referer'] ) ) {
-			if ( strpos( $_POST['_wp_original_http_referer'], 'GrandMedia' ) !== false ) {
-				return $_POST['_wp_original_http_referer'];
+		global $pagenow, $gmCore;
+		$ref = $gmCore->_post( '_wp_original_http_referer' );
+		if ( 'media.php' === $pagenow && $ref ) {
+			if ( strpos( $ref, 'GrandMedia' ) !== false ) {
+				return $ref;
 			} else {
 				return $location;
 			}
@@ -243,13 +248,13 @@ class GmediaProcessor {
 	/**
 	 * Add thumb to gmedia comment text in admin
 	 *
-	 * @param $comment_content
-	 * @param $comment
-	 * @param $args
+	 * @param string $comment_content
+	 * @param string $comment
+	 * @param array  $args
 	 *
 	 * @return string $comment_content
 	 */
-	function gmedia_comment_text( $comment_content, $comment, $args ) {
+	public function gmedia_comment_text( $comment_content, $comment, $args ) {
 		global $post;
 		if ( ! $post ) {
 			return $comment_content;
@@ -258,7 +263,7 @@ class GmediaProcessor {
 		if ( 'gmedia' === $post->post_type ) {
 			global $gmDB, $gmCore;
 			$gmedia          = $gmDB->get_post_gmedia( $post->ID );
-			$thumb           = '<div class="alignright" style="clear:right;"><img class="gmedia-thumb" style="max-height:72px;" src="' . $gmCore->gm_get_media_image( $gmedia, 'thumb', false ) . '" alt=""/></div>';
+			$thumb           = '<div class="alignright" style="clear:right;"><img class="gmedia-thumb" style="max-height:72px;" src="' . esc_url( $gmCore->gm_get_media_image( $gmedia, 'thumb', false ) ) . '" alt=""/></div>';
 			$comment_content = $thumb . $comment_content;
 		}
 

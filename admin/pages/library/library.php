@@ -3,19 +3,16 @@
  * Gmedia Library
  */
 
-// don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
-global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor, $gmProcessorLibrary;
+global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor, $gmProcessorLibrary, $gm_allowed_tags;
 
-$panel_class         = [];
+$panel_class         = array();
 $gmedia_url          = $gmProcessor->url;
 $gmedia_user_options = $gmProcessor->user_options;
 
 $_get_filter = $gmCore->_get( 'filter' );
-if ( $_get_filter && ( $_get_filter !== 'selected' ) ) {
+if ( $_get_filter && ( 'selected' !== $_get_filter ) ) {
 	$gmProcessorLibrary->query_args['mime_type'] = $_get_filter;
 }
 
@@ -31,7 +28,7 @@ if ( isset( $gmedia_filter['author__in'] ) && ! gm_user_can( 'show_others_media'
 	unset( $gmDB->filter['author__in'] );
 	unset( $gmedia_filter['author__in'] );
 }
-if ( $_get_filter && ( $_get_filter !== 'selected' ) ) {
+if ( $_get_filter && ( 'selected' !== $_get_filter ) ) {
 	unset( $gmDB->filter['mime_type'] );
 	unset( $gmedia_filter['mime_type'] );
 }
@@ -65,22 +62,22 @@ if ( $gmProcessorLibrary->mode ) {
 
 <?php gmedia_filter_message(); ?>
 
-<div class="panel panel-default <?php gm_panel_classes( $panel_class ); ?>" id="gmedia-panel">
+<div class="card m-0 mw-100 p-0 <?php gm_panel_classes( $panel_class ); ?>" id="gmedia-panel">
 
-	<?php include dirname( __FILE__ ) . '/tpl/panel-heading.php'; ?>
+	<?php require dirname( __FILE__ ) . '/tpl/panel-heading.php'; ?>
 
-	<div class="panel-body"></div>
-	<div class="list-group clearfix" id="gm-list-table" data-idx0="<?php echo absint( $idx0 + 1 ); ?>">
+	<div class="card-body"></div>
+	<div class="list-group clearfix <?php echo 'grid' === $display_mode_gmedia ? 'list-group-horizontal' : ''; ?>" id="gm-list-table" data-idx0="<?php echo absint( $idx0 + 1 ); ?>">
 		<?php
 		if ( count( $gmedia_query ) ) {
 
 			gmedia_alert_message();
 
-			if ( ! ( $gmProcessor->mode === 'edit' ) ) {
+			if ( ! ( 'edit' === $gmProcessor->mode ) ) {
 				foreach ( $gmedia_query as &$item ) {
 					gmedia_item_more_data( $item );
 
-					$item->classes = [ 'gmedia-' . $item->type . '-item' ];
+					$item->classes = array( 'gmedia-' . $item->type . '-item' );
 					if ( 'publish' !== $item->status ) {
 						if ( 'private' === $item->status ) {
 							$item->classes[] = 'list-group-item-info';
@@ -89,7 +86,7 @@ if ( $gmProcessorLibrary->mode ) {
 						}
 					}
 					$item->selected = in_array( $item->ID, (array) $gmProcessor->selected_items, true );
-					if ( $item->selected && ( $gmProcessor->mode !== 'select_single' ) ) {
+					if ( $item->selected && ( 'select_single' !== $gmProcessor->mode ) ) {
 						$item->classes[] = 'gm-selected';
 					}
 					$item->in_stack = in_array( $item->ID, (array) $gmProcessor->stack_items, true );
@@ -100,18 +97,18 @@ if ( $gmProcessorLibrary->mode ) {
 					echo '<div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div><div class="gm-item-cell-blank"></div>';
 				}
 			} elseif ( gm_user_can( 'edit_media' ) ) {
-				$gm_category_terms = $gmDB->get_terms( 'gmedia_category', [ 'fields' => 'names' ] );
-				$gm_tag_terms      = $gmDB->get_terms( 'gmedia_tag', [ 'fields' => 'names' ] );
+				$gm_category_terms = $gmDB->get_terms( 'gmedia_category', array( 'fields' => 'names' ) );
+				$gm_tag_terms      = $gmDB->get_terms( 'gmedia_tag', array( 'fields' => 'names' ) );
 				?>
 				<script type="text/javascript">
-					var gmedia_categories = <?php echo wp_json_encode( $gm_category_terms ); ?>;
-					var gmedia_tags = <?php echo wp_json_encode( $gm_tag_terms ); ?>;
+									var gmedia_categories = <?php echo wp_json_encode( $gm_category_terms ); ?>;
+									var gmedia_tags = <?php echo wp_json_encode( $gm_tag_terms ); ?>;
 				</script>
 				<?php
 				foreach ( $gmedia_query as &$item ) {
 					gmedia_item_more_data( $item );
 
-					$item->classes = [ 'gmedia-' . $item->type . '-item' ];
+					$item->classes = array( 'gmedia-' . $item->type . '-item' );
 					if ( 'publish' !== $item->status ) {
 						if ( 'private' === $item->status ) {
 							$item->classes[] = 'list-group-item-info';
@@ -134,11 +131,12 @@ if ( $gmProcessorLibrary->mode ) {
 			}
 		} else {
 			include dirname( __FILE__ ) . '/tpl/no-items.php';
-		} ?>
+		}
+		?>
 	</div>
 
 	<?php
-	include dirname( __FILE__ ) . '/tpl/panel-footer.php';
+	require dirname( __FILE__ ) . '/tpl/panel-footer.php';
 
 	wp_original_referer_field( true, 'previous' );
 	wp_nonce_field( 'GmediaGallery' );
@@ -150,7 +148,7 @@ if ( $gmProcessorLibrary->mode ) {
 </div>
 <?php if ( gm_user_can( 'edit_media' ) ) { ?>
 	<div class="modal fade gmedia-modal" id="gmeditModal" tabindex="-1" role="dialog" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
+		<div class="modal-dialog modal-xl">
 			<div class="modal-content"></div>
 		</div>
 	</div>
@@ -159,11 +157,11 @@ if ( $gmProcessorLibrary->mode ) {
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<div class="btn-toolbar pull-right" style="margin-top:-4px;">
-					<button type="button" class="btn btn-primary"><?php _e( 'Submit', 'grand-media' ); ?></button>
-					<button type="button" class="btn btn-default" data-dismiss="modal"><?php _e( 'Close', 'grand-media' ); ?></button>
-				</div>
 				<h4 class="modal-title"></h4>
+				<div class="btn-toolbar gap-4 float-end" style="margin-top:-4px;">
+					<button type="button" class="btn btn-primary"><?php esc_html_e( 'Submit', 'grand-media' ); ?></button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'grand-media' ); ?></button>
+				</div>
 			</div>
 			<div class="modal-body"></div>
 		</div>
@@ -171,9 +169,9 @@ if ( $gmProcessorLibrary->mode ) {
 </div>
 
 <?php
-include GMEDIA_ABSPATH . 'admin/tpl/modal-share.php';
+require GMEDIA_ABSPATH . 'admin/tpl/modal-share.php';
 
-if ( $gmProcessor->mode === 'edit' ) {
+if ( 'edit' === $gmProcessor->mode ) {
 	$customfield_meta_type = 'gmedia';
 	include GMEDIA_ABSPATH . 'admin/tpl/modal-customfield.php';
 }

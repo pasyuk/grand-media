@@ -3,16 +3,13 @@
  * Gmedia Gallery Edit
  */
 
-// don't load directly.
-if ( ! defined( 'ABSPATH' ) ) {
-	die( '-1' );
-}
+defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
 global $user_ID, $gmDB, $gmCore, $gmGallery, $gmProcessor;
 
 $term_id              = (int) $gmCore->_get( 'preset', 0 );
 $preset_module        = $gmCore->_get( 'preset_module' );
-$gmedia_url           = add_query_arg( [ 'preset_module' => $preset_module, 'preset' => $term_id ], $gmProcessor->url );
+$gmedia_url           = add_query_arg( array( 'preset_module' => $preset_module, 'preset' => $term_id ), $gmProcessor->url );
 $gmedia_term_taxonomy = 'gmedia_module';
 $taxterm              = str_replace( 'gmedia_', '', $gmedia_term_taxonomy );
 
@@ -29,7 +26,7 @@ $gmedia_modules = get_gmedia_modules( false );
 
 $default_module_demo_query_args = get_user_option( 'gmedia_preset_demo_query_args' );
 $gmedia_filter                  = gmedia_gallery_query_data( $default_module_demo_query_args );
-$default_options                = [];
+$default_options                = array();
 
 if ( isset( $gmedia_modules['in'][ $term->module['name'] ] ) ) {
 
@@ -47,14 +44,16 @@ if ( isset( $gmedia_modules['in'][ $term->module['name'] ] ) ) {
 		include $module_path . '/settings.php';
 
 	} else {
-		$alert[] = sprintf( __( 'Module `%s` is broken. Choose another module from the list.' ), $module_name );
+		// translators: module name.
+		$alert[] = sprintf( esc_html__( 'Module `%s` is broken. Choose another module from the list.' ), esc_html( $module_name ) );
 	}
 } else {
-	$alert[] = sprintf( __( 'Can\'t get module with name `%s`. Choose module from the list.' ), $term->module['name'] );
+	// translators: module name.
+	$alert[] = sprintf( esc_html__( 'Can\'t get module with name `%s`. Choose module from the list.' ), esc_html( $term->module['name'] ) );
 }
 
 if ( ! empty( $alert ) ) {
-	echo $gmCore->alert( 'danger', $alert );
+	echo wp_kses_post( $gmCore->alert( 'danger', $alert ) );
 }
 
 if ( ! empty( $term->module['settings'] ) ) {
@@ -63,21 +62,21 @@ if ( ! empty( $term->module['settings'] ) ) {
 	$gallery_settings = $default_options;
 }
 
-$params               = [];
-$gallery_link_default = add_query_arg( [ 'page' => 'GrandMedia', 'gmediablank' => 'module_preview', 'module' => $term->module['name'], 'preset' => $term->term_id, 'query' => $gmedia_filter['query_args'] ], admin_url( 'admin.php' ) );
+$params               = array();
+$gallery_link_default = add_query_arg( array( 'page' => 'GrandMedia', 'gmediablank' => 'module_preview', 'module' => $term->module['name'], 'preset' => $term->term_id, 'query' => $gmedia_filter['query_args'] ), admin_url( 'admin.php' ) );
 
 /** @noinspection PhpIncludeInspection */
-include_once GMEDIA_ABSPATH . 'inc/module.options.php';
+require_once GMEDIA_ABSPATH . 'inc/module.options.php';
 
 do_action( 'gmedia_module_preset_before_panel' );
 ?>
 
-<div class="panel panel-default panel-fixed-header">
+<div class="card m-0 mw-100 p-0 panel-fixed-header">
 
 	<?php
-	include dirname( __FILE__ ) . '/tpl/module-preset-panel-heading.php';
+	require dirname( __FILE__ ) . '/tpl/module-preset-panel-heading.php';
 
-	include dirname( __FILE__ ) . "/tpl/module-preset-edit-item.php";
+	require dirname( __FILE__ ) . '/tpl/module-preset-edit-item.php';
 	?>
 
 </div>
@@ -89,11 +88,11 @@ do_action( 'gmedia_module_preset_after_panel' );
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<div class="btn-toolbar pull-right" style="margin-top:-4px;">
-					<button type="button" class="btn btn-primary"><?php _e( 'Submit', 'grand-media' ); ?></button>
-					<button type="button" class="btn btn-default" data-dismiss="modal"><?php _e( 'Close', 'grand-media' ); ?></button>
-				</div>
 				<h4 class="modal-title"></h4>
+				<div class="btn-toolbar gap-4 float-end" style="margin-top:-4px;">
+					<button type="button" class="btn btn-primary"><?php esc_html_e( 'Submit', 'grand-media' ); ?></button>
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php esc_html_e( 'Close', 'grand-media' ); ?></button>
+				</div>
 			</div>
 			<div class="modal-body"></div>
 		</div>
