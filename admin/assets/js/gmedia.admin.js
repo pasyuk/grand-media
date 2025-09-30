@@ -1297,7 +1297,11 @@ var GmediaFunction = {
 							} );
 							if ( getData.length ) {
 								jQuery.get( ajaxurl,
-										{action: 'gmedia_get_data', gmedia__in: getData},
+										{
+											action: 'gmedia_get_data',
+											nonce: (window.GmediaGallery && GmediaGallery.nonce) ? GmediaGallery.nonce : '',
+											gmedia__in: getData
+										},
 										function( data, textStatus, jqXHR ) {
 											if ( jQuery.isArray( data ) && data.length ) {
 												var thumbHTML;

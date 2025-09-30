@@ -418,6 +418,10 @@ class GmediaCore {
 		if ( empty( $module_name ) ) {
 			return false;
 		}
+
+		if ( ! preg_match( '/^[A-Za-z0-9_-]+$/', $module_name ) ) {
+			return false;
+		}
 		$module_dirs = array(
 			'upload' => array(
 				'name' => $module_name,

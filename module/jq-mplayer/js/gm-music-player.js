@@ -380,7 +380,7 @@
                 myPlaylist[index].rating = rating;
                 var gmid = myPlaylist[index].id,
                     uip = userOptions.ip;
-                $.post(options.ajaxurl, {action: 'gmedia_module_interaction', rate: {uip: uip, gmid: gmid, rate: rating}}, function (r) {
+                $.post(options.ajaxurl, {action: 'gmedia_module_interaction', nonce: (GmediaGallery && GmediaGallery.nonce) ? GmediaGallery.nonce : '', rate: {uip: uip, gmid: gmid, rate: rating}}, function (r) {
                     //console.log(r);
                 });
 

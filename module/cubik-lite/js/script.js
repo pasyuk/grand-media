@@ -876,7 +876,11 @@ if ( typeof jQuery.fn.gmCubikLite == 'undefined' ) {
 									type: 'post',
 									dataType: 'json',
 									url: GmediaGallery.ajaxurl,
-									data: {action: 'gmedia_module_interaction', hit: id}
+									data: {
+										action: 'gmedia_module_interaction',
+										nonce: (window.GmediaGallery && GmediaGallery.nonce) ? GmediaGallery.nonce : '',
+										hit: id
+									}
 								} ).done( function( r ) {
 									if ( r && r.views ) {
 										item.views = r.views;
@@ -896,7 +900,12 @@ if ( typeof jQuery.fn.gmCubikLite == 'undefined' ) {
 									type: 'post',
 									dataType: 'json',
 									url: GmediaGallery.ajaxurl,
-									data: {action: 'gmedia_module_interaction', hit: id, vote: 1}
+									data: {
+										action: 'gmedia_module_interaction',
+										nonce: (window.GmediaGallery && GmediaGallery.nonce) ? GmediaGallery.nonce : '',
+										hit: id,
+										vote: 1
+									}
 								} ).done( function( r ) {
 									if ( r && r.likes ) {
 										item.likes = r.likes;

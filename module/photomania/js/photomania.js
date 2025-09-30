@@ -40,7 +40,8 @@
 			scale_mode: 'fit',
 			link_color: '0099e5',
 			link_color_hover: '02adea',
-			ajaxurl: ((GmediaGallery && GmediaGallery.ajaxurl) ? GmediaGallery.ajaxurl : '')
+			ajaxurl: ((GmediaGallery && GmediaGallery.ajaxurl) ? GmediaGallery.ajaxurl : ''),
+			nonce: ((GmediaGallery && GmediaGallery.nonce) ? GmediaGallery.nonce : '')
 		},
 		_defaults_int: {
 			base_gallery_width: 800,
@@ -630,11 +631,11 @@
 				sessionStorage.setItem( elid, JSON.stringify( this.storage ) );
 				if ( this.opts.ajaxurl ) {
 					$.ajax( {
-						type: 'post',
-						dataType: 'json',
-						url: this.opts.ajaxurl,
-						data: {action: 'gmedia_module_interaction', hit: item.id}
-					} ).done( function( r ) {
+					type: 'post',
+					dataType: 'json',
+					url: this.opts.ajaxurl,
+					data: {action: 'gmedia_module_interaction', nonce: this.opts.nonce || (GmediaGallery && GmediaGallery.nonce) || '', hit: item.id}
+				} ).done( function( r ) {
 						if ( r.views ) {
 							item.meta.views = r.views;
 						}
@@ -650,11 +651,11 @@
 				sessionStorage.setItem( elid, JSON.stringify( this.storage ) );
 				if ( this.opts.ajaxurl ) {
 					$.ajax( {
-						type: 'post',
-						dataType: 'json',
-						url: this.opts.ajaxurl,
-						data: {action: 'gmedia_module_interaction', hit: item.id, vote: 1}
-					} ).done( function( r ) {
+					type: 'post',
+					dataType: 'json',
+					url: this.opts.ajaxurl,
+					data: {action: 'gmedia_module_interaction', nonce: this.opts.nonce || (GmediaGallery && GmediaGallery.nonce) || '', hit: item.id, vote: 1}
+				} ).done( function( r ) {
 						if ( r.likes ) {
 							item.meta.likes = r.likes;
 						}

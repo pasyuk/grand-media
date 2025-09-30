@@ -2426,6 +2426,17 @@ add_action( 'wp_ajax_nopriv_gmedia_module_interaction', 'gmedia_module_interacti
 function gmedia_module_interaction() {
 	global $gmDB, $gmCore;
 
+	$nonce_valid = false;
+	if ( isset( $_REQUEST['_ajax_nonce'] ) ) {
+		$nonce_valid = (bool) check_ajax_referer( 'GmediaGallery', '_ajax_nonce', false );
+	}
+	if ( ! $nonce_valid && isset( $_REQUEST['nonce'] ) ) {
+		$nonce_valid = (bool) check_ajax_referer( 'GmediaGallery', 'nonce', false );
+	}
+	if ( ! $nonce_valid ) {
+		wp_send_json_error( array( 'code' => 'invalid_nonce' ), 403 );
+	}
+
 	$referer   = isset( $_SERVER['HTTP_REFERER'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_REFERER'] ) ) : '';
 	$protocol  = isset( $_SERVER['SERVER_PROTOCOL'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_PROTOCOL'] ) ) : '';
 	$http_post = isset( $_SERVER['HTTP_HOST'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_HOST'] ) ) : '';
@@ -2462,11 +2473,7 @@ function gmedia_module_interaction() {
 
 	$gmRate = $gmCore->_post( 'rate' );
 	if ( $gmRate ) {
-		/**
-		 * @var $uip
-		 * @var $gmid
-		 * @var $rate
-		 */
+		$gmRate = wp_parse_args( (array) $gmRate, array( 'uip' => '', 'gmid' => 0, 'rate' => 0 ) );
 		extract( $gmRate, EXTR_OVERWRITE );
 		if ( ! intval( $gmid ) || ( null === $gmDB->get_gmedia( $gmid ) ) ) {
 			die( '0' );
@@ -2535,6 +2542,17 @@ add_action( 'wp_ajax_gmedia_get_data', 'gmedia_get_data' );
 add_action( 'wp_ajax_nopriv_gmedia_get_data', 'gmedia_get_data' );
 function gmedia_get_data() {
 	global $gmDB, $gmProcessor, $gmGallery, $gm_allowed_tags;
+
+	$nonce_valid = false;
+	if ( isset( $_REQUEST['_ajax_nonce'] ) ) {
+		$nonce_valid = (bool) check_ajax_referer( 'GmediaGallery', '_ajax_nonce', false );
+	}
+	if ( ! $nonce_valid && isset( $_REQUEST['nonce'] ) ) {
+		$nonce_valid = (bool) check_ajax_referer( 'GmediaGallery', 'nonce', false );
+	}
+	if ( ! $nonce_valid ) {
+		wp_send_json_error( array( 'code' => 'invalid_nonce' ), 403 );
+	}
 
 	/** @var $gmProcessorLibrary */
 	include_once GMEDIA_ABSPATH . 'admin/processor/class.processor.library.php';
