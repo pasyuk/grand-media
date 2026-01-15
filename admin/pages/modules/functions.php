@@ -17,12 +17,14 @@ function gmedia_module_action_buttons( $module ) {
 		$buttons['buy'] = '<a class="btn btn-primary" href="' . esc_url( $module['buy'] ) . '" target="_blank">' . esc_html__( 'Buy Now (no license required)', 'grand-media' ) . ' <span>' . esc_html( $module['price'] ) . '</span></a>';
 	}
 
-	if ( ( ! empty( $module['status'] ) && 'premium' === $module['status'] ) && empty( $module['buy'] ) && empty( $gmGallery->options['license_name'] ) ) {
-		$buttons['premium'] = '<a class="btn btn-success" style="font-weight: bold;" target="_blank" href="https://codeasily.com/gmedia-premium/">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
+	$has_premium = gmedia_has_premium_license();
+
+	if ( ( ! empty( $module['status'] ) && 'premium' === $module['status'] ) && empty( $module['buy'] ) && ! $has_premium ) {
+		$buttons['premium'] = '<a class="btn btn-success" style="font-weight: bold;" href="' . esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) . '">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
 	} else {
 		if ( 'remote' === $module['place'] && ! empty( $module['download'] ) ) {
-			if ( ( ! empty( $module['status'] ) && 'premium' === $module['status'] ) && empty( $gmGallery->options['license_name'] ) ) {
-				$buttons['premium'] = '<a class="btn btn-success" style="font-weight: bold;" target="_blank" href="https://codeasily.com/gmedia-premium/">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
+			if ( ( ! empty( $module['status'] ) && 'premium' === $module['status'] ) && ! $has_premium ) {
+				$buttons['premium'] = '<a class="btn btn-success" style="font-weight: bold;" href="' . esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) . '">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
 			} else {
 				$buttons['install'] = '<a class="btn btn-primary ' . ( gm_user_can( 'module_manage' ) ? 'module_install' : 'disabled' ) . '" data-module="' . esc_attr( $module['name'] ) . '" data-loading-text="' . esc_attr__( 'Loading...', 'grand-media' ) . '" href="' . esc_url( $module['download'] ) . '">' . esc_html__( 'Install Module', 'grand-media' ) . '</a>';
 			}
@@ -36,11 +38,11 @@ function gmedia_module_action_buttons( $module ) {
 	}
 	if ( ! empty( $module['update'] ) && 'remote' !== $module['place'] ) {
 		if ( empty( $module['buy'] ) ) {
-			if ( 'free' === $module['status'] || ! empty( $gmGallery->options['license_name'] ) ) {
+			if ( 'free' === $module['status'] || $has_premium ) {
 				$buttons['update'] = '<a class="btn btn-warning module_install" data-module="' . esc_attr( $module['name'] ) . '" data-loading-text="' . esc_attr__( 'Loading...', 'grand-media' ) . '" href="' . esc_url( $module['download'] ) . '">' . esc_html( __( 'Update Module', 'grand-media' ) . " (v{$module['update']})" ) . '</a>';
 			}
 		} else {
-			if ( ! empty( $module['download'] ) && ! empty( $gmGallery->options['license_name'] ) ) {
+			if ( ! empty( $module['download'] ) && $has_premium ) {
 				$buttons['update'] = '<a class="btn btn-warning module_install" data-module="' . esc_attr( $module['name'] ) . '" data-loading-text="' . esc_attr__( 'Loading...', 'grand-media' ) . '" href="' . esc_url( $module['download'] ) . '">' . esc_html( __( 'Update Module (license required)', 'grand-media' ) . " (v{$module['update']})" ) . '</a>';
 			}
 			$buttons['update2'] = '<a class="btn btn-warning" target="_blank" href="' . esc_url( $module['buy'] ) . '">' . esc_html( __( 'Download Update (no license required)', 'grand-media' ) . " (v{$module['update']})" ) . '</a>';
@@ -49,7 +51,7 @@ function gmedia_module_action_buttons( $module ) {
 	if ( ( 'remote' !== $module['place'] ) && ( 'amron' !== $module['name'] ) && gm_user_can( 'module_manage' ) ) {
 		$buttons['delete'] = '<a class="btn btn-danger" href="' . wp_nonce_url( $gmCore->get_admin_url( array( 'delete_module' => $module['name'] ), array(), $gmProcessor->url ), 'gmedia_module_delete', '_wpnonce_module_delete' ) . '">' . esc_html__( 'Delete Module', 'grand-media' ) . '</a>';
 	}
-	if ( ! empty( $module['download'] ) && ( 'free' === $module['status'] || ! empty( $gmGallery->options['license_name'] ) ) ) {
+	if ( ! empty( $module['download'] ) && ( 'free' === $module['status'] || $has_premium ) ) {
 		$buttons['download'] = '<a class="btn btn-link" href="' . esc_url( $module['download'] ) . '" download="' . esc_attr( $module['name'] ) . '">' . esc_html__( 'Download module ZIP', 'grand-media' ) . '</a>';
 	}
 

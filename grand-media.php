@@ -3,12 +3,12 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.24.1
+ * Version: 1.25.0
  * Author: Rattus
  * Author URI: https://codeasily.com/
- * Requires at least: 5.3.0
- * Tested up to: 6.8
- * Stable tag: 1.24.1
+ * Requires at least: 5.4.0
+ * Tested up to: 6.9
+ * Stable tag: 1.25.0
  * Text Domain: grand-media
  * Domain Path: /lang
  */
@@ -34,6 +34,44 @@
 // Stop direct call.
 defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
+// Create a helper function for easy SDK access.
+if ( ! function_exists( 'gmg_fs' ) ) {
+	function gmg_fs() {
+		global $gmg_fs;
+
+		if ( ! isset( $gmg_fs ) ) {
+			// Include Freemius SDK.
+			require_once dirname( __FILE__ ) . '/vendor/freemius/start.php';
+			$gmg_fs = fs_dynamic_init(
+				array(
+					'id'                  => '20980',
+					'slug'                => 'grand-media',
+					'type'                => 'plugin',
+					'public_key'          => 'pk_377df98aab7989cdb496abbd72dea',
+					'is_premium'          => true,
+					'premium_suffix'      => 'Premium',
+					'has_premium_version' => false,
+					'has_addons'          => false,
+					'has_paid_plans'      => true,
+					'wp_org_gatekeeper'   => 'OA7#BoRiBNqdf52FvzEf!!074aRLPs8fspif$7K1#4u4Csys1fQlCecVcUTOs2mcpeVHi#C2j9d09fOTvbC0HloPT7fFee5WdS3G',
+					'menu'                => array(
+						'slug'    => 'GrandMedia',
+						'contact' => false,
+						'support' => false,
+					),
+				)
+			);
+		}
+
+		return $gmg_fs;
+	}
+
+	// Init Freemius.
+	gmg_fs();
+	// Signal that SDK was initiated.
+	do_action( 'gmg_fs_loaded' );
+}
+
 if ( ! class_exists( 'Gmedia' ) ) {
 	/**
 	 * Class Gmedia
@@ -47,6 +85,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 		public $do_module     = array();
 		public $import_styles = array();
 		public $shortcode     = array();
+		public $plugin_name   = '';
 
 		public function __construct() {
 
@@ -299,6 +338,15 @@ if ( ! class_exists( 'Gmedia' ) ) {
 				$db_options = array();
 			}
 			$this->options = array_merge( $default_options, $db_options );
+
+			if ( function_exists( 'gmg_fs' ) ) {
+				$fs = gmg_fs();
+				if ( $fs->has_active_valid_license() ) {
+					$this->options['license_key']  = 'freemius';
+					$this->options['license_key2'] = 'freemius';
+				}
+			}
+
 		}
 
 		public function load_dependencies() {
@@ -898,7 +946,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			if ( plugin_basename( __FILE__ ) === $file ) {
 				$links[] = '<a href="admin.php?page=GrandMedia_Settings">' . esc_html__( 'Settings', 'grand-media' ) . '</a>';
 				$links[] = '<a href="admin.php?page=GrandMedia_Modules">' . esc_html__( 'Modules', 'grand-media' ) . '</a>';
-				$links[] = '<a href="https://codeasily.com/product/one-site-license/">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
+				$links[] = '<a href="admin.php?page=GrandMedia-pricing">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
 				$links[] = '<a href="https://codeasily.com/donate/">' . esc_html__( 'Donate', 'grand-media' ) . '</a>';
 			}
 

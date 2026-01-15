@@ -1913,13 +1913,21 @@ class GmediaCore {
 
 		foreach ( array( 'title', 'caption', 'credit', 'copyright', 'model', 'iso', 'software' ) as $key ) {
 			if ( ! empty( $meta[ $key ] ) && ! seems_utf8( $meta[ $key ] ) ) {
-				$meta[ $key ] = utf8_encode( $meta[ $key ] );
+				if ( function_exists( 'mb_convert_encoding' ) ) {
+					$meta[ $key ] = mb_convert_encoding( $meta[ $key ], 'UTF-8', 'ISO-8859-1' );
+				} else {
+					$meta[ $key ] = utf8_encode( $meta[ $key ] );
+				}
 			}
 		}
 		if ( ! empty( $meta['keywords'] ) ) {
 			foreach ( $meta['keywords'] as $i => $key ) {
 				if ( ! seems_utf8( $key ) ) {
-					$meta['keywords'][ $i ] = utf8_encode( $key );
+					if ( function_exists( 'mb_convert_encoding' ) ) {
+						$meta['keywords'][ $i ] = mb_convert_encoding( $key, 'UTF-8', 'ISO-8859-1' );
+					} else {
+						$meta['keywords'][ $i ] = utf8_encode( $key );
+					}
 				}
 			}
 		}
@@ -2200,7 +2208,11 @@ class GmediaCore {
 		if ( function_exists( 'mb_convert_encoding' ) ) {
 			$string = mb_convert_encoding( $string, 'UTF-8', 'UTF-8' );
 		} else {
-			$string = htmlspecialchars_decode( utf8_decode( htmlentities( $string, ENT_COMPAT, 'utf-8', false ) ) );
+			if ( function_exists( 'mb_convert_encoding' ) ) {
+				$string = htmlspecialchars_decode( mb_convert_encoding( htmlentities( $string, ENT_COMPAT, 'utf-8', false ), 'ISO-8859-1', 'UTF-8' ) );
+			} else {
+				$string = htmlspecialchars_decode( utf8_decode( htmlentities( $string, ENT_COMPAT, 'utf-8', false ) ) );
+			}
 		}
 
 		return $string;

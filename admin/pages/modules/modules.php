@@ -38,7 +38,6 @@ if ( isset( $modules['error'] ) ) {
 							<span class="badge badge-error gm-module-count-<?php echo intval( $gmGallery->options['modules_update'] ); ?>" title="<?php esc_attr_e( 'Modules Updates', 'grand-media' ); ?>"><?php echo intval( $gmGallery->options['modules_update'] ); ?></span></button>
 						<button type="button" data-filter="not-installed" class="btn btn-secondary"><?php esc_html_e( 'New Modules', 'grand-media' ); ?>
 							<span class="badge badge-success gm-module-count-<?php echo intval( $gmGallery->options['modules_new'] ); ?>" title="<?php esc_attr_e( 'New Modules', 'grand-media' ); ?>"><?php echo intval( $gmGallery->options['modules_new'] ); ?></span></button>
-						<button type="button" data-filter="tag-trend" class="btn btn-secondary"><?php esc_html_e( 'Trends', 'grand-media' ); ?></button>
 					</div>
 
 					<?php if ( ! empty( $tags ) ) { ?>

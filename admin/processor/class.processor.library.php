@@ -13,6 +13,7 @@ class GmediaProcessor_Library extends GmediaProcessor {
 	public $selected_items = array();
 	public $stack_items    = array();
 	public $filters        = array();
+	public $dbfilter;
 	public $query_args;
 
 	/**

@@ -26,7 +26,7 @@ used as it is.
 		$('#uploader').pluploadQueue({
 			url : '../upload.php',
 			filters : [
-				{title : "Image files", extensions : "jpg,gif,png,webp"}
+				{title : "Image files", extensions : "jpg,gif,png"}
 			],
 			rename: true,
 			flash_swf_url : '../../js/Moxie.swf',
@@ -50,7 +50,7 @@ used as it is.
 	@param {String} settings.url URL of the server-side upload handler.
 	@param {Number|String} [settings.chunk_size=0] Chunk size in bytes to slice the file into. Shorcuts with b, kb, mb, gb, tb suffixes also supported. `e.g. 204800 or "204800b" or "200kb"`. By default - disabled.
 	@param {String} [settings.file_data_name="file"] Name for the file field in Multipart formated message.
-	@param {Array} [settings.filters=[]] Set of file type filters, each one defined by hash of title and extensions. `e.g. {title : "Image files", extensions : "jpg,jpeg,gif,png,webp"}`. Dispatches `plupload.FILE_EXTENSION_ERROR`
+	@param {Array} [settings.filters=[]] Set of file type filters, each one defined by hash of title and extensions. `e.g. {title : "Image files", extensions : "jpg,jpeg,gif,png"}`. Dispatches `plupload.FILE_EXTENSION_ERROR`
 	@param {String} [settings.flash_swf_url] URL of the Flash swf.
 	@param {Object} [settings.headers] Custom headers to send with the upload. Hash of name/value pairs.
 	@param {Number|String} [settings.max_file_size] Maximum file size that the user can pick, in bytes. Optionally supports b, kb, mb, gb, tb suffixes. `e.g. "10mb" or "1gb"`. By default - not set. Dispatches `plupload.FILE_SIZE_ERROR`.
@@ -74,6 +74,26 @@ used as it is.
 	@param {Boolean} [settings.multiple_queues=true] Re-activate the widget after each upload procedure.
 */
 ;(function($, plupload) {
+    // Polyfill for plupload.sprintf when used with older WP-bundled Plupload (e.g., 2.1.9)
+    // Newer jquery.plupload.queue.js (2.3.x) expects plupload.sprintf to exist.
+    if (plupload && typeof plupload.sprintf !== 'function') {
+        plupload.sprintf = function(str) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            var ai = 0;
+            return String(str).replace(/%(%|d|s)/g, function(m, t) {
+                if (t === '%') {
+                    return '%';
+                }
+                var v = args[ai++];
+                if (t === 'd') {
+                    var n = parseInt(v, 10);
+                    return isNaN(n) ? '0' : String(n);
+                }
+                // 's'
+                return v == null ? '' : String(v);
+            });
+        };
+    }
 	var uploaders = {};
 
 	function _(str) {
@@ -198,7 +218,7 @@ used as it is.
 					$('span.plupload_total_status', target).html(uploader.total.percent + '%');
 					$('div.plupload_progress_bar', target).css('width', uploader.total.percent + '%');
 					$('span.plupload_upload_status', target).html(
-						sprintf(_('Uploaded %d/%d files'), uploader.total.uploaded, uploader.files.length)
+						plupload.sprintf(_('Uploaded %d/%d files'), uploader.total.uploaded, uploader.files.length)
 					);
 				}
 
@@ -247,7 +267,7 @@ used as it is.
 					if (uploader.total.queued === 0) {
 						$('span.plupload_add_text', target).html(_('Add Files'));
 					} else {
-						$('span.plupload_add_text', target).html(sprintf(_('%d files queued'), uploader.total.queued));
+						$('span.plupload_add_text', target).html(plupload.sprintf(_('%d files queued'), uploader.total.queued));
 					}
 
 					$('a.plupload_start', target).toggleClass('plupload_disabled', uploader.files.length == (uploader.total.uploaded + uploader.total.failed));

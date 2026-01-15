@@ -291,7 +291,7 @@ class GmediaAdmin {
 									<div class="card-header" data-bs-toggle="collapse" data-bs-target="#support_div_collapse" aria-expanded="true" aria-controls="support_div_collapse" style="cursor:pointer;">
 										<b><?php esc_html_e( 'Any feedback?', 'grand-media' ); ?></b>
 									</div>
-									<div class="collapse<?php echo empty( $gmGallery->options['license_key'] ) ? ' in' : ''; ?>" id="support_div_collapse">
+									<div class="collapse<?php echo ! gmedia_has_premium_license() ? ' in' : ''; ?>" id="support_div_collapse">
 										<div class="card-body">
 											<p><?php esc_html_e( 'You can help me spread the word about GmediaGallery among the users striving to get awesome galleries on their WordPress sites.', 'grand-media' ); ?></p>
 
@@ -339,8 +339,8 @@ class GmediaAdmin {
 		<div id="gmedia-navbar">
 			<div class="row">
 				<ul>';
-		if ( empty( $gmGallery->options['license_key'] ) ) {
-			$content['sideLinks'] .= "\n" . '<li class="list-group mb-3"><a class="list-group-item list-group-item-premium" target="_blank" href="https://codeasily.com/product/one-site-license/">' . esc_html__( 'Get Gmedia Premium', 'grand-media' ) . '</a></li>';
+		if ( ! gmedia_has_premium_license() ) {
+			$content['sideLinks'] .= "\n" . '<li class="list-group mb-3"><a class="list-group-item list-group-item-premium" href="' . esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) . '">' . esc_html__( 'Get Gmedia Premium', 'grand-media' ) . '</a></li>';
 		}
 		$content['sideLinks'] .= "\n" . '<li class="list-group">';
 		foreach ( $submenu['GrandMedia'] as $menuItem ) {
@@ -828,10 +828,10 @@ class GmediaAdmin {
 <h4>Links</h4>',
 						'grand-media'
 					)
-					. '<p><a href="https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/" target="_blank">' . esc_html__( 'Support Forum', 'grand-media' ) . '</a>
+					. '<p><a href="https://wordpress.org/support/plugin/grand-media" target="_blank">' . esc_html__( 'Support Forum', 'grand-media' ) . '</a>
 	| <a href="https://codeasily.com/contact/" target="_blank">' . esc_html__( 'Contact', 'grand-media' ) . '</a>
 	| <a href="https://codeasily.com/portfolio/gmedia-gallery-modules/" target="_blank">' . esc_html__( 'Demo', 'grand-media' ) . '</a>
-	| <a href="https://codeasily.com/product/one-site-license/" target="_blank">' . esc_html__( 'Premium', 'grand-media' ) . '</a>
+	| <a href="' . esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) . '" target="_blank">' . esc_html__( 'Premium', 'grand-media' ) . '</a>
 </p>',
 			]
 		);
@@ -841,6 +841,7 @@ class GmediaAdmin {
 				break;
 			case 'GrandMedia_Settings':
 				if ( current_user_can( 'manage_options' ) ) {
+					$license_type = gmedia_get_license_type();
 					$screen->add_help_tab(
 						[
 							'id'      => 'help_' . $screen_id . '_license',
@@ -860,7 +861,7 @@ class GmediaAdmin {
 									'https://wordpress.org/support/plugin/grand-media/',
 									'gmediafolder@gmail.com'
 								)
-								. '<div><a class="btn btn-secondary" href="' . admin_url( 'admin.php?page=' . $screen_id . '&license_activate=manual' ) . '">' . __( 'Manual Activation', 'grand-media' ) . '</a></div>',
+								. ('freemius' !== $license_type ? '<div><a class="btn btn-secondary" href="' . admin_url( 'admin.php?page=' . $screen_id . '&license_activate=manual' ) . '">' . __( 'Manual Activation', 'grand-media' ) . '</a></div>' : ''),
 						]
 					);
 				}

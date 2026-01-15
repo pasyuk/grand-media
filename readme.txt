@@ -2,10 +2,10 @@
 Contributors: pasyuk
 Donate link: https://codeasily.com/donate/
 Tags: best gallery plugin, gallery, image gallery, photo gallery, wordpress gallery plugin
-Requires at least: 5.3.0
-Tested up to: 6.8
+Requires at least: 5.4.0
+Tested up to: 6.9
 Requires PHP: 5.6
-Stable tag: 1.24.1
+Stable tag: 1.25.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,7 +45,7 @@ Handle any file format and link any files with images in few clicks. You can imp
 
 = Links =
 
-**[Home Page](https://codeasily.com/)**, **[Skins Portfolio](https://codeasily.com/portfolio/gmedia-gallery-modules/)**,  **[Forum](https://codeasily.com/community/forum/gmedia-gallery-wordpress-plugin/)**
+**[Home Page](https://codeasily.com/)**, **[Skins Portfolio](https://codeasily.com/portfolio/gmedia-gallery-modules/)**
 
 = How to create FREE responsive photo gallery =
 
@@ -138,6 +138,12 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 
 = Modules Updated =
 * Go to Gmedia Modules page and update installed premium modules to latest versions
+
+= v1.25.0 =
+* Fix image upload.
+* Fix PHP warnings.
+* Compatibility with latest WordPress versions.
+* Other improvements.
 
 = v1.24.1 =
 * Fix Gmedia Library not show images

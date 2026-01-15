@@ -1,5 +1,49 @@
 <?php
 
+/**
+ * Check if user has premium license (Freemius or Legacy)
+ *
+ * @return bool
+ */
+function gmedia_has_premium_license() {
+	// Check Freemius license first
+	if ( function_exists( 'gmg_fs' ) ) {
+		$fs = gmg_fs();
+		if ( $fs->is_premium() && $fs->can_use_premium_code() ) {
+			return true;
+		}
+	}
+
+	// Fallback to legacy license
+	global $gmGallery;
+	if ( ! empty( $gmGallery->options['license_name'] ) ) {
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Get license type (freemius, legacy, or none)
+ *
+ * @return string
+ */
+function gmedia_get_license_type() {
+	if ( function_exists( 'gmg_fs' ) ) {
+		$fs = gmg_fs();
+		if ( $fs->is_premium() && $fs->can_use_premium_code() ) {
+			return 'freemius';
+		}
+	}
+
+	global $gmGallery;
+	if ( ! empty( $gmGallery->options['license_name'] ) ) {
+		return 'legacy';
+	}
+
+	return 'none';
+}
+
 function gm_user_can( $capability ) {
 	global $gmCore;
 
