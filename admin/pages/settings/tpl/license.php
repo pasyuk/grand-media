@@ -42,29 +42,29 @@ $has_premium  = gmedia_has_premium_license();
 				</div>
 				<!-- Legacy License Activation Form -->
 				<p><?php esc_html_e( 'If you have a legacy Gmedia Premium Key from previous purchases, you can activate it below:', 'grand-media' ); ?></p>
-
-				<div class="row">
-					<div class="form-group col-sm-5">
-						<label><?php esc_html_e( 'Gmedia Premium Key', 'grand-media' ); ?>:</label>
-						<input type="text" name="set[purchase_key]" id="purchase_key" class="form-control input-sm" value="<?php echo esc_attr( $pk ); ?>"/>
-
-						<div class="manual_license_activate"<?php echo( ( 'manual' === $gmCore->_get( 'license_activate' ) ) ? '' : ' style="display:none;"' ); ?>>
-							<label style="margin-top:7px;"><?php esc_html_e( 'License Name', 'grand-media' ); ?>:</label>
-							<input type="text" name="set[license_name]" id="license_name" class="form-control input-sm" value="<?php echo esc_attr( $gmGallery->options['license_name'] ); ?>"/>
-							<label style="margin-top:7px;"><?php esc_html_e( 'License Key', 'grand-media' ); ?>:</label>
-							<input type="text" name="set[license_key]" id="license_key" class="form-control input-sm" value="<?php echo esc_attr( $lk ); ?>"/>
-							<label style="margin-top:7px;"><?php esc_html_e( 'Additional Key', 'grand-media' ); ?>:</label>
-							<input type="text" name="set[license_key2]" id="license_key2" class="form-control input-sm" value="<?php echo esc_attr( $gmGallery->options['license_key2'] ); ?>"/>
-						</div>
-					</div>
-					<?php if ( ! ( 'manual' === $gmCore->_get( 'license_activate' ) || ! empty( $pk ) ) ) { ?>
-						<div class="form-group col-sm-7">
-							<label>&nbsp;</label>
-							<button style="display:block;" class="btn btn-success btn-xs" type="submit" name="license-key-activate"><?php esc_html_e( 'Activate Legacy Key', 'grand-media' ); ?></button>
-						</div>
-					<?php } ?>
-				</div>
 			<?php endif; ?>
+
+			<div class="row">
+				<div class="form-group col-sm-5">
+					<label><?php esc_html_e( 'Gmedia Premium Key', 'grand-media' ); ?>:</label>
+					<input type="text" name="set[purchase_key]" id="purchase_key" class="form-control input-sm" value="<?php echo esc_attr( $pk ); ?>"/>
+
+					<div class="manual_license_activate"<?php echo( ( 'manual' === $gmCore->_get( 'license_activate' ) ) ? '' : ' style="display:none;"' ); ?>>
+						<label style="margin-top:7px;"><?php esc_html_e( 'License Name', 'grand-media' ); ?>:</label>
+						<input type="text" name="set[license_name]" id="license_name" class="form-control input-sm" value="<?php echo esc_attr( $gmGallery->options['license_name'] ); ?>"/>
+						<label style="margin-top:7px;"><?php esc_html_e( 'License Key', 'grand-media' ); ?>:</label>
+						<input type="text" name="set[license_key]" id="license_key" class="form-control input-sm" value="<?php echo esc_attr( $lk ); ?>"/>
+						<label style="margin-top:7px;"><?php esc_html_e( 'Additional Key', 'grand-media' ); ?>:</label>
+						<input type="text" name="set[license_key2]" id="license_key2" class="form-control input-sm" value="<?php echo esc_attr( $gmGallery->options['license_key2'] ); ?>"/>
+					</div>
+				</div>
+				<?php if ( ! ( 'manual' === $gmCore->_get( 'license_activate' ) || ! empty( $pk ) ) ) { ?>
+					<div class="form-group col-sm-7">
+						<label>&nbsp;</label>
+						<button style="display:block;" class="btn btn-success btn-xs" type="submit" name="license-key-activate"><?php esc_html_e( 'Activate Legacy Key', 'grand-media' ); ?></button>
+					</div>
+				<?php } ?>
+			</div>
 
 			<p class="description" style="margin-top: 10px;">
 				<strong><?php esc_html_e( 'Need a new license?', 'grand-media' ); ?></strong>

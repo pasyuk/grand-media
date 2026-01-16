@@ -26,7 +26,7 @@ used as it is.
 		$('#uploader').pluploadQueue({
 			url : '../upload.php',
 			filters : [
-				{title : "Image files", extensions : "jpg,gif,png"}
+				{title : "Image files", extensions : "jpg,gif,png,webp"}
 			],
 			rename: true,
 			flash_swf_url : '../../js/Moxie.swf',
@@ -50,7 +50,7 @@ used as it is.
 	@param {String} settings.url URL of the server-side upload handler.
 	@param {Number|String} [settings.chunk_size=0] Chunk size in bytes to slice the file into. Shorcuts with b, kb, mb, gb, tb suffixes also supported. `e.g. 204800 or "204800b" or "200kb"`. By default - disabled.
 	@param {String} [settings.file_data_name="file"] Name for the file field in Multipart formated message.
-	@param {Array} [settings.filters=[]] Set of file type filters, each one defined by hash of title and extensions. `e.g. {title : "Image files", extensions : "jpg,jpeg,gif,png"}`. Dispatches `plupload.FILE_EXTENSION_ERROR`
+	@param {Array} [settings.filters=[]] Set of file type filters, each one defined by hash of title and extensions. `e.g. {title : "Image files", extensions : "jpg,jpeg,gif,png,webp"}`. Dispatches `plupload.FILE_EXTENSION_ERROR`
 	@param {String} [settings.flash_swf_url] URL of the Flash swf.
 	@param {Object} [settings.headers] Custom headers to send with the upload. Hash of name/value pairs.
 	@param {Number|String} [settings.max_file_size] Maximum file size that the user can pick, in bytes. Optionally supports b, kb, mb, gb, tb suffixes. `e.g. "10mb" or "1gb"`. By default - not set. Dispatches `plupload.FILE_SIZE_ERROR`.
