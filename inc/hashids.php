@@ -19,6 +19,9 @@ class GmediaHashIDs {
 	private $_min_hash_length = 0;
 	private $_math_functions  = array();
 	private $_max_int_value   = 1000000000;
+	private $_lower_max_int_value;
+	private $_salt;
+	private $_guards;
 
 	/**
 	 * @param string $salt

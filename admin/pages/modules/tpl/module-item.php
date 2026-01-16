@@ -38,10 +38,10 @@ global $gmGallery, $gmDB, $gmCore, $user_ID, $gm_allowed_tags;
 			<div class="col-sm-4">
 				<div id="module_presets_list" class="module_presets module_presets_<?php echo esc_attr( $module['name'] ); ?>">
 					<h4 class="media-heading" style="margin-bottom:10px;">
-						<?php if ( 'free' === $module['status'] || ! empty( $gmGallery->options['license_name'] ) || ! empty( $module['buy'] ) ) { ?>
+						<?php if ( 'free' === $module['status'] || gmedia_has_premium_license() || ! empty( $module['buy'] ) ) { ?>
 							<a href="<?php echo esc_url( $gmCore->get_admin_url( array( 'page' => 'GrandMedia_Modules', 'preset_module' => $module['name'] ), array(), admin_url( 'admin.php' ) ) ); ?>" class="addpreset float-end"><span class="badge-success rounded-1">+</span></a>
 						<?php } else { ?>
-							<a href="https://codeasily.com/gmedia-premium/" title="<?php esc_attr_e( 'Get Premium', 'grand-media' ); ?>" class="addpreset float-end"><span class="badge-success rounded-1">+</span></a>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ); ?>" title="<?php esc_attr_e( 'Get Premium', 'grand-media' ); ?>" class="addpreset float-end"><span class="badge-success rounded-1">+</span></a>
 						<?php } ?>
 						<?php esc_html_e( 'Presets', 'grand-media' ); ?></h4>
 					<?php

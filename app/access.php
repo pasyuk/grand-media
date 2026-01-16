@@ -74,7 +74,13 @@ if ( $globaldata ) {
 			} elseif ( isset( $json->library_terms ) ) {
 				$args = (array) $json->library_terms;
 				if ( isset( $args['taxonomy'] ) ) {
-					$out = gmedia_ios_app_library_data( array( $args['taxonomy'] ), $args );
+					if ( ! is_array( $args['taxonomy'] ) ) {
+						$args['taxonomy'] = array( $args['taxonomy'] );
+					}
+					if ( empty( $args['taxonomy'] ) ) {
+						$args['taxonomy'] = array( 'gmedia_category', 'gmedia_album', 'gmedia_tag' );
+					}
+					$out = gmedia_ios_app_library_data( $args['taxonomy'], $args );
 				}
 			}
 		} else {
@@ -125,7 +131,10 @@ if ( $globaldata ) {
 				if ( ! is_array( $args['taxonomy'] ) ) {
 					$args['taxonomy'] = array( $args['taxonomy'] );
 				}
-				$out = gmedia_ios_app_library_data( (array) $args['taxonomy'], $args );
+				if ( empty( $args['taxonomy'] ) ) {
+					$args['taxonomy'] = array( 'gmedia_category', 'gmedia_album', 'gmedia_tag' );
+				}
+				$out = gmedia_ios_app_library_data( $args['taxonomy'], $args );
 			}
 		} else {
 			$out = gmedia_ios_app_library_data();

@@ -3,12 +3,12 @@
  * Plugin Name: Gmedia Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
- * Version: 1.24.1
+ * Version: 1.25.0
  * Author: Rattus
  * Author URI: https://codeasily.com/
- * Requires at least: 5.3.0
- * Tested up to: 6.8
- * Stable tag: 1.24.1
+ * Requires at least: 5.4.0
+ * Tested up to: 6.9
+ * Stable tag: 1.25.0
  * Text Domain: grand-media
  * Domain Path: /lang
  */
@@ -34,6 +34,69 @@
 // Stop direct call.
 defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 
+// Create a helper function for easy SDK access.
+if ( ! function_exists( 'gmg_fs' ) ) {
+	function gmg_fs() {
+		global $gmg_fs;
+
+		if ( ! isset( $gmg_fs ) ) {
+			// Include Freemius SDK.
+			require_once dirname( __FILE__ ) . '/vendor/freemius/start.php';
+			$gmg_fs = fs_dynamic_init(
+				array(
+					'id'                  => '20980',
+					'slug'                => 'grand-media',
+					'type'                => 'plugin',
+					'public_key'          => 'pk_377df98aab7989cdb496abbd72dea',
+					'is_premium'          => false,
+					'premium_suffix'      => 'Premium',
+					'has_premium_version' => false,
+					'has_addons'          => false,
+					'has_paid_plans'      => true,
+					'wp_org_gatekeeper'   => 'OA7#BoRiBNqdf52FvzEf!!074aRLPs8fspif$7K1#4u4Csys1fQlCecVcUTOs2mcpeVHi#C2j9d09fOTvbC0HloPT7fFee5WdS3G',
+					'menu'                => array(
+						'slug'    => 'GrandMedia',
+						'contact' => false,
+						'support' => false,
+					),
+				)
+			);
+		}
+
+		return $gmg_fs;
+	}
+
+	// Init Freemius.
+	gmg_fs();
+	// Signal that SDK was initiated.
+	do_action( 'gmg_fs_loaded' );
+
+	gmg_fs()->add_action( 'after_uninstall', 'gmg_fs_uninstall_cleanup' );
+}
+
+/**
+ * Freemius uninstall cleanup
+ */
+function gmg_fs_uninstall_cleanup() {
+	if ( ! function_exists( 'gmedia_uninstall' ) ) {
+		require_once dirname( __FILE__ ) . '/inc/functions.php';
+	}
+
+	if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+		global $wpdb;
+		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
+		if ( $blogs ) {
+			foreach ( $blogs as $blog ) {
+				switch_to_blog( $blog['blog_id'] );
+				gmedia_uninstall();
+				restore_current_blog();
+			}
+		}
+	} else {
+		gmedia_uninstall();
+	}
+}
+
 if ( ! class_exists( 'Gmedia' ) ) {
 	/**
 	 * Class Gmedia
@@ -47,6 +110,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 		public $do_module     = array();
 		public $import_styles = array();
 		public $shortcode     = array();
+		public $plugin_name   = '';
 
 		public function __construct() {
 
@@ -82,8 +146,6 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			register_activation_hook( $this->plugin_name, array( &$this, 'activate' ) );
 			register_deactivation_hook( $this->plugin_name, array( &$this, 'deactivate' ) );
 
-			// Register an uninstall hook to remove all tables & option automatic.
-			//register_uninstall_hook( $this->plugin_name, array(__CLASS__, 'uninstall' ) );
 
 			add_action( 'wp_enqueue_scripts', array( &$this, 'register_scripts_frontend' ), 20 );
 
@@ -110,7 +172,6 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			//add_action( 'after_plugin_row', array(&$this, 'check_message_version') );
 			//Add some links on the plugins page.
 			add_filter( 'plugin_row_meta', array( &$this, 'add_plugin_links' ), 10, 2 );
-			add_action( 'admin_footer', array( &$this, 'add_plugin_feedback' ) );
 
 		}
 
@@ -299,6 +360,15 @@ if ( ! class_exists( 'Gmedia' ) ) {
 				$db_options = array();
 			}
 			$this->options = array_merge( $default_options, $db_options );
+
+			if ( function_exists( 'gmg_fs' ) ) {
+				$fs = gmg_fs();
+				if ( $fs->has_active_valid_license() ) {
+					$this->options['license_key']  = 'freemius';
+					$this->options['license_key2'] = 'freemius';
+				}
+			}
+
 		}
 
 		public function load_dependencies() {
@@ -898,203 +968,11 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			if ( plugin_basename( __FILE__ ) === $file ) {
 				$links[] = '<a href="admin.php?page=GrandMedia_Settings">' . esc_html__( 'Settings', 'grand-media' ) . '</a>';
 				$links[] = '<a href="admin.php?page=GrandMedia_Modules">' . esc_html__( 'Modules', 'grand-media' ) . '</a>';
-				$links[] = '<a href="https://codeasily.com/product/one-site-license/">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
+				$links[] = '<a href="admin.php?page=GrandMedia-pricing">' . esc_html__( 'Get Premium', 'grand-media' ) . '</a>';
 				$links[] = '<a href="https://codeasily.com/donate/">' . esc_html__( 'Donate', 'grand-media' ) . '</a>';
 			}
 
 			return $links;
-		}
-
-		public function add_plugin_feedback() {
-			global $pagenow;
-			if ( 'plugins.php' !== $pagenow ) {
-				return;
-			}
-			?>
-			<script type="text/javascript">
-							jQuery( function( $ ) {
-								function gm_parse_query( s ) {
-									var j = {}, res = s.split( /&/gm ).map( function( e ) {
-										var o = e.split( /=/ ), pt = j;
-										if ( typeof o[1] === 'undefined' ) {o[1] = '';}
-										o[0].replace( /^(\w+)\[([^&]*)]/, '$1][$2' ).split( /]\[/ ).map( function( e, i, a ) {
-											if ( e === '' ) {e = Object.keys( pt ).length;}
-											pt = (pt[e] = pt[e] || (i === a.length - 1 ? decodeURIComponent( o[1].replace( /\+/, ' ' ) ) : {}));
-										} );
-									} );
-									return j;
-								}
-
-								$( 'tr[data-slug="grand-media"] .deactivate a' ).on( 'click', function( e ) {
-									e.preventDefault();
-									e.stopPropagation();
-
-									$( 'body' ).append( $( '#tmpl-gmedia-feedback' ).html() );
-									var deactivate_link = $( this ).attr( 'href' );
-									$( '.gm-button-submit-deactivate, .gm-button-skip-deactivate' ).attr( 'href', deactivate_link );
-									$( '#gmedia-feedback [name="reason"]' ).on( 'change', function() {
-										var parent = $( this ).closest( '.reason' );
-										parent.siblings( '.has-input' ).find( '.reason-input' ).hide().find( 'input' ).prop( 'disabled', true );
-										if ( parent.hasClass( 'has-input' ) ) {
-											if ( $( this ).is( ':checked' ) ) {
-												$( '.reason-input', parent ).show().find( 'input' ).prop( 'disabled', false );
-											}
-										}
-									} );
-									$( '#gmedia-feedback .gm-button-submit-deactivate' ).on( 'click', function( e ) {
-										e.preventDefault();
-
-										var feedback = $( '#gmedia-feedback input' ).serialize();
-										feedback = gm_parse_query( feedback );
-
-										if ( feedback.reason === '' ) {
-											window.location = deactivate_link;
-											return;
-										}
-
-										$( '#gmedia-feedback .spinner' ).addClass( 'is-active' );
-										var post_data = {
-											action: 'gmedia_feedback',
-											data: feedback,
-											_wpnonce_gmedia_feedback: '<?php echo esc_js( wp_create_nonce( 'gmedia_feedback' ) ); ?>'
-										};
-										$.post( ajaxurl, post_data ).always( function( data ) {
-											$( '#gmedia-feedback .spinner' ).removeClass( 'is-active' );
-											window.location = deactivate_link;
-										} );
-										return false;
-									} );
-									$( '#gmedia-feedback .gm-button-close' ).on( 'click', function() {
-										$( '#gmedia-feedback' ).remove();
-										return false;
-									} );
-
-									return false;
-								} );
-							} );
-			</script>
-			<script id="tmpl-gmedia-feedback" type="text/template">
-				<div class="gm-modal gm-modal-deactivation-feedback" id="gmedia-feedback">
-					<style>
-						.gm-modal {
-							position: fixed;
-							overflow: auto;
-							height: 100%;
-							width: 100%;
-							top: 0;
-							z-index: 100000;
-							background: rgba(0, 0, 0, 0.6);
-						}
-
-						.gm-modal-dialog {
-							position: absolute;
-							left: 50%;
-							padding-bottom: 30px;
-							top: 10%;
-							z-index: 100001;
-							max-width: 600px;
-							min-width: 220px;
-							transform: translateX(-50%);
-						}
-
-						.gm-modal-header {
-							border-bottom: #eeeeee solid 1px;
-							background: #fbfbfb;
-							padding: 15px 20px;
-							position: relative;
-							margin-bottom: -10px;
-						}
-
-						.gm-modal-header h4 {
-							margin: 0;
-							padding: 0;
-							text-transform: uppercase;
-							font-size: 1.2em;
-							font-weight: bold;
-							color: #cacaca;
-							text-shadow: 1px 1px 1px #fff;
-							letter-spacing: 0.6px;
-							-webkit-font-smoothing: antialiased;
-						}
-
-						.gm-modal-body,
-						.gm-modal-footer {
-							border: 0;
-							background: #fefefe;
-							padding: 20px;
-						}
-
-						.gm-modal-footer {
-							border-top: #eeeeee solid 1px;
-							text-align: right;
-						}
-
-						.gm-modal-body h3 {
-							margin-top: 0;
-							line-height: 1.5em;
-						}
-
-						.gm-modal-body .reason {
-							margin: 7px 0;
-						}
-
-						.gm-modal-body .reason-input {
-							margin: 3px 0 3px 22px;
-							display: none;
-						}
-
-						.gm-modal-body .reason-input input {
-							width: 100%;
-						}
-
-						.gm-modal-footer a.button {
-							margin-right: 7px;
-						}
-					</style>
-					<div class="gm-modal-dialog">
-						<div class="gm-modal-header"><h4><?php esc_html_e( 'Quick feedback', 'grand-media' ); ?></h4></div>
-						<div class="gm-modal-body">
-							<h3><strong><?php esc_html_e( 'If you have a moment, please let us know why you are deactivating:', 'grand-media' ); ?></strong></h3>
-							<div id="reasons-list">
-								<div class="reason">
-									<label><input type="radio" name="reason" value="" checked/>
-										<span><?php esc_html_e( 'It\'s a temporary deactivation. I\'m just debugging an issue.', 'grand-media' ); ?></span></label>
-								</div>
-								<div class="reason">
-									<label><input type="radio" name="reason" value="I no longer need the gallery plugin"/>
-										<span><?php esc_html_e( 'I no longer need the gallery plugin', 'grand-media' ); ?></span></label>
-								</div>
-								<div class="reason has-input">
-									<label><input type="radio" name="reason" value="I found a better gallery plugin"/>
-										<span><?php esc_html_e( 'I found a better gallery plugin', 'grand-media' ); ?></span></label>
-									<div class="reason-input">
-										<input type="text" name="better_plugin" disabled placeholder="<?php esc_html_e( 'What\'s the plugin\'s name?', 'grand-media' ); ?>"/>
-									</div>
-								</div>
-								<div class="reason">
-									<label><input type="radio" name="reason" value="The plugin is too coomplicated for me"/>
-										<span><?php esc_html_e( 'The plugin is too coomplicated for me', 'grand-media' ); ?></span></label>
-								</div>
-								<div class="reason">
-									<label><input type="radio" name="reason" value="The plugin broke my life"/>
-										<span><?php esc_html_e( 'The plugin broke my life', 'grand-media' ); ?></span></label>
-								</div>
-								<div class="reason has-input">
-									<label><input type="radio" name="reason" value="Other"/> <span><?php esc_html_e( 'Other', 'grand-media' ); ?></span></label>
-									<div class="reason-input"><input type="text" name="other_reason" value="" disabled/></div>
-								</div>
-							</div>
-						</div>
-						<div class="gm-modal-footer">
-							<span class="spinner" style="float: none;"></span>
-							<a href="#" class="button button-secondary gm-button-submit-deactivate"><?php esc_html_e( 'Submit & Deactivate', 'grand-media' ); ?></a>
-							<a href="#" class="button button-secondary gm-button-skip-deactivate"><?php esc_html_e( 'Skip', 'grand-media' ); ?></a>
-							<a href="#" class="button button-primary gm-button-close"><?php esc_html_e( 'Cancel', 'grand-media' ); ?></a>
-						</div>
-					</div>
-				</div>
-			</script>
-			<?php
 		}
 
 	}

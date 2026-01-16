@@ -12,8 +12,8 @@ class GmediaProcessor {
 	public $page;
 	public $gmediablank;
 	public $url;
-	public $msg;
-	public $error;
+	public $msg = array();
+	public $error = array();
 
 	public $display_mode;
 	public $taxonomy;

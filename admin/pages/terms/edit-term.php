@@ -32,10 +32,10 @@ do_action( 'gmedia_term_before_panel' );
 if ( 'album' === $taxterm ) {
 	$_module_preset = ! empty( $term->meta['_module_preset'][0] ) ? $term->meta['_module_preset'][0] : '';
 	$_module        = $gmCore->getModulePreset( $_module_preset );
-	$limitation     = empty( $gmGallery->options['license_key'] ) && in_array( $_module['module'], array( 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ), true );
+	$limitation     = ! gmedia_has_premium_license() && in_array( $_module['module'], array( 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ), true );
 	if ( $limitation ) {
 		?>
-		<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php echo wp_kses_post( __( 'Note: Free version allows you to show maximum 100 images per gallery on the frontend. Purchase license key <a href="https://codeasily.com/gmedia-premium/" target="_blank">here</a>. It\'s a one time payment.', 'grand-media' ) ); ?></div>
+		<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php echo wp_kses_post( sprintf( __( 'Note: Free version allows you to show maximum 100 images per gallery on the frontend. Purchase license key <a href="%s">here</a>.', 'grand-media' ), esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) ) ); ?></div>
 		<?php
 	}
 }
