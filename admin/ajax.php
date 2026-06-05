@@ -2261,6 +2261,11 @@ function gmedia_term_sortorder() {
 add_action( 'wp_ajax_gmedia_upgrade_process', 'gmedia_upgrade_process' );
 function gmedia_upgrade_process() {
 
+	check_ajax_referer( 'gmedia_ajax_long_operations', '_wpnonce_ajax_long_operations' );
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( array( 'message' => esc_html__( 'You are not allowed to run this process.', 'grand-media' ) ), 403 );
+	}
+
 	$db_version = get_option( 'gmediaDbVersion' );
 	$info       = get_transient( 'gmediaHeavyJob' );
 	$result     = array( 'content' => '' );

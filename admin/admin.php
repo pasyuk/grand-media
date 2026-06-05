@@ -195,7 +195,7 @@ class GmediaAdmin {
 
 		// check for upgrade.
 		if ( get_option( 'gmediaDbVersion' ) !== GMEDIA_DBVERSION ) {
-			if ( get_transient( 'gmediaUpgrade' ) || ( 'gmedia' === $gmCore->_get( 'do_update' ) ) ) {
+			if ( current_user_can( 'manage_options' ) && ( get_transient( 'gmediaUpgrade' ) || ( 'gmedia' === $gmCore->_get( 'do_update' ) ) ) ) {
 				$sideLinks['grandTitle'] = __( 'Updating GmediaGallery Plugin', 'grand-media' );
 				$sideLinks['sideLinks']  = '';
 				$gmProcessor->page       = 'GrandMedia_Update';
