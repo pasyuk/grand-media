@@ -115,7 +115,7 @@
     edit: function(props) {
       var id = props.attributes.id;
       var elclass = 'gmedia-id';
-      var image = gmedia_data.gmedia_image;
+      var image = gmedia_data ? gmedia_data.gmedia_image : undefined;
       var form_fields = [];
       var children = [];
       var options = [];
@@ -134,11 +134,13 @@
       );
 
       // Choose galleries
-      Object.keys(gmedia_data.galleries).forEach(function(key) {
-        options.push(
-          el('option', {value: gmedia_data.galleries[key].term_id}, gmedia_data.galleries[key].name)
-        );
-      });
+      if (gmedia_data.galleries) {
+        Object.keys(gmedia_data.galleries).forEach(function(key) {
+          options.push(
+            el('option', {value: gmedia_data.galleries[key].term_id}, gmedia_data.galleries[key].name)
+          );
+        });
+      }
       if (!id) {
         elclass += ' gmedia-required';
       }
@@ -155,8 +157,8 @@
       );
 
       if (id) {
-        var module = gmedia_data.galleries[id].module_name;
-        image = (gmedia_data.modules[module] && gmedia_data.modules[module].screenshot)
+        var module = (gmedia_data.galleries && gmedia_data.galleries[id]) ? gmedia_data.galleries[id].module_name : undefined;
+        image = (module && gmedia_data.modules[module] && gmedia_data.modules[module].screenshot)
           ? gmedia_data.modules[module].screenshot : undefined;
       }
       if (image) {
@@ -245,7 +247,7 @@
       var module = props.attributes.module_preset ? props.attributes.module_preset : module_name;
       var default_module = gmedia_data.default_module;
       var elclass = 'gmedia-id';
-      var image = gmedia_data.gmedia_image;
+      var image = gmedia_data ? gmedia_data.gmedia_image : undefined;
       var form_fields = [];
       var children = [];
       var modules = [];
@@ -279,11 +281,13 @@
       );
 
       // Choose galleries
-      Object.keys(gmedia_data.albums).forEach(function(key) {
-        options.push(
-          el('option', {value: gmedia_data.albums[key].term_id}, gmedia_data.albums[key].name)
-        );
-      });
+      if (gmedia_data.albums) {
+        Object.keys(gmedia_data.albums).forEach(function(key) {
+          options.push(
+            el('option', {value: gmedia_data.albums[key].term_id}, gmedia_data.albums[key].name)
+          );
+        });
+      }
       if (!id) {
         elclass += ' gmedia-required';
       }
@@ -294,17 +298,19 @@
       modules.push(
         el('option', {value: ''}, ' - default module -')
       );
-      Object.keys(gmedia_data.modules_options).forEach(function(key) {
-        options = [];
-        Object.keys(gmedia_data.modules_options[key].options).forEach(function(m) {
-          options.push(
-            el('option', {value: m}, gmedia_data.modules_options[key].options[m])
+      if (gmedia_data.modules_options) {
+        Object.keys(gmedia_data.modules_options).forEach(function(key) {
+          options = [];
+          Object.keys(gmedia_data.modules_options[key].options).forEach(function(m) {
+            options.push(
+              el('option', {value: m}, gmedia_data.modules_options[key].options[m])
+            );
+          });
+          modules.push(
+            el('optgroup', {label: gmedia_data.modules_options[key].title, module: key}, null, options)
           );
         });
-        modules.push(
-          el('optgroup', {label: gmedia_data.modules_options[key].title, module: key}, null, options)
-        );
-      });
+      }
       form_fields.push(
         el('select', {className: 'gmedia-overwrite-module', value: module, onChange: setGallery}, modules)
       );
@@ -318,8 +324,8 @@
       );
 
       if (id) {
-        var term_module = gmedia_data.albums[id].module_name;
-        image = module_name ? gmedia_data.modules[module_name].screenshot : (term_module ? gmedia_data.modules[term_module].screenshot : gmedia_data.modules[default_module].screenshot);
+        var term_module = (gmedia_data.albums && gmedia_data.albums[id]) ? gmedia_data.albums[id].module_name : undefined;
+        image = (module_name && gmedia_data.modules[module_name]) ? gmedia_data.modules[module_name].screenshot : ((term_module && gmedia_data.modules[term_module]) ? gmedia_data.modules[term_module].screenshot : (gmedia_data.modules[default_module] ? gmedia_data.modules[default_module].screenshot : undefined));
       }
       children.push(
         el('img', {className: 'gmedia-module-screenshot', src: image})
@@ -397,7 +403,7 @@
       var module = props.attributes.module_preset ? props.attributes.module_preset : module_name;
       var default_module = gmedia_data.default_module;
       var elclass = 'gmedia-id';
-      var image = gmedia_data.gmedia_image;
+      var image = gmedia_data ? gmedia_data.gmedia_image : undefined;
       var form_fields = [];
       var children = [];
       var modules = [];
@@ -431,11 +437,13 @@
       );
 
       // Choose galleries
-      Object.keys(gmedia_data.categories).forEach(function(key) {
-        options.push(
-          el('option', {value: gmedia_data.categories[key].term_id}, gmedia_data.categories[key].name)
-        );
-      });
+      if (gmedia_data.categories) {
+        Object.keys(gmedia_data.categories).forEach(function(key) {
+          options.push(
+            el('option', {value: gmedia_data.categories[key].term_id}, gmedia_data.categories[key].name)
+          );
+        });
+      }
       if (!id) {
         elclass += ' gmedia-required';
       }
@@ -446,17 +454,19 @@
       modules.push(
         el('option', {value: ''}, ' - default module -')
       );
-      Object.keys(gmedia_data.modules_options).forEach(function(key) {
-        options = [];
-        Object.keys(gmedia_data.modules_options[key].options).forEach(function(m) {
-          options.push(
-            el('option', {value: m}, gmedia_data.modules_options[key].options[m])
+      if (gmedia_data.modules_options) {
+        Object.keys(gmedia_data.modules_options).forEach(function(key) {
+          options = [];
+          Object.keys(gmedia_data.modules_options[key].options).forEach(function(m) {
+            options.push(
+              el('option', {value: m}, gmedia_data.modules_options[key].options[m])
+            );
+          });
+          modules.push(
+            el('optgroup', {label: gmedia_data.modules_options[key].title, module: key}, null, options)
           );
         });
-        modules.push(
-          el('optgroup', {label: gmedia_data.modules_options[key].title, module: key}, null, options)
-        );
-      });
+      }
       form_fields.push(
         el('select', {className: 'gmedia-overwrite-module', value: module, onChange: setGallery}, modules)
       );
@@ -470,8 +480,8 @@
       );
 
       if (id) {
-        var term_module = gmedia_data.categories[id].module_name;
-        image = module_name ? gmedia_data.modules[module_name].screenshot : (term_module ? gmedia_data.modules[term_module].screenshot : gmedia_data.modules[default_module].screenshot);
+        var term_module = (gmedia_data.categories && gmedia_data.categories[id]) ? gmedia_data.categories[id].module_name : undefined;
+        image = (module_name && gmedia_data.modules[module_name]) ? gmedia_data.modules[module_name].screenshot : ((term_module && gmedia_data.modules[term_module]) ? gmedia_data.modules[term_module].screenshot : (gmedia_data.modules[default_module] ? gmedia_data.modules[default_module].screenshot : undefined));
       }
       children.push(
         el('img', {className: 'gmedia-module-screenshot', src: image})
@@ -549,7 +559,7 @@
       var module = props.attributes.module_preset ? props.attributes.module_preset : module_name;
       var default_module = gmedia_data.default_module;
       var elclass = 'gmedia-id';
-      var image = gmedia_data.gmedia_image;
+      var image = gmedia_data ? gmedia_data.gmedia_image : undefined;
       var form_fields = [];
       var children = [];
       var modules = [];
@@ -582,11 +592,13 @@
         el('h3', null, 'Gmedia Tag')
       );
       // Choose galleries
-      Object.keys(gmedia_data.tags).forEach(function(key) {
-        options.push(
-          el('option', {value: gmedia_data.tags[key].term_id}, gmedia_data.tags[key].name)
-        );
-      });
+      if (gmedia_data.tags) {
+        Object.keys(gmedia_data.tags).forEach(function(key) {
+          options.push(
+            el('option', {value: gmedia_data.tags[key].term_id}, gmedia_data.tags[key].name)
+          );
+        });
+      }
       if (!id) {
         elclass += ' gmedia-required';
       }
@@ -597,17 +609,19 @@
       modules.push(
         el('option', {value: ''}, ' - default module -')
       );
-      Object.keys(gmedia_data.modules_options).forEach(function(key) {
-        options = [];
-        Object.keys(gmedia_data.modules_options[key].options).forEach(function(m) {
-          options.push(
-            el('option', {value: m}, gmedia_data.modules_options[key].options[m])
+      if (gmedia_data.modules_options) {
+        Object.keys(gmedia_data.modules_options).forEach(function(key) {
+          options = [];
+          Object.keys(gmedia_data.modules_options[key].options).forEach(function(m) {
+            options.push(
+              el('option', {value: m}, gmedia_data.modules_options[key].options[m])
+            );
+          });
+          modules.push(
+            el('optgroup', {label: gmedia_data.modules_options[key].title, module: key}, null, options)
           );
         });
-        modules.push(
-          el('optgroup', {label: gmedia_data.modules_options[key].title, module: key}, null, options)
-        );
-      });
+      }
       form_fields.push(
         el('select', {className: 'gmedia-overwrite-module', value: module, onChange: setGallery}, modules)
       );
@@ -621,8 +635,8 @@
       );
 
       if (id) {
-        var term_module = gmedia_data.tags[id].module_name;
-        image = module_name ? gmedia_data.modules[module_name].screenshot : (term_module ? gmedia_data.modules[term_module].screenshot : gmedia_data.modules[default_module].screenshot);
+        var term_module = (gmedia_data.tags && gmedia_data.tags[id]) ? gmedia_data.tags[id].module_name : undefined;
+        image = (module_name && gmedia_data.modules[module_name]) ? gmedia_data.modules[module_name].screenshot : ((term_module && gmedia_data.modules[term_module]) ? gmedia_data.modules[term_module].screenshot : (gmedia_data.modules[default_module] ? gmedia_data.modules[default_module].screenshot : undefined));
       }
       children.push(
         el('img', {className: 'gmedia-module-screenshot', src: image})

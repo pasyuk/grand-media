@@ -161,12 +161,20 @@ class gmediaPermalinks {
 		$endpoint = ! empty( $gmGallery->options['endpoint'] ) ? $gmGallery->options['endpoint'] : 'gmedia';
 		if ( isset( $wp->query_vars[ $endpoint ] ) && isset( $wp->query_vars['t'] ) && in_array( $wp->query_vars['t'], array( 'g', 'a', 't', 's', 'k', 'u' ), true ) ) {
 
-			global $wp_query;
+			global $wp_query, $post;
 			$wp_query->is_single  = false;
 			$wp_query->is_page    = false;
 			$wp_query->is_archive = false;
 			$wp_query->is_search  = false;
 			$wp_query->is_home    = false;
+
+			$post = new stdClass();
+			$post->ID = 0;
+			$post->post_content = '';
+			$post->post_excerpt = '';
+			$post->post_title = '';
+			$post->post_type = 'gmedia';
+			$post->filter = 'raw';
 
 			/*
 			$template = get_query_template( 'gmedia-gallery' );
@@ -191,12 +199,20 @@ class gmediaPermalinks {
 		$is_app = ( isset( $wp->query_vars['gmedia-app'] ) && ! empty( $wp->query_vars['gmedia-app'] ) );
 		if ( $is_app ) {
 
-			global $wp_query;
+			global $wp_query, $post;
 			$wp_query->is_single  = false;
 			$wp_query->is_page    = false;
 			$wp_query->is_archive = false;
 			$wp_query->is_search  = false;
 			$wp_query->is_home    = false;
+
+			$post = new stdClass();
+			$post->ID = 0;
+			$post->post_content = '';
+			$post->post_excerpt = '';
+			$post->post_title = '';
+			$post->post_type = 'gmedia';
+			$post->filter = 'raw';
 
 			$template = GMEDIA_ABSPATH . 'app/access.php';
 
