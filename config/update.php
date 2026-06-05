@@ -5,6 +5,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
  * Update Gmedia plugin
  */
 function gmedia_upgrade_required_admin_notice() {
+	$can_update = current_user_can( 'manage_options' );
 	?>
 	<div id="message" class="updated gmedia-message">
 		<p><?php esc_html_e( '<strong>GmediaGallery Database Update Required</strong> &#8211; We need to update your install to the latest version.', 'grand-media' ); ?></p>
@@ -13,15 +14,19 @@ function gmedia_upgrade_required_admin_notice() {
 
 		<p><?php esc_html_e( 'The update process may take a little while, so please be patient.', 'grand-media' ); ?></p>
 
-		<p class="submit">
-			<a href="<?php echo esc_url( add_query_arg( 'do_update', 'gmedia', admin_url( 'admin.php?page=GrandMedia' ) ) ); ?>" class="gm-update-now button-primary"><?php esc_html_e( 'Run the updater', 'grand-media' ); ?></a>
-		</p>
+		<?php if ( $can_update ) { ?>
+			<p class="submit">
+				<a href="<?php echo esc_url( add_query_arg( 'do_update', 'gmedia', admin_url( 'admin.php?page=GrandMedia' ) ) ); ?>" class="gm-update-now button-primary"><?php esc_html_e( 'Run the updater', 'grand-media' ); ?></a>
+			</p>
+		<?php } ?>
 	</div>
-	<script type="text/javascript">
-			jQuery('.gm-update-now').click('click', function() {
-				return confirm('<?php echo esc_js( esc_html__( 'It is strongly recommended that you backup your database before proceeding. Are you sure you wish to run the updater now?', 'grand-media' ) ); ?>');
-			});
-	</script>
+	<?php if ( $can_update ) { ?>
+		<script type="text/javascript">
+				jQuery('.gm-update-now').click('click', function() {
+					return confirm('<?php echo esc_js( esc_html__( 'It is strongly recommended that you backup your database before proceeding. Are you sure you wish to run the updater now?', 'grand-media' ) ); ?>');
+				});
+		</script>
+	<?php } ?>
 	<?php
 
 }
@@ -38,6 +43,7 @@ function gmedia_upgrade_process_admin_notice() {
 
 function gmedia_upgrade_progress_panel() {
 	gmedia_do_update();
+	$nonce = wp_create_nonce( 'gmedia_ajax_long_operations' );
 	?>
 	<div id="gmediaUpdate" class="card m-0 mw-100 p-0">
 		<div class="card-body">
@@ -56,7 +62,7 @@ function gmedia_upgrade_progress_panel() {
 							type: 'get',
 							dataType: 'json',
 							url: ajaxurl,
-							data: {action: 'gmedia_upgrade_process'},
+							data: {action: 'gmedia_upgrade_process', _wpnonce_ajax_long_operations: '<?php echo esc_js( $nonce ); ?>'},
 						}).done(function(data) {
 							if (data.content) {
 								jQuery('#gmUpdateProgress').html(data.content);
