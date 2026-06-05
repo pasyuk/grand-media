@@ -61,29 +61,35 @@ find . -type f -name "*.php" -not -path "./vendor/*" -print0 | xargs -0 -n1 php 
 php -v
 ```
 
-- WP-CLI is currently a tooling gap. If `wp` is not available, record that and use the WordPress admin UI for activation and smoke checks:
+- Use `wp-dev` for WP-CLI checks against the Local by WP Engine `wp-dev.loc` site. This wrapper runs the official WP-CLI Phar through the site's Local PHP runtime and Local `php.ini`, so PHP uses the correct MySQL socket:
 
 ```bash
-wp core version
+wp-dev --info
+wp-dev core version
+wp-dev plugin status grand-media
 ```
 
-Expected if the gap still exists:
+Current expected baseline:
 
 ```text
-zsh:1: command not found: wp
+WP-CLI version: 2.12.0
+PHP binary: /Users/simka/Library/Application Support/Local/lightning-services/php-8.4.10+0/bin/darwin-arm64/bin/php
+php.ini used: /Users/simka/Library/Application Support/Local/run/OTxPEpfwF/conf/php/php.ini
+WordPress core: 7.0
+Gmedia Gallery: Active, 1.25.0
 ```
 
 ### Activation
 
 Use one of these paths:
 
-- Preferred once WP-CLI is available:
+- Preferred:
 
 ```bash
-wp plugin activate grand-media
+wp-dev plugin activate grand-media
 ```
 
-- Current fallback: activate Gmedia Gallery in WordPress admin under Plugins.
+- Fallback: activate Gmedia Gallery in WordPress admin under Plugins.
 
 Pass criteria:
 
@@ -205,6 +211,16 @@ Pass criteria:
 - Premium buttons and notices match access state.
 - Existing legacy access is not broken unintentionally.
 
+For controlled local state changes, use the manual harness documented in [Freemius And Licensing](freemius-and-licensing.md):
+
+```bash
+wp-dev eval-file tests/manual/license-state-matrix.php snapshot /private/tmp/gmedia-license-state-backup.json
+wp-dev eval-file tests/manual/license-state-matrix.php current
+wp-dev eval-file tests/manual/license-state-matrix.php restore /private/tmp/gmedia-license-state-backup.json
+```
+
+Backup files can contain serialized account/license state. Keep them outside the repo and restore the baseline after every scenario.
+
 ### Cleanup
 
 After local verification:
@@ -216,9 +232,10 @@ After local verification:
 
 ## Local Tooling Notes
 
-- PHP CLI was verified locally as PHP 8.4.3 on 2026-06-05.
-- `wp` CLI was not found in PATH on 2026-06-05.
-- If WP-CLI becomes part of release verification, first document the Local by WP Engine-compatible invocation.
+- Generic Homebrew PHP was verified as PHP 8.5.7 on 2026-06-15, but it does not use the Local by WP Engine MySQL socket by default.
+- The `wp-dev` wrapper was installed on 2026-06-15 at `~/.local/bin/wp-dev`.
+- `wp-dev` uses `~/.local/bin/wp-cli.phar`, Local site id `OTxPEpfwF`, and the `wp-dev.loc` Local PHP config at `~/Library/Application Support/Local/run/OTxPEpfwF/conf/php/php.ini`.
+- Direct PHP or WP-CLI commands that touch the Local MySQL socket may need unsandboxed execution in Codex because the socket lives outside the plugin workspace.
 
 ## Rollback Notes
 
