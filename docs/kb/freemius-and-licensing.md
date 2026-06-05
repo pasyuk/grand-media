@@ -46,6 +46,12 @@ Important: an old local `FREEMIUS_INTEGRATION_GUIDE.md` note described a differe
 
 Current priority is Freemius first, legacy second, none third.
 
+Bundled SDK note verified on 2026-06-05:
+
+- `vendor/freemius/includes/class-freemius.php` implements `can_use_premium_code()` as trial access or `has_features_enabled_license()`.
+- `has_features_enabled_license()` checks whether the current license has enabled features; it does not obviously check expiration in the inspected SDK code.
+- Context7 Freemius WordPress SDK docs emphasize `is__premium_only()` / `__premium_only` for build-time premium-code stripping, and `is_paying()` for active paid customer checks. That does not automatically mean Gmedia should switch helpers, but it makes the intended expired-license behavior a product decision that must be verified before changing access logic.
+
 ## Settings UI Behavior
 
 `admin/pages/settings/tpl/license.php` derives:
@@ -88,6 +94,30 @@ Observed current code:
 - `admin/pages/modules/tpl/module-item.php` allows free modules, premium-licensed users, or modules with a `buy` link to proceed; otherwise it points users to `GrandMedia-pricing`.
 
 Manual verification is still required for premium modules in the admin UI.
+
+## Local Admin Verification
+
+Verified on 2026-06-05 in the local WordPress admin at `https://wp-dev.loc/`.
+
+Public-safe observations only:
+
+- The site is logged into WordPress admin; no login screen appeared during checks.
+- The Freemius account page is connected and shows a premium plan state that is expired.
+- The account page contains sensitive license/billing data; do not copy page details into public issues or docs.
+- `GrandMedia_Settings` shows the Premium Settings pane with premium controls enabled.
+- `GrandMedia_Settings` does not show the no-license CTA, the legacy activation section, or the legacy-active notice in the current local state.
+- `GrandMedia_Modules` loaded successfully and the sampled local module list did not show a "Get Premium" button.
+
+Interpretation:
+
+- Current local behavior appears to grant premium access in an expired Freemius plan state.
+- This may be intended Freemius/Gmedia policy or a gating bug; do not change behavior until the product decision is confirmed.
+- Follow-up issue: GitHub #16, "Review expired Freemius plan premium access gating".
+
+Tooling gap:
+
+- Direct `php -r` bootstrap of WordPress failed from the shell because the Local by WP Engine database socket is not available to the default PHP CLI connection.
+- Until WP-CLI or the Local DB socket is configured for CLI use, admin verification must be browser-based or done through an explicitly approved backup/restore workflow.
 
 ## Support Rules
 
@@ -146,10 +176,10 @@ These scenarios must be tested in WordPress admin before closing the licensing r
 | --- | --- | --- |
 | No license | `gmedia_get_license_type()` returns `none`; premium fieldset disabled; pricing CTA visible | Not manually verified |
 | Legacy license only | `gmedia_get_license_type()` returns `legacy`; premium feature fieldset enabled | Not manually verified |
-| Freemius license only | `gmedia_get_license_type()` returns `freemius`; Freemius takes priority | Not manually verified |
+| Freemius license only | `gmedia_get_license_type()` returns `freemius`; Freemius takes priority | Partially verified in local admin; current connected Freemius state is expired and still appears to grant premium access. See #16 |
 | Both legacy and Freemius | `freemius` takes priority; legacy acts as fallback only if Freemius access is unavailable | Not manually verified |
 | Legacy activation form | Current processor appears to still call `codeasily.com/rest/gmedia-key.php`; guide says this may be blocked | Needs verification |
-| Module buttons | Premium access should be controlled by `gmedia_has_premium_license()` | Not manually verified |
+| Module buttons | Premium access should be controlled by `gmedia_has_premium_license()` | Partially verified in local admin for current connected Freemius state; sampled modules did not show "Get Premium" |
 | Settings reset | Existing legacy license fields should be preserved | Not manually verified |
 
 ## Open Risks
@@ -157,4 +187,5 @@ These scenarios must be tested in WordPress admin before closing the licensing r
 - Retired local notes and current code disagreed on whether new legacy activations are blocked.
 - Retired local notes described a Freemius config that differed from the current `grand-media.php` config.
 - `gmedia_has_premium_license()` uses `can_use_premium_code()`; verify this is the intended Freemius method for the current wp.org/free plugin flow.
+- Expired Freemius plan access is ambiguous in the current local verification and is tracked separately in GitHub #16.
 - Premium/free boundary audit is intentionally deferred until these license paths are verified.
