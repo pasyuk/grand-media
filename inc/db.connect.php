@@ -86,20 +86,19 @@ class GmediaDB {
 				$matches[0]
 			);
 
-			$n         = '%';
 			$searchand = '';
 
 			foreach ( (array) $search_terms as $term ) {
-				$term = wp_slash( $term );
+				$search_like = '%' . $wpdb->esc_like( $term ) . '%';
 
-				$search .= "{$searchand}(($wpdb->posts.post_title LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_content LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_name LIKE '{$n}{$term}{$n}'))";
+				$search .= $wpdb->prepare( "{$searchand}(($wpdb->posts.post_title LIKE %s) OR ($wpdb->posts.post_content LIKE %s) OR ($wpdb->posts.post_name LIKE %s))", $search_like, $search_like, $search_like );
 
 				$searchand = ' AND ';
 			}
 
-			$term = esc_sql( $s );
 			if ( count( $search_terms ) > 1 && $search_terms[0] !== $s ) {
-				$search .= " OR ($wpdb->posts.post_title LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_content LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_name LIKE '{$n}{$term}{$n}')";
+				$search_like = '%' . $wpdb->esc_like( $s ) . '%';
+				$search      .= $wpdb->prepare( " OR ($wpdb->posts.post_title LIKE %s) OR ($wpdb->posts.post_content LIKE %s) OR ($wpdb->posts.post_name LIKE %s)", $search_like, $search_like, $search_like );
 			}
 
 			if ( ! empty( $search ) ) {
@@ -235,20 +234,19 @@ class GmediaDB {
 				$matches[0]
 			);
 
-			$n         = '%';
 			$searchand = '';
 
 			foreach ( (array) $search_terms as $term ) {
-				$term = wp_slash( $term );
+				$search_like = '%' . $wpdb->esc_like( $term ) . '%';
 
-				$search .= "{$searchand}(($wpdb->posts.post_title LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_content LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_name LIKE '{$n}{$term}{$n}'))";
+				$search .= $wpdb->prepare( "{$searchand}(($wpdb->posts.post_title LIKE %s) OR ($wpdb->posts.post_content LIKE %s) OR ($wpdb->posts.post_name LIKE %s))", $search_like, $search_like, $search_like );
 
 				$searchand = ' AND ';
 			}
 
-			$term = esc_sql( $s );
 			if ( count( $search_terms ) > 1 && $search_terms[0] !== $s ) {
-				$search .= " OR ($wpdb->posts.post_title LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_content LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_name LIKE '{$n}{$term}{$n}')";
+				$search_like = '%' . $wpdb->esc_like( $s ) . '%';
+				$search      .= $wpdb->prepare( " OR ($wpdb->posts.post_title LIKE %s) OR ($wpdb->posts.post_content LIKE %s) OR ($wpdb->posts.post_name LIKE %s)", $search_like, $search_like, $search_like );
 			}
 
 			if ( ! empty( $search ) ) {
@@ -1730,12 +1728,11 @@ class GmediaDB {
 			} else {
 				$q['search_terms'] = $q['s'];
 			}
-			$n         = '%';
 			$searchand = '';
 			foreach ( (array) $q['search_terms'] as $term ) {
-				$term = esc_sql( addcslashes( $term, '_%\\' ) );
+				$search_like = '%' . $wpdb->esc_like( $term ) . '%';
 
-				$search .= "{$searchand}(({$wpdb->prefix}gmedia.title LIKE '{$n}{$term}{$n}') OR ({$wpdb->prefix}gmedia.description LIKE '{$n}{$term}{$n}') OR ({$wpdb->prefix}gmedia.gmuid LIKE '{$n}{$term}{$n}'))";
+				$search .= $wpdb->prepare( "{$searchand}(({$wpdb->prefix}gmedia.title LIKE %s) OR ({$wpdb->prefix}gmedia.description LIKE %s) OR ({$wpdb->prefix}gmedia.gmuid LIKE %s))", $search_like, $search_like, $search_like );
 
 				$searchand = ' AND ';
 			}

@@ -60,18 +60,17 @@ if ( isset( $_GET['s'] ) ) {
 			$matches[0]
 		);
 
-		$n         = '%';
 		$searchand = '';
 
 		foreach ( (array) $search_terms as $search_term ) {
-			$search_term = wp_slash( $search_term );
-			$log_search  .= "{$searchand}(g.title LIKE '{$n}{$search_term}{$n}') OR (g.description LIKE '{$n}{$search_term}{$n}')";
+			$search_like = '%' . $wpdb->esc_like( $search_term ) . '%';
+			$log_search  .= $wpdb->prepare( "{$searchand}((g.title LIKE %s) OR (g.description LIKE %s))", $search_like, $search_like );
 			$searchand   = ' AND ';
 		}
 
-		$search_term = esc_sql( $log_s );
 		if ( count( $search_terms ) > 1 && $search_terms[0] !== $log_s ) {
-			$log_search .= " OR (g.title LIKE '{$n}{$search_term}{$n}') OR (g.description LIKE '{$n}{$search_term}{$n}')";
+			$search_like = '%' . $wpdb->esc_like( $log_s ) . '%';
+			$log_search  .= $wpdb->prepare( ' OR ((g.title LIKE %s) OR (g.description LIKE %s))', $search_like, $search_like );
 		}
 
 		if ( ! empty( $log_search ) ) {
