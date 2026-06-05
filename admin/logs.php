@@ -64,7 +64,7 @@ if ( isset( $_GET['s'] ) ) {
 		$searchand = '';
 
 		foreach ( (array) $search_terms as $search_term ) {
-			$search_term = addslashes_gpc( $search_term );
+			$search_term = wp_slash( $search_term );
 			$log_search  .= "{$searchand}(g.title LIKE '{$n}{$search_term}{$n}') OR (g.description LIKE '{$n}{$search_term}{$n}')";
 			$searchand   = ' AND ';
 		}

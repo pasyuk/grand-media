@@ -90,7 +90,7 @@ class GmediaDB {
 			$searchand = '';
 
 			foreach ( (array) $search_terms as $term ) {
-				$term = addslashes_gpc( $term );
+				$term = wp_slash( $term );
 
 				$search .= "{$searchand}(($wpdb->posts.post_title LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_content LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_name LIKE '{$n}{$term}{$n}'))";
 
@@ -239,7 +239,7 @@ class GmediaDB {
 			$searchand = '';
 
 			foreach ( (array) $search_terms as $term ) {
-				$term = addslashes_gpc( $term );
+				$term = wp_slash( $term );
 
 				$search .= "{$searchand}(($wpdb->posts.post_title LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_content LIKE '{$n}{$term}{$n}') OR ($wpdb->posts.post_name LIKE '{$n}{$term}{$n}'))";
 
@@ -2100,7 +2100,7 @@ class GmediaDB {
 
 		// Author/user stuff for ID.
 		if ( ! empty( $q['author'] ) && '0' !== $q['author'] ) {
-			$q['author'] = addslashes_gpc( '' . urldecode( $q['author'] ) );
+			$q['author'] = wp_slash( '' . urldecode( $q['author'] ) );
 			$authors     = array_unique( array_map( 'intval', preg_split( '/[,\s]+/', $q['author'] ) ) );
 			foreach ( $authors as $author ) {
 				$key         = $author > 0 ? 'author__in' : 'author__not_in';
@@ -2161,7 +2161,7 @@ class GmediaDB {
 				$allowed_keys[] = 'custom';
 			}
 			$q['orderby'] = urldecode( $q['orderby'] );
-			$q['orderby'] = addslashes_gpc( $q['orderby'] );
+			$q['orderby'] = wp_slash( $q['orderby'] );
 			if ( in_array( $q['orderby'], array( '_created_timestamp', 'views', 'likes', '_size' ), true ) ) {
 				$q['meta_key'] = $q['orderby'];
 				$q['orderby']  = 'meta_value_num';
@@ -2382,7 +2382,7 @@ class GmediaDB {
 		if ( isset( $q['cat'] ) ) {
 			if ( ! empty( $q['cat'] ) && ( '0' !== $q['cat'] ) && ( 0 !== $q['cat'] ) ) {
 				$q['cat']  = '' . urldecode( $q['cat'] ) . '';
-				$q['cat']  = addslashes_gpc( $q['cat'] );
+				$q['cat']  = wp_slash( $q['cat'] );
 				$cat_array = preg_split( '/[,\s]+/', $q['cat'] );
 				$q['cat']  = '';
 				$req_cats  = array();
@@ -2856,7 +2856,7 @@ class GmediaDB {
 		if ( isset( $q['alb'] ) ) {
 			if ( ! empty( $q['alb'] ) && ( '0' !== $q['alb'] ) && ( 0 !== $q['alb'] ) ) {
 				$q['alb']  = '' . urldecode( $q['alb'] ) . '';
-				$q['alb']  = addslashes_gpc( $q['alb'] );
+				$q['alb']  = wp_slash( $q['alb'] );
 				$alb_array = preg_split( '/[,\s]+/', $q['alb'] );
 				$q['alb']  = '';
 				$req_albs  = array();
