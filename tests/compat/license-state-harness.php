@@ -13,7 +13,7 @@ if ( ! is_file( $script ) ) {
 	if ( false === $code ) {
 		$failures[] = 'Could not read manual license state matrix harness';
 	} else {
-		foreach ( array( 'snapshot', 'restore', 'current', 'apply-scenario' ) as $command ) {
+		foreach ( array( 'snapshot', 'restore', 'current', 'apply-scenario', 'verify-reset-preserves-legacy' ) as $command ) {
 			if ( false === strpos( $code, "'{$command}'" ) && false === strpos( $code, "\"{$command}\"" ) ) {
 				$failures[] = "Harness must support {$command} command";
 			}
@@ -29,6 +29,16 @@ if ( ! is_file( $script ) ) {
 			if ( false === strpos( $code, $required_text ) ) {
 				$failures[] = "Harness must include {$required_text}";
 			}
+		}
+
+		foreach ( array( 'GmediaProcessor_Settings', 'gmedia_settings_reset', '_wpnonce_settings', 'load_options' ) as $reset_text ) {
+			if ( false === strpos( $code, $reset_text ) ) {
+				$failures[] = "Harness reset verification must include {$reset_text}";
+			}
+		}
+
+		if ( false === strpos( $code, 'esc_like' ) ) {
+			$failures[] = 'Harness must escape SQL LIKE option prefixes';
 		}
 	}
 }

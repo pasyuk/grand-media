@@ -7,6 +7,7 @@
  *   wp-dev eval-file tests/manual/license-state-matrix.php apply-scenario no-license
  *   wp-dev eval-file tests/manual/license-state-matrix.php apply-scenario legacy-only
  *   wp-dev eval-file tests/manual/license-state-matrix.php apply-scenario both /private/tmp/gmedia-license-backup.json
+ *   wp-dev eval-file tests/manual/license-state-matrix.php verify-reset-preserves-legacy
  *   wp-dev eval-file tests/manual/license-state-matrix.php restore /private/tmp/gmedia-license-backup.json
  *
  * Keep backup files outside the repo. They can contain serialized account/license state.
@@ -25,18 +26,19 @@ function gmedia_license_harness_usage() {
 		"  snapshot <backup-file>\n" .
 		"  restore <backup-file>\n" .
 		"  current\n" .
-		"  apply-scenario <no-license|legacy-only|both> [backup-file]\n"
+		"  apply-scenario <no-license|legacy-only|both> [backup-file]\n" .
+		"  verify-reset-preserves-legacy\n"
 	);
 	exit( 2 );
 }
 
 function gmedia_license_harness_option_patterns() {
 	return array(
-		'fs_%',
-		'_transient_fs_%',
-		'_transient_timeout_fs_%',
-		'_site_transient_fs_%',
-		'_site_transient_timeout_fs_%',
+		'fs_',
+		'_transient_fs_',
+		'_transient_timeout_fs_',
+		'_site_transient_fs_',
+		'_site_transient_timeout_fs_',
 	);
 }
 
@@ -57,7 +59,8 @@ function gmedia_license_harness_collect_option_names() {
 
 	$names = gmedia_license_harness_fixed_options();
 
-	foreach ( gmedia_license_harness_option_patterns() as $pattern ) {
+	foreach ( gmedia_license_harness_option_patterns() as $prefix ) {
+		$pattern = $wpdb->esc_like( $prefix ) . '%';
 		$sql  = $wpdb->prepare( "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s", $pattern );
 		$rows = $wpdb->get_col( $sql );
 		foreach ( $rows as $row ) {
@@ -124,6 +127,15 @@ function gmedia_license_harness_redact( $value ) {
 	}
 
 	return empty( $value ) ? 'empty' : 'present';
+}
+
+function gmedia_license_harness_legacy_test_values() {
+	return array(
+		'license_name' => 'Manual Test Legacy License',
+		'purchase_key' => 'manual-test-purchase-key',
+		'license_key'  => 'manual-test-license-key',
+		'license_key2' => 'manual-test-license-key-2',
+	);
 }
 
 function gmedia_license_harness_snapshot( $file ) {
@@ -231,6 +243,96 @@ function gmedia_license_harness_update_legacy_fields( $enabled ) {
 	$options['license_key2'] = '';
 
 	update_option( 'gmediaOptions', $options );
+}
+
+function gmedia_license_harness_set_admin_context() {
+	global $gmCore;
+
+	$admins = get_users(
+		array(
+			'role'   => 'administrator',
+			'number' => 1,
+			'fields' => 'ID',
+		)
+	);
+	if ( empty( $admins ) ) {
+		fwrite( STDERR, "No administrator user found for reset verification.\n" );
+		exit( 1 );
+	}
+
+	wp_set_current_user( (int) $admins[0] );
+	if ( isset( $gmCore->caps ) && is_array( $gmCore->caps ) ) {
+		$gmCore->caps['gmedia_settings'] = true;
+	}
+}
+
+function gmedia_license_harness_verify_reset_preserves_legacy() {
+	global $gmGallery;
+
+	gmedia_license_harness_set_admin_context();
+
+	$options = get_option( 'gmediaOptions', array() );
+	if ( ! is_array( $options ) ) {
+		$options = array();
+	}
+
+	$raw_legacy_values                = gmedia_license_harness_legacy_test_values();
+	$options                          = array_merge( $options, $raw_legacy_values );
+	$options['issue_20_reset_marker'] = 'remove-me-on-reset';
+	update_option( 'gmediaOptions', $options );
+	if ( method_exists( $gmGallery, 'load_options' ) ) {
+		$gmGallery->load_options();
+	} else {
+		$gmGallery->options = $options;
+	}
+	$expected = array_intersect_key( $gmGallery->options, $raw_legacy_values );
+
+	if ( ! class_exists( 'GmediaProcessor' ) ) {
+		include_once GMEDIA_ABSPATH . 'admin/class.processor.php';
+	}
+	if ( ! class_exists( 'GmediaProcessor_Settings' ) ) {
+		$_GET['page'] = 'GrandMedia_Settings';
+		include_once GMEDIA_ABSPATH . 'admin/processor/class.processor.settings.php';
+	}
+
+	$old_post    = $_POST;
+	$old_request = $_REQUEST;
+	$_POST       = array(
+		'gmedia_settings_reset' => '1',
+		'_wpnonce_settings'    => wp_create_nonce( 'gmedia_settings' ),
+	);
+	$_REQUEST    = array_merge( $_REQUEST, $_POST );
+
+	$processor = GmediaProcessor_Settings::getMe();
+	$method    = new ReflectionMethod( 'GmediaProcessor_Settings', 'processor' );
+	$method->setAccessible( true );
+	$method->invoke( $processor );
+
+	$_POST    = $old_post;
+	$_REQUEST = $old_request;
+
+	$after     = get_option( 'gmediaOptions', array() );
+	$preserved = array();
+	foreach ( array_keys( $expected ) as $field ) {
+		$preserved[ $field ] = gmedia_license_harness_bool_text( isset( $after[ $field ] ) && $after[ $field ] === $expected[ $field ] );
+	}
+
+	$all_preserved  = ! in_array( 'no', $preserved, true );
+	$marker_removed = ! array_key_exists( 'issue_20_reset_marker', $after );
+
+	echo wp_json_encode(
+		array(
+			'reset_executed'          => gmedia_license_harness_bool_text( $marker_removed ),
+			'legacy_fields_redacted' => array_map( 'gmedia_license_harness_redact', array_intersect_key( $after, $expected ) ),
+			'legacy_fields_preserved' => $preserved,
+			'passed'                  => gmedia_license_harness_bool_text( $all_preserved && $marker_removed ),
+		),
+		JSON_PRETTY_PRINT
+	) . PHP_EOL;
+
+	if ( ! $all_preserved || ! $marker_removed ) {
+		exit( 1 );
+	}
 }
 
 function gmedia_license_harness_delete_current_freemius_options() {
@@ -341,6 +443,10 @@ switch ( $command ) {
 			gmedia_license_harness_usage();
 		}
 		gmedia_license_harness_apply_scenario( $scenario, array_shift( $args ) ?: '' );
+		break;
+
+	case 'verify-reset-preserves-legacy':
+		gmedia_license_harness_verify_reset_preserves_legacy();
 		break;
 
 	default:
