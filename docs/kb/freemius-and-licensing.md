@@ -189,6 +189,14 @@ Always restore after a temporary scenario:
 wp-dev eval-file tests/manual/license-state-matrix.php restore /private/tmp/gmedia-license-state-backup.json
 ```
 
+To verify that the Settings reset processor preserves legacy license fields, run this command only after taking a backup:
+
+```bash
+wp-dev eval-file tests/manual/license-state-matrix.php verify-reset-preserves-legacy
+```
+
+This command creates temporary synthetic legacy field values, submits the real `GmediaProcessor_Settings` reset path with a nonce, verifies sanitized preservation results, and must be followed by restoring the backup.
+
 Scenarios verified on 2026-06-15:
 
 | Scenario | Temporary setup | Verified result |
@@ -205,6 +213,13 @@ Admin UI smoke on 2026-06-15:
 - The `both` scenario loads `GrandMedia_Settings` successfully after Freemius state is restored from the backup and fake legacy data is added. Freemius remains the effective license type, Premium Settings is visible, and legacy license inputs are not rendered.
 - In this connected Local site, direct `GrandMedia_Settings` access returns the WordPress "not allowed" error when Freemius account state is removed or unregistered for no-license / legacy-only simulation, even when `fs_active_plugins` is preserved. Treat this as a local Freemius connection-state limitation, not a verified Gmedia no-license UI result.
 - No-license and legacy-only UI smoke should be completed on a fresh Local site, a safely disconnected Freemius test site, or an approved Freemius disconnect workflow. Do not keep deleting additional Freemius options by guesswork.
+
+Settings reset verification on 2026-06-15:
+
+- `verify-reset-preserves-legacy` ran the real `GmediaProcessor_Settings` reset branch in `wp-dev`.
+- The reset marker was removed, confirming the default reset path executed.
+- `license_name`, `purchase_key`, `license_key`, and `license_key2` were all preserved.
+- The original Local baseline was restored and re-checked with `current`.
 
 ## Support Rules
 
@@ -267,7 +282,7 @@ These scenarios must be tested in WordPress admin before closing the licensing r
 | Both legacy and Freemius | `freemius` takes priority; legacy acts as fallback only if Freemius access is unavailable | Helper priority verified with `wp-dev` harness; admin UI smoke verified in the connected Local site |
 | Legacy activation form | Current processor appears to still call `codeasily.com/rest/gmedia-key.php`; guide says this may be blocked | Needs verification |
 | Module buttons | Premium access should be controlled by `gmedia_has_premium_license()` | Partially verified in local admin for current connected Freemius state; sampled modules did not show "Get Premium" |
-| Settings reset | Existing legacy license fields should be preserved | Not manually verified |
+| Settings reset | Existing legacy license fields should be preserved | Verified with `wp-dev` harness against the real `GmediaProcessor_Settings` reset path; original Local baseline restored afterward |
 
 ## Open Risks
 
