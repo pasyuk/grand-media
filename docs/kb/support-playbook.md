@@ -158,7 +158,9 @@ Hi [name],
 
 Thanks for reaching out. License/account issues need to be checked carefully because Gmedia supports both Freemius licenses and older legacy licenses.
 
-Please do not post your license key publicly. If you already sent account details by email, I will check the license state there and reply with the next step.
+Valid older legacy keys can still be activated for the site/domain they belong to. New purchases are handled through Freemius.
+
+Please do not post your license key publicly. If activation fails, email support with the account/order details and the site URL, and I will check it privately.
 
 Best,
 Serhii

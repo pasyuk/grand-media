@@ -84,7 +84,13 @@ Observed current code in `admin/processor/class.processor.settings.php`:
 - On an error response, it clears those license option fields.
 - Settings reset preserves existing license fields.
 
-This needs manual/admin verification before support messaging says legacy activation is blocked or still available.
+Verified on 2026-06-15 with `wp-dev` and a domain-bound legacy test key for `wp-dev.loc`:
+
+- The endpoint returned HTTP 200.
+- The response matched the current processor success contract: `error.code` was 200, and `content`, `dkey`, `key`, and `key2` were present.
+- No returned key values were copied into docs or GitHub.
+
+Current support policy: legacy activation is still supported for valid legacy keys bound to the current site/domain. New purchases should still use Freemius.
 
 ## Module Access Behavior
 
@@ -236,9 +242,9 @@ Settings reset verification on 2026-06-15:
 ```text
 Hi [name],
 
-Gmedia currently supports both Freemius licensing and older legacy license data. Please do not post your license key publicly.
+Gmedia currently supports both Freemius licensing and older legacy license keys. Valid older keys can still be activated for the site/domain they belong to.
 
-I will check the license behavior carefully against the current version and reply with the safest next step.
+Please do not post your license key publicly. If activation fails, email support with the account/order details and the site URL so I can check it privately.
 
 Best,
 Serhii
@@ -280,13 +286,13 @@ These scenarios must be tested in WordPress admin before closing the licensing r
 | Legacy license only | `gmedia_get_license_type()` returns `legacy`; premium feature fieldset enabled | Helper behavior verified with `wp-dev` harness; admin UI still needs browser smoke on a fresh/disconnected Freemius site because the connected Local site returns WordPress "not allowed" when Freemius account state is removed |
 | Freemius license only | `gmedia_get_license_type()` returns `freemius`; Freemius takes priority | Partially verified in local admin and WP-CLI; current connected Freemius state is not paying / no active valid license, but `can_use_premium_code()` is true. See #16 |
 | Both legacy and Freemius | `freemius` takes priority; legacy acts as fallback only if Freemius access is unavailable | Helper priority verified with `wp-dev` harness; admin UI smoke verified in the connected Local site |
-| Legacy activation form | Current processor appears to still call `codeasily.com/rest/gmedia-key.php`; guide says this may be blocked | Needs verification |
+| Legacy activation form | Current processor calls `codeasily.com/rest/gmedia-key.php`; valid domain-bound legacy keys are still accepted | Verified with `wp-dev` and a domain-bound test key for `wp-dev.loc`; no key values copied into docs |
 | Module buttons | Premium access should be controlled by `gmedia_has_premium_license()` | Partially verified in local admin for current connected Freemius state; sampled modules did not show "Get Premium" |
 | Settings reset | Existing legacy license fields should be preserved | Verified with `wp-dev` harness against the real `GmediaProcessor_Settings` reset path; original Local baseline restored afterward |
 
 ## Open Risks
 
-- Retired local notes and current code disagreed on whether new legacy activations are blocked.
+- Retired local notes and current code disagreed on whether new legacy activations are blocked; verified current endpoint behavior shows valid domain-bound legacy keys are still accepted.
 - Retired local notes described a Freemius config that differed from the current `grand-media.php` config.
 - `gmedia_has_premium_license()` uses `can_use_premium_code()`; verify this is the intended Freemius method for the current wp.org/free plugin flow.
 - Expired Freemius plan access is ambiguous in the current local verification and is tracked separately in GitHub #16.

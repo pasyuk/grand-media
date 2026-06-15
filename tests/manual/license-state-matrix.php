@@ -8,6 +8,7 @@
  *   wp-dev eval-file tests/manual/license-state-matrix.php apply-scenario legacy-only
  *   wp-dev eval-file tests/manual/license-state-matrix.php apply-scenario both /private/tmp/gmedia-license-backup.json
  *   wp-dev eval-file tests/manual/license-state-matrix.php verify-reset-preserves-legacy
+ *   GMEDIA_LEGACY_TEST_KEY=... wp-dev eval-file tests/manual/license-state-matrix.php verify-legacy-activation-endpoint
  *   wp-dev eval-file tests/manual/license-state-matrix.php restore /private/tmp/gmedia-license-backup.json
  *
  * Keep backup files outside the repo. They can contain serialized account/license state.
@@ -27,7 +28,8 @@ function gmedia_license_harness_usage() {
 		"  restore <backup-file>\n" .
 		"  current\n" .
 		"  apply-scenario <no-license|legacy-only|both> [backup-file]\n" .
-		"  verify-reset-preserves-legacy\n"
+		"  verify-reset-preserves-legacy\n" .
+		"  verify-legacy-activation-endpoint [key-file]\n"
 	);
 	exit( 2 );
 }
@@ -335,6 +337,97 @@ function gmedia_license_harness_verify_reset_preserves_legacy() {
 	}
 }
 
+function gmedia_license_harness_get_legacy_activation_key( $file = '' ) {
+	$key = getenv( 'GMEDIA_LEGACY_TEST_KEY' );
+	if ( false !== $key && '' !== trim( $key ) ) {
+		return trim( $key );
+	}
+
+	if ( $file ) {
+		if ( ! is_file( $file ) ) {
+			fwrite( STDERR, "Legacy activation key file not found: {$file}\n" );
+			exit( 1 );
+		}
+
+		$key = trim( (string) file_get_contents( $file ) );
+		if ( '' !== $key ) {
+			return $key;
+		}
+	}
+
+	fwrite( STDERR, "Set GMEDIA_LEGACY_TEST_KEY or pass a key file outside the repo.\n" );
+	exit( 2 );
+}
+
+function gmedia_license_harness_verify_legacy_activation_endpoint( $key_file = '' ) {
+	global $wp_version;
+
+	$purchase_key = gmedia_license_harness_get_legacy_activation_key( $key_file );
+	$gmedia_ua    = "WordPress/{$wp_version} | ";
+	$gmedia_ua   .= 'Gmedia/' . constant( 'GMEDIA_VERSION' );
+
+	$response = wp_remote_post(
+		'https://codeasily.com/rest/gmedia-key.php',
+		array(
+			'body'        => array(
+				'key'  => $purchase_key,
+				'site' => site_url(),
+			),
+			'headers'     => array(
+				'Content-Type' => 'application/x-www-form-urlencoded; ' . 'charset=' . get_option( 'blog_charset' ),
+				'Host'         => 'codeasily.com',
+				'User-Agent'   => $gmedia_ua,
+			),
+			'httpversion' => '1.0',
+			'timeout'     => 45,
+		)
+	);
+
+	if ( is_wp_error( $response ) ) {
+		echo wp_json_encode(
+			array(
+				'endpoint' => 'codeasily.com/rest/gmedia-key.php',
+				'accepted' => 'no',
+				'status'   => 'request_error',
+				'error'    => $response->get_error_code(),
+				'passed'   => 'no',
+			),
+			JSON_PRETTY_PRINT
+		) . PHP_EOL;
+		exit( 1 );
+	}
+
+	$body   = wp_remote_retrieve_body( $response );
+	$result = json_decode( $body );
+	$code   = wp_remote_retrieve_response_code( $response );
+
+	$accepted = isset( $result->error ) && 200 === (int) $result->error->code;
+	$data     = array(
+		'endpoint'           => 'codeasily.com/rest/gmedia-key.php',
+		'http_code'          => $code,
+		'response_has_error' => gmedia_license_harness_bool_text( isset( $result->error ) ),
+		'accepted'           => gmedia_license_harness_bool_text( $accepted ),
+		'status'             => $accepted ? 'legacy_activation_supported' : 'legacy_activation_not_accepted',
+		'fields_redacted'    => array(
+			'content' => isset( $result->content ) ? gmedia_license_harness_redact( $result->content ) : 'missing',
+			'dkey'    => isset( $result->dkey ) ? gmedia_license_harness_redact( $result->dkey ) : 'missing',
+			'key'     => isset( $result->key ) ? gmedia_license_harness_redact( $result->key ) : 'missing',
+			'key2'    => isset( $result->key2 ) ? gmedia_license_harness_redact( $result->key2 ) : 'missing',
+		),
+		'passed'             => gmedia_license_harness_bool_text( $accepted ),
+	);
+
+	if ( isset( $result->error->code ) && ! $accepted ) {
+		$data['remote_error_code'] = (int) $result->error->code;
+	}
+
+	echo wp_json_encode( $data, JSON_PRETTY_PRINT ) . PHP_EOL;
+
+	if ( ! $accepted ) {
+		exit( 1 );
+	}
+}
+
 function gmedia_license_harness_delete_current_freemius_options() {
 	foreach ( gmedia_license_harness_collect_option_names() as $name ) {
 		if ( gmedia_license_harness_is_safe_freemius_option( $name ) ) {
@@ -447,6 +540,10 @@ switch ( $command ) {
 
 	case 'verify-reset-preserves-legacy':
 		gmedia_license_harness_verify_reset_preserves_legacy();
+		break;
+
+	case 'verify-legacy-activation-endpoint':
+		gmedia_license_harness_verify_legacy_activation_endpoint( array_shift( $args ) ?: '' );
 		break;
 
 	default:
