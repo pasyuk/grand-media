@@ -52,9 +52,14 @@ After modifying code, run `graphify update .`. For codebase questions, query
 `graphify query "<question>"` before grepping.
 
 ## Conventions
-Observed in the repo, not invented — follow these unless the owner says otherwise:
-- Branches: `codex/<short-slug>` for agent-driven work, one task per branch;
+Follow these unless the owner says otherwise:
+- Branches: name them after the WORK, never after the tool. `issue-<N>-<slug>`
+  when a GitHub issue drives it, otherwise `fix/<slug>`. One task per branch.
   PRs target `master` (this repo has no `main`) and land squashed with `(#N)`.
+  Do NOT prefix branches or PR titles with a tool name (`codex/`, `claude/`,
+  `[codex]`): several harnesses work this repo, the author is already recorded
+  in the commit, and a copied prefix ends up crediting the wrong tool. Branches
+  and PRs predating 2026-08-23 carry `codex/` — leave that history alone.
 - Commits: imperative subject, no type prefix ("Harden admin AJAX nonce and
   capability checks"). Older history used `Fix:`/`Enhance:` prefixes; recent
   work does not. Body explains why, not what.
