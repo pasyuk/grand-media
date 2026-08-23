@@ -2216,6 +2216,21 @@ input[type="month"].input-sm,
 	border-radius: 3px;
 }
 
+/* wp-admin forms.css sets min-height:40px on text inputs, which outranks the
+   heights above and leaves the panel header fields taller than their buttons. */
+#gmedia-panel .card-header input.form-control {
+	min-height: 0;
+}
+
+/* Mirror the .btn-xs box above so the search field is exactly as tall as the
+   toolbar buttons. Font size is scoped to this form on purpose: the pager field
+   keeps 12px to stay level with its own "Page"/"of" labels. */
+#gmedia-panel .card-header .gmedia-search-form input.form-control {
+	height: auto;
+	padding-block: 0.15rem;
+	font-size: 15px !important;
+}
+
 select.input-xs,
 select.input-sm {
 	height: 22px;
