@@ -2216,6 +2216,12 @@ input[type="month"].input-sm,
 	border-radius: 3px;
 }
 
+/* wp-admin forms.css sets min-height:40px on text inputs, which outranks the
+   heights above and leaves the panel header fields taller than their buttons. */
+#gmedia-panel .card-header input.form-control {
+	min-height: 0;
+}
+
 select.input-xs,
 select.input-sm {
 	height: 22px;
