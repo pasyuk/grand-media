@@ -13,7 +13,7 @@ if ( ! is_file( $script ) ) {
 	if ( false === $code ) {
 		$failures[] = 'Could not read manual license state matrix harness';
 	} else {
-		foreach ( array( 'snapshot', 'restore', 'current', 'apply-scenario', 'verify-reset-preserves-legacy' ) as $command ) {
+		foreach ( array( 'snapshot', 'restore', 'current', 'apply-scenario', 'verify-reset-preserves-legacy', 'verify-legacy-activation-endpoint' ) as $command ) {
 			if ( false === strpos( $code, "'{$command}'" ) && false === strpos( $code, "\"{$command}\"" ) ) {
 				$failures[] = "Harness must support {$command} command";
 			}
