@@ -30,7 +30,34 @@ Accounts this project may touch. Connector skills call the service CLI/API via
 `agentic secrets run <profile> -- ...` (ADR-002 §3); anything not listed = out of scope.
 | Service | Account/workspace | Access |
 |---|---|---|
-| github | pasyuk/grand-media (personal fork) | read-write; push to feature branches, PRs into this fork |
+| github | pasyuk/grand-media (PUBLIC repo, `pasyuk` gh account only) | read-write; push to feature branches, PRs into this repo |
+| wordpress.org | support forum for grand-media | read; drafting replies only — the owner posts |
+
+## Workflow (required)
+- **Tracking**: GitHub issues are the ticket system. Every unit of work gets an
+  issue first, then a branch named after it, then a PR that closes it.
+- **Intake — support forum**: check
+  `https://wordpress.org/support/plugin/grand-media/` regularly for new user
+  reports. Triage per `docs/kb/support-playbook.md`. Replies are DRAFTS; the
+  owner posts them.
+- **Intake — email**: the owner forwards problem reports as vault notes under
+  `Sources/Emails/`. Read the note, turn it into an issue, then implement.
+- **Implementation**: use the superpowers skills — `brainstorming` before design
+  work, `systematic-debugging` for defects, `test-driven-development` for the
+  fix, `verification-before-completion` before claiming anything done.
+- **Release**: Freemius + wordpress.org SVN. Process not documented yet — ASK
+  the owner before attempting any release step.
+
+## Security reports (required)
+This repository is PUBLIC. A vulnerability report is confidential until patched:
+- NEVER put proof of concept, exploit parameters, CVSS, or reporter identity in
+  an issue, PR, commit message, or committed doc.
+- Track with a neutral title and the affected surface only; details stay in the
+  private email thread.
+- Note the wordpress.org clock in the issue: 14 days to acknowledge, 30 days to
+  patch, or the plugin is closed.
+- Plugin Check (`https://wordpress.org/plugins/plugin-check/`) must be clean
+  before requesting re-review.
 
 ## Protected actions (required)
 These ALWAYS require explicit human approval (enforced by the PreToolUse hook,
