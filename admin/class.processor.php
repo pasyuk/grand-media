@@ -106,6 +106,12 @@ class GmediaProcessor {
 			$author = wp_parse_id_list( $author_id_list );
 			if ( ! $gmCore->caps['gmedia_show_others_media'] ) {
 				$author = array_intersect( array( $user_ID, 0 ), $author );
+				if ( empty( $author ) ) {
+					// The requested authors are all off-limits for this user. Fall
+					// back to their own scope: an empty list would be read by the
+					// query layer as "no author restriction" and leak everyone.
+					$author = array( $user_ID, 0 );
+				}
 			}
 		}
 

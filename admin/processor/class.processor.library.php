@@ -834,7 +834,9 @@ class GmediaProcessor_Library extends GmediaProcessor {
 		}
 
 		$args['mime_type']        = $gmCore->_get( 'mime_type' );
-		$args['status']           = $gmCore->_get( 'status' );
+		// Anonymous callers (e.g. the nopriv gmedia_get_data endpoint) must never
+		// reach draft/private media, regardless of a requested status parameter.
+		$args['status']           = is_user_logged_in() ? $gmCore->_get( 'status' ) : 'publish';
 		$args['page']             = $gmCore->_get( 'pager' );
 		$args['per_page']         = $gmCore->_get( 'per_page', $per_page );
 		$args['author__in']       = parent::filter_by_author( $gmCore->_get( 'author__in', $gmCore->_get( 'author' ) ) );
