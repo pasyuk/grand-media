@@ -24,6 +24,46 @@ function gmedia_has_premium_license() {
 }
 
 /**
+ * Check if premium features are running on an expired Freemius license
+ *
+ * Freemius keeps features enabled after expiration unless the plan blocks them,
+ * so this state grants premium access but still needs a renewal.
+ *
+ * @return bool
+ */
+function gmedia_has_expired_premium_license() {
+	if ( ! function_exists( 'gmg_fs' ) ) {
+		return false;
+	}
+
+	$fs = gmg_fs();
+
+	return $fs->has_features_enabled_license() && ! $fs->has_active_valid_license();
+}
+
+/**
+ * Get the raw expiration datetime of the current Freemius license
+ *
+ * Returns the unformatted API value so callers stay responsible for display.
+ * Lifetime licenses have no expiration and return an empty string.
+ *
+ * @return string
+ */
+function gmedia_get_premium_license_expiration() {
+	if ( ! function_exists( 'gmg_fs' ) ) {
+		return '';
+	}
+
+	$license = gmg_fs()->_get_license();
+
+	if ( ! is_object( $license ) || empty( $license->expiration ) ) {
+		return '';
+	}
+
+	return (string) $license->expiration;
+}
+
+/**
  * Get license type (freemius, legacy, or none)
  *
  * @return string

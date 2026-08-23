@@ -166,6 +166,25 @@ Best,
 Serhii
 ```
 
+### Expired License, Premium Still Working
+
+Use when a user reports their license shows as expired but premium features
+still work, or asks whether they will lose access. Policy: they keep the
+features — see `freemius-and-licensing.md`, "Expired License Policy".
+
+```text
+Hi [name],
+
+That is expected, not a bug. When a license expires, Gmedia keeps your premium
+features working — nothing gets switched off on you.
+
+What you lose without renewing is plugin updates and support. Renewing from
+your account page restores those and clears the notice.
+
+Best,
+Serhii
+```
+
 ### How-To
 
 ```text
