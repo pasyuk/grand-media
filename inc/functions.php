@@ -24,6 +24,24 @@ function gmedia_has_premium_license() {
 }
 
 /**
+ * Check if premium features are running on an expired Freemius license
+ *
+ * Freemius keeps features enabled after expiration unless the plan blocks them,
+ * so this state grants premium access but still needs a renewal.
+ *
+ * @return bool
+ */
+function gmedia_has_expired_premium_license() {
+	if ( ! function_exists( 'gmg_fs' ) ) {
+		return false;
+	}
+
+	$fs = gmg_fs();
+
+	return $fs->has_features_enabled_license() && ! $fs->has_active_valid_license();
+}
+
+/**
  * Get license type (freemius, legacy, or none)
  *
  * @return string

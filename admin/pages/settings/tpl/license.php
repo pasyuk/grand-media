@@ -79,6 +79,22 @@ $has_premium  = gmedia_has_premium_license();
 		</div>
 	<?php endif; ?>
 
+	<?php if ( gmedia_has_expired_premium_license() ) : ?>
+		<!-- Expired License, Features Still Enabled -->
+		<div class="notice notice-warning inline" style="margin: 15px 0;">
+			<p>
+				<strong><?php esc_html_e( 'Your license has expired.', 'grand-media' ); ?></strong>
+				<?php
+				echo sprintf(
+				/* translators: %s: Link to the account page */
+						esc_html__( 'Premium features keep working, but you need to renew to continue getting updates and support. %s', 'grand-media' ),
+						'<a href="' . esc_url( gmg_fs()->get_account_url() ) . '">' . esc_html__( 'Renew license', 'grand-media' ) . ' &rarr;</a>'
+				);
+				?>
+			</p>
+		</div>
+	<?php endif; ?>
+
 	<?php if ( ! $has_premium ) : ?>
 		<!-- No License Active -->
 		<div class="no-license-section" style="margin-bottom: 30px; padding: 20px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px;">

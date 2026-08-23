@@ -101,6 +101,51 @@ Observed current code:
 
 Manual verification is still required for premium modules in the admin UI.
 
+## Expired License Policy
+
+Decided 2026-08-23 (GitHub #16): an expired Freemius license KEEPS premium
+features. Renewal is asked for, never enforced by cutting access.
+
+Why premium stays on — the chain is entirely inside the SDK, not plugin code:
+
+- `gmedia_has_premium_license()` calls `can_use_premium_code()`.
+- `can_use_premium_code()` is `is_trial() || has_features_enabled_license()`.
+- `has_features_enabled_license()` requires the license object's
+  `is_features_enabled()`, which is
+  `is_active() && ( ! is_block_features || ! is_expired() )`, where
+  `is_active()` only means "not cancelled".
+
+So an expired, non-cancelled license keeps features whenever the plan's
+`is_block_features` flag is off. That flag lives in the Freemius dashboard, so
+the access policy is configuration, not code. Verified live on 2026-08-23:
+license present, not cancelled, expired, `is_block_features` off, not lifetime.
+
+Consequences:
+
+- Do NOT tighten the helper to `has_active_valid_license()` or
+  `is_paying_or_trial()`. That would move the policy out of the Freemius
+  dashboard into the release cycle and diverge from what the customer's own
+  Freemius account page tells them.
+- To block features on expiry, flip `is_block_features` on the plan in the
+  Freemius dashboard. No plugin release needed.
+- `can_use_premium_code()` is the CORRECT method here. The
+  `can_use_premium_code__premium_only()` variant additionally requires
+  `is_premium()`, which is `false` in this plugin's `fs_dynamic_init` config
+  (single wp.org codebase, premium gated at runtime), so it would always be
+  false. This resolves the previously open question about the method choice.
+
+Renewal messaging, so expiry is visible without blocking anyone:
+
+- Freemius already shows a sticky notice for this exact state
+  (`is_expired() && has_features_enabled_license()`), repeated every 14 days on
+  license sync: "Your license has expired. You can still continue using all the
+  ... features, but you'll need to renew ...".
+- The Settings license pane showed nothing at all, so
+  `gmedia_has_expired_premium_license()` now renders an inline warning there
+  with a renewal link to the Freemius account page.
+- Guard: `tests/compat/expired-license-notice.php` covers the helper's truth
+  table, the missing-`gmg_fs()` case, and that the template still renders it.
+
 ## Local Admin Verification
 
 Verified on 2026-06-05 in the local WordPress admin at `https://wp-dev.loc/`.
@@ -117,8 +162,8 @@ Public-safe observations only:
 Interpretation:
 
 - Current local behavior appears to grant premium access in an expired Freemius plan state.
-- This may be intended Freemius/Gmedia policy or a gating bug; do not change behavior until the product decision is confirmed.
-- Follow-up issue: GitHub #16, "Review expired Freemius plan premium access gating".
+- Resolved on 2026-08-23 (GitHub #16): this is intended, and the mechanism is
+  the Freemius plan setting, not plugin code. See "Expired License Policy".
 
 Tooling gap:
 
@@ -284,7 +329,8 @@ These scenarios must be tested in WordPress admin before closing the licensing r
 | --- | --- | --- |
 | No license | `gmedia_get_license_type()` returns `none`; premium fieldset disabled; pricing CTA visible | Helper behavior verified with `wp-dev` harness; admin UI CTA still needs browser smoke on a fresh/disconnected Freemius site because the connected Local site returns WordPress "not allowed" when Freemius account state is removed |
 | Legacy license only | `gmedia_get_license_type()` returns `legacy`; premium feature fieldset enabled | Helper behavior verified with `wp-dev` harness; admin UI still needs browser smoke on a fresh/disconnected Freemius site because the connected Local site returns WordPress "not allowed" when Freemius account state is removed |
-| Freemius license only | `gmedia_get_license_type()` returns `freemius`; Freemius takes priority | Partially verified in local admin and WP-CLI; current connected Freemius state is not paying / no active valid license, but `can_use_premium_code()` is true. See #16 |
+| Freemius license only | `gmedia_get_license_type()` returns `freemius`; Freemius takes priority | Verified in local admin and WP-CLI. The connected state is an expired, non-cancelled license with `is_block_features` off, so `can_use_premium_code()` is true by design — see "Expired License Policy" (#16, resolved) |
+| Expired Freemius license | Premium features stay enabled; Settings shows a renewal warning | Helper truth table + template wiring guarded by `tests/compat/expired-license-notice.php`; live state confirmed 2026-08-23. Admin UI browser smoke still pending with #19 |
 | Both legacy and Freemius | `freemius` takes priority; legacy acts as fallback only if Freemius access is unavailable | Helper priority verified with `wp-dev` harness; admin UI smoke verified in the connected Local site |
 | Legacy activation form | Current processor calls `codeasily.com/rest/gmedia-key.php`; valid domain-bound legacy keys are still accepted | Verified with `wp-dev` and a domain-bound test key for `wp-dev.loc`; no key values copied into docs |
 | Module buttons | Premium access should be controlled by `gmedia_has_premium_license()` | Partially verified in local admin for current connected Freemius state; sampled modules did not show "Get Premium" |
@@ -294,6 +340,6 @@ These scenarios must be tested in WordPress admin before closing the licensing r
 
 - Retired local notes and current code disagreed on whether new legacy activations are blocked; verified current endpoint behavior shows valid domain-bound legacy keys are still accepted.
 - Retired local notes described a Freemius config that differed from the current `grand-media.php` config.
-- `gmedia_has_premium_license()` uses `can_use_premium_code()`; verify this is the intended Freemius method for the current wp.org/free plugin flow.
-- Expired Freemius plan access is ambiguous in the current local verification and is tracked separately in GitHub #16.
+- ~~`gmedia_has_premium_license()` uses `can_use_premium_code()`; verify this is the intended Freemius method~~ — resolved 2026-08-23: correct method, see "Expired License Policy".
+- ~~Expired Freemius plan access is ambiguous~~ — resolved 2026-08-23 (#16): expired licenses intentionally keep features; policy lives in the Freemius plan's `is_block_features` flag.
 - Premium/free boundary audit is intentionally deferred until these license paths are verified.
