@@ -401,7 +401,8 @@ function gmedia_license_harness_verify_legacy_activation_endpoint( $key_file = '
 	$result = json_decode( $body );
 	$code   = wp_remote_retrieve_response_code( $response );
 
-	$accepted = isset( $result->error ) && 200 === (int) $result->error->code;
+	// Strict comparison matches GmediaProcessor_Settings, which treats a non-int 200 as an error.
+	$accepted = isset( $result->error ) && 200 === $result->error->code;
 	$data     = array(
 		'endpoint'           => 'codeasily.com/rest/gmedia-key.php',
 		'http_code'          => $code,
