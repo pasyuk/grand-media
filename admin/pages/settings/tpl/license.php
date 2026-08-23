@@ -80,17 +80,23 @@ $has_premium  = gmedia_has_premium_license();
 	<?php endif; ?>
 
 	<?php if ( gmedia_has_expired_premium_license() ) : ?>
+		<?php $expiration = gmedia_get_premium_license_expiration(); ?>
 		<!-- Expired License, Features Still Enabled -->
 		<div class="notice notice-warning inline" style="margin: 15px 0;">
 			<p>
-				<strong><?php esc_html_e( 'Your license has expired.', 'grand-media' ); ?></strong>
-				<?php
-				echo sprintf(
-				/* translators: %s: Link to the account page */
-						esc_html__( 'Premium features keep working, but you need to renew to continue getting updates and support. %s', 'grand-media' ),
-						'<a href="' . esc_url( gmg_fs()->get_account_url() ) . '">' . esc_html__( 'Renew license', 'grand-media' ) . ' &rarr;</a>'
-				);
-				?>
+				<strong><?php esc_html_e( 'License expired', 'grand-media' ); ?></strong>
+				<?php if ( $expiration ) : ?>
+					<?php
+					echo esc_html(
+							sprintf(
+							/* translators: %s: License expiration date */
+									__( 'on %s.', 'grand-media' ),
+									mysql2date( get_option( 'date_format' ), $expiration )
+							)
+					);
+					?>
+				<?php endif; ?>
+				<a href="<?php echo esc_url( gmg_fs()->get_account_url() ); ?>"><?php esc_html_e( 'Renew license', 'grand-media' ); ?> &rarr;</a>
 			</p>
 		</div>
 	<?php endif; ?>

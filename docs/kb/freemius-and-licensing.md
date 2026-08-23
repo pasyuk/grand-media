@@ -143,8 +143,17 @@ Renewal messaging, so expiry is visible without blocking anyone:
 - The Settings license pane showed nothing at all, so
   `gmedia_has_expired_premium_license()` now renders an inline warning there
   with a renewal link to the Freemius account page.
-- Guard: `tests/compat/expired-license-notice.php` covers the helper's truth
-  table, the missing-`gmg_fs()` case, and that the template still renders it.
+- That notice deliberately does NOT repeat the Freemius wording, because both
+  can appear on the Settings screen at once. It states the expiration date via
+  `gmedia_get_premium_license_expiration()` — the fact the global notice omits —
+  and leaves the "features keep working" reassurance to Freemius and to the
+  support reply template. Keep them complementary if either is reworded.
+- The expiration helper returns the raw API datetime; formatting is the
+  template's job (`mysql2date` with the site's `date_format`). Keeping it
+  WordPress-free is what lets the compat test call it without bootstrapping WP.
+- Guard: `tests/compat/expired-license-notice.php` covers both helpers' truth
+  tables, the missing-`gmg_fs()` case, and that the template still renders the
+  notice with a date and an account link.
 
 ## Local Admin Verification
 
