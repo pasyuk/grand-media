@@ -2115,7 +2115,7 @@ function gmedia_delete_custom_field() {
 			if ( ! $meta ) {
 				continue;
 			}
-			if ( $meta->{$column} !== $pid ) {
+			if ( (int) $meta->{$column} !== $pid ) {
 				continue;
 			}
 			if ( $gmCore->is_protected_meta( $meta->meta_key, $meta_type ) ) {

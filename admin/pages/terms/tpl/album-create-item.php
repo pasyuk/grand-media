@@ -127,7 +127,7 @@ $gmedia_url = $gmProcessor->url;
 						wp_nonce_field( 'gmedia_terms', '_wpnonce_terms' );
 						?>
 						<input type="hidden" name="term[taxonomy]" value="gmedia_album"/>
-						<button style="display:block" type="submit" class="btn btn-primary btn-xs" name="gmedia_album_save"><?php esc_html_e( 'Add New Album', 'grand-media' ); ?></button>
+						<button style="display:block" type="submit" class="btn btn-primary btn-xs gmedia-add-term" name="gmedia_album_save"><?php esc_html_e( 'Add New Album', 'grand-media' ); ?></button>
 					</div>
 				</div>
 			</div>

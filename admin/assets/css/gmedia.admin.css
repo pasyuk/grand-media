@@ -317,6 +317,7 @@ form#gmedia-pager span {
 }
 
 form#gmedia-pager input.pager_current_page {
+	min-height: 0;
 	padding-left: 0;
 	padding-right: 0;
 	text-align: center;
@@ -517,6 +518,8 @@ input.gm-order-input {
 	float: right;
 	border: 1px solid #ccc;
 	border-radius: 3px;
+	height: auto;
+	min-height: 0;
 	padding: 1px 3px;
 	margin: 0;
 	font-size: 12px;
@@ -1198,6 +1201,15 @@ div.form-control.selectize-control {
 	line-height: 146%;
 }
 
+#uploader_multipart_params .selectize-control.input-sm {
+	height: auto;
+}
+
+#uploader_multipart_params .selectize-control.input-sm .selectize-input {
+	min-height: 40px;
+	padding-block: 7px;
+}
+
 .term-list-item {
 	padding-top: 0;
 	padding-bottom: 0;
@@ -1853,7 +1865,6 @@ body.gmedia_library .panel {
 }
 
 #previewModal {
-	z-index: 9999;
 	overflow-x: auto;
 }
 
@@ -1960,6 +1971,14 @@ div#wp-link-wrap label {
 
 .input-group.gmedia_date input {
 	background: #ffffff;
+}
+
+body.grand-media-admin-page > .modal-backdrop {
+	z-index: 159900;
+}
+
+body.grand-media-admin-page > .gmedia-modal {
+	z-index: 160000;
 }
 
 @media (min-width: 782px) {
@@ -2222,10 +2241,12 @@ input[type="month"].input-sm,
 	min-height: 0;
 }
 
-/* Mirror the .btn-xs box above so the search field is exactly as tall as the
-   toolbar buttons. Font size is scoped to this form on purpose: the pager field
-   keeps 12px to stay level with its own "Page"/"of" labels. */
-#gmedia-panel .card-header .gmedia-search-form input.form-control {
+/* Mirror the .btn-xs box above so fixed-panel search fields are exactly as tall
+   as their toolbar buttons. The WP Media Library panel has no #gmedia-panel ID,
+   so its direct card header needs the structural selector below. */
+#gmedia-panel .card-header .gmedia-search-form input.form-control,
+.panel-fixed-header > .card-header .gmedia-search-form input.form-control {
+	min-height: 0;
 	height: auto;
 	padding-block: 0.15rem;
 	font-size: 15px !important;
@@ -2242,6 +2263,10 @@ select.input-sm {
 .form-group select.form-control,
 select.form-control {
 	padding-block: 0;
+}
+
+#gmedia-edit-term .gmedia-add-term {
+	min-height: 40px;
 }
 
 textarea.input-xs,
@@ -2385,6 +2410,11 @@ select[multiple].input-group-sm > .input-group-text {
 
 div#gallery_options_block .form-control.input-sm {
 	padding-block: 0;
+}
+
+#gallery_options_block .minicolors-theme-bootstrap .minicolors-swatch {
+	top: 50%;
+	transform: translateY(-50%);
 }
 
 div#gallery_options_block .nav-item {

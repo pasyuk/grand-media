@@ -113,7 +113,7 @@ $_order   = $gmGallery->options['in_category_order'];
 						wp_nonce_field( 'gmedia_terms', '_wpnonce_terms' );
 						?>
 						<input type="hidden" name="term[taxonomy]" value="gmedia_category"/>
-						<button style="display:block" type="submit" class="btn btn-primary btn-xs" name="gmedia_category_save"><?php esc_html_e( 'Add New Category', 'grand-media' ); ?></button>
+						<button style="display:block" type="submit" class="btn btn-primary btn-xs gmedia-add-term" name="gmedia_category_save"><?php esc_html_e( 'Add New Category', 'grand-media' ); ?></button>
 					</div>
 				</div>
 			</div>
