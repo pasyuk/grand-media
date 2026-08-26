@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 global $wp;
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- This only selects the API route; privileged library mutations require a validated signed auth cookie and action capabilities.
 $gmedia_app = isset( $_GET['gmedia-app'] ) || isset( $wp->query_vars['gmedia-app'] );
 if ( ! $gmedia_app ) {
 	die();
@@ -22,10 +23,13 @@ $gmmodule      = absint( $gmCore->_get( 'gmmodule', 0 ) );
 
 $out = array();
 
+// phpcs:ignore WordPress.Security.NonceVerification.Missing -- This only selects multipart versus JSON input; native app authentication is verified before privileged library mutations.
 if ( isset( $_FILES['userfile']['name'] ) ) {
 	$globaldata = $gmCore->_post( 'account' );
-	if ( $globaldata ) {
+	if ( is_string( $globaldata ) ) {
 		$globaldata = stripslashes( $globaldata );
+	} else {
+		$globaldata = false;
 	}
 } else {
 	//$globaldata = isset($GLOBALS['HTTP_RAW_POST_DATA'])? $GLOBALS['HTTP_RAW_POST_DATA'] : false;
@@ -645,13 +649,23 @@ function gmedia_ios_app_processor( $action, $data, $filter = true, $cache = true
 						return $out;
 					}
 
+					$gmedia = isset( $data['item'] ) && is_array( $data['item'] ) ? $data['item'] : array();
+					if ( ! empty( $gmedia['ID'] ) ) {
+						$item = $gmDB->get_gmedia( (int) $gmedia['ID'] );
+						if ( ! current_user_can( 'gmedia_edit_media' ) || ! $item || ( (int) $user_ID !== (int) $item->author && ! current_user_can( 'gmedia_edit_others_media' ) ) ) {
+							$error[] = esc_html__( 'You are not allowed to edit media', 'grand-media' );
+							break;
+						}
+					}
+
 					usleep( 10 );
 
-					if ( is_uploaded_file( $_FILES['userfile']['tmp_name'] ) ) {
-						$file_name = sanitize_text_field( wp_unslash( $_FILES['userfile']['name'] ) );
-						$file_tmp  = sanitize_text_field( wp_unslash( $_FILES['userfile']['tmp_name'] ) );
-					} else {
-						$file_error = intval( wp_unslash( $_FILES['userfile']['error'] ) );
+					// phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Signed-cookie authentication and upload capability precede this read; validate field shapes below and verify the untouched PHP temporary path with is_uploaded_file().
+					$upload     = isset( $_FILES['userfile'] ) && is_array( $_FILES['userfile'] ) ? $_FILES['userfile'] : array();
+					$file_name  = isset( $upload['name'] ) && is_string( $upload['name'] ) ? sanitize_text_field( wp_unslash( $upload['name'] ) ) : '';
+					$file_tmp   = isset( $upload['tmp_name'] ) && is_string( $upload['tmp_name'] ) ? $upload['tmp_name'] : '';
+					$file_error = isset( $upload['error'] ) && is_scalar( $upload['error'] ) ? (int) $upload['error'] : UPLOAD_ERR_NO_FILE;
+					if ( UPLOAD_ERR_OK !== $file_error || '' === $file_name || ! is_uploaded_file( $file_tmp ) ) {
 						switch ( $file_error ) {
 							case 0:
 								//no error; possible file attack!
@@ -686,7 +700,6 @@ function gmedia_ios_app_processor( $action, $data, $filter = true, $cache = true
 						break;
 					}
 
-					$gmedia = (array) $data['item'];
 					if ( current_user_can( 'gmedia_terms' ) ) {
 						if ( empty( $gmedia['albums'] ) ) {
 							$gmedia['terms']['gmedia_album'] = '';
@@ -799,11 +812,17 @@ function gmedia_ios_app_processor( $action, $data, $filter = true, $cache = true
 					}
 					if ( ! current_user_can( 'gmedia_terms' ) ) {
 						$error[] = esc_html__( 'You are not allowed to manage albums', 'grand-media' );
+						break;
 					}
 					$term  = $data['assign_album'][0];
 					$count = count( $data['selected'] );
 					if ( '0' === $term ) {
 						foreach ( $data['selected'] as $item ) {
+							$gm_item = $gmDB->get_gmedia( $item );
+							if ( ! $gm_item || ( (int) $user_ID !== (int) $gm_item->author && ! current_user_can( 'gmedia_edit_others_media' ) ) ) {
+								$count --;
+								continue;
+							}
 							$gmDB->delete_gmedia_term_relationships( $item, 'gmedia_album' );
 						}
 						// translators: number.
@@ -993,7 +1012,7 @@ function gmedia_ios_app_processor( $action, $data, $filter = true, $cache = true
 
 				case 'delete':
 					if ( ! current_user_can( 'gmedia_delete_media' ) ) {
-						$error[] = esc_html__( 'You are not allowed to delete this post.' );
+						$error[] = esc_html__( 'You are not allowed to delete this post.' , 'grand-media');
 						break;
 					}
 					$count = count( $data['selected'] );

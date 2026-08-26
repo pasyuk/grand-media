@@ -71,7 +71,7 @@ $gmedia_url = $gmProcessor->url;
 								echo '<optgroup label="' . esc_attr( $module['title'] ) . '">';
 								$presets  = $gmDB->get_terms( 'gmedia_module', array( 'status' => $mfold ) );
 								$option   = array();
-								$option[] = '<option value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' ) ) . '</option>';
+								$option[] = '<option value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 								foreach ( $presets as $preset ) {
 									if ( ! (int) $preset->global && '[' . $mfold . ']' === $preset->name ) {
 										continue;
@@ -81,7 +81,7 @@ $gmedia_url = $gmProcessor->url;
 										$by_author = ' [' . get_the_author_meta( 'display_name', $preset->global ) . ']';
 									}
 									if ( '[' . $mfold . ']' === $preset->name ) {
-										$option[] = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' ) ) . '</option>';
+										$option[] = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 									} else {
 										$preset_name = str_replace( '[' . $mfold . '] ', '', $preset->name );
 										$option[]    = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . $preset_name ) . '</option>';
@@ -127,7 +127,7 @@ $gmedia_url = $gmProcessor->url;
 						wp_nonce_field( 'gmedia_terms', '_wpnonce_terms' );
 						?>
 						<input type="hidden" name="term[taxonomy]" value="gmedia_album"/>
-						<button style="display:block" type="submit" class="btn btn-primary btn-xs" name="gmedia_album_save"><?php esc_html_e( 'Add New Album', 'grand-media' ); ?></button>
+						<button style="display:block" type="submit" class="btn btn-primary btn-xs gmedia-add-term" name="gmedia_album_save"><?php esc_html_e( 'Add New Album', 'grand-media' ); ?></button>
 					</div>
 				</div>
 			</div>

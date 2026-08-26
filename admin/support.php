@@ -8,6 +8,12 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
  */
 function gmediaSupport() {
 	global $gmCore, $gmGallery;
+	if ( ! empty( $_POST ) ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to run this process.', 'grand-media' ), '', array( 'response' => 403 ) );
+		}
+		check_admin_referer( 'gmedia_support' );
+	}
 	$current_user = wp_get_current_user();
 	$alert        = '';
 
@@ -90,6 +96,7 @@ function gmediaSupport() {
 		<div class="card-body" id="gmedia-msg-panel"><?php echo wp_kses_post( $alert ); ?></div>
 		<form method="post" class="card-body" id="gm_support_form">
 			<?php if ( current_user_can( 'manage_options' ) ) { ?>
+				<?php wp_nonce_field( 'gmedia_support' ); ?>
 			<div class="container-fluid">
 				<div class="form-header clearfix">
 					<div class="alignleft">

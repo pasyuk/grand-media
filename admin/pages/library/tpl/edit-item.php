@@ -48,7 +48,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 					data-height="500"
 					data-cls="select_gmedia_related"
 					title="<?php esc_attr_e( 'Choose Related Media', 'grand-media' ); ?>">
-					<?php esc_html_e( 'choose' ); ?>
+					<?php esc_html_e( 'choose' , 'grand-media'); ?>
 					<i class='fa-solid fa-image'></i>
 				</a>
 			</label>
@@ -81,7 +81,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 				<label><?php esc_html_e( 'Link URL', 'grand-media' ); ?></label>
 				<div class="input-group">
 					<input name="link" type="text" class="form-control input-sm gmedia-custom-link-field" id="gmlink<?php echo absint( $item->ID ); ?>" value="<?php echo esc_attr( $item->link ); ?>"/>
-					<span class="input-group-btn"><button type="button" class="btn btn-primary gmedia-custom-link" data-target="gmlink<?php echo absint( $item->ID ); ?>" title="<?php esc_attr_e( 'Link to existing WP content', 'grand-media' ); ?>"><i class='fa-solid fa-link'></i></button></span>
+					<span class="input-group-btn"><button type="button" class="btn btn-primary gmedia-custom-link h-100" data-target="gmlink<?php echo absint( $item->ID ); ?>" title="<?php esc_attr_e( 'Link to existing WP content', 'grand-media' ); ?>"><i class='fa-solid fa-link'></i></button></span>
 				</div>
 			</div>
 		</div>
@@ -291,7 +291,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 						<div class="input-group">
 							<input name="meta[_gps]" type="text" class="form-control input-sm gps_map_coordinates" value="<?php echo esc_attr( $item->gps ); ?>" placeholder="<?php esc_attr_e( 'Latitude, Longtitude', 'grand-media' ); ?>" autocomplete="off"/>
 							<span class="input-group-btn">
-								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'GrandMedia', 'gmediablank' => 'map_editor', 'id' => $item->ID ), $gmProcessor->url ) ); ?>" class="btn btn-primary gmedit-modal" data-bs-toggle="modal" data-bs-target="#gmeditModal">
+								<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'GrandMedia', 'gmediablank' => 'map_editor', 'id' => $item->ID ), $gmProcessor->url ) ); ?>" class="btn btn-primary gmedit-modal h-100 d-inline-flex align-items-center justify-content-center" data-bs-toggle="modal" data-bs-target="#gmeditModal">
 									<i class='fa-solid fa-location-dot'></i>
 								</a>
 							</span>

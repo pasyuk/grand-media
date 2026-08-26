@@ -3,6 +3,18 @@
 $root     = dirname( __DIR__, 2 );
 $failures = array();
 
+// Covers both this process and the child run without Freemius.
+$completed = false;
+register_shutdown_function(
+	static function () use ( &$completed ) {
+		if ( ! $completed ) {
+			fwrite( STDERR, 'Expired license notice test did not complete.' . PHP_EOL );
+			exit( 1 );
+		}
+	}
+);
+define( 'ABSPATH', $root . '/' );
+
 // Child run: no gmg_fs() defined, so the helper must not assume Freemius exists.
 $no_fs_mode = '1' === getenv( 'GMEDIA_TEST_NO_FS' );
 
@@ -55,6 +67,7 @@ if ( $no_fs_mode ) {
 		exit( 1 );
 	}
 
+	$completed = true;
 	exit( 0 );
 }
 
@@ -149,4 +162,5 @@ if ( $failures ) {
 	exit( 1 );
 }
 
+$completed = true;
 echo 'Expired license notice guard passed.' . PHP_EOL;

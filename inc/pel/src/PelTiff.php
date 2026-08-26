@@ -103,6 +103,7 @@ class PelTiff
             Pel::debug('Initializing PelTiff object from PelDataWindow.');
             $this->load($data);
         } else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidArgumentException('Bad type for $data: %s', gettype($data));
         }
     }
@@ -129,6 +130,7 @@ class PelTiff
          * to the first IFD.
          */
         if ($d->getSize() < 8) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric byte-count diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidDataException('Expected at least 8 bytes of TIFF ' . 'data, found just %d bytes.', $d->getSize());
         }
         /* Byte order */
@@ -139,6 +141,7 @@ class PelTiff
             Pel::debug('Found Motorola byte order');
             $d->setByteOrder(PelConvert::BIG_ENDIAN);
         } else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Hexadecimal byte-order diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidDataException('Unknown byte order found in TIFF ' . 'data: 0x%2X%2X', $d->getByte(0), $d->getByte(1));
         }
 
@@ -181,6 +184,7 @@ class PelTiff
     public function setIfd(PelIfd $ifd)
     {
         if ($ifd->getType() != PelIfd::IFD0) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric IFD diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidDataException('Invalid type of IFD: %d, expected %d.', $ifd->getType(), PelIfd::IFD0);
         }
         $this->ifd = $ifd;

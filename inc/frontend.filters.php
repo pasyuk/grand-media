@@ -395,7 +395,7 @@ function gmedia_post_type__the_content( $content ) {
 										}
 										?>
 										<div class="gmsingle_terms">
-											<span class="gmsingle_term_label"><?php esc_html_e( 'Album' ); ?>:</span>
+											<span class="gmsingle_term_label"><?php esc_html_e( 'Album' , 'grand-media'); ?>:</span>
 											<span class="gmsingle_album"><span class="gmsingle_term"><a
 														href="<?php echo esc_url( $term_url ); ?>"><?php echo esc_html( $term_name ); ?></a></span></span>
 										</div>
@@ -411,7 +411,7 @@ function gmedia_post_type__the_content( $content ) {
 										}
 										?>
 										<div class="gmsingle_terms">
-											<span class="gmsingle_term_label"><?php esc_html_e( 'Categories' ); ?>:</span>
+											<span class="gmsingle_term_label"><?php esc_html_e( 'Categories' , 'grand-media'); ?>:</span>
 											<span class="gmsingle_categories"><?php echo wp_kses_post( implode( ' ', $item_cats ) ); ?></span>
 										</div>
 										<?php
@@ -426,7 +426,7 @@ function gmedia_post_type__the_content( $content ) {
 										}
 										?>
 										<div class="gmsingle_terms">
-											<span class="gmsingle_term_label"><?php esc_html_e( 'Tags' ); ?>:</span>
+											<span class="gmsingle_term_label"><?php esc_html_e( 'Tags' , 'grand-media'); ?>:</span>
 											<span class="gmsingle_tags"><?php echo wp_kses_post( implode( ' ', $item_tags ) ); ?></span>
 										</div>
 									<?php } ?>
@@ -438,7 +438,7 @@ function gmedia_post_type__the_content( $content ) {
 									$loc = str_replace( ' ', '', $gmedia->gps );
 									?>
 									<div class="gmsingle_location_section">
-										<div class="gmsingle_details_title"><?php esc_html_e( 'Location' ); ?></div>
+										<div class="gmsingle_details_title"><?php esc_html_e( 'Location' , 'grand-media'); ?></div>
 
 										<div class="gmsingle_location_info">
 											<a href='https://www.google.com/maps/place/<?php echo esc_attr( $loc ); ?>'
@@ -775,7 +775,7 @@ function gmedia_post_type__the_content( $content ) {
 						}
 						?>
 						<p class="gmsingle_terms">
-							<span class="gmsingle_term_label"><?php esc_html_e( 'Album' ); ?>:</span>
+							<span class="gmsingle_term_label"><?php esc_html_e( 'Album' , 'grand-media'); ?>:</span>
 							<span class="gmsingle_album"><span class="gmsingle_term"><a
 										href="<?php echo esc_url( $term_url ); ?>"><?php echo esc_html( $term_name ); ?></a></span></span>
 						</p>
@@ -791,7 +791,7 @@ function gmedia_post_type__the_content( $content ) {
 						}
 						?>
 						<p class="gmsingle_terms">
-							<span class="gmsingle_term_label"><?php esc_html_e( 'Categories' ); ?>:</span>
+							<span class="gmsingle_term_label"><?php esc_html_e( 'Categories' , 'grand-media'); ?>:</span>
 							<span class="gmsingle_categories"><?php echo wp_kses_post( implode( ' ', $item_cats ) ); ?></span>
 						</p>
 						<?php
@@ -806,7 +806,7 @@ function gmedia_post_type__the_content( $content ) {
 						}
 						?>
 						<p class="gmsingle_terms">
-							<span class="gmsingle_term_label"><?php esc_html_e( 'Tags' ); ?>:</span>
+							<span class="gmsingle_term_label"><?php esc_html_e( 'Tags' , 'grand-media'); ?>:</span>
 							<span class="gmsingle_tags"><?php echo wp_kses_post( implode( ' ', $item_tags ) ); ?></span>
 						</p>
 					<?php } ?>
@@ -854,7 +854,7 @@ function gmedia_post_type__the_content( $content ) {
 					}
 					?>
 					<p class="gmsingle_terms">
-						<span class="gmsingle_term_label"><?php esc_html_e( 'Album' ); ?>:</span>
+						<span class="gmsingle_term_label"><?php esc_html_e( 'Album' , 'grand-media'); ?>:</span>
 						<span class="gmsingle_album"><span class="gmsingle_term"><a
 									href="<?php echo esc_url( $term_url ); ?>"><?php echo esc_html( $term_name ); ?></a></span></span>
 					</p>
@@ -870,7 +870,7 @@ function gmedia_post_type__the_content( $content ) {
 					}
 					?>
 					<p class="gmsingle_terms">
-						<span class="gmsingle_term_label"><?php esc_html_e( 'Categories' ); ?>:</span>
+						<span class="gmsingle_term_label"><?php esc_html_e( 'Categories' , 'grand-media'); ?>:</span>
 						<span class="gmsingle_categories"><?php echo wp_kses_post( implode( ' ', $item_cats ) ); ?></span>
 					</p>
 					<?php
@@ -885,7 +885,7 @@ function gmedia_post_type__the_content( $content ) {
 					}
 					?>
 					<p class="gmsingle_terms">
-						<span class="gmsingle_term_label"><?php esc_html_e( 'Tags' ); ?>:</span>
+						<span class="gmsingle_term_label"><?php esc_html_e( 'Tags' , 'grand-media'); ?>:</span>
 						<span class="gmsingle_tags"><?php echo wp_kses_post( implode( ' ', $item_tags ) ); ?></span>
 					</p>
 				<?php } ?>

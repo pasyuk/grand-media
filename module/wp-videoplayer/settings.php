@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $default_options = array(
 	'width'        => '640',
 	'tracknumbers' => '1',

@@ -72,7 +72,7 @@ $has_premium  = gmedia_has_premium_license();
 				echo sprintf(
 				/* translators: %s: Link to purchase page */
 						esc_html__( 'New licenses are only available through Freemius. %s', 'grand-media' ),
-						'<a href="' . admin_url( 'admin.php?page=GrandMedia-pricing' ) . '" target="_blank">' . esc_html__( 'Purchase here', 'grand-media' ) . ' &rarr;</a>'
+						'<a href="' . esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) . '" target="_blank">' . esc_html__( 'Purchase here', 'grand-media' ) . ' &rarr;</a>'
 				);
 				?>
 			</p>
@@ -106,7 +106,7 @@ $has_premium  = gmedia_has_premium_license();
 		<div class="no-license-section" style="margin-bottom: 30px; padding: 20px; background: #f0f0f0; border: 1px solid #ccc; border-radius: 4px;">
 			<h3 style="margin-top: 0;"><?php esc_html_e( 'Unlock Premium Features', 'grand-media' ); ?></h3>
 			<p><?php esc_html_e( 'Get access to premium gallery modules, advanced features, and priority support.', 'grand-media' ); ?></p>
-			<a href="<?php echo admin_url( 'admin.php?page=GrandMedia-pricing' ); ?>" class="button button-primary button-large" target="_blank"><?php esc_html_e( 'Get Gmedia Premium', 'grand-media' ); ?></a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ); ?>" class="button button-primary button-large" target="_blank"><?php esc_html_e( 'Get Gmedia Premium', 'grand-media' ); ?></a>
 		</div>
 		<hr/>
 	<?php endif; ?>

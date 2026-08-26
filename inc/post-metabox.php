@@ -46,6 +46,7 @@ function gmedia_media_buttons_context() {
  * @param $hook
  */
 function gmedia_meta_box_load_scripts( $hook ) {
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only editor routing determines which assets to enqueue; no form is processed.
 	if ( ( in_array( $hook, array( 'post.php', 'edit.php' ), true ) && isset( $_GET['post'] ) && isset( $_GET['action'] ) && 'edit' === $_GET['action'] ) || 'post-new.php' === $hook ) {
 		wp_enqueue_style( 'gmedia-meta-box', plugins_url( 'admin/assets/css/gmedia.metabox.css', dirname( __FILE__ ) ), array(), '1.0.0' );
 		wp_enqueue_script( 'gmedia-meta-box', plugins_url( 'admin/assets/js/gmedia.metabox.js', dirname( __FILE__ ) ), array( 'jquery', 'gmedia-global-backend' ), '1.4.3', true );
@@ -149,7 +150,7 @@ function gmedia_related_post_metabox_save( $post_id, $update ) {
 		return;
 	}
 	// verify taxonomies meta box nonce.
-	if ( ! isset( $_POST['_wpnonce_related_gmedia'] ) || ! wp_verify_nonce( $_POST['_wpnonce_related_gmedia'], 'GmediaGallery' ) ) {
+	if ( ! isset( $_POST['_wpnonce_related_gmedia'] ) || ! is_string( $_POST['_wpnonce_related_gmedia'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wpnonce_related_gmedia'] ) ), 'GmediaGallery' ) ) {
 		return;
 	}
 	// Check the user's permissions.

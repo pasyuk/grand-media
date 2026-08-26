@@ -1,4 +1,8 @@
-<?php get_gmedia_header();
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+get_gmedia_header();
 
 /**
  * @var $gmedia

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /* only for default template */
 add_action( 'gmedia_head', 'gmedia_default_template_styles' );
 

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 remove_all_actions( 'wp_print_styles' );
 //add_action('gmedia_head', 'gmediacloud_appbaner');
@@ -279,7 +282,6 @@ function gmediacloud_social_sharing() {
 	$mailbody   = esc_attr( $text . ' ' . $url );
 	?>
 	<style>
-		/*@import url('//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css') all;*/
 		/*.fa span { display:none; }*/
 		.gmedia-socialsharebuttons {
 			float: right;

@@ -15,7 +15,7 @@ global $user_ID, $gmDB, $gmCore
 	<div class="modal-dialog mw-100" style="width:700px;">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title"><?php esc_html_e( 'Query Parameters' ); ?></h4>
+				<h4 class="modal-title"><?php esc_html_e( 'Query Parameters' , 'grand-media'); ?></h4>
 				<div class="float-end" style="margin-top:-4px;">
 					<button type="button" class="btn btn-secondary buildqueryreset"><?php esc_html_e( 'Reset', 'grand-media' ); ?></button>
 					<button type="button" class="btn btn-primary buildquerysubmit"><?php esc_html_e( 'Build Query', 'grand-media' ); ?></button>
@@ -79,13 +79,13 @@ global $user_ID, $gmDB, $gmCore
 							<div class="col-sm-4">
 								<label><?php esc_html_e( 'Albums Order', 'grand-media' ); ?> </label>
 								<select name="albums_order" class="form-control input-xs">
-									<option <?php selected( $query_data['albums_order'], '' ); ?> value=""><?php esc_html_e( 'No Order' ); ?></option>
-									<option <?php selected( $query_data['albums_order'], 'id' ); ?> value="id"><?php esc_html_e( 'By ID (ASC)' ); ?></option>
-									<option <?php selected( $query_data['albums_order'], 'id_desc' ); ?> value="desc"><?php esc_html_e( 'By ID (DESC)' ); ?></option>
-									<option <?php selected( $query_data['albums_order'], 'name' ); ?> value="name"><?php esc_html_e( 'By Name (ASC)' ); ?></option>
-									<option <?php selected( $query_data['albums_order'], 'name_desc' ); ?> value="name_desc"><?php esc_html_e( 'By Name (DESC)' ); ?></option>
-									<option <?php selected( $query_data['albums_order'], 'date' ); ?> value="date"><?php esc_html_e( 'By Date (ASC)' ); ?></option>
-									<option <?php selected( $query_data['albums_order'], 'date_desc' ); ?> value="date_desc"><?php esc_html_e( 'By Date (DESC)' ); ?></option>
+									<option <?php selected( $query_data['albums_order'], '' ); ?> value=""><?php esc_html_e( 'No Order' , 'grand-media'); ?></option>
+									<option <?php selected( $query_data['albums_order'], 'id' ); ?> value="id"><?php esc_html_e( 'By ID (ASC)' , 'grand-media'); ?></option>
+									<option <?php selected( $query_data['albums_order'], 'id_desc' ); ?> value="desc"><?php esc_html_e( 'By ID (DESC)' , 'grand-media'); ?></option>
+									<option <?php selected( $query_data['albums_order'], 'name' ); ?> value="name"><?php esc_html_e( 'By Name (ASC)' , 'grand-media'); ?></option>
+									<option <?php selected( $query_data['albums_order'], 'name_desc' ); ?> value="name_desc"><?php esc_html_e( 'By Name (DESC)' , 'grand-media'); ?></option>
+									<option <?php selected( $query_data['albums_order'], 'date' ); ?> value="date"><?php esc_html_e( 'By Date (ASC)' , 'grand-media'); ?></option>
+									<option <?php selected( $query_data['albums_order'], 'date_desc' ); ?> value="date_desc"><?php esc_html_e( 'By Date (DESC)' , 'grand-media'); ?></option>
 								</select>
 							</div>
 						</div>
@@ -146,9 +146,9 @@ global $user_ID, $gmDB, $gmCore
 					<div class="row">
 						<div class="col-sm-4">
 							<select name="terms_relation" class="form-control input-xs">
-								<option <?php selected( $query_data['terms_relation'], '' ); ?> value=""><?php esc_html_e( 'Default (OR)' ); ?></option>
-								<option <?php selected( $query_data['terms_relation'], 'AND' ); ?> value="AND"><?php esc_html_e( 'AND' ); ?></option>
-								<option <?php selected( $query_data['terms_relation'], 'OR' ); ?> value="OR"><?php esc_html_e( 'OR' ); ?></option>
+								<option <?php selected( $query_data['terms_relation'], '' ); ?> value=""><?php esc_html_e( 'Default (OR)' , 'grand-media'); ?></option>
+								<option <?php selected( $query_data['terms_relation'], 'AND' ); ?> value="AND"><?php esc_html_e( 'AND' , 'grand-media'); ?></option>
+								<option <?php selected( $query_data['terms_relation'], 'OR' ); ?> value="OR"><?php esc_html_e( 'OR' , 'grand-media'); ?></option>
 							</select>
 						</div>
 						<div class="col-sm-8">

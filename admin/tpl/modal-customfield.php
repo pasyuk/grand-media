@@ -8,7 +8,7 @@ if ( isset( $customfield_meta_type ) && $customfield_meta_type ) { ?>
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h4 class="modal-title"><?php esc_html_e( 'Add New Custom Field' ); ?></h4>
+					<h4 class="modal-title"><?php esc_html_e( 'Add New Custom Field' , 'grand-media'); ?></h4>
 					<button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<form class="modal-body" method="post" id="newCustomFieldForm">

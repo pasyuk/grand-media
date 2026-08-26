@@ -81,12 +81,12 @@ global $gmCore, $gmDB, $gmGallery, $gm_allowed_tags;
 						<label><?php esc_html_e( 'Change Module/Preset for Galleries', 'grand-media' ); ?>:</label>
 						<select class="form-control input-sm" name="gmedia_gallery_module">
 							<?php
-							echo '<option value="">' . esc_html__( 'Choose Module/Preset' ) . '</option>';
+							echo '<option value="">' . esc_html__( 'Choose Module/Preset' , 'grand-media') . '</option>';
 							foreach ( $gmedia_modules['in'] as $mfold => $module ) {
 								echo '<optgroup label="' . esc_attr( $module['title'] ) . '">';
 								$presets  = $gmDB->get_terms( 'gmedia_module', array( 'status' => $mfold ) );
 								$option   = array();
-								$option[] = '<option value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' ) ) . '</option>';
+								$option[] = '<option value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 								foreach ( $presets as $preset ) {
 									if ( ! (int) $preset->global && '[' . $mfold . ']' === $preset->name ) {
 										continue;
@@ -96,7 +96,7 @@ global $gmCore, $gmDB, $gmGallery, $gm_allowed_tags;
 										$by_author = ' [' . get_the_author_meta( 'display_name', $preset->global ) . ']';
 									}
 									if ( '[' . $mfold . ']' === $preset->name ) {
-										$option[] = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' ) ) . '</option>';
+										$option[] = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 									} else {
 										$preset_name = str_replace( '[' . $mfold . '] ', '', $preset->name );
 										$option[]    = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . $preset_name ) . '</option>';

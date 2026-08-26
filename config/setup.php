@@ -191,7 +191,7 @@ function gmedia_install() {
 
 	// check one table again, to be sure.
 	$gmedia = $wpdb->prefix . 'gmedia';
-	if ( $wpdb->get_var( "show tables like '$gmedia'" ) !== $gmedia ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia ) ) ) !== $gmedia ) {
 		update_option( 'gmediaInitCheck', esc_html__( 'GmediaGallery: Tables could not created, please check your database settings', 'grand-media' ) );
 
 		return;
@@ -257,7 +257,7 @@ function gmedia_db_tables() {
 	$gmedia_term_relationships = $wpdb->prefix . 'gmedia_term_relationships';
 	$gmedia_log                = $wpdb->prefix . 'gmedia_log';
 
-	if ( $wpdb->get_var( "show tables like '$gmedia'" ) !== $gmedia ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia ) ) ) !== $gmedia ) {
 		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia} (
 			ID BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -280,7 +280,7 @@ function gmedia_db_tables() {
 		dbDelta( $sql );
 	}
 
-	if ( $wpdb->get_var( "show tables like '$gmedia_meta'" ) !== $gmedia_meta ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia_meta ) ) ) !== $gmedia_meta ) {
 		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_meta} (
 			meta_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -295,7 +295,7 @@ function gmedia_db_tables() {
 		dbDelta( $sql );
 	}
 
-	if ( $wpdb->get_var( "show tables like '$gmedia_term'" ) !== $gmedia_term ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia_term ) ) ) !== $gmedia_term ) {
 		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_term} (
 			term_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -312,7 +312,7 @@ function gmedia_db_tables() {
 		dbDelta( $sql );
 	}
 
-	if ( $wpdb->get_var( "show tables like '$gmedia_term_meta'" ) !== $gmedia_term_meta ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia_term_meta ) ) ) !== $gmedia_term_meta ) {
 		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_term_meta} (
 			meta_id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -326,7 +326,7 @@ function gmedia_db_tables() {
 		dbDelta( $sql );
 	}
 
-	if ( $wpdb->get_var( "show tables like '$gmedia_term_relationships'" ) !== $gmedia_term_relationships ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia_term_relationships ) ) ) !== $gmedia_term_relationships ) {
 		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_term_relationships} (
 			gmedia_id BIGINT(20) UNSIGNED NOT NULL DEFAULT '0',
@@ -339,7 +339,7 @@ function gmedia_db_tables() {
 		dbDelta( $sql );
 	}
 
-	if ( $wpdb->get_var( "show tables like '$gmedia_log'" ) !== $gmedia_log ) {
+	if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $gmedia_log ) ) ) !== $gmedia_log ) {
 		$sql = 'SET GLOBAL innodb_file_format = Barracuda, innodb_large_prefix = ON;';
 		$sql .= "CREATE TABLE {$gmedia_log} (
 			log VARCHAR(200) NOT NULL DEFAULT '',

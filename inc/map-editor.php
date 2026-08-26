@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * @title  Image Editor
  */
@@ -32,7 +35,7 @@ function gmedia_map_editor() {
 				<div class="input-group input-group-sm">
 					<input id="geocode_address" type="text" placeholder="<?php esc_attr_e( 'location address', 'grand-media' ); ?>" value="" class="form-control input-sm gps_map_coordinates">
 					<span class="input-group-btn">
-						<button id="geocode_submit" class="btn btn-lg btn-success" type="button"><?php esc_html_e( 'Geocode', 'grand-media' ); ?></button>
+						<button id="geocode_submit" class="btn btn-lg btn-success h-100" type="button"><?php esc_html_e( 'Geocode', 'grand-media' ); ?></button>
 					</span>
 				</div>
 			</div>

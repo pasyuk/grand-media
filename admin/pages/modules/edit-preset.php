@@ -45,11 +45,11 @@ if ( isset( $gmedia_modules['in'][ $term->module['name'] ] ) ) {
 
 	} else {
 		// translators: module name.
-		$alert[] = sprintf( esc_html__( 'Module `%s` is broken. Choose another module from the list.' ), esc_html( $module_name ) );
+		$alert[] = sprintf( esc_html__( 'Module `%s` is broken. Choose another module from the list.' , 'grand-media'), esc_html( $module_name ) );
 	}
 } else {
 	// translators: module name.
-	$alert[] = sprintf( esc_html__( 'Can\'t get module with name `%s`. Choose module from the list.' ), esc_html( $term->module['name'] ) );
+	$alert[] = sprintf( esc_html__( 'Can\'t get module with name `%s`. Choose module from the list.' , 'grand-media'), esc_html( $term->module['name'] ) );
 }
 
 if ( ! empty( $alert ) ) {

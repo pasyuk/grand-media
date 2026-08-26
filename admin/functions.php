@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 function gm_get_admin_url( $add_args = array(), $remove_args = array(), $uri = false, $preserve_args = array() ) {
 	global $gmCore;
@@ -8,6 +11,27 @@ function gm_get_admin_url( $add_args = array(), $remove_args = array(), $uri = f
 
 function gm_panel_classes( $classes ) {
 	echo esc_attr( implode( ' ', (array) $classes ) );
+}
+
+/**
+ * Build the allowlisted ORDER BY clause for the Gmedia log table.
+ *
+ * @param mixed $orderby   Requested screen-option column.
+ * @param mixed $sortorder Requested screen-option direction.
+ *
+ * @return string
+ */
+function gmedia_log_orderby_sql( $orderby, $sortorder ) {
+	$columns = array(
+		'log_date' => 'log_date',
+		'ID'       => 'ID',
+		'author'   => 'log_author',
+	);
+
+	$column    = is_string( $orderby ) && isset( $columns[ $orderby ] ) ? $columns[ $orderby ] : 'log_date';
+	$direction = is_string( $sortorder ) && 'ASC' === strtoupper( $sortorder ) ? 'ASC' : 'DESC';
+
+	return "ORDER BY l.{$column} {$direction}";
 }
 
 function gmedia_term_choose_author_field( $selected = false, $_args = array() ) {

@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var $gmDB
  * @var  $gmCore
  * @var  $gmGallery
@@ -10,9 +13,10 @@
  **/
 
 global $wp;
+$gmedia_url_query = isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '';
 $settings    = array_merge( $settings, array(
 	'ID'            => $id,
-	'url'           => add_query_arg( $_SERVER['QUERY_STRING'], '', home_url( $wp->request ) ),
+	'url'           => add_query_arg( $gmedia_url_query, '', home_url( $wp->request ) ),
 	'module_dirurl' => $module['url'],
 	'ajax_actions'  => array(
 		'comments' => array(
@@ -23,7 +27,7 @@ $settings    = array_merge( $settings, array(
 ) );
 $allsettings = array_merge( $module['options'], $settings );
 
-$base_url_host = parse_url( $gmCore->upload['url'], PHP_URL_HOST );
+$base_url_host = wp_parse_url( $gmCore->upload['url'], PHP_URL_HOST );
 $term_url      = remove_query_arg( 'gm' . $id );
 
 if ( empty( $query['per_page'] ) ) {
@@ -39,7 +43,7 @@ if ( $gmDB->openPage < $gmDB->pages ) {
 }
 
 if ( empty( $gmedias ) ) {
-	echo GMEDIA_GALLERY_EMPTY;
+	echo esc_html( GMEDIA_GALLERY_EMPTY );
 
 	return;
 }
@@ -70,7 +74,7 @@ if ( ! isset( $shortcode_raw ) ) {
 			$thumbsWrapper_class .= ' gmPhantom_LabelNone';
 		}
 		?>
-		<div class="gmPhantom_thumbsWrapper<?php echo $thumbsWrapper_class; ?>">
+		<div class="gmPhantom_thumbsWrapper<?php echo esc_attr( $thumbsWrapper_class ); ?>">
 			<?php
 			$web_size   = array();
 			$thumb_size = array();
@@ -90,7 +94,7 @@ if ( ! isset( $shortcode_raw ) ) {
 				if ( $item->link ) {
 					$link_target = $allsettings['link_target'];
 					if ( 'auto' == $link_target ) {
-						$url_host = parse_url( $item->link, PHP_URL_HOST );
+						$url_host = wp_parse_url( $item->link, PHP_URL_HOST );
 						if ( $url_host == $base_url_host || empty( $url_host ) ) {
 							$link_target = '_self';
 						} else {
@@ -100,7 +104,7 @@ if ( ! isset( $shortcode_raw ) ) {
 					if ( isset( $meta['link_target'][0] ) ) {
 						$link_target = $meta['link_target'][0];
 					}
-					$title = "<a href='{$item->link}' target='{$link_target}'>" . ( $title ? $title : $item->gmuid ) . '</a>';
+					$title = '<a href="' . esc_url( $item->link ) . '" target="' . esc_attr( $link_target ) . '">' . ( $title ? $title : $item->gmuid ) . '</a>';
 				}
 
 				if ( 'image' === $type ) {
@@ -145,11 +149,11 @@ if ( ! isset( $shortcode_raw ) ) {
 					$item_data_html .= " data-{$key}=\"{$val}\"";
 				}
 				?>
-			<div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo( ! in_array( $type, array( 'image' ) ) ? " mfp-iframe" : '' ); ?>"<?php echo $item_data_html; ?>>
-				<a href="<?php echo ( ! empty( $allsettings['thumb2link'] ) && $item->link ) ? $item->link : $item->url; ?>" class="gmPhantom_Thumb"><img src="<?php echo $thumb; ?>" data-src="<?php echo $image; ?>" alt="<?php echo esc_attr( $alttext ); ?>"/></a>
+			<div class="gmPhantom_ThumbContainer gmPhantom_ThumbLoader<?php echo( ! in_array( $type, array( 'image' ) ) ? " mfp-iframe" : '' ); ?>"<?php echo $item_data_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed data attribute names; each value is escaped with esc_attr above. ?>>
+				<a href="<?php echo esc_url( ( ! empty( $allsettings['thumb2link'] ) && $item->link ) ? $item->link : $item->url ); ?>" class="gmPhantom_Thumb"><img src="<?php echo esc_url( $thumb ); ?>" data-src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $alttext ); ?>"/></a>
 				<?php
 				if ( in_array( $allsettings['thumbsinfo'], array( 'label', 'label_bottom' ) ) ) { ?>
-					<div class="gmPhantom_ThumbLabel"><span class="gmPhantom_ThumbLabel_title"><?php echo $title; ?></span></div>
+					<div class="gmPhantom_ThumbLabel"><span class="gmPhantom_ThumbLabel_title"><?php echo wp_kses_post( $title ); ?></span></div>
 					<?php
 				} ?>
 				<div style="display:none;" class="gmPhantom_Details">
@@ -159,8 +163,8 @@ if ( ! isset( $shortcode_raw ) ) {
 					}
 					if ( $title || $description ) { ?>
 						<div class="gmPhantom_description">
-							<div class="gmPhantom_title"><?php echo $title; ?></div>
-							<div class="gmPhantom_text"><?php echo $description; ?></div>
+							<div class="gmPhantom_title"><?php echo wp_kses_post( $title ); ?></div>
+							<div class="gmPhantom_text"><?php echo wp_kses_post( $description ); ?></div>
 						</div>
 					<?php } ?>
 					<?php
@@ -168,7 +172,7 @@ if ( ! isset( $shortcode_raw ) ) {
 					if ( (int) $allsettings['show_tags'] && ( $terms = $item->tags ) ) {
 						foreach ( $terms as $_term ) {
 							$url    = add_query_arg( array( "gm{$id}" => array( 'tag__in' => $_term->term_id ) ), $term_url );
-							$tags[] = '<a href="' . urldecode( $url ) . '" class="gmPhantom_tag">#' . $_term->name . '</a>';
+							$tags[] = '<a href="' . esc_url( urldecode( $url ) ) . '" class="gmPhantom_tag">#' . esc_html( $_term->name ) . '</a>';
 						}
 					}
 
@@ -176,7 +180,7 @@ if ( ! isset( $shortcode_raw ) ) {
 					if ( (int) $allsettings['show_categories'] && ( $terms = $item->categories ) ) {
 						foreach ( $terms as $_term ) {
 							$url          = add_query_arg( array( "gm{$id}" => array( 'category__in' => $_term->term_id ) ), $term_url );
-							$categories[] = '<a href="' . urldecode( $url ) . '" class="gmPhantom_cat">' . $_term->name . '</a>';
+							$categories[] = '<a href="' . esc_url( urldecode( $url ) ) . '" class="gmPhantom_cat">' . esc_html( $_term->name ) . '</a>';
 						}
 					}
 
@@ -184,7 +188,7 @@ if ( ! isset( $shortcode_raw ) ) {
 					if ( (int) $allsettings['show_albums'] && ( $terms = $item->album ) ) {
 						foreach ( $terms as $_term ) {
 							$url      = add_query_arg( array( "gm{$id}" => array( 'album__in' => $_term->term_id ) ), $term_url );
-							$albums[] = '<a href="' . urldecode( $url ) . '" class="gmPhantom_alb">' . $_term->name . '</a>';
+							$albums[] = '<a href="' . esc_url( urldecode( $url ) ) . '" class="gmPhantom_alb">' . esc_html( $_term->name ) . '</a>';
 						}
 					}
 					?>
@@ -192,7 +196,7 @@ if ( ! isset( $shortcode_raw ) ) {
 						<?php
 						if ( count( $tags ) ) {
 							?>
-							<div class="gmPhantom_tags_container"><?php echo implode( ' ', $tags ); ?></div>
+							<div class="gmPhantom_tags_container"><?php echo wp_kses_post( implode( ' ', $tags ) ); ?></div>
 						<?php }
 
 						$details                                 = array();
@@ -206,8 +210,8 @@ if ( ! isset( $shortcode_raw ) ) {
 								<table class="gmPhantom_other_terms_table">
 									<?php foreach ( $details as $key => $value ) { ?>
 										<tr class="gmPhantom_term_row_<?php echo sanitize_key( $key ); ?>">
-											<td class="gmPhantom_term_key"><?php echo ucwords( $key ); ?></td>
-											<td class="gmPhantom_term_value"><?php echo $value; ?></td>
+											<td class="gmPhantom_term_key"><?php echo esc_html( ucwords( $key ) ); ?></td>
+											<td class="gmPhantom_term_value"><?php echo wp_kses_post( $value ); ?></td>
 										</tr>
 									<?php } ?>
 								</table>
@@ -221,7 +225,7 @@ if ( ! isset( $shortcode_raw ) ) {
 			if ( $load_more ) { ?>
 				<div class="gmPhantom_LoadMore">
 					<?php $nextpage = $gmDB->openPage + 1;
-					echo "<a class='gmPhantom_pager' href='{$load_more}' title='" . __( 'Load more', 'grand-media' ) . "'><span class='gmPhantom_dots'>&bull;&bull;&bull;</span><span class='gmPhantom_page'>{$nextpage}</span></a>";
+					echo '<a class="gmPhantom_pager" href="' . esc_url( $load_more ) . '" title="' . esc_attr__( 'Load more', 'grand-media' ) . '"><span class="gmPhantom_dots">&bull;&bull;&bull;</span><span class="gmPhantom_page">' . (int) $nextpage . '</span></a>';
 					?>
 				</div>
 			<?php } ?>

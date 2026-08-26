@@ -107,6 +107,7 @@ class PelDataWindow
             ImageJpeg($data, null, Pel::getJPEGQuality());
             $this->data = ob_get_clean();
         } else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidArgumentException('Bad type for $data: %s', gettype($data));
         }
 
@@ -162,6 +163,7 @@ class PelDataWindow
     public function setWindowStart($start)
     {
         if ($start < 0 || $start > $this->size) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric window diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelDataWindowWindowException('Window [%d, %d] does ' . 'not fit in window [0, %d]', $start, $this->size, $this->size);
         }
         $this->start += $start;
@@ -183,6 +185,7 @@ class PelDataWindow
             $size += $this->size;
         }
         if ($size < 0 || $size > $this->size) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric window diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelDataWindowWindowException('Window [0, %d] ' . 'does not fit in window [0, %d]', $size, $this->size);
         }
         $this->size = $size;
@@ -231,6 +234,7 @@ class PelDataWindow
     private function validateOffset($offset)
     {
         if ($offset < 0 || $offset >= $this->size) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric offset diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelDataWindowOffsetException('Offset %d not within [%d, %d]', $offset, 0, $this->size - 1);
         }
     }

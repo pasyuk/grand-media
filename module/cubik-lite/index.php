@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $module_info = array(
 	'base'         => 'cubik-lite',
 	'name'         => 'cubik-lite',
@@ -16,9 +19,10 @@ Responsive and mobile friendly &bull; Working in all major browsers &bull; built
 	'download'     => 'http://codeasily.com/download/cubik-lite-module-zip/',
 	'dependencies' => '',
 );
-if ( preg_match( '#' . basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) . '#', $_SERVER['PHP_SELF'] ) ) {
+$gmedia_php_self = isset( $_SERVER['PHP_SELF'] ) ? wp_unslash( $_SERVER['PHP_SELF'] ) : '';
+if ( preg_match( '#' . basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) . '#', $gmedia_php_self ) ) {
 	if ( isset( $_GET['info'] ) ) {
-		echo '<pre>' . print_r( $module_info, true ) . '</pre>';
+		echo '<pre>' . esc_html( print_r( $module_info, true ) ) . '</pre>';
 	} else {
 		header( "Location: {$module_info['demo']}" );
 		die();

@@ -84,14 +84,14 @@ if ( $term->module['name'] ) {
 			}
 		} else {
 			// translators: module name.
-			$alert[] = sprintf( esc_html__( 'Module `%s` is broken. Choose another module from the list.' ), esc_html( $term->module['name'] ) );
+			$alert[] = sprintf( esc_html__( 'Module `%s` is broken. Choose another module from the list.' , 'grand-media'), esc_html( $term->module['name'] ) );
 		}
 	} else {
 		// translators: module name.
-		$alert[] = sprintf( esc_html__( 'Can\'t get module with name `%s`. Choose module from the list.' ), esc_html( $term->module['name'] ) );
+		$alert[] = sprintf( esc_html__( 'Can\'t get module with name `%s`. Choose module from the list.' , 'grand-media'), esc_html( $term->module['name'] ) );
 	}
 } else {
-	$alert[] = esc_html__( 'Module is not selected for this gallery. Choose module from the list.' );
+	$alert[] = esc_html__( 'Module is not selected for this gallery. Choose module from the list.' , 'grand-media');
 }
 
 if ( ! empty( $alert ) ) {
@@ -101,7 +101,7 @@ if ( ! empty( $alert ) ) {
 if ( ! empty( $load_preset ) ) {
 	$term->meta['_settings'][ $term->module['name'] ] = $gmCore->array_replace_recursive( $term->meta['_settings'][ $term->module['name'] ], $load_preset );
 	// translators: presert name.
-	echo wp_kses_post( $gmCore->alert( 'info', sprintf( esc_html__( 'Preset `%s` loaded. To apply it for current gallery click Save button' ), esc_html( $load_preset['name'] ) ) ) );
+	echo wp_kses_post( $gmCore->alert( 'info', sprintf( esc_html__( 'Preset `%s` loaded. To apply it for current gallery click Save button' , 'grand-media'), esc_html( $load_preset['name'] ) ) ) );
 }
 if ( ! empty( $term->meta['_settings'][ $term->module['name'] ] ) ) {
 	$gallery_settings = $gmCore->array_replace_recursive( $default_options, $term->meta['_settings'][ $term->module['name'] ] );
@@ -121,7 +121,9 @@ do_action( 'gmedia_gallery_before_panel' );
 $limitation = ! gmedia_has_premium_license() && in_array( $term->module['name'], array( 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ), true );
 if ( $limitation ) {
 	?>
-	<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php echo wp_kses_post( sprintf( __( 'Note: Free version allows you to show maximum 100 images per gallery on the frontend. Purchase license key <a href="%s">here</a>.', 'grand-media' ), esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) ) ); ?></div>
+	<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php
+		/* translators: %s: License purchase URL. */
+		echo wp_kses_post( sprintf( __( 'Note: Free version allows you to show maximum 100 images per gallery on the frontend. Purchase license key <a href="%s">here</a>.', 'grand-media' ), esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) ) ); ?></div>
 	<?php
 }
 ?>

@@ -16,7 +16,7 @@ function gmedia_upgrade_required_admin_notice() {
 
 		<?php if ( $can_update ) { ?>
 			<p class="submit">
-				<a href="<?php echo esc_url( add_query_arg( 'do_update', 'gmedia', admin_url( 'admin.php?page=GrandMedia' ) ) ); ?>" class="gm-update-now button-primary"><?php esc_html_e( 'Run the updater', 'grand-media' ); ?></a>
+				<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'do_update', 'gmedia', admin_url( 'admin.php?page=GrandMedia' ) ), 'gmedia_update' ) ); ?>" class="gm-update-now button-primary"><?php esc_html_e( 'Run the updater', 'grand-media' ); ?></a>
 			</p>
 		<?php } ?>
 	</div>
@@ -42,7 +42,11 @@ function gmedia_upgrade_process_admin_notice() {
 }
 
 function gmedia_upgrade_progress_panel() {
-	gmedia_do_update();
+	// The protected AJAX worker continues existing upgrades; rendering progress must not rerun schema changes.
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Dispatch only; gmedia_do_update verifies capability and nonce before any start/reset effects.
+	if ( ! get_transient( 'gmediaUpgrade' ) || isset( $_GET['reset_update_process'] ) ) {
+		gmedia_do_update();
+	}
 	$nonce = wp_create_nonce( 'gmedia_ajax_long_operations' );
 	?>
 	<div id="gmediaUpdate" class="card m-0 mw-100 p-0">
@@ -86,6 +90,11 @@ function gmedia_upgrade_progress_panel() {
 
 function gmedia_do_update() {
 	global $wpdb;
+
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'You are not allowed to run this process.', 'grand-media' ), '', array( 'response' => 403 ) );
+	}
+	check_admin_referer( 'gmedia_update' );
 
 	if ( isset( $_GET['reset_update_process'] ) ) {
 		delete_transient( 'gmediaHeavyJob' );
@@ -235,6 +244,7 @@ function gmedia_db_update__0_9_6() {
 	$fix_files = glob( $gmCore->upload['path'] . '/?*.?*', GLOB_NOSORT );
 	if ( ! empty( $fix_files ) ) {
 		foreach ( $fix_files as $ff ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 			@rename( $ff, $gmCore->upload['path'] . '/image/' . basename( $ff ) );
 		}
 	}
@@ -500,6 +510,7 @@ function gmedia_images_update( $files ) {
 		if ( ! is_file( $file ) ) {
 			$fileinfo = $gmCore->fileinfo( $file, false );
 			if ( is_file( $fileinfo['filepath_original'] ) ) {
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 				@rename( $fileinfo['filepath_original'], $fileinfo['filepath'] );
 			} else {
 				// translators: file name.
@@ -513,6 +524,7 @@ function gmedia_images_update( $files ) {
 		$fileinfo  = $gmCore->fileinfo( $file, false );
 
 		if ( $file_File !== $fileinfo['filepath'] ) {
+			// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 			@rename( $file_File, $fileinfo['filepath'] );
 			$wpdb->update( $wpdb->prefix . 'gmedia', array( 'gmuid' => $fileinfo['basename'] ), array( 'gmuid' => basename( $file_File ) ) );
 		}
@@ -569,13 +581,14 @@ function gmedia_images_update( $files ) {
 				}
 
 				if ( ! wp_mkdir_p( $fileinfo['dirpath_thumb'] ) ) {
+					/* translators: %s: Thumbnail directory path. */
 					$info[ 'img_' . $i ] = $prefix_ko . sprintf( __( 'Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media' ), $fileinfo['dirpath_thumb'] ) . $eol;
 					set_transient( 'gmediaHeavyJob', $info );
 					continue;
 				}
-				if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
-					@chmod( $fileinfo['dirpath_thumb'], 0755 );
-					if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
+				if ( ! wp_is_writable( $fileinfo['dirpath_thumb'] ) ) {
+					$gmCore->file_chmod( $fileinfo['dirpath_thumb'], 0755 );
+					if ( ! wp_is_writable( $fileinfo['dirpath_thumb'] ) ) {
 						// translators: dirname.
 						$info[ 'img_' . $i ] = $prefix_ko . sprintf( esc_html__( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_thumb'] ) . $eol;
 						set_transient( 'gmediaHeavyJob', $info );
@@ -588,9 +601,9 @@ function gmedia_images_update( $files ) {
 					set_transient( 'gmediaHeavyJob', $info );
 					continue;
 				}
-				if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
-					@chmod( $fileinfo['dirpath_original'], 0755 );
-					if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
+				if ( ! wp_is_writable( $fileinfo['dirpath_original'] ) ) {
+					$gmCore->file_chmod( $fileinfo['dirpath_original'], 0755 );
+					if ( ! wp_is_writable( $fileinfo['dirpath_original'] ) ) {
 						// translators: dirname.
 						$info[ 'img_' . $i ] = $prefix_ko . sprintf( esc_html__( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol;
 						set_transient( 'gmediaHeavyJob', $info );
@@ -606,6 +619,7 @@ function gmedia_images_update( $files ) {
 				$thumbimg['resize'] = ( ( $thumbimg['width'] < $size[0] ) || ( $thumbimg['height'] < $size[1] ) );
 
 				if ( $webimg['resize'] ) {
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 					rename( $fileinfo['filepath'], $fileinfo['filepath_original'] );
 				} else {
 					copy( $fileinfo['filepath'], $fileinfo['filepath_original'] );
@@ -694,9 +708,10 @@ function gmedia_restore_original_images() {
 			$id    = $wpdb->get_var( $wpdb->prepare( "SELECT ID FROM {$wpdb->prefix}gmedia WHERE gmuid = %s", $gmuid ) );
 			if ( $id ) {
 				$gmDB->update_metadata( 'gmedia', $id, '_modified', 1 );
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 				@rename( $ff, $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $gmuid );
 			} else {
-				@unlink( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $gmuid . '_backup' );
+				wp_delete_file( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/' . $gmuid . '_backup' );
 			}
 		}
 	}
@@ -776,8 +791,8 @@ function gmedia_quite_update() {
 		}
 		if ( version_compare( $current_version, '1.8.08', '<' ) ) {
 			if ( is_file( $gmCore->upload['path'] . '/module/mosaic/js/mosaic.min.js' ) ) {
-				@unlink( $gmCore->upload['path'] . '/module/mosaic/js/jquery.prettyPhoto-min.js' );
-				@unlink( $gmCore->upload['path'] . '/module/mosaic/js/mosaic.js' );
+				wp_delete_file( $gmCore->upload['path'] . '/module/mosaic/js/jquery.prettyPhoto-min.js' );
+				wp_delete_file( $gmCore->upload['path'] . '/module/mosaic/js/mosaic.js' );
 			}
 		}
 		if ( version_compare( $current_version, '1.8.12', '<' ) ) {

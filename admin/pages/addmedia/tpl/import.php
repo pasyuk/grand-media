@@ -60,7 +60,7 @@ $import_tab = array();
 					<div class="checkbox float-start">
 						<div><label><input type="checkbox" name="delete_source" value="1"/> <?php esc_html_e( 'delete source files after importing', 'grand-media' ); ?></label></div>
 						<div><label><input type="checkbox" name="skip_exists" value="skip"> <?php esc_html_e( 'Skip if file with the same name already exists in Gmedia Library', 'grand-media' ); ?></label></div>
-						<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' ); ?></div>
+						<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' , 'grand-media'); ?></div>
 					</div>
 					<button class="float-end btn btn-info gmedia-import" data-bs-toggle="modal" data-bs-target="#importModal" type="button" name="import-folder" value="true"><?php esc_html_e( 'Import folder', 'grand-media' ); ?></button>
 				</div>
@@ -103,7 +103,7 @@ $import_tab = array();
 						<div class="tab-footer">
 							<div class="checkbox float-start">
 								<label><input type="checkbox" name="skip_exists" value="skip"> <?php esc_html_e( 'Skip if file with the same name already exists in Gmedia Library', 'grand-media' ); ?></label>
-								<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' ); ?></div>
+								<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' , 'grand-media'); ?></div>
 							</div>
 							<button class="float-end btn btn-info gmedia-import" data-bs-toggle="modal" data-bs-target="#importModal" type="button" name="import-flagallery" value="true"><?php esc_html_e( 'Import', 'grand-media' ); ?></button>
 						</div>
@@ -136,7 +136,7 @@ $import_tab = array();
 						<div class="tab-footer">
 							<div class="checkbox float-start">
 								<label><input type="checkbox" name="skip_exists" value="skip"> <?php esc_html_e( 'Skip if file with the same name already exists in Gmedia Library', 'grand-media' ); ?></label>
-								<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' ); ?></div>
+								<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' , 'grand-media'); ?></div>
 							</div>
 							<button class="float-end btn btn-info gmedia-import" data-bs-toggle="modal" data-bs-target="#importModal" type="button" name="import-nextgen" value="true"><?php esc_html_e( 'Import', 'grand-media' ); ?></button>
 						</div>

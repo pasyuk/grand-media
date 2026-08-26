@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $default_options = array(
 	'base_gallery_width'      => '800',
 	'base_gallery_height'     => '500',

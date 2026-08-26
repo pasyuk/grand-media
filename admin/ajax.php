@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 add_action( 'wp_ajax_gmedia_update_data', 'gmedia_update_data' );
 function gmedia_update_data() {
 	global $gmDB, $gmCore;
@@ -34,10 +37,13 @@ function gmedia_update_data() {
 			if ( false !== $fileinfo ) {
 				if ( 'image' === $fileinfo['dirname'] && file_is_displayable_image( $fileinfo['dirpath'] . '/' . $item->gmuid ) ) {
 					if ( is_file( $fileinfo['dirpath_original'] . '/' . $item->gmuid ) ) {
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 						@rename( $fileinfo['dirpath_original'] . '/' . $item->gmuid, $fileinfo['filepath_original'] );
 					}
+					// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 					@rename( $fileinfo['dirpath_thumb'] . '/' . $item->gmuid, $fileinfo['filepath_thumb'] );
 				}
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 				if ( @rename( $fileinfo['dirpath'] . '/' . $item->gmuid, $fileinfo['filepath'] ) ) {
 					$gmedia['gmuid'] = $fileinfo['basename'];
 				}
@@ -260,7 +266,7 @@ function gmedit_save() {
 				if ( 'JPG' === $extensions[ $size[2] ] ) {
 					$gmCore->copy_exif( $fileinfo['filepath_original'], $fileinfo['filepath'] );
 					if ( $no_original ) {
-						@unlink( $fileinfo['filepath_original'] );
+						wp_delete_file( $fileinfo['filepath_original'] );
 					}
 				}
 			}
@@ -291,11 +297,13 @@ function gmedit_save() {
 					$thumbis = false;
 					if ( is_file( $fileinfo['filepath_thumb'] ) ) {
 						$thumbis = true;
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 						rename( $fileinfo['filepath_thumb'], $fileinfo['filepath_thumb'] . '.tmp' );
 					}
 					$saved = $editor->save( $fileinfo['filepath_thumb'] );
 					if ( is_wp_error( $saved ) ) {
 						if ( $thumbis ) {
+							// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 							rename( $fileinfo['filepath_thumb'] . '.tmp', $fileinfo['filepath_thumb'] );
 						}
 						$fail = $fileinfo['basename'] . ' (' . $saved->get_error_code() . ' | editor->save->thumb): ' . $saved->get_error_message();
@@ -497,7 +505,7 @@ function gmedia_get_modal() {
 								$presets  = $gmDB->get_terms( 'gmedia_module', array( 'status' => $mfold ) );
 								$selected = selected( $gmGallery->options['default_gmedia_module'], esc_attr( $mfold ), false );
 								$option   = array();
-								$option[] = '<option ' . $selected . ' value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' ) ) . '</option>';
+								$option[] = '<option ' . $selected . ' value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 								foreach ( $presets as $preset ) {
 									if ( ! (int) $preset->global && '[' . $mfold . ']' === $preset->name ) {
 										continue;
@@ -508,7 +516,7 @@ function gmedia_get_modal() {
 										$by_author = ' [' . get_the_author_meta( 'display_name', $preset->global ) . ']';
 									}
 									if ( '[' . $mfold . ']' === $preset->name ) {
-										$option[] = '<option ' . $selected . ' value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' ) ) . '</option>';
+										$option[] = '<option ' . $selected . ' value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 									} else {
 										$preset_name = str_replace( '[' . $mfold . '] ', '', $preset->name );
 										$option[]    = '<option ' . $selected . ' value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . $preset_name ) . '</option>';
@@ -800,7 +808,7 @@ function gmedia_get_modal() {
 							<input id="combobox_gmedia_tag" name="tag_names" class="form-control input-sm" value="" placeholder="<?php esc_attr_e( 'Add Tags...', 'grand-media' ); ?>"/>
 						</div>
 						<div class="checkbox">
-							<label><input type="checkbox" name="iptc_tags" value="1"> <?php esc_html_e( 'Import IPTC Keywords from selected images to Tags' ); ?></label>
+							<label><input type="checkbox" name="iptc_tags" value="1"> <?php esc_html_e( 'Import IPTC Keywords from selected images to Tags' , 'grand-media'); ?></label>
 						</div>
 						<script type="text/javascript">
 							jQuery(function($) {
@@ -905,13 +913,13 @@ function gmedia_get_modal() {
 						</script>
 					<?php
 					} else {
-						echo '<p>' . esc_html__( 'You are not allowed to see others media' ) . '</p>';
+						echo '<p>' . esc_html__( 'You are not allowed to see others media' , 'grand-media') . '</p>';
 						echo '<p><strong>' . esc_html( get_the_author_meta( 'display_name', $user_ID ) ) . '</strong></p>';
 					}
 					break;
 				case 'batch_edit':
 					?>
-					<p><?php esc_html_e( 'Note, data will be saved to all selected items in Gmedia Library.' ); ?></p>
+					<p><?php esc_html_e( 'Note, data will be saved to all selected items in Gmedia Library.' , 'grand-media'); ?></p>
 					<div class="form-group">
 						<label><?php esc_html_e( 'Filename', 'grand-media' ); ?></label>
 						<select class="form-control input-sm batch_set" name="batch_filename">
@@ -961,7 +969,7 @@ function gmedia_get_modal() {
 							<option value="self"><?php esc_html_e( 'Link to original file', 'grand-media' ); ?></option>
 							<option value="custom"><?php esc_html_e( 'Custom', 'grand-media' ); ?></option>
 						</select>
-						<input class="form-control input-sm batch_set_custom" style="margin-top:5px;display:none;" name="batch_link_custom" value="" placeholder="<?php esc_attr_e( 'Enter url here' ); ?>"/>
+						<input class="form-control input-sm batch_set_custom" style="margin-top:5px;display:none;" name="batch_link_custom" value="" placeholder="<?php esc_attr_e( 'Enter url here' , 'grand-media'); ?>"/>
 					</div>
 					<div class="form-group">
 						<label><?php esc_html_e( 'Status', 'grand-media' ); ?></label>
@@ -1123,7 +1131,7 @@ function gmedia_module_install() {
 
 	check_ajax_referer( 'GmediaGallery' );
 	if ( ! current_user_can( 'gmedia_module_manage' ) ) {
-		echo wp_kses_post( $gmCore->alert( 'danger', esc_html__( 'You are not allowed to install modules' ) ) );
+		echo wp_kses_post( $gmCore->alert( 'danger', esc_html__( 'You are not allowed to install modules' , 'grand-media') ) );
 		die();
 	}
 
@@ -1143,9 +1151,9 @@ function gmedia_module_install() {
 			echo wp_kses_post( $gmCore->alert( 'danger', sprintf( esc_html__( 'Unable to create directory %s. Is its parent directory writable by the server?', 'grand-media' ), $to_folder ) ) );
 			die();
 		}
-		if ( ! is_writable( $to_folder ) ) {
-			@chmod( $to_folder, 0755 );
-			if ( ! is_writable( $to_folder ) ) {
+		if ( ! wp_is_writable( $to_folder ) ) {
+			$gmCore->file_chmod( $to_folder, 0755 );
+			if ( ! wp_is_writable( $to_folder ) ) {
 				// translators: dirname.
 				echo wp_kses_post( $gmCore->alert( 'danger', sprintf( esc_html__( 'Directory %s is not writable by the server.', 'grand-media' ), $to_folder ) ) );
 				die();
@@ -1172,7 +1180,7 @@ function gmedia_module_install() {
 		}
 
 		// Once extracted, delete the package.
-		unlink( $mzip );
+		wp_delete_file( $mzip );
 
 		if ( is_wp_error( $result ) ) {
 			echo wp_kses_post( $gmCore->alert( 'danger', $result->get_error_message() ) );
@@ -1202,7 +1210,7 @@ function gmedia_import_wpmedia_modal() {
 	?>
 	<div class="modal-content">
 		<div class="modal-header">
-			<h4 class="modal-title"><?php esc_html_e( 'Import from WP Media Library' ); ?></h4>
+			<h4 class="modal-title"><?php esc_html_e( 'Import from WP Media Library' , 'grand-media'); ?></h4>
 			<button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
 		</div>
 		<div class="modal-body" style="position:relative; min-height:270px;">
@@ -1330,7 +1338,7 @@ function gmedia_import_wpmedia_modal() {
 				<?php } ?>
 				<div class="checkbox">
 					<label><input type="checkbox" name="skip_exists" value="skip"> <?php esc_html_e( 'Skip if file with the same name already exists in Gmedia Library', 'grand-media' ); ?></label>
-					<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' ); ?></div>
+					<div class="help-block"><?php esc_html_e( 'Note: duplicates will be skipped in any way (checked by file hash)' , 'grand-media'); ?></div>
 				</div>
 				<script type="text/javascript">
 									jQuery( function( $ ) {
@@ -1417,7 +1425,7 @@ function gmedia_relimage() {
 		$string_placeholders    = array_fill( 0, $post_tags_count, '%s' );
 		$placeholders_post_tags = implode( ', ', $string_placeholders );
 		$tag__not_in_query      = "SELECT term_id FROM {$wpdb->prefix}gmedia_term WHERE taxonomy = 'gmedia_tag' AND name IN ({$placeholders_post_tags})";
-		$tag__not_in            = $wpdb->get_col( $wpdb->prepare( $tag__not_in_query, $post_tags ) );
+		$tag__not_in            = $wpdb->get_col( $wpdb->prepare( $tag__not_in_query, $post_tags ) ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Query placeholders are generated above and every tag is passed to prepare().
 
 		$arg       = array(
 			'mime_type'   => 'image/*',
@@ -1614,7 +1622,7 @@ function gmedia_upload_handler() {
 	// if nonce is not correct it returns -1.
 	check_ajax_referer( 'gmedia_upload', '_wpnonce_upload' );
 	if ( ! current_user_can( 'gmedia_upload' ) ) {
-		wp_die( esc_html__( 'You do not have permission to upload files in Gmedia Library.' ) );
+		wp_die( esc_html__( 'You do not have permission to upload files in Gmedia Library.' , 'grand-media') );
 	}
 
 	// 5 minutes execution time.
@@ -1685,7 +1693,7 @@ function gmedia_import_handler() {
 
 	check_admin_referer( 'gmedia_import', '_wpnonce_import' );
 	if ( ! current_user_can( 'gmedia_import' ) ) {
-		wp_die( esc_html__( 'You do not have permission to upload files.' ) );
+		wp_die( esc_html__( 'You do not have permission to upload files.' , 'grand-media') );
 	}
 
 	// 10 minutes execution time.
@@ -1736,7 +1744,7 @@ function gmedia_import_handler() {
 	if ( ( 'import-folder' === $import ) || isset( $_POST['import-folder'] ) ) {
 
 		$path = $gmCore->_post( 'path' );
-		echo '<h4 style="margin: 0 0 10px">' . esc_html( __( 'Import Server Folder' ) . " `$path`:" ) . '</h4>' . PHP_EOL;
+		echo '<h4 style="margin: 0 0 10px">' . esc_html( __( 'Import Server Folder' , 'grand-media') . " `$path`:" ) . '</h4>' . PHP_EOL;
 
 		if ( $path ) {
 			$path = trim( urldecode( $path ), '/' );
@@ -1783,7 +1791,7 @@ function gmedia_import_handler() {
 		}
 	} elseif ( ( 'import-flagallery' === $import ) || isset( $_POST['import-flagallery'] ) ) {
 
-		echo '<h4 style="margin: 0 0 10px">' . esc_html__( 'Import from Flagallery plugin' ) . ':</h4>' . PHP_EOL;
+		echo '<h4 style="margin: 0 0 10px">' . esc_html__( 'Import from Flagallery plugin' , 'grand-media') . ':</h4>' . PHP_EOL;
 
 		$gallery = $gmCore->_post( 'gallery' );
 		if ( ! empty( $gallery ) ) {
@@ -1824,7 +1832,7 @@ function gmedia_import_handler() {
 		}
 	} elseif ( ( 'import-nextgen' === $import ) || isset( $_POST['import-nextgen'] ) ) {
 
-		echo '<h4 style="margin: 0 0 10px">' . esc_html__( 'Import from NextGen plugin' ) . ':</h4>' . PHP_EOL;
+		echo '<h4 style="margin: 0 0 10px">' . esc_html__( 'Import from NextGen plugin' , 'grand-media') . ':</h4>' . PHP_EOL;
 
 		$gallery = $gmCore->_post( 'gallery' );
 		if ( ! empty( $gallery ) ) {
@@ -1871,7 +1879,7 @@ function gmedia_import_handler() {
 		}
 	} elseif ( ( 'import-wpmedia' === $import ) || isset( $_POST['import-wpmedia'] ) ) {
 
-		echo '<h4 style="margin: 0 0 10px">' . esc_html__( 'Import from WP Media Library' ) . ':</h4>' . PHP_EOL;
+		echo '<h4 style="margin: 0 0 10px">' . esc_html__( 'Import from WP Media Library' , 'grand-media') . ':</h4>' . PHP_EOL;
 
 		$wpMediaLib = $gmDB->get_wp_media_lib( array( 'filter' => 'selected', 'selected' => $gmCore->_post( 'selected' ) ) );
 
@@ -1981,7 +1989,7 @@ function gmedia_share_page() {
 			</tr>
 			<tr style="line-height:0;">
 				<td width="100%" style="font-size:0;" align="center" height="1">
-					<img width="72" style="max-height:72px;width:72px;" alt="GmediaGallery" src="https://mypgc.co/images/email/logo-128.png"/>
+					<img width="72" style="max-height:72px;width:72px;" alt="GmediaGallery" src="<?php echo esc_url( plugins_url( 'assets/icons/icon_gmedia_120.png', dirname( __FILE__ ) ) ); ?>"/>
 				</td>
 			</tr>
 			<tr>
@@ -2107,7 +2115,7 @@ function gmedia_delete_custom_field() {
 			if ( ! $meta ) {
 				continue;
 			}
-			if ( $meta->{$column} !== $pid ) {
+			if ( (int) $meta->{$column} !== $pid ) {
 				continue;
 			}
 			if ( $gmCore->is_protected_meta( $meta->meta_key, $meta_type ) ) {
@@ -2573,6 +2581,7 @@ function gmedia_get_data() {
 
 	if ( ! empty( $cache_value ) ) {
 		header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- This transient contains the wp_json_encode response generated below; HTML escaping would corrupt application/json.
 		echo $cache_value; // json data.
 	} else {
 		$gmedia_query = $gmDB->get_gmedias( $query_args );
@@ -2586,6 +2595,7 @@ function gmedia_get_data() {
 
 		header( 'Content-Type: application/json; charset=' . get_option( 'blog_charset' ) );
 
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already encoded by wp_json_encode for this application/json response, not an HTML context.
 		echo $json_string; // json data.
 	}
 

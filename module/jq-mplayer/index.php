@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $module_info = array(
 	'base'         => 'jq-mplayer',
 	'name'         => 'jq-mplayer',

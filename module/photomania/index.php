@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $module_info = array(
 	'base'         => 'photomania',
 	'name'         => 'photomania',
@@ -14,9 +17,10 @@ $module_info = array(
 	'download'     => 'http://codeasily.com/download/photomania-module-zip/',
 	'dependencies' => 'swiper,mousetrap',
 );
-if ( preg_match( '#' . basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) . '#', $_SERVER['PHP_SELF'] ) ) {
+$gmedia_php_self = isset( $_SERVER['PHP_SELF'] ) ? wp_unslash( $_SERVER['PHP_SELF'] ) : '';
+if ( preg_match( '#' . basename( dirname( __FILE__ ) ) . '/' . basename( __FILE__ ) . '#', $gmedia_php_self ) ) {
 	if ( isset( $_GET['info'] ) ) {
-		echo '<pre>' . print_r( $module_info, true ) . '</pre>';
+		echo '<pre>' . esc_html( print_r( $module_info, true ) ) . '</pre>';
 	} else {
 		header( "Location: {$module_info['demo']}" );
 		die();

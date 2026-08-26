@@ -580,10 +580,7 @@ Update Gallery modules to the latest version: PhotoMania, PhotoTravlr, Desire !!
 Database changed. Backup before updating.
 
 = Grand Media Gallery v1.5.5 =
-If you want to import IPTC Keywords to Tags for already uploaded images, you need:
-  1) Select images with IPTC Keywords in Gmedia Library
-  2) In Action menu choose "Update Metadata in Database"
-  3) In Action menu choose "Add Tags.." -> check "Import IPTC Keywords from selected images to Tags" -> click "Add Tags" button
+To import IPTC keywords as tags for existing images: select the images in Gmedia Library, choose "Update Metadata in Database", then "Add Tags..". Check "Import IPTC Keywords from selected images to Tags" and click "Add Tags".
 
 = Grand Media Gallery v0.9.6 =
 Backup before updating.

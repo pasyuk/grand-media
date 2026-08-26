@@ -383,6 +383,7 @@ class PelConvert
         $line = 24;
 
         for ($i = 0; $i < $s; $i ++) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- ord() yields 0-255; %02X outputs only hexadecimal digits.
             printf('%02X ', ord($bytes[$i]));
 
             if (($i + 1) % $line == 0) {

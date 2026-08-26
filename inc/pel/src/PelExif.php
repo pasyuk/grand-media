@@ -86,6 +86,7 @@ class PelExif extends PelJpegContent
 
         /* There must be at least 6 bytes for the Exif header. */
         if ($d->getSize() < 6) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric byte-count diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidDataException('Expected at least 6 bytes of Exif ' . 'data, found just %d bytes.', $d->getSize());
         }
         /* Verify the Exif header */

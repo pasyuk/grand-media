@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var $gmDB
  * @var  $gmCore
  * @var  $gmGallery

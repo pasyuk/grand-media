@@ -84,7 +84,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 								class="form-control input-sm"
 								id="build_query_field"
 								style="height:120px;"
-								title="<?php esc_attr_e( "Click 'Build Query' button and choose query arguments for this gallery" ); ?>"
+								title="<?php esc_attr_e( "Click 'Build Query' button and choose query arguments for this gallery" , 'grand-media'); ?>"
 								placeholder="<?php esc_attr_e( "Click 'Build Query' button for help with Query Args.\nIf you leave this field empty then whole Library will be loaded. That's could exceed your server's PHP Memory Limit.", 'grand-media' ); ?>"
 								rows="2"
 								name="term[query]"
@@ -115,7 +115,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 								$reset_settings = $gmCore->array_diff_keyval_recursive( $default_options, $gallery_settings, true );
 								if ( ! empty( $reset_settings ) ) {
 									?>
-									<button type="submit" name="gmedia_gallery_reset" class="btn btn-secondary" data-confirm="<?php esc_attr_e( 'Confirm reset module settings to default preset' ); ?>"><?php esc_html_e( 'Reset to default', 'grand-media' ); ?></button>
+									<button type="submit" name="gmedia_gallery_reset" class="btn btn-secondary" data-confirm="<?php esc_attr_e( 'Confirm reset module settings to default preset' , 'grand-media'); ?>"><?php esc_html_e( 'Reset to default', 'grand-media' ); ?></button>
 								<?php } ?>
 								<button type="submit" name="gmedia_gallery_save" class="btn btn-primary"><?php esc_html_e( 'Save', 'grand-media' ); ?></button>
 							<?php } ?>
@@ -123,15 +123,15 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 					</div>
 				</div>
 
-				<p><b><?php esc_html_e( 'Gallery ID:' ); ?></b> #<?php echo intval( $term_id ); ?></p>
-				<p><b><?php esc_html_e( 'Last edited:' ); ?></b> <?php echo esc_html( $term->meta['_edited'] ); ?></p>
+				<p><b><?php esc_html_e( 'Gallery ID:' , 'grand-media'); ?></b> #<?php echo intval( $term_id ); ?></p>
+				<p><b><?php esc_html_e( 'Last edited:' , 'grand-media'); ?></b> <?php echo esc_html( $term->meta['_edited'] ); ?></p>
 				<p>
 					<?php
-					echo '<b>' . esc_html__( 'Gallery module:' ) . '</b> <a href="#chooseModuleModal" data-bs-toggle="modal" title="' . esc_attr__( 'Change module for gallery', 'grand-media' ) . '">' . esc_html( $term->meta['_module'] ) . '</a>';
+					echo '<b>' . esc_html__( 'Gallery module:' , 'grand-media') . '</b> <a href="#chooseModuleModal" data-bs-toggle="modal" title="' . esc_attr__( 'Change module for gallery', 'grand-media' ) . '">' . esc_html( $term->meta['_module'] ) . '</a>';
 					if ( $term->module['name'] !== $term->meta['_module'] ) {
-						echo '<br /><b>' . esc_html__( 'Preview module:' ) . '</b> ' . esc_html( $term->module['name'] );
+						echo '<br /><b>' . esc_html__( 'Preview module:' , 'grand-media') . '</b> ' . esc_html( $term->module['name'] );
 						// translators: module name.
-						echo '<br /><span class="text-danger">' . sprintf( esc_html__( 'Note: Module changed to %s, but not saved yet' ), esc_html( $term->module['name'] ) ) . '</span>';
+						echo '<br /><span class="text-danger">' . sprintf( esc_html__( 'Note: Module changed to %s, but not saved yet' , 'grand-media'), esc_html( $term->module['name'] ) ) . '</span>';
 					}
 					?>
 				</p>
@@ -144,11 +144,11 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 					}
 					$params['iframe'] = 1;
 					?>
-					<p><b><?php esc_html_e( 'GmediaCloud page URL for current gallery:' ); ?></b>
+					<p><b><?php esc_html_e( 'GmediaCloud page URL for current gallery:' , 'grand-media'); ?></b>
 						<br/><a target="_blank" href="<?php echo esc_url( $term->cloud_link ); ?>"><?php echo esc_html( $term->cloud_link ); ?></a>
 					</p>
 					<?php if ( $term->post_link ) { ?>
-						<p><b><?php esc_html_e( 'Gmedia Post URL for current gallery:' ); ?></b>
+						<p><b><?php esc_html_e( 'Gmedia Post URL for current gallery:' , 'grand-media'); ?></b>
 							<br/><a target="_blank" href="<?php echo esc_url( $term->post_link ); ?>"><?php echo esc_html( $term->post_link ); ?></a>
 						</p>
 					<?php } ?>

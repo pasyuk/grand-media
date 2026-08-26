@@ -530,7 +530,7 @@
 }
 
 .gmpm_photo_show .gmpm_big_button.gmpm_download_button .gmpm_icon {
-	background-image: url('../img/download@2x.png');
+	background-image: url('../img/download-2x.png');
 }
 
 .gmpm_photo_show .gmpm_big_button.gmpm_link_button {
@@ -538,7 +538,7 @@
 }
 
 .gmpm_photo_show .gmpm_big_button.gmpm_link_button .gmpm_icon {
-	background-image: url('../img/open_link@2x.png');
+	background-image: url('../img/open_link-2x.png');
 }
 
 .gmpm_big_button_wrap .gmpm_button {
@@ -596,7 +596,7 @@
 	height: 24px;
 	text-indent: -999px;
 	overflow: hidden;
-	background-image: url('../img/share@2x.png');
+	background-image: url('../img/share-2x.png');
 	background-position: 50% 50%;
 	background-size: 18px 18px;
 	-webkit-background-size: 18px;
@@ -617,7 +617,7 @@
 	height: 24px;
 	text-indent: -999px;
 	overflow: hidden;
-	background-image: url('../img/like@2x.png');
+	background-image: url('../img/like-2x.png');
 	background-position: 50% 50%;
 	background-size: 16px 16px;
 	-webkit-background-size: 16px;
@@ -688,7 +688,7 @@
 }
 
 .gmpm_big_button_wrap ul .gmpm_facebook {
-	background: #262626 url('../img/facebook@2x.png') !important;
+	background: #262626 url('../img/facebook-2x.png') !important;
 	background-size: 22px 22px !important;
 }
 
@@ -697,7 +697,7 @@
 }
 
 .gmpm_big_button_wrap ul .gmpm_twitter {
-	background: #262626 url('../img/twitter@2x.png') !important;
+	background: #262626 url('../img/twitter-2x.png') !important;
 	background-size: 22px 22px !important;
 }
 
@@ -706,7 +706,7 @@
 }
 
 .gmpm_big_button_wrap ul .gmpm_pinterest {
-	background: #262626 url('../img/pinterest@2x.png') !important;
+	background: #262626 url('../img/pinterest-2x.png') !important;
 	background-size: 22px 22px !important;
 }
 
@@ -715,7 +715,7 @@
 }
 
 .gmpm_big_button_wrap ul .gmpm_stumbleupon {
-	background: #262626 url('../img/stumbleupon@2x.png') !important;
+	background: #262626 url('../img/stumbleupon-2x.png') !important;
 	background-size: 22px 22px !important;
 }
 
@@ -830,7 +830,7 @@
 
 .gmpm_focus_actions ul .gmpm_button.gmpm_share {
 	-webkit-background-size: 26px !important;
-	background-image: url('../img/share@2x.png') !important;
+	background-image: url('../img/share-2x.png') !important;
 	background-size: 26px 26px !important;
 	background-position: 14px 50% !important;
 }
@@ -841,7 +841,7 @@
 
 .gmpm_focus_actions ul .gmpm_button.gmpm_like {
 	-webkit-background-size: 22px !important;
-	background-image: url('../img/like@2x.png') !important;
+	background-image: url('../img/like-2x.png') !important;
 	background-size: 22px 22px !important;
 }
 
@@ -851,25 +851,25 @@
 
 .gmpm_focus_actions ul .gmpm_button.gmpm_prev {
 	-webkit-background-size: 11px !important;
-	background-image: url('../img/prev@2x.png') !important;
+	background-image: url('../img/prev-2x.png') !important;
 	background-size: 11px 11px !important;
 }
 
 .gmpm_focus_actions ul .gmpm_button.gmpm_next {
 	-webkit-background-size: 11px !important;
-	background-image: url('../img/next@2x.png') !important;
+	background-image: url('../img/next-2x.png') !important;
 	background-size: 11px 11px !important;
 }
 
 .gmpm_focus_close_full .gmpm_button.gmpm_full {
 	-webkit-background-size: 12px !important;
-	background-image: url('../img/full@2x.png') !important;
+	background-image: url('../img/full-2x.png') !important;
 	background-size: 12px 12px !important;
 }
 
 .gmpm_focus_close_full .gmpm_button.gmpm_close {
 	-webkit-background-size: 8px !important;
-	background-image: url('../img/close@2x.png') !important;
+	background-image: url('../img/close-2x.png') !important;
 	background-size: 8px 8px !important;
 }
 
@@ -889,7 +889,7 @@
 }
 
 .gmpm_focus_actions ul .gmpm_facebook {
-	background: #262626 url('../img/facebook@2x.png');
+	background: #262626 url('../img/facebook-2x.png');
 	background-size: 22px 22px;
 }
 
@@ -898,7 +898,7 @@
 }
 
 .gmpm_focus_actions ul .gmpm_twitter {
-	background: #262626 url('../img/twitter@2x.png');
+	background: #262626 url('../img/twitter-2x.png');
 	background-size: 22px 22px;
 }
 
@@ -907,7 +907,7 @@
 }
 
 .gmpm_focus_actions ul .gmpm_pinterest {
-	background: #262626 url('../img/pinterest@2x.png');
+	background: #262626 url('../img/pinterest-2x.png');
 	background-size: 22px 22px;
 }
 
@@ -916,7 +916,7 @@
 }
 
 .gmpm_focus_actions ul .gmpm_stumbleupon {
-	background: #262626 url('../img/stumbleupon@2x.png');
+	background: #262626 url('../img/stumbleupon-2x.png');
 	background-size: 22px 22px;
 }
 

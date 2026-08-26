@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $default_options = array(
 	'per_page'                => '100',
 	'maxheight'               => '0',

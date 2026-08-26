@@ -22,7 +22,7 @@ if ( have_comments() ) : ?>
 
 	<?php else : // comments are closed. ?>
 		<!-- If comments are closed. -->
-		<p class="gmedia_nocomments"><?php esc_html_e( 'Comments are closed.' ); ?></p>
+		<p class="gmedia_nocomments"><?php esc_html_e( 'Comments are closed.' , 'grand-media'); ?></p>
 
 	<?php endif; ?>
 <?php endif; ?>
@@ -34,14 +34,16 @@ if ( comments_open() ) :
 	$user              = wp_get_current_user();
 	$user_identity     = $user->exists() ? $user->display_name : '';
 	$fields            = array(
-		'author' => '<p class="gmedia_comment-form-author"><input id="author" class="gmedia_comments-input" name="author" type="text" placeholder="' . __( 'Name' ) . '" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" required="required" /></p>',
-		'email'  => '<p class="gmedia_comment-form-email"><input id="email" class="gmedia_comments-input" name="email" type="email" placeholder="' . __( 'Email' ) . '" value="' . esc_attr( $commenter['comment_author_email'] ) . '" size="30" required="required" /></p>',
+		'author' => '<p class="gmedia_comment-form-author"><input id="author" class="gmedia_comments-input" name="author" type="text" placeholder="' . __( 'Name' , 'grand-media') . '" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" required="required" /></p>',
+		'email'  => '<p class="gmedia_comment-form-email"><input id="email" class="gmedia_comments-input" name="email" type="email" placeholder="' . __( 'Email' , 'grand-media') . '" value="' . esc_attr( $commenter['comment_author_email'] ) . '" size="30" required="required" /></p>',
 	);
 	$comment_form_args = array(
 		'fields'               => $fields,
-		'comment_field'        => '<p class="gmedia_comment-form-comment"><textarea id="gmedia_comment" name="comment" cols="45" rows="2" required="required" placeholder="' . _x( 'Comment', 'noun' ) . '"></textarea></p>',
-		'must_log_in'          => '<p class="gmedia_must-log-in">' . sprintf( __( '<a href="%s">Log in</a> to post a comment.' ), wp_login_url( apply_filters( 'the_permalink', get_permalink( $postid ) ) ) ) . '</p>',
-		'logged_in_as'         => '<p class="gmedia_logged-in-as">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s">Log out?</a>' ), get_edit_user_link(), esc_html( $user_identity ), wp_logout_url( apply_filters( 'the_permalink', get_permalink( $postid ) ) ) ) . '</p>',
+		'comment_field'        => '<p class="gmedia_comment-form-comment"><textarea id="gmedia_comment" name="comment" cols="45" rows="2" required="required" placeholder="' . _x( 'Comment', 'noun' , 'grand-media') . '"></textarea></p>',
+		/* translators: %s: Login URL. */
+		'must_log_in'          => '<p class="gmedia_must-log-in">' . sprintf( __( '<a href="%s">Log in</a> to post a comment.' , 'grand-media'), wp_login_url( apply_filters( 'the_permalink', get_permalink( $postid ) ) ) ) . '</p>',
+		/* translators: 1: User profile URL, 2: User display name, 3: Logout URL. */
+		'logged_in_as'         => '<p class="gmedia_logged-in-as">' . sprintf( __( 'Logged in as <a href="%1$s">%2$s</a>. <a href="%3$s">Log out?</a>' , 'grand-media'), get_edit_user_link(), esc_html( $user_identity ), wp_logout_url( apply_filters( 'the_permalink', get_permalink( $postid ) ) ) ) . '</p>',
 		'comment_notes_before' => '',
 		'comment_notes_after'  => '',
 		'id_form'              => 'gmedia_commentform',
@@ -55,8 +57,8 @@ if ( comments_open() ) :
 		'title_reply_after'    => '',
 		'cancel_reply_before'  => '<div class="gmedia_cancel-reply">',
 		'cancel_reply_after'   => '</div>',
-		'cancel_reply_link'    => __( 'Cancel reply' ),
-		'label_submit'         => __( 'Post Comment' ),
+		'cancel_reply_link'    => __( 'Cancel reply' , 'grand-media'),
+		'label_submit'         => __( 'Post Comment' , 'grand-media'),
 		'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s" value="%4$s" />',
 		'submit_field'         => '<p class="gmedia_form-submit">%1$s %2$s</p>',
 		'format'               => 'html5',

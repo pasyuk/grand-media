@@ -55,7 +55,9 @@ add_filter( 'a3_lazy_load_skip_images_classes', 'a3_no_lazy_for_gmedia', 10 );
  * @return bool
  */
 function wpss_gmedia_check_bypass( $pass ) {
-	$is_app = ( isset( $_GET['gmedia-app'] ) && ! empty( $_GET['gmedia-app'] ) );
+	global $wp;
+	// Only the parsed app route reaches app authentication, including pretty URLs.
+	$is_app = ! empty( $wp->query_vars['gmedia-app'] );
 	if ( $is_app ) {
 		return true;
 	}
@@ -76,7 +78,7 @@ add_filter( 'wpss_misc_form_spam_check_bypass', 'wpss_gmedia_check_bypass' );
  */
 function gmedia_user_has_cap( $allcaps, $caps, $args, $user ) {
 	if ( is_array( $caps ) && count( $caps ) ) {
-		global $post_id, $gmDB;
+		global $gmDB;
 		foreach ( $caps as $cap ) {
 			$gmedia = false;
 			if ( 'read_private_gmedia_posts' === $cap ) {
@@ -91,9 +93,12 @@ function gmedia_user_has_cap( $allcaps, $caps, $args, $user ) {
 					return $allcaps;
 				}
 
-				$pid = isset( $_REQUEST['p'] ) ? absint( $_REQUEST['p'] ) : ( $post_id ? $post_id : false );
-				if ( ! $pid && isset( $_REQUEST['id'] ) ) {
-					$comment = get_comment( absint( $_REQUEST['id'] ) );
+				// Bind the extension to the object WordPress is checking, never request context.
+				$pid = 0;
+				if ( isset( $args[0], $args[2] ) && 'edit_post' === $args[0] ) {
+					$pid = absint( $args[2] );
+				} elseif ( isset( $args[0], $args[2] ) && 'edit_comment' === $args[0] ) {
+					$comment = get_comment( absint( $args[2] ) );
 					if ( $comment ) {
 						$pid = $comment->comment_post_ID;
 					}
@@ -101,7 +106,7 @@ function gmedia_user_has_cap( $allcaps, $caps, $args, $user ) {
 				if ( $pid ) {
 					$gmedia = $gmDB->get_post_gmedia( $pid );
 				}
-				if ( $gmedia && $gmedia->author === $user->ID ) {
+				if ( $gmedia && 0 < (int) $user->ID && (int) $gmedia->author === (int) $user->ID ) {
 					$allcaps[ $cap ] = 1;
 				}
 			}

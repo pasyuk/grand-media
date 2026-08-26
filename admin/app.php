@@ -9,6 +9,10 @@ function gmediaApp() {
 
 	$force_app_status = $gmCore->_get( 'force_app_status' );
 	if ( false !== $force_app_status ) {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'You are not allowed to change Gmedia settings.', 'grand-media' ) );
+		}
+		check_admin_referer( 'GmediaService' );
 		$gm_options                       = get_option( 'gmediaOptions' );
 		$gm_options['mobile_app']         = (int) $force_app_status;
 		$gmGallery->options['mobile_app'] = $gm_options['mobile_app'];
@@ -25,13 +29,16 @@ function gmediaApp() {
 	$mobile_app = (int) $gmGallery->options['mobile_app'];
 
 	$current_user = wp_get_current_user();
+	$server_addr  = isset( $_SERVER['SERVER_ADDR'] ) && is_string( $_SERVER['SERVER_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) ) : '';
+	$remote_addr  = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+	$real_ip      = isset( $_SERVER['HTTP_X_REAL_IP'] ) && is_string( $_SERVER['HTTP_X_REAL_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) ) : '';
 
 	?>
 	<div class="card m-0 mw-100 p-0" id="gm_application">
 		<?php wp_nonce_field( 'GmediaService' ); ?>
 		<div class="card-body" id="gmedia-service-msg-panel">
 			<?php
-			if ( empty( $_SERVER['HTTP_X_REAL_IP'] ) && ( '127.0.0.1' === $_SERVER['REMOTE_ADDR'] || '::1' === $_SERVER['REMOTE_ADDR'] ) ) {
+			if ( '' === $real_ip && ( '127.0.0.1' === $remote_addr || '::1' === $remote_addr ) ) {
 				echo wp_kses_post( $alert );
 			} else {
 				if ( ! $mobile_app || ! $site_ID ) {
@@ -88,9 +95,9 @@ function gmediaApp() {
 						<div class="col-xs-6">
 							<p>
 								<?php
-								echo 'Server address: ' . esc_html( $_SERVER['SERVER_ADDR'] );
-								echo '<br>Remote address: ' . esc_html( $_SERVER['REMOTE_ADDR'] );
-								echo '<br>HTTP X Real IP: ' . ( isset( $_SERVER['HTTP_X_REAL_IP'] ) ? esc_html( $_SERVER['HTTP_X_REAL_IP'] ) : '' );
+								echo 'Server address: ' . esc_html( $server_addr );
+								echo '<br>Remote address: ' . esc_html( $remote_addr );
+								echo '<br>HTTP X Real IP: ' . esc_html( $real_ip );
 								?>
 							</p>
 							<div class="gmapp-description">

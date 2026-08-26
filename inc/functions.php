@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Check if user has premium license (Freemius or Legacy)
@@ -653,13 +656,13 @@ function gmedia_search_database_for_transients_by_prefix( $prefix ) {
 	// Add our prefix after concating our prefix with the _transient prefix.
 	$prefix = $wpdb->esc_like( '_transient_' . $prefix . '_' );
 
-	// Build up our SQL query.
-	$sql = "SELECT `option_name` FROM $wpdb->options WHERE `option_name` LIKE '%s'";
-
 	// Execute our query.
-	$transients = $wpdb->get_results( $wpdb->prepare( $sql, $prefix . '%' ), ARRAY_A );
+	$transients = $wpdb->get_results(
+		$wpdb->prepare( "SELECT `option_name` FROM {$wpdb->options} WHERE `option_name` LIKE %s", $prefix . '%' ),
+		ARRAY_A
+	);
 
-	// If if looks good, pass it back.
+	// If it looks good, pass it back.
 	if ( $transients && ! is_wp_error( $transients ) ) {
 		return $transients;
 	}
