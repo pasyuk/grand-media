@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $default_options = array(
 	'maxSize'               => '400',
 	'thumbCols'             => '4',

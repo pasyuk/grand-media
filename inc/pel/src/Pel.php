@@ -259,7 +259,7 @@ class Pel
     public static function debug($format, ...$args)
     {
         if (self::$debug) {
-            vprintf($format . "\n", $args);
+            echo esc_html(vsprintf($format . "\n", $args));
         }
     }
 
@@ -280,7 +280,7 @@ class Pel
     public static function warning($format, ...$args)
     {
         if (self::$debug) {
-            vprintf('Warning: ' . $format . "\n", $args);
+            echo esc_html(vsprintf('Warning: ' . $format . "\n", $args));
         }
     }
 

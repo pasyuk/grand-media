@@ -22,7 +22,7 @@ $openPage = ! empty( $_GET['pager'] ) ? (int) $_GET['pager'] : 1;
 
 $where       = '';
 $log_search  = '';
-$log_orderby = 'ORDER BY l.' . esc_sql( $gmedia_user_options['orderby_gmedia_log'] ) . ' ' . esc_sql( $gmedia_user_options['sortorder_gmedia_log'] );
+$log_orderby = gmedia_log_orderby_sql( $gmedia_user_options['orderby_gmedia_log'], $gmedia_user_options['sortorder_gmedia_log'] );
 $lim         = '';
 
 if ( isset( $_POST['filter_author'] ) ) {
@@ -64,6 +64,7 @@ if ( isset( $_GET['s'] ) ) {
 
 		foreach ( (array) $search_terms as $search_term ) {
 			$search_like = '%' . $wpdb->esc_like( $search_term ) . '%';
+			// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $searchand is only an empty string or the literal AND separator; search values use placeholders.
 			$log_search  .= $wpdb->prepare( "{$searchand}((g.title LIKE %s) OR (g.description LIKE %s))", $search_like, $search_like );
 			$searchand   = ' AND ';
 		}
@@ -88,7 +89,7 @@ if ( $limit > 0 ) {
 
 $query = "SELECT SQL_CALC_FOUND_ROWS * FROM {$wpdb->prefix}gmedia_log AS l INNER JOIN {$wpdb->prefix}gmedia AS g ON g.ID = l.ID WHERE 1=1 $where $log_search $log_orderby $lim";
 //echo '<pre>' . print_r($query, true) . '</pre>';
-$logs        = $wpdb->get_results( $query );
+$logs        = $wpdb->get_results( $query ); // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter,WordPress.DB.PreparedSQL.NotPrepared -- ORDER BY is allowlisted; filters are integer-safe or individually prepared above.
 $totalResult = (int) $wpdb->get_var( 'SELECT FOUND_ROWS()' );
 
 if ( ( 1 > $limit ) || ( 0 === $totalResult ) ) {
@@ -158,11 +159,11 @@ $gmedia_pager   = $gmDB->query_pager();
 		<?php
 		if ( empty( $gmGallery->options['license_key'] ) ) {
 			?>
-			<div class="alert alert-warning" role="alert"><strong><?php esc_html_e( 'It\'s a premium feature. Gmedia Logger requires License Key.' ); ?></strong></div>
+			<div class="alert alert-warning" role="alert"><strong><?php esc_html_e( 'It\'s a premium feature. Gmedia Logger requires License Key.' , 'grand-media'); ?></strong></div>
 			<?php
 		} elseif ( ! empty( $gmGallery->options['disable_logs'] ) ) {
 			?>
-			<div class="alert alert-warning" role="alert"><strong><?php esc_html_e( 'Gmedia Logger is disabled in settings.' ); ?></strong></div>
+			<div class="alert alert-warning" role="alert"><strong><?php esc_html_e( 'Gmedia Logger is disabled in settings.' , 'grand-media'); ?></strong></div>
 			<?php
 		}
 		?>

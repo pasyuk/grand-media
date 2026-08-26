@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Hashids
@@ -54,9 +57,11 @@ class GmediaHashIDs {
 			$this->_alphabet = implode( '', array_unique( str_split( $alphabet ) ) );
 		}
 		if ( strlen( $this->_alphabet ) < self::MIN_ALPHABET_LENGTH ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Static ASCII message and integer constant; no input is included.
 			throw new Exception( sprintf( self::E_ALPHABET_LENGTH, self::MIN_ALPHABET_LENGTH ) );
 		}
 		if ( is_int( strpos( $this->_alphabet, ' ' ) ) ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Static ASCII message; no input is included.
 			throw new Exception( self::E_ALPHABET_SPACE );
 		}
 		$alphabet_array  = str_split( $this->_alphabet );

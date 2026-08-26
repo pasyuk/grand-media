@@ -205,6 +205,7 @@ class PelFormat
         if (array_key_exists($type, self::$formatName)) {
             return self::$formatName[$type];
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Parser format identifier, not output; the exception formats it as hexadecimal.
         throw new PelIllegalFormatException($type);
     }
 
@@ -221,6 +222,7 @@ class PelFormat
         if (array_key_exists($type, self::$formatLength)) {
             return self::$formatLength[$type];
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Parser format identifier, not output; the exception formats it as hexadecimal.
         throw new PelIllegalFormatException($type);
     }
 }

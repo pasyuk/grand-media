@@ -521,6 +521,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
     public function __construct($type)
     {
         if (! array_key_exists($type, self::TYPE_NAMES)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric IFD diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelIfdException('Unknown IFD type: %d', $type);
         }
         $this->type = $type;
@@ -890,9 +891,11 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
                     case PelTag::DATE_TIME_ORIGINAL:
                     case PelTag::DATE_TIME_DIGITIZED:
                         if ($format != PelFormat::ASCII) {
+                            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured parser arguments; preserve integer tag/type metadata, not HTML strings.
                             throw new PelUnexpectedFormatException($this->type, $tag, $format, PelFormat::ASCII);
                         }
                         if ($components != 20) {
+                            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured parser arguments; preserve integer tag/type metadata, not HTML strings.
                             throw new PelWrongComponentCountException($this->type, $tag, $components, 20);
                         }
                         // TODO: handle timezones.
@@ -900,6 +903,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
 
                     case PelTag::COPYRIGHT:
                         if ($format != PelFormat::ASCII) {
+                            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured parser arguments; preserve integer tag/type metadata, not HTML strings.
                             throw new PelUnexpectedFormatException($this->type, $tag, $format, PelFormat::ASCII);
                         }
                         $v = explode("\0", trim($data->getBytes(), ' '));
@@ -914,12 +918,14 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
                     case PelTag::FLASH_PIX_VERSION:
                     case PelTag::INTEROPERABILITY_VERSION:
                         if ($format != PelFormat::UNDEFINED) {
+                            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured parser arguments; preserve integer tag/type metadata, not HTML strings.
                             throw new PelUnexpectedFormatException($this->type, $tag, $format, PelFormat::UNDEFINED);
                         }
                         return new PelEntryVersion($tag, (float) $data->getBytes() / 100);
 
                     case PelTag::USER_COMMENT:
                         if ($format != PelFormat::UNDEFINED) {
+                            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured parser arguments; preserve integer tag/type metadata, not HTML strings.
                             throw new PelUnexpectedFormatException($this->type, $tag, $format, PelFormat::UNDEFINED);
                         }
                         if ($data->getSize() < 8) {
@@ -934,6 +940,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
                     case PelTag::XP_KEYWORDS:
                     case PelTag::XP_SUBJECT:
                         if ($format != PelFormat::BYTE) {
+                            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Structured parser arguments; preserve integer tag/type metadata, not HTML strings.
                             throw new PelUnexpectedFormatException($this->type, $tag, $format, PelFormat::BYTE);
                         }
                         return new PelEntryWindowsString($tag, $data->getBytes(), true);
@@ -1012,6 +1019,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
                         return new PelEntryUndefined($tag, $data->getBytes());
 
                     default:
+                        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Raw parser diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
                         throw new PelException('Unsupported format: %s', PelFormat::getName($format));
                 }
         }
@@ -1159,6 +1167,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
         if (array_key_exists($type, self::TYPE_NAMES)) {
             return self::TYPE_NAMES[$type];
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric IFD diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
         throw new PelIfdException('Unknown IFD type: %d', $type);
     }
 
@@ -1189,6 +1198,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
             $e->setIfdType($this->type);
             $this->entries[$e->getTag()] = $e;
         } else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Preserve raw entry diagnostics; copy_exif() catches them, and Pel::warning() escapes output.
             throw new PelInvalidDataException("IFD %s cannot hold\n%s", $this->getName(), $e->__toString());
         }
     }
@@ -1259,6 +1269,7 @@ class PelIfd implements \IteratorAggregate, \ArrayAccess
     public function offsetSet($tag, $e): void
     {
         if (!$e instanceof PelEntry) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Preserve raw argument diagnostics; copy_exif() catches them, and Pel::warning() escapes output.
             throw new PelInvalidArgumentException('Argument "%s" must be a PelEntry.', $e);
         }
         $newTag = $e->getTag();

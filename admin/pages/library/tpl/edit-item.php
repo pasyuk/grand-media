@@ -48,7 +48,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 					data-height="500"
 					data-cls="select_gmedia_related"
 					title="<?php esc_attr_e( 'Choose Related Media', 'grand-media' ); ?>">
-					<?php esc_html_e( 'choose' ); ?>
+					<?php esc_html_e( 'choose' , 'grand-media'); ?>
 					<i class='fa-solid fa-image'></i>
 				</a>
 			</label>

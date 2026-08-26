@@ -36,6 +36,10 @@ function gmedia_upload_tabs( $tabs ) {
 function media_upload_gmedia() {
 	global $gmCore, $gmDB;
 
+	if ( isset( $_POST['gmedia_library_insert'] ) || isset( $_POST['gmedia_gallery_insert'] ) || isset( $_POST['gmedia_term_insert'] ) ) {
+		check_admin_referer( 'media-form' );
+	}
+
 	add_action( 'admin_enqueue_scripts', 'gmedia_add_media_popup_enqueue_scripts' );
 
 	$action = $gmCore->_get( 'action' );
@@ -553,7 +557,7 @@ function gmedia_add_media_terms() {
 									$_module_preset = $gmGallery->options['default_gmedia_module'];
 								}
 								$by_author   = '';
-								$preset_name = __( 'Default Settings' );
+								$preset_name = __( 'Default Settings' , 'grand-media');
 								if ( $gmCore->is_digit( $_module_preset ) ) {
 									$preset = $gmDB->get_term( $_module_preset );
 									$mfold  = $preset->status;
@@ -703,7 +707,7 @@ function gmedia_add_media_terms() {
 										echo '<optgroup label="' . esc_attr( $module['title'] ) . '">';
 										$presets  = $gmDB->get_terms( 'gmedia_module', array( 'status' => $mfold ) );
 										$option   = array();
-										$option[] = '<option value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] ) . ' - ' . esc_html__( 'Default Settings' ) . '</option>';
+										$option[] = '<option value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] ) . ' - ' . esc_html__( 'Default Settings' , 'grand-media') . '</option>';
 										foreach ( $presets as $preset ) {
 											if ( ! (int) $preset->global && '[' . $mfold . ']' === $preset->name ) {
 												continue;
@@ -713,7 +717,7 @@ function gmedia_add_media_terms() {
 												$by_author = ' [' . get_the_author_meta( 'display_name', $preset->global ) . ']';
 											}
 											if ( '[' . $mfold . ']' === $preset->name ) {
-												$option[] = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author ) . ' - ' . esc_html__( 'Default Settings' ) . '</option>';
+												$option[] = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author ) . ' - ' . esc_html__( 'Default Settings' , 'grand-media') . '</option>';
 											} else {
 												$preset_name = str_replace( '[' . $mfold . '] ', '', $preset->name );
 												$option[]    = '<option value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . $preset_name ) . '</option>';
@@ -826,10 +830,10 @@ function gmedia_add_media_library() {
 									<div class="form-group">
 										<label><?php esc_html_e( 'Link To', 'grand-media' ); ?></label>
 										<select id="gmedia_url" class="form-control input-sm" style="display:block;margin-bottom:5px;">
-											<option value="customurl" selected="selected"><?php esc_html_e( 'Custom URL' ); ?></option>
-											<option value="weburl"><?php esc_html_e( 'Web size image' ); ?></option>
+											<option value="customurl" selected="selected"><?php esc_html_e( 'Custom URL' , 'grand-media'); ?></option>
+											<option value="weburl"><?php esc_html_e( 'Web size image' , 'grand-media'); ?></option>
 											<?php if ( $item->path_original ) { ?>
-												<option value="originalurl"><?php esc_html_e( 'Original image' ); ?></option>
+												<option value="originalurl"><?php esc_html_e( 'Original image' , 'grand-media'); ?></option>
 											<?php } ?>
 										</select>
 										<input name="link" type="text" class="customurl form-control input-sm" value="<?php echo esc_attr( $item->link ); ?>" placeholder="https://"/>

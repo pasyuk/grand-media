@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Class GmediaProcessor
@@ -77,7 +80,9 @@ class GmediaProcessor {
 
 		$selected_items = array();
 		if ( $key ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Read-only selection parser; library/term/gallery mutation handlers verify their action nonce and permissions separately.
 			if ( isset( $_POST[ $post_key ] ) ) {
+				// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Also used to display selected items; this helper performs no state changes.
 				$sel_string     = sanitize_text_field( wp_unslash( $_POST[ $post_key ] ) );
 				$selected_items = array_filter( explode( ',', $sel_string ), 'is_numeric' );
 			} elseif ( isset( $_COOKIE[ $key ] ) ) {

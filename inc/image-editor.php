@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * @title  Image Editor
  */
@@ -15,10 +18,10 @@ function gmedia_image_editor() {
 		<div class="card-header bg-light clearfix">
 			<div class="btn-toolbar gap-3 float-end">
 				<?php if ( $gmedia->path_original && $is_modified ) { ?>
-					<button type="button" id="gmedit-restore" name="gmedit_restore" class="btn btn-warning float-start" data-confirm="<?php esc_attr_e( 'Do you really want restore original image?' ); ?>"><?php esc_html_e( 'Restore Original', 'grand-media' ); ?></button>
+					<button type="button" id="gmedit-restore" name="gmedit_restore" class="btn btn-warning float-start" data-confirm="<?php esc_attr_e( 'Do you really want restore original image?' , 'grand-media'); ?>"><?php esc_html_e( 'Restore Original', 'grand-media' ); ?></button>
 				<?php } ?>
 				<div class="btn-group float-start">
-					<button type="button" id="gmedit-reset" name="gmedit_reset" class="btn btn-secondary" data-confirm="<?php esc_attr_e( 'Do you really want reset all changes?' ); ?>"><?php esc_html_e( 'Reset', 'grand-media' ); ?></button>
+					<button type="button" id="gmedit-reset" name="gmedit_reset" class="btn btn-secondary" data-confirm="<?php esc_attr_e( 'Do you really want reset all changes?' , 'grand-media'); ?>"><?php esc_html_e( 'Reset', 'grand-media' ); ?></button>
 					<button type="button" id="gmedit-save" name="gmedit_save" data-loading-text="<?php esc_attr_e( 'Working', 'grand-media' ); ?>" data-reset-text="<?php esc_attr_e( 'Save image', 'grand-media' ); ?>" class="btn btn-primary"><?php esc_html_e( 'Save image', 'grand-media' ); ?></button>
 				</div>
 				<?php wp_nonce_field( 'gmedia_edit', '_wpnonce_edit' ); ?>
@@ -153,9 +156,9 @@ function gmedia_image_editor() {
 						<div class="form-group d-flex text-nowrap m-0 align-items-center">
 							<label class="control-label m-0"><?php esc_html_e( 'Apply to', 'grand-media' ); ?>: &nbsp;</label>
 							<select name="applyto" id="applyto" class="form-control input-xs">
-								<option value="web_thumb" selected="selected"><?php esc_html_e( 'Web-image, Thumbnail' ); ?></option>
-								<option value="web"><?php esc_html_e( 'Only Web-image' ); ?></option>
-								<option value="thumb"><?php esc_html_e( 'Only Thumbnail' ); ?></option>
+								<option value="web_thumb" selected="selected"><?php esc_html_e( 'Web-image, Thumbnail' , 'grand-media'); ?></option>
+								<option value="web"><?php esc_html_e( 'Only Web-image' , 'grand-media'); ?></option>
+								<option value="thumb"><?php esc_html_e( 'Only Thumbnail' , 'grand-media'); ?></option>
 							</select>
 						</div>
 					</div>

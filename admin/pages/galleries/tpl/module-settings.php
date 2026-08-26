@@ -50,7 +50,7 @@ global $gmGallery;
 			?>
 			<div class="clearfix">
 				<div class="form-group float-end" style="margin:-10px 0 5px 0;"><input type="text" data-type="color" class="form-control form-control-sm input-sm pt-0 pb-0" id="preview_color" name="preview_bgcolor" value="<?php echo esc_attr( $bgcolor ); ?>" placeholder="ffffff" size="7"/></div>
-				<b><?php esc_html_e( 'Gallery Preview:' ); ?></b>
+				<b><?php esc_html_e( 'Gallery Preview:' , 'grand-media'); ?></b>
 			</div>
 			<div class="gallery_preview">
 				<iframe id="gallery_preview" style="background-color:<?php echo esc_attr( "#$bgcolor" ); ?>;padding:5px;" name="gallery_preview" src="<?php echo esc_url( add_query_arg( $params, set_url_scheme( $gallery_link_default, 'admin' ) ) ); ?>"></iframe>

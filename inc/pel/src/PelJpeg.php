@@ -126,6 +126,7 @@ class PelJpeg
                 Pel::debug('Initializing PelJpeg object from image resource.');
                 $this->load(new PelDataWindow($data));
             } else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
                 throw new PelInvalidArgumentException('Bad type for $data: %s', gettype($data));
             }
         }
@@ -186,6 +187,7 @@ class PelJpeg
             $marker = $d->getByte($i);
 
             if (! PelJpegMarker::isValid($marker)) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric marker and offset, not output; the exception formats these parser arguments.
                 throw new PelJpegInvalidMarkerException($marker, $i);
             }
 
@@ -287,6 +289,7 @@ class PelJpeg
     {
         $content = @file_get_contents($filename);
         if ($content === false) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Preserve the raw filename diagnostic; copy_exif() catches it, and Pel::warning() escapes output.
             throw new PelException('Can not open file "%s"', $filename);
         } else {
             $this->load(new PelDataWindow($content));

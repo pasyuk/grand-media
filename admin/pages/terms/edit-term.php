@@ -35,7 +35,9 @@ if ( 'album' === $taxterm ) {
 	$limitation     = ! gmedia_has_premium_license() && in_array( $_module['module'], array( 'amron', 'phantom', 'cubik-lite', 'photomania', 'wp-videoplayer', 'jq-mplayer', 'minima' ), true );
 	if ( $limitation ) {
 		?>
-		<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php echo wp_kses_post( sprintf( __( 'Note: Free version allows you to show maximum 100 images per gallery on the frontend. Purchase license key <a href="%s">here</a>.', 'grand-media' ), esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) ) ); ?></div>
+		<div style="overflow:hidden; margin-bottom: 6px; padding: 10px; background-color: #fff; border: 1px solid red; border-radius: 5px; font-size: 14px; font-weight: bold;"><?php
+			/* translators: %s: License purchase URL. */
+			echo wp_kses_post( sprintf( __( 'Note: Free version allows you to show maximum 100 images per gallery on the frontend. Purchase license key <a href="%s">here</a>.', 'grand-media' ), esc_url( admin_url( 'admin.php?page=GrandMedia-pricing' ) ) ) ); ?></div>
 		<?php
 	}
 }

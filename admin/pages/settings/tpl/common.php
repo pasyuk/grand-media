@@ -137,7 +137,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 				$presets  = $gmDB->get_terms( 'gmedia_module', array( 'status' => $mfold ) );
 				$selected = selected( $gmGallery->options['default_gmedia_module'], esc_attr( $mfold ), false );
 				$option   = array();
-				$option[] = '<option ' . $selected . ' value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' ) ) . '</option>';
+				$option[] = '<option ' . $selected . ' value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 				foreach ( $presets as $preset ) {
 					if ( ! (int) $preset->global && '[' . $mfold . ']' === $preset->name ) {
 						continue;
@@ -148,7 +148,7 @@ defined( 'ABSPATH' ) || die( 'No script kiddies please!' );
 						$by_author = ' [' . get_the_author_meta( 'display_name', $preset->global ) . ']';
 					}
 					if ( '[' . $mfold . ']' === $preset->name ) {
-						$option[] = '<option ' . $selected . ' value="' . esc_attr( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' ) ) . '</option>';
+						$option[] = '<option ' . $selected . ' value="' . esc_attr( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 					} else {
 						$preset_name = str_replace( '[' . $mfold . '] ', '', $preset->name );
 						$option[]    = '<option ' . $selected . ' value="' . esc_attr( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . $preset_name ) . '</option>';

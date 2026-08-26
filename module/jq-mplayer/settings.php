@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 $default_options = array(
 	'maxwidth'      => '0',
 	'rating'        => '1',

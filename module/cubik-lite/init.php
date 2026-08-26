@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var $gmDB
  * @var  $gmCore
  * @var  $gmGallery
@@ -11,8 +14,9 @@
  **/
 
 global $wp;
+$gmedia_url_query = isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '';
 $settings    = array_merge( $settings, array(
-	'url'           => add_query_arg( $_SERVER['QUERY_STRING'], '', home_url( $wp->request ) ),
+	'url'           => add_query_arg( $gmedia_url_query, '', home_url( $wp->request ) ),
 	'module_dirurl' => $module['url'],
 	'ajax_actions'  => array(
 		'comments' => array(
@@ -23,12 +27,12 @@ $settings    = array_merge( $settings, array(
 ) );
 $allsettings = array_merge( $module['options'], $settings );
 
-$base_url_host = parse_url( $gmCore->upload['url'], PHP_URL_HOST );
+$base_url_host = wp_parse_url( $gmCore->upload['url'], PHP_URL_HOST );
 $term_url      = remove_query_arg( 'gm' . $id );
 
 $gmedias = $gmDB->get_gmedias( $query );
 if ( empty( $gmedias ) ) {
-	echo GMEDIA_GALLERY_EMPTY;
+	echo esc_html( GMEDIA_GALLERY_EMPTY );
 
 	return;
 }
@@ -61,7 +65,7 @@ foreach ( $gmedias as $gmkey => $item ) {
 
 	$link_target = '';
 	if ( $item->link ) {
-		$url_host = parse_url( $item->link, PHP_URL_HOST );
+		$url_host = wp_parse_url( $item->link, PHP_URL_HOST );
 		if ( $url_host == $base_url_host || empty( $url_host ) ) {
 			$link_target = '_self';
 		} else {
@@ -86,7 +90,7 @@ foreach ( $gmedias as $gmkey => $item ) {
 	if ( (int) $allsettings['show_title'] ) {
 		$title = $item->title;
 		if ( $item->link ) {
-			$title = "<a href='{$item->link}' target='{$link_target}'>" . ( $title ? $title : $item->gmuid ) . '</a>';
+			$title = '<a href="' . esc_url( $item->link ) . '" target="' . esc_attr( $link_target ) . '">' . ( $title ? $title : $item->gmuid ) . '</a>';
 		}
 	} else {
 		$title = '';
@@ -94,8 +98,8 @@ foreach ( $gmedias as $gmkey => $item ) {
 	if ( $title || $item->description ) {
 		?>
 		<div class="gmCubikLite_description">
-			<div class="gmCubikLite_title"><?php echo $title; ?></div>
-			<div class="gmCubikLite_text"><?php echo str_replace( array( "\r\n", "\r", "\n" ), '', wpautop( $item->description ) ); ?></div>
+			<div class="gmCubikLite_title"><?php echo wp_kses_post( $title ); ?></div>
+			<div class="gmCubikLite_text"><?php echo wp_kses_post( str_replace( array( "\r\n", "\r", "\n" ), '', wpautop( $item->description ) ) ); ?></div>
 		</div>
 		<?php
 	}
@@ -104,7 +108,7 @@ foreach ( $gmedias as $gmkey => $item ) {
 	if ( (int) $allsettings['show_tags'] && $item->tags ) {
 		foreach ( $item->tags as $_term ) {
 			$url    = add_query_arg( array( "gm{$id}" => array( 'tag__in' => $_term->term_id ) ), $term_url );
-			$tags[] = '<a href="' . urldecode( $url ) . '" class="gmCubikLite_tag">#' . $_term->name . '</a>';
+			$tags[] = '<a href="' . esc_url( urldecode( $url ) ) . '" class="gmCubikLite_tag">#' . esc_html( $_term->name ) . '</a>';
 		}
 	}
 
@@ -112,7 +116,7 @@ foreach ( $gmedias as $gmkey => $item ) {
 	if ( (int) $allsettings['show_categories'] && $item->categories ) {
 		foreach ( $item->categories as $_term ) {
 			$url          = add_query_arg( array( "gm{$id}" => array( 'category__in' => $_term->term_id ) ), $term_url );
-			$categories[] = '<a href="' . urldecode( $url ) . '" class="gmCubikLite_cat">' . $_term->name . '</a>';
+			$categories[] = '<a href="' . esc_url( urldecode( $url ) ) . '" class="gmCubikLite_cat">' . esc_html( $_term->name ) . '</a>';
 		}
 	}
 
@@ -120,13 +124,13 @@ foreach ( $gmedias as $gmkey => $item ) {
 	if ( (int) $allsettings['show_albums'] && $item->album ) {
 		foreach ( $item->album as $_term ) {
 			$url      = add_query_arg( array( "gm{$id}" => array( 'album__in' => $_term->term_id ) ), $term_url );
-			$albums[] = '<a href="' . urldecode( $url ) . '" class="gmCubikLite_alb">' . $_term->name . '</a>';
+			$albums[] = '<a href="' . esc_url( urldecode( $url ) ) . '" class="gmCubikLite_alb">' . esc_html( $_term->name ) . '</a>';
 		}
 	}
 	?>
 	<div class="gmCubikLite_terms">
 		<?php if ( count( $tags ) ) { ?>
-			<div class="gmCubikLite_terms_container"><?php echo implode( ' ', $tags ); ?></div>
+			<div class="gmCubikLite_terms_container"><?php echo wp_kses_post( implode( ' ', $tags ) ); ?></div>
 		<?php }
 
 		$details                                 = array();
@@ -140,8 +144,8 @@ foreach ( $gmedias as $gmkey => $item ) {
 				<table class="gmCubikLite_other_terms_table">
 					<?php foreach ( $details as $key => $value ) { ?>
 						<tr class="gmCubikLite_term_row_<?php echo sanitize_key( $key ); ?>">
-							<td class="gmCubikLite_term_key"><?php echo ucwords( $key ); ?></td>
-							<td class="gmCubikLite_term_value"><?php echo $value; ?></td>
+							<td class="gmCubikLite_term_key"><?php echo esc_html( ucwords( $key ) ); ?></td>
+							<td class="gmCubikLite_term_value"><?php echo wp_kses_post( $value ); ?></td>
 						</tr>
 					<?php } ?>
 				</table>
@@ -164,16 +168,16 @@ reset( $gmedias );
 				<?php
 				$gridSize = $allsettings['thumbCols'];
 				for ( $i = 1; $i <= 6; $i ++ ) {
-					echo "<div class='gmCubikLite_face gmCubikLite_side-{$i}'><div class='gmCubikLite_faceContainer'><div class='gmCubikLite_faceWrapper'>";
+					echo '<div class="gmCubikLite_face gmCubikLite_side-' . (int) $i . '"><div class="gmCubikLite_faceContainer"><div class="gmCubikLite_faceWrapper">';
 					for ( $j = 1; $j <= $gridSize; $j ++ ) {
 						$item = array_shift( $gmedias );
 						if ( ! $item ) {
 							break;
 						}
 						?>
-						<div class="gmCubikLite_thumb gmCubikLite_thumbLoader<?php echo ( $item->type !== 'image' ) ? ' mfp-iframe' : ''; ?>"<?php echo $item->attr_data_html; ?>>
-							<a class="gmCubikLite_thumbImg" href="<?php echo $item->url; ?>" title="<?php echo esc_attr( $item->title ); ?>"><img src="<?php echo $item->url_thumb; ?>" data-src="<?php echo $item->url_web; ?>" alt="<?php echo esc_attr( $item->alttext ); ?>"></a>
-							<script type="text/html" class="gmCubikLite_thumbDetails"><?php echo $item->details_html; ?></script>
+						<div class="gmCubikLite_thumb gmCubikLite_thumbLoader<?php echo ( $item->type !== 'image' ) ? ' mfp-iframe' : ''; ?>"<?php echo $item->attr_data_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed data attribute names; each value is escaped with esc_attr above. ?>>
+							<a class="gmCubikLite_thumbImg" href="<?php echo esc_url( $item->url ); ?>" title="<?php echo esc_attr( $item->title ); ?>"><img src="<?php echo esc_url( $item->url_thumb ); ?>" data-src="<?php echo esc_url( $item->url_web ); ?>" alt="<?php echo esc_attr( $item->alttext ); ?>"></a>
+							<script type="text/html" class="gmCubikLite_thumbDetails"><?php echo wp_kses_post( $item->details_html ); ?></script>
 						</div>
 						<?php
 					}
@@ -188,9 +192,9 @@ reset( $gmedias );
 							break;
 						}
 						?>
-						<div class="gmCubikLite_thumb<?php echo ( $item->type !== 'image' ) ? ' mfp-iframe' : ''; ?>"<?php echo $item->attr_data_html; ?>>
-							<a class="gmCubikLite_thumbImg" href="<?php echo $item->url; ?>" title="<?php echo esc_attr( $item->title ); ?>"><img data-src="<?php echo $item->url_web; ?>" alt="<?php echo esc_attr( $item->alttext ); ?>"></a>
-							<script type="text/html" class="gmCubikLite_thumbDetails"><?php echo $item->details_html; ?></script>
+						<div class="gmCubikLite_thumb<?php echo ( $item->type !== 'image' ) ? ' mfp-iframe' : ''; ?>"<?php echo $item->attr_data_html; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Fixed data attribute names; each value is escaped with esc_attr above. ?>>
+							<a class="gmCubikLite_thumbImg" href="<?php echo esc_url( $item->url ); ?>" title="<?php echo esc_attr( $item->title ); ?>"><img data-src="<?php echo esc_url( $item->url_web ); ?>" alt="<?php echo esc_attr( $item->alttext ); ?>"></a>
+							<script type="text/html" class="gmCubikLite_thumbDetails"><?php echo wp_kses_post( $item->details_html ); ?></script>
 						</div>
 						<?php
 					}
@@ -291,4 +295,3 @@ if ( ! $is_bot ) {
 		echo '</pre>';
 	}
 }
-

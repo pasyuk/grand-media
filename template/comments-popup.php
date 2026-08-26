@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /**
  * Comments Popup Template
  */
@@ -15,7 +18,7 @@ add_filter( 'comments_template', 'gmedia_comments_template' );
 	<title>
 		<?php
 		// translators: 1 - blogname, 2 - title.
-		echo esc_html( sprintf( __( '%1$s - Comments on %2$s' ), get_option( 'blogname' ), the_title( '', '', false ) ) );
+		echo esc_html( sprintf( __( '%1$s - Comments on %2$s' , 'grand-media'), get_option( 'blogname' ), the_title( '', '', false ) ) );
 		?>
 	</title>
 

@@ -31,7 +31,7 @@ if ( isset( $modules['error'] ) ) {
 		<div class="card m-0 mw-100 p-0">
 			<div class="card-header bg-light clearfix">
 				<div class="clearfix">
-					<a href="#installModuleModal" class="btn btn-primary float-end<?php echo current_user_can( 'manage_options' ) ? '' : ' disabled'; ?>" data-bs-toggle="modal"><?php esc_html_e( 'Install Module ZIP' ); ?></a>
+					<a href="#installModuleModal" class="btn btn-primary float-end<?php echo current_user_can( 'manage_options' ) ? '' : ' disabled'; ?>" data-bs-toggle="modal"><?php esc_html_e( 'Install Module ZIP' , 'grand-media'); ?></a>
 
 					<div class="btn-group float-start filter-modules" style="margin-right: 10px;">
 						<button type="button" data-filter="collection" class="btn btn-primary"><?php esc_html_e( 'All Modules', 'grand-media' ); ?>

@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Gmedia Gallery
+ * Plugin Name: Gmedia Photo Gallery
  * Plugin URI: http://wordpress.org/extend/plugins/grand-media/
  * Description: Gmedia Gallery - powerful media library plugin for creating beautiful galleries and managing files.
  * Version: 1.25.1
@@ -9,6 +9,7 @@
  * Requires at least: 5.4.0
  * Tested up to: 7.0
  * Stable tag: 1.25.1
+ * License: GPLv2 or later
  * Text Domain: grand-media
  * Domain Path: /lang
  */
@@ -517,7 +518,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			if ( ! wp_script_is( 'photoswipe', 'registered' ) || version_compare( $wp_scripts->registered['photoswipe']->ver, '3.0.5', '<=' ) ) {
 				wp_deregister_style( 'photoswipe' );
 				wp_deregister_script( 'photoswipe' );
-				wp_register_style( 'photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.css', array(), '3.0.5', 'screen' );
+				wp_register_style( 'photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.css', array(), GMEDIA_VERSION, 'screen' );
 				wp_register_script( 'photoswipe', $gmCore->gmedia_url . '/assets/photoswipe/photoswipe.jquery.min.js', array( 'jquery' ), '3.0.5', true );
 			}
 
@@ -621,7 +622,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			$module_styles = '';
 			$files         = glob( $module['path'] . '/css/*.css', GLOB_NOSORT );
 			if ( ! empty( $files ) ) {
-				$_ver  = isset( $module['info']['version'] ) ? $module['info']['version'] : false;
+				$_ver  = isset( $module['info']['version'] ) ? $module['info']['version'] . '-' . GMEDIA_VERSION : GMEDIA_VERSION;
 				$files = array_map( 'basename', $files );
 				foreach ( $files as $file ) {
 					$src = "{$module['url']}/css/{$file}";
@@ -919,7 +920,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			$gmedia_shedules = array(
 				'gmedia_app' => array(
 					'interval' => 5 * DAY_IN_SECONDS,
-					'display'  => __( 'Gmedia App Defined' ),
+					'display'  => __( 'Gmedia App Defined' , 'grand-media'),
 				),
 			);
 			$shedules        = array_merge( $shedules, $gmedia_shedules );

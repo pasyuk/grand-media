@@ -14,7 +14,7 @@ $_module_preset = ! empty( $term->meta['_module_preset'][0] ) ? $term->meta['_mo
 <form method="post" id="gmedia-edit-term" name="gmEditTerm" class="card-body" data-id="<?php echo absint( $term->term_id ); ?>" action="<?php echo esc_url( gm_get_admin_url() ); ?>">
 	<h4 style="margin-top:0;">
 		<span class="float-end"><?php echo esc_html( __( 'ID', 'grand-media' ) . ": {$term->term_id}" ); ?></span>
-		<?php esc_html_e( 'Edit Album' ); ?>: <em><?php echo esc_html( $term->name ); ?></em>
+		<?php esc_html_e( 'Edit Album' , 'grand-media'); ?>: <em><?php echo esc_html( $term->name ); ?></em>
 	</h4>
 
 	<div class="row">
@@ -118,7 +118,7 @@ $_module_preset = ! empty( $term->meta['_module_preset'][0] ) ? $term->meta['_mo
 								$presets  = $gmDB->get_terms( 'gmedia_module', array( 'status' => $mfold ) );
 								$selected = selected( $_module_preset, esc_attr( $mfold ), false );
 								$option   = array();
-								$option[] = '<option ' . $selected . ' value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' ) ) . '</option>';
+								$option[] = '<option ' . $selected . ' value="' . esc_attr( $mfold ) . '">' . esc_html( $module['title'] . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 								foreach ( $presets as $preset ) {
 									if ( ! (int) $preset->global && '[' . $mfold . ']' === $preset->name ) {
 										continue;
@@ -129,7 +129,7 @@ $_module_preset = ! empty( $term->meta['_module_preset'][0] ) ? $term->meta['_mo
 										$by_author = ' [' . get_the_author_meta( 'display_name', $preset->global ) . ']';
 									}
 									if ( '[' . $mfold . ']' === $preset->name ) {
-										$option[] = '<option ' . $selected . ' value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' ) ) . '</option>';
+										$option[] = '<option ' . $selected . ' value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . __( 'Default Settings' , 'grand-media') ) . '</option>';
 									} else {
 										$preset_name = str_replace( '[' . $mfold . '] ', '', $preset->name );
 										$option[]    = '<option ' . $selected . ' value="' . intval( $preset->term_id ) . '">' . esc_html( $module['title'] . $by_author . ' - ' . $preset_name ) . '</option>';
@@ -256,7 +256,7 @@ $_module_preset = ! empty( $term->meta['_module_preset'][0] ) ? $term->meta['_mo
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h4 class="modal-title"><?php esc_html_e( 'Add New Custom Field' ); ?></h4>
+				<h4 class="modal-title"><?php esc_html_e( 'Add New Custom Field' , 'grand-media'); ?></h4>
 				<button type="button" class="btn-close m-0" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<form class="modal-body" method="post" id="newCustomFieldForm">

@@ -162,6 +162,7 @@ class PelEntryTime extends PelEntryAscii
             case self::JULIAN_DAY_COUNT:
                 return $this->day_count + $this->seconds / 86400;
             default:
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric timestamp-type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
                 throw new PelInvalidArgumentException('Expected UNIX_TIMESTAMP (%d), ' . 'EXIF_STRING (%d), or ' . 'JULIAN_DAY_COUNT (%d) for $type, got %d.', self::UNIX_TIMESTAMP, self::EXIF_STRING, self::JULIAN_DAY_COUNT, $type);
         }
     }
@@ -191,6 +192,7 @@ class PelEntryTime extends PelEntryAscii
                 $this->day_count = (int) $this->convertUnixToJd($timestamp);
                 $this->seconds = $timestamp % 86400;
             } else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
                 throw new PelInvalidArgumentException('Expected integer value for $type, got %s', gettype($timestamp));
             }
         } elseif ($type === self::EXIF_STRING) {
@@ -211,9 +213,11 @@ class PelEntryTime extends PelEntryAscii
                 $this->day_count = (int) floor($timestamp);
                 $this->seconds = (int) (86400 * ($timestamp - floor($timestamp)));
             } else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
                 throw new PelInvalidArgumentException('Expected integer value for $type, got %s', gettype($timestamp));
             }
         } else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Numeric timestamp-type diagnostic, caught by GmediaCore::copy_exif(); not rendered here.
             throw new PelInvalidArgumentException('Expected UNIX_TIMESTAMP (%d), ' . 'EXIF_STRING (%d), or ' . 'JULIAN_DAY_COUNT (%d) for $type, got %d.', self::UNIX_TIMESTAMP, self::EXIF_STRING, self::JULIAN_DAY_COUNT, $type);
         }
 

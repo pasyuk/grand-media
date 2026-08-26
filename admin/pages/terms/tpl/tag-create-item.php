@@ -12,7 +12,7 @@ $gmedia_url = $gmProcessor->url;
 	<div class="row">
 		<div class="form-group col-sm-9">
 			<label><?php esc_html_e( 'Tags', 'grand-media' ); ?>
-				<small class="text-muted">(<?php esc_html_e( 'you can type multiple tags separated by comma' ); ?>)</small>
+				<small class="text-muted">(<?php esc_html_e( 'you can type multiple tags separated by comma' , 'grand-media'); ?>)</small>
 			</label>
 			<input type="text" class="form-control" name="term[name]" placeholder="<?php esc_attr_e( 'Tag Names', 'grand-media' ); ?>" required/>
 		</div>

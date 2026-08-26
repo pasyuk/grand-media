@@ -9,6 +9,7 @@ global $gmCore;
 <form class="form-inline gmedia-search-form" role="search" method="get">
 	<div class="form-group">
 		<?php
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Preserve escaped read-only GET filters across searches, excluding action parameters and nonce fields below.
 		foreach ( $_GET as $key => $value ) {
 			if ( ! in_array( $key, array( 'doing_wp_cron', 'do_gmedia', 'did_gmedia', 'do_gmedia_terms', 'did_gmedia_terms', 'ids', 's', 'pager' ), true ) ) {
 				if ( strpos( $key, '_wpnonce' ) !== false ) {

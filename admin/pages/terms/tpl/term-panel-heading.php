@@ -81,7 +81,7 @@ $referer = remove_query_arg( array( 'edit_term' ), $refurl );
 			</div>
 
 			<div class="term-shortcode float-start">
-				<input type="text" title="<?php esc_attr_e( 'Shortcode' ); ?>" class="form-control float-start h-100" value="<?php echo esc_attr( "[gm {$taxterm}={$term_id}]" ); ?>" readonly/>
+				<input type="text" title="<?php esc_attr_e( 'Shortcode' , 'grand-media'); ?>" class="form-control float-start h-100" value="<?php echo esc_attr( "[gm {$taxterm}={$term_id}]" ); ?>" readonly/>
 				<div class="input-buffer"></div>
 			</div>
 			<?php

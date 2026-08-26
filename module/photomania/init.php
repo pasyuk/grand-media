@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 /** @var $gmDB
  * @var  $gmCore
  * @var  $gmGallery
@@ -12,13 +15,14 @@
  **/
 
 global $wp;
+$gmedia_url_query = isset( $_SERVER['QUERY_STRING'] ) ? wp_unslash( $_SERVER['QUERY_STRING'] ) : '';
 $settings      = array_merge( $settings, array(
 	'ID'        => $id,
-	'url'       => remove_query_arg( 'gm' . $id . '_slide', add_query_arg( $_SERVER['QUERY_STRING'], '', home_url( $wp->request ) ) ),
+	'url'       => remove_query_arg( 'gm' . $id . '_slide', add_query_arg( $gmedia_url_query, '', home_url( $wp->request ) ) ),
 	'moduleUrl' => $module['url'],
 ) );
 $iSlide        = $settings['initial_slide'] = (int) $gmCore->_get( 'gm' . $id . '_slide', 0 );
-$base_url_host = parse_url( $gmCore->upload['url'], PHP_URL_HOST );
+$base_url_host = wp_parse_url( $gmCore->upload['url'], PHP_URL_HOST );
 $term_url      = remove_query_arg( 'gm' . $id, $settings['url'] );
 
 $allsettings = array_merge( $module['options'], $settings );
@@ -62,7 +66,7 @@ foreach ( $gmedias as $item ) {
 	);
 
 	if ( ! empty( $allsettings['show_description'] ) ) {
-		$content['data'][ $item->ID ]['description'] = str_replace( array( "\r\n", "\r", "\n" ), '', wpautop( $item->description ) );
+		$content['data'][ $item->ID ]['description'] = wp_kses_post( str_replace( array( "\r\n", "\r", "\n" ), '', wpautop( $item->description ) ) );
 	}
 
 	if ( ! empty( $item->post_id ) ) {
@@ -86,7 +90,7 @@ foreach ( $gmedias as $item ) {
 		$content['data'][ $item->ID ]['link'] = $item->link;
 		$link_target                          = '';
 		if ( $item->link ) {
-			$url_host = parse_url( $item->link, PHP_URL_HOST );
+			$url_host = wp_parse_url( $item->link, PHP_URL_HOST );
 			if ( $url_host == $base_url_host || empty( $url_host ) ) {
 				$link_target = '_self';
 			} else {
@@ -117,7 +121,7 @@ foreach ( $gmedias as $item ) {
 
 
 if ( empty( $content['data'] ) ) {
-	echo GMEDIA_GALLERY_EMPTY;
+	echo esc_html( GMEDIA_GALLERY_EMPTY );
 
 	return;
 }
@@ -143,8 +147,8 @@ foreach ( $content['data'] as $item_id => $item ) {
 	$img_src   = '';
 	$thumb_src = '';
 	if ( $is_bot || 1 === $i ) {
-		$img_src   = 'src="' . $web . '"';
-		$thumb_src = 'src="' . $thumb . '"';
+		$img_src   = 'src="' . esc_url( $web ) . '"';
+		$thumb_src = 'src="' . esc_url( $thumb ) . '"';
 	}
 	$img_class     = '';
 	$img_preloader = '';
@@ -153,9 +157,9 @@ foreach ( $content['data'] as $item_id => $item ) {
 		$img_preloader = '<div class="swiper-lazy-preloader swiper-lazy-preloader-black"></div>';
 	}
 	$slides[]        = '
-		<div class="swiper-slide" data-hash="gmedia' . $item['id'] . '" data-photo-id="' . $item['id'] . '"><span class="gmpm_va"></span>' . '<img ' . $img_src . ' data-src="' . $web . '" alt="' . esc_attr( $item['alt'] ) . '" data-protect="' . $item['author']['name'] . '" class="gmpm_the_photo' . $img_class . '">' . $img_preloader . '</div>';
+		<div class="swiper-slide" data-hash="gmedia' . (int) $item['id'] . '" data-photo-id="' . (int) $item['id'] . '"><span class="gmpm_va"></span>' . '<img ' . $img_src . ' data-src="' . esc_url( $web ) . '" alt="' . esc_attr( $item['alt'] ) . '" data-protect="' . esc_attr( $item['author']['name'] ) . '" class="gmpm_the_photo' . $img_class . '">' . $img_preloader . '</div>';
 	$slides_thumbs[] = '
-		<div class="swiper-slide gmpm_photo" data-photo-id="' . $item['id'] . '">' . '<img ' . $thumb_src . ' data-src="' . $thumb . '" alt="' . esc_attr( $item['alt'] ) . '" class="gmpm_photo swiper-lazy ' . $orientation . '">' . '<span class="swiper-lazy-preloader swiper-lazy-preloader-black"></span>' . '</div>';
+		<div class="swiper-slide gmpm_photo" data-photo-id="' . (int) $item['id'] . '">' . '<img ' . $thumb_src . ' data-src="' . esc_url( $thumb ) . '" alt="' . esc_attr( $item['alt'] ) . '" class="gmpm_photo swiper-lazy ' . $orientation . '">' . '<span class="swiper-lazy-preloader swiper-lazy-preloader-black"></span>' . '</div>';
 }
 $content['data'] = array_values( $content['data'] );
 
@@ -177,7 +181,7 @@ if ( ! $is_bot ) {
 }
 ?>
 
-	<div class="gmpm_photo_show gmpm_w960 gmpm_w640 gmpm_w480<?php echo $photo_show_class; ?>">
+	<div class="gmpm_photo_show gmpm_w960 gmpm_w640 gmpm_w480<?php echo esc_attr( $photo_show_class ); ?>">
 
 		<div class="gmpm_photo_wrap has_prev_photo has_next_photo">
 			<div class="swiper-container swiper-big-images">
@@ -189,7 +193,7 @@ if ( ! $is_bot ) {
 				</div>
 				<div class="swiper-wrapper">
 					<?php
-					echo implode( '', $slides );
+					echo wp_kses_post( implode( '', $slides ) );
 					?>
 				</div>
 			</div>
@@ -201,24 +205,24 @@ if ( ! $is_bot ) {
 					<?php if ( ! empty( $allsettings['show_share_button'] ) ) { ?>
 						<ul class="gmpm_focus_share">
 							<li style="list-style:none;" class="gmpm_share_wrapper">
-								<a class="gmpm_button gmpm_share"><?php _e( 'Share', 'grand-media' ); ?></a>
+								<a class="gmpm_button gmpm_share"><?php esc_html_e( 'Share', 'grand-media' ); ?></a>
 								<ul class="gmpm_sharelizers gmpm_clearfix">
-									<li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
-									<li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
-									<li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
-									<li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
+									<li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php esc_html_e( 'Facebook', 'grand-media' ); ?></a></li>
+									<li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php esc_html_e( 'Twitter', 'grand-media' ); ?></a></li>
+									<li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php esc_html_e( 'Pinterest', 'grand-media' ); ?></a></li>
+									<li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php esc_html_e( 'StumbleUpon', 'grand-media' ); ?></a></li>
 								</ul>
 							</li>
 						</ul>
 					<?php } ?>
 					<?php if ( ! empty( $allsettings['show_like_button'] ) ) { ?>
 						<ul class="gmpm_focus_like_fave gmpm_clearfix">
-							<li style="list-style:none;"><a class="gmpm_button gmpm_like"><?php _e( 'Like', 'grand-media' ); ?></a></li>
+							<li style="list-style:none;"><a class="gmpm_button gmpm_like"><?php esc_html_e( 'Like', 'grand-media' ); ?></a></li>
 						</ul>
 					<?php } ?>
 					<ul class="gmpm_focus_arrows gmpm_clearfix">
-						<li style="list-style:none;"><a class="gmpm_button gmpm_photo_arrow_previous gmpm_prev"><?php _e( 'Previous', 'grand-media' ); ?></a></li>
-						<li style="list-style:none;"><a class="gmpm_button gmpm_photo_arrow_next gmpm_next"><?php _e( 'Next', 'grand-media' ); ?></a></li>
+						<li style="list-style:none;"><a class="gmpm_button gmpm_photo_arrow_previous gmpm_prev"><?php esc_html_e( 'Previous', 'grand-media' ); ?></a></li>
+						<li style="list-style:none;"><a class="gmpm_button gmpm_photo_arrow_next gmpm_next"><?php esc_html_e( 'Next', 'grand-media' ); ?></a></li>
 					</ul>
 				</div>
 				<div class="gmpm_name_wrap gmpm_clearfix<?php if ( empty( $allsettings['show_author_avatar'] ) ) {
@@ -226,14 +230,14 @@ if ( ! $is_bot ) {
 				} ?>">
 					<?php if ( ! empty( $allsettings['show_author_avatar'] ) ) { ?>
 						<div class="gmpm_user_avatar">
-							<a class="gmpm_user_avatar_link" href="<?php echo urldecode( $content['data'][ $iSlide ]['author']['posts_link'] ); ?>"><img src="<?php echo $content['data'][ $iSlide ]['author']['avatar']; ?>" alt=""/></a>
+							<a class="gmpm_user_avatar_link" href="<?php echo esc_url( urldecode( $content['data'][ $iSlide ]['author']['posts_link'] ) ); ?>"><img src="<?php echo esc_url( $content['data'][ $iSlide ]['author']['avatar'] ); ?>" alt=""/></a>
 						</div>
 					<?php } ?>
 					<div class="gmpm_title_author">
-						<div class="gmpm_title"><?php echo $content['data'][ $iSlide ]['title']; ?></div>
+						<div class="gmpm_title"><?php echo wp_kses_post( $content['data'][ $iSlide ]['title'] ); ?></div>
 						<?php if ( ! empty( $allsettings['show_author_name'] ) ) { ?>
 							<div class="gmpm_author_name">
-								<a class="gmpm_author_link" href="<?php echo urldecode( $content['data'][ $iSlide ]['author']['posts_link'] ); ?>"><?php echo $content['data'][ $iSlide ]['author']['name']; ?></a>
+								<a class="gmpm_author_link" href="<?php echo esc_url( urldecode( $content['data'][ $iSlide ]['author']['posts_link'] ) ); ?>"><?php echo esc_html( $content['data'][ $iSlide ]['author']['name'] ); ?></a>
 							</div>
 						<?php } ?>
 					</div>
@@ -244,7 +248,7 @@ if ( ! $is_bot ) {
 						<div class="gmpm_photo_carousel">
 							<div class="swiper-container swiper-small-images">
 								<div class="swiper-wrapper">
-									<?php echo implode( '', $slides_thumbs ); ?>
+									<?php echo wp_kses_post( implode( '', $slides_thumbs ) ); ?>
 								</div>
 							</div>
 						</div>
@@ -257,20 +261,20 @@ if ( ! $is_bot ) {
 						<div class="gmpm_big_button_wrap<?php echo ( ! $show_share_button || ! $show_like_button ) ? ' gmpm_one_button' : ''; ?>">
 							<?php if ( $show_share_button ) { ?>
 								<div class="gmpm_share_wrapper">
-									<a class="gmpm_button gmpm_share"><?php _e( 'Share', 'grand-media' ); ?></a>
+									<a class="gmpm_button gmpm_share"><?php esc_html_e( 'Share', 'grand-media' ); ?></a>
 
 									<div class="gmpm_sharelizers_wrap">
 										<ul class="gmpm_sharelizers">
-											<li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php _e( 'Facebook', 'grand-media' ); ?></a></li>
-											<li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php _e( 'Twitter', 'grand-media' ); ?></a></li>
-											<li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php _e( 'Pinterest', 'grand-media' ); ?></a></li>
-											<li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php _e( 'StumbleUpon', 'grand-media' ); ?></a></li>
+											<li style="list-style:none;"><a class="gmpm_button gmpm_facebook gmpm_sharelizer"><?php esc_html_e( 'Facebook', 'grand-media' ); ?></a></li>
+											<li style="list-style:none;"><a class="gmpm_button gmpm_twitter gmpm_sharelizer"><?php esc_html_e( 'Twitter', 'grand-media' ); ?></a></li>
+											<li style="list-style:none;"><a class="gmpm_button gmpm_pinterest gmpm_sharelizer"><?php esc_html_e( 'Pinterest', 'grand-media' ); ?></a></li>
+											<li style="list-style:none;"><a class="gmpm_button gmpm_stumbleupon gmpm_sharelizer"><?php esc_html_e( 'StumbleUpon', 'grand-media' ); ?></a></li>
 										</ul>
 									</div>
 								</div>
 							<?php } ?>
 							<?php if ( $show_like_button ) { ?>
-								<a class="gmpm_button gmpm_like"><?php _e( 'Like', 'grand-media' ); ?></a>
+								<a class="gmpm_button gmpm_like"><?php esc_html_e( 'Like', 'grand-media' ); ?></a>
 							<?php } ?>
 						</div>
 					<?php } ?>
@@ -280,13 +284,13 @@ if ( ! $is_bot ) {
 							$link_href  = '';
 						} else {
 							$link_class = '';
-							$link_href  = "href='{$content['data'][$iSlide]['post_link']}#comments' target='_blank'";
+							$link_href  = 'href="' . esc_url( $content['data'][ $iSlide ]['post_link'] . '#comments' ) . '" target="_blank"';
 						}
 						?>
 						<div class="gmpm_big_button_wrap">
-							<a class="gmpm_big_button gmpm_comments_button<?php echo $link_class; ?>" <?php echo $link_href; ?>>
+							<a class="gmpm_big_button gmpm_comments_button<?php echo esc_attr( $link_class ); ?>" <?php echo $link_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Complete attribute fragment with an escaped URL and a fixed target. ?>>
                                 <span class="gmpm_count_icon">
-                                    <span class="gmpm_comments_count"><?php echo $content['data'][ $iSlide ]['cc'] ?></span>
+                                    <span class="gmpm_comments_count"><?php echo esc_html( $content['data'][ $iSlide ]['cc'] ); ?></span>
                                     <span class="gmpm_comments_icon">
                                         <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
                                             <symbol id="icon-bubbles2" viewBox="0 0 1152 1024">
@@ -298,15 +302,15 @@ if ( ! $is_bot ) {
                                         </svg>
                                     </span>
                                 </span>
-								<span class="gmpm_label"><?php echo $allsettings['comments_button_text']; ?></span>
+								<span class="gmpm_label"><?php echo esc_html( $allsettings['comments_button_text'] ); ?></span>
 							</a>
 						</div>
 					<?php } ?>
 					<?php if ( ! empty( $allsettings['show_download_button'] ) ) { ?>
 						<div class="gmpm_big_button_wrap">
-							<a class="gmpm_big_button gmpm_download_button" href="<?php echo $content['data'][ $iSlide ]['download']; ?>" download="<?php echo esc_attr( $content['data'][ $iSlide ]['file'] ); ?>">
+							<a class="gmpm_big_button gmpm_download_button" href="<?php echo esc_url( $content['data'][ $iSlide ]['download'] ); ?>" download="<?php echo esc_attr( $content['data'][ $iSlide ]['file'] ); ?>">
 								<span class="gmpm_icon"></span>
-								<span class="gmpm_label"><?php echo $allsettings['download_button_text']; ?></span>
+								<span class="gmpm_label"><?php echo esc_html( $allsettings['download_button_text'] ); ?></span>
 							</a>
 						</div>
 					<?php } ?>
@@ -316,13 +320,13 @@ if ( ! $is_bot ) {
 							$link_href  = '';
 						} else {
 							$link_class = '';
-							$link_href  = "href='{$content['data'][$iSlide]['link']}' target='{$content['data'][$iSlide]['link_target']}'";
+							$link_href  = 'href="' . esc_url( $content['data'][ $iSlide ]['link'] ) . '" target="' . esc_attr( $content['data'][ $iSlide ]['link_target'] ) . '"';
 						}
 						?>
 						<div class="gmpm_big_button_wrap">
-							<a class="gmpm_big_button gmpm_link_button<?php echo $link_class; ?>" <?php echo $link_href; ?>>
+							<a class="gmpm_big_button gmpm_link_button<?php echo esc_attr( $link_class ); ?>" <?php echo $link_href; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Complete attribute fragment with escaped URL and target values. ?>>
 								<span class="gmpm_icon"></span>
-								<span class="gmpm_label"><?php echo $allsettings['link_button_text']; ?></span>
+								<span class="gmpm_label"><?php echo esc_html( $allsettings['link_button_text'] ); ?></span>
 							</a>
 						</div>
 					<?php } ?>
@@ -330,17 +334,17 @@ if ( ! $is_bot ) {
 			</div>
 		</div>
 		<div class="gmpm_focus_close_full">
-			<span><a class="gmpm_button gmpm_close"><?php _e( 'Close', 'grand-media' ); ?></a></span>
-			<span><a class="gmpm_button gmpm_full"><?php _e( 'Full', 'grand-media' ); ?></a></span>
+			<span><a class="gmpm_button gmpm_close"><?php esc_html_e( 'Close', 'grand-media' ); ?></a></span>
+			<span><a class="gmpm_button gmpm_full"><?php esc_html_e( 'Full', 'grand-media' ); ?></a></span>
 		</div>
 		<div class="gmpm_photo_details">
 			<div class="gmpm_description_wrap<?php echo empty( $content['data'][ $iSlide ]['description'] ) ? ' empty-item-description' : ''; ?>">
 				<?php if ( ! empty( $allsettings['show_description'] ) ) { ?>
 					<?php if ( ! empty( $allsettings['description_title'] ) ) { ?>
-						<div class="details_title"><?php echo $allsettings['description_title']; ?></div>
+						<div class="details_title"><?php echo esc_html( $allsettings['description_title'] ); ?></div>
 					<?php } ?>
 					<div class="gmpm_description_text_wrap">
-						<div class="gmpm_slide_description"><?php echo $content['data'][ $iSlide ]['description']; ?></div>
+						<div class="gmpm_slide_description"><?php echo wp_kses_post( $content['data'][ $iSlide ]['description'] ); ?></div>
 					</div>
 				<?php } ?>
 			</div>
@@ -348,13 +352,13 @@ if ( ! $is_bot ) {
 
 		<div class="gmpm_focus_footer">
 			<div class="gmpm_focus_keyboard">
-				<div class="gmpm_focus_keyboard_title"><?php _e( 'Keyboard Shortcuts', 'grand-media' ); ?> <a class="gmpm_focus_keyboard_dismiss"><?php _e( 'Dismiss', 'grand-media' ); ?></a></div>
+				<div class="gmpm_focus_keyboard_title"><?php esc_html_e( 'Keyboard Shortcuts', 'grand-media' ); ?> <a class="gmpm_focus_keyboard_dismiss"><?php esc_html_e( 'Dismiss', 'grand-media' ); ?></a></div>
 				<ul>
-					<li style="list-style:none;"><a data-key="p" class="gmpm_key">S</a><span class="gmpm_label"><?php _e( 'Slideshow', 'grand-media' ); ?></span></li>
-					<li style="list-style:none;"><a data-key="m" class="gmpm_key">M</a><span class="gmpm_label"><?php _e( 'Maximize', 'grand-media' ); ?></span></li>
-					<li style="list-style:none;"><a data-key="left" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php _e( 'Previous', 'grand-media' ); ?></span></li>
-					<li style="list-style:none;"><a data-key="right" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php _e( 'Next', 'grand-media' ); ?></span></li>
-					<li style="list-style:none;"><a data-key="escape" class="gmpm_key gmpm_esc">esc</a><span class="gmpm_label"><?php _e( 'Close', 'grand-media' ); ?></span></li>
+					<li style="list-style:none;"><a data-key="p" class="gmpm_key">S</a><span class="gmpm_label"><?php esc_html_e( 'Slideshow', 'grand-media' ); ?></span></li>
+					<li style="list-style:none;"><a data-key="m" class="gmpm_key">M</a><span class="gmpm_label"><?php esc_html_e( 'Maximize', 'grand-media' ); ?></span></li>
+					<li style="list-style:none;"><a data-key="left" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php esc_html_e( 'Previous', 'grand-media' ); ?></span></li>
+					<li style="list-style:none;"><a data-key="right" class="gmpm_key">&nbsp;</a><span class="gmpm_label"><?php esc_html_e( 'Next', 'grand-media' ); ?></span></li>
+					<li style="list-style:none;"><a data-key="escape" class="gmpm_key gmpm_esc">esc</a><span class="gmpm_label"><?php esc_html_e( 'Close', 'grand-media' ); ?></span></li>
 				</ul>
 			</div>
 		</div>

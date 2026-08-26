@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 function gmedia_term_item_thumbnails( $term_item, $qty = 7 ) {
 	global $gmCore, $gmDB, $gmGallery;

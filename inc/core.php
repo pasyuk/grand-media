@@ -72,7 +72,7 @@ class GmediaCore {
 			// Make sure we have an uploads dir.
 			if ( ! wp_mkdir_p( $uploads['path'] ) ) {
 				// translators: directory name.
-				$message          = sprintf( esc_html__( 'Unable to create directory %s. Is its parent directory writable by the server?' ), $uploads['path'] );
+				$message          = sprintf( esc_html__( 'Unable to create directory %s. Is its parent directory writable by the server?' , 'grand-media'), $uploads['path'] );
 				$uploads['error'] = $message;
 			}
 		} elseif ( ! is_dir( $uploads['path'] ) ) {
@@ -211,6 +211,7 @@ class GmediaCore {
 	 * @return mixed
 	 */
 	public function _get( $var, $def = false, $empty2false = false ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Shared input accessor; state-changing request handlers enforce their own authorization and nonce checks.
 		if ( ! isset( $_GET[ $var ] ) ) {
 			return $def;
 		}
@@ -263,6 +264,22 @@ class GmediaCore {
 	}
 
 	/**
+	 * Access local upload paths without changing WordPress's configured transport.
+	 *
+	 * @return WP_Filesystem_Direct
+	 */
+	public function local_filesystem() {
+		static $filesystem;
+		if ( ! $filesystem ) {
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
+			require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
+			$filesystem = new WP_Filesystem_Direct( null );
+		}
+
+		return $filesystem;
+	}
+
+	/**
 	 * @param string $path
 	 *
 	 * @return bool|null
@@ -270,14 +287,14 @@ class GmediaCore {
 	public function delete_folder( $path ) {
 		$path = rtrim( $path, '/' );
 		if ( is_file( $path ) ) {
-			return @unlink( $path );
+			return $this->local_filesystem()->delete( $path, false, 'f' );
 		} elseif ( is_dir( $path ) ) {
 			$files = glob( $path . '/*', GLOB_NOSORT );
 			if ( ! empty( $files ) && is_array( $files ) ) {
 				array_map( array( $this, 'delete_folder' ), $files );
 			}
 
-			return @rmdir( $path );
+			return $this->local_filesystem()->rmdir( $path, false );
 		}
 
 		return null;
@@ -1140,9 +1157,9 @@ class GmediaCore {
 			);
 		}
 		// Check if grand-media dir is writable.
-		if ( ! is_writable( $fileinfo['dirpath'] ) ) {
-			@chmod( $fileinfo['dirpath'], 0755 );
-			if ( ! is_writable( $fileinfo['dirpath'] ) ) {
+		if ( ! wp_is_writable( $fileinfo['dirpath'] ) ) {
+			$this->file_chmod( $fileinfo['dirpath'], 0755 );
+			if ( ! wp_is_writable( $fileinfo['dirpath'] ) ) {
 				return array(
 					'error' => array(
 						'code'    => 100,
@@ -1161,7 +1178,7 @@ class GmediaCore {
 
 					// Remove temp file if it is older than the max age and is not the current file.
 					if ( preg_match( '/\.part$/', $_file ) && ( filemtime( $tmpfilePath ) < time() - $file_age ) && ( $tmpfilePath !== $fileinfo['filepath'] . '.part' ) ) {
-						@unlink( $tmpfilePath );
+						wp_delete_file( $tmpfilePath );
 					}
 				}
 
@@ -1191,11 +1208,12 @@ class GmediaCore {
 				return array( 'error' => array( 'code' => 101, 'message' => esc_html__( 'Failed to open input stream.', 'grand-media' ) ), 'id' => $fileinfo['basename'] );
 			}
 			if ( strpos( $content_type, 'multipart' ) !== false ) {
-				@unlink( $file_tmp );
+				wp_delete_file( $file_tmp );
 			}
 			if ( ! $chunks || ( $chunks - 1 ) === $chunk ) {
 				sleep( 1 );
 				// Strip the temp .part suffix off.
+				// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 				rename( $fileinfo['filepath'] . '.part', $fileinfo['filepath'] );
 
 				$wp_filesystem->chmod( $fileinfo['filepath'] );
@@ -1267,10 +1285,10 @@ class GmediaCore {
 								'id'    => $fileinfo['basename'],
 							);
 						}
-						if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
-							@chmod( $fileinfo['dirpath_thumb'], 0755 );
-							if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
-								@unlink( $fileinfo['filepath'] );
+						if ( ! wp_is_writable( $fileinfo['dirpath_thumb'] ) ) {
+							$this->file_chmod( $fileinfo['dirpath_thumb'], 0755 );
+							if ( ! wp_is_writable( $fileinfo['dirpath_thumb'] ) ) {
+								wp_delete_file( $fileinfo['filepath'] );
 
 								return array(
 									'error' => array(
@@ -1292,10 +1310,10 @@ class GmediaCore {
 								'id'    => $fileinfo['basename'],
 							);
 						}
-						if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
-							@chmod( $fileinfo['dirpath_original'], 0755 );
-							if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
-								@unlink( $fileinfo['filepath'] );
+						if ( ! wp_is_writable( $fileinfo['dirpath_original'] ) ) {
+							$this->file_chmod( $fileinfo['dirpath_original'], 0755 );
+							if ( ! wp_is_writable( $fileinfo['dirpath_original'] ) ) {
+								wp_delete_file( $fileinfo['filepath'] );
 
 								return array(
 									'error' => array(
@@ -1315,6 +1333,7 @@ class GmediaCore {
 						$webimg['resize'] = ( ( $webimg['width'] < $size[0] ) || ( $webimg['height'] < $size[1] ) );
 
 						if ( $webimg['resize'] && 'GIF' !== $extensions[ $size[2] ] ) {
+							// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 							rename( $fileinfo['filepath'], $fileinfo['filepath_original'] );
 						} else {
 							copy( $fileinfo['filepath'], $fileinfo['filepath_original'] );
@@ -1345,8 +1364,8 @@ class GmediaCore {
 						if ( 'GIF' !== $extensions[ $size[2] ] || $thumbimg['resize'] ) {
 							$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
 							if ( is_wp_error( $editor ) ) {
-								@unlink( $fileinfo['filepath'] );
-								@unlink( $fileinfo['filepath_original'] );
+								wp_delete_file( $fileinfo['filepath'] );
+								wp_delete_file( $fileinfo['filepath_original'] );
 
 								return array(
 									'error' => array( 'code' => $editor->get_error_code(), 'message' => $editor->get_error_message() ),
@@ -1365,8 +1384,8 @@ class GmediaCore {
 								if ( $webimg['resize'] ) {
 									$resized = $editor->resize( $webimg['width'], $webimg['height'], $webimg['crop'] );
 									if ( is_wp_error( $resized ) ) {
-										@unlink( $fileinfo['filepath'] );
-										@unlink( $fileinfo['filepath_original'] );
+										wp_delete_file( $fileinfo['filepath'] );
+										wp_delete_file( $fileinfo['filepath_original'] );
 
 										return array(
 											'error' => array( 'code' => $resized->get_error_code(), 'message' => $resized->get_error_message() ),
@@ -1378,8 +1397,8 @@ class GmediaCore {
 
 								$saved = $editor->save( $fileinfo['filepath'] );
 								if ( is_wp_error( $saved ) ) {
-									@unlink( $fileinfo['filepath'] );
-									@unlink( $fileinfo['filepath_original'] );
+									wp_delete_file( $fileinfo['filepath'] );
+									wp_delete_file( $fileinfo['filepath_original'] );
 
 									return array(
 										'error' => array( 'code' => $saved->get_error_code(), 'message' => $saved->get_error_message() ),
@@ -1400,8 +1419,8 @@ class GmediaCore {
 									$resized = $editor->resize( 0, $thumbimg['height'], $thumbimg['crop'] );
 								}
 								if ( is_wp_error( $resized ) ) {
-									@unlink( $fileinfo['filepath'] );
-									@unlink( $fileinfo['filepath_original'] );
+									wp_delete_file( $fileinfo['filepath'] );
+									wp_delete_file( $fileinfo['filepath_original'] );
 
 									return array(
 										'error' => array( 'code' => $resized->get_error_code(), 'message' => $resized->get_error_message() ),
@@ -1413,8 +1432,8 @@ class GmediaCore {
 
 							$saved = $editor->save( $fileinfo['filepath_thumb'] );
 							if ( is_wp_error( $saved ) ) {
-								@unlink( $fileinfo['filepath'] );
-								@unlink( $fileinfo['filepath_original'] );
+								wp_delete_file( $fileinfo['filepath'] );
+								wp_delete_file( $fileinfo['filepath_original'] );
 
 								return array(
 									'error' => array( 'code' => $saved->get_error_code(), 'message' => $saved->get_error_message() ),
@@ -1434,7 +1453,7 @@ class GmediaCore {
 						//$is_webimage = true;
 					} else {
 						/*
-						@unlink($fileinfo['filepath']);
+						wp_delete_file($fileinfo['filepath']);
 						$return = array("error" => array("code" => 104, "message" => esc_html__("Could not read image size. Invalid image was deleted.", 'grand-media')),
 										"id"    => $fileinfo['basename_original']
 						);
@@ -1571,7 +1590,7 @@ class GmediaCore {
 				$gmDB->update_metadata( 'gmedia', $id, '_size', $file_size );
 
 				if ( (int) $gmGallery->options['delete_originals'] ) {
-					@unlink( $fileinfo['filepath_original'] );
+					wp_delete_file( $fileinfo['filepath_original'] );
 				}
 
 				return array(
@@ -1596,6 +1615,7 @@ class GmediaCore {
 	 * @return mixed
 	 */
 	public function _req( $var, $def = false ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Shared input accessor; state-changing request handlers enforce their own authorization and nonce checks.
 		if ( ! isset( $_REQUEST[ $var ] ) ) {
 			return $def;
 		}
@@ -1612,10 +1632,14 @@ class GmediaCore {
 	/** Set correct file permissions (chmod)
 	 *
 	 * @param string $new_file
+	 * @param int|null $perms Explicit permissions, or inherit the parent directory's file permissions.
 	 */
-	public function file_chmod( $new_file ) {
-		$stat  = stat( dirname( $new_file ) );
-		$perms = $stat['mode'] & 0000666;
+	public function file_chmod( $new_file, $perms = null ) {
+		if ( null === $perms ) {
+			$stat  = stat( dirname( $new_file ) );
+			$perms = $stat['mode'] & 0000666;
+		}
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- Exact local modes are required: WP_Filesystem_Direct::chmod treats 0555 as 0755 and can skip making a directory writable.
 		@chmod( $new_file, $perms );
 	}
 
@@ -1913,21 +1937,13 @@ class GmediaCore {
 
 		foreach ( array( 'title', 'caption', 'credit', 'copyright', 'model', 'iso', 'software' ) as $key ) {
 			if ( ! empty( $meta[ $key ] ) && ! seems_utf8( $meta[ $key ] ) ) {
-				if ( function_exists( 'mb_convert_encoding' ) ) {
-					$meta[ $key ] = mb_convert_encoding( $meta[ $key ], 'UTF-8', 'ISO-8859-1' );
-				} else {
-					$meta[ $key ] = utf8_encode( $meta[ $key ] );
-				}
+				$meta[ $key ] = $this->iso_8859_1_to_utf8( $meta[ $key ] );
 			}
 		}
 		if ( ! empty( $meta['keywords'] ) ) {
 			foreach ( $meta['keywords'] as $i => $key ) {
 				if ( ! seems_utf8( $key ) ) {
-					if ( function_exists( 'mb_convert_encoding' ) ) {
-						$meta['keywords'][ $i ] = mb_convert_encoding( $key, 'UTF-8', 'ISO-8859-1' );
-					} else {
-						$meta['keywords'][ $i ] = utf8_encode( $key );
-					}
+					$meta['keywords'][ $i ] = $this->iso_8859_1_to_utf8( $key );
 				}
 			}
 		}
@@ -2198,6 +2214,27 @@ class GmediaCore {
 	}
 
 	/**
+	 * Convert legacy image metadata without requiring mbstring or deprecated PHP functions.
+	 *
+	 * @param string $string ISO-8859-1 bytes.
+	 * @return string UTF-8 text.
+	 */
+	public function iso_8859_1_to_utf8( $string ) {
+		if ( function_exists( 'mb_convert_encoding' ) ) {
+			return mb_convert_encoding( $string, 'UTF-8', 'ISO-8859-1' );
+		}
+
+		return preg_replace_callback(
+			'/[\x80-\xff]/',
+			static function ( $match ) {
+				$byte = ord( $match[0] );
+				return chr( 0xc0 | ( $byte >> 6 ) ) . chr( 0x80 | ( $byte & 0x3f ) );
+			},
+			$string
+		);
+	}
+
+	/**
 	 * mb_convert_encoding alternative function
 	 *
 	 * @param string $string
@@ -2208,11 +2245,8 @@ class GmediaCore {
 		if ( function_exists( 'mb_convert_encoding' ) ) {
 			$string = mb_convert_encoding( $string, 'UTF-8', 'UTF-8' );
 		} else {
-			if ( function_exists( 'mb_convert_encoding' ) ) {
-				$string = htmlspecialchars_decode( mb_convert_encoding( htmlentities( $string, ENT_COMPAT, 'utf-8', false ), 'ISO-8859-1', 'UTF-8' ) );
-			} else {
-				$string = htmlspecialchars_decode( utf8_decode( htmlentities( $string, ENT_COMPAT, 'utf-8', false ) ) );
-			}
+			// This helper always handles UTF-8, independently of the site's charset.
+			$string = preg_match( '//u', $string ) ? $string : '';
 		}
 
 		return $string;
@@ -2547,9 +2581,9 @@ class GmediaCore {
 				continue;
 			}
 			// Check if grand-media dir is writable.
-			if ( ! is_writable( $fileinfo['dirpath'] ) ) {
-				@chmod( $fileinfo['dirpath'], 0755 );
-				if ( ! is_writable( $fileinfo['dirpath'] ) ) {
+			if ( ! wp_is_writable( $fileinfo['dirpath'] ) ) {
+				$this->file_chmod( $fileinfo['dirpath'], 0755 );
+				if ( ! wp_is_writable( $fileinfo['dirpath'] ) ) {
 					// translators: dir name.
 					echo wp_kses_post( $prefix_ko . sprintf( esc_html__( 'Directory `%s` or its subfolders are not writable by the server.', 'grand-media' ), dirname( $fileinfo['dirpath'] ) ) . $eol );
 					continue;
@@ -2567,7 +2601,7 @@ class GmediaCore {
 			$hash_file    = hash_file( 'md5', $fileinfo['filepath'] );
 			$duplicate_id = $wpdb->get_var( $wpdb->prepare( "SELECT gmedia_id FROM {$wpdb->prefix}gmedia_meta WHERE meta_key = '_hash' AND meta_value = %s LIMIT 1;", $hash_file ) );
 			if ( $duplicate_id ) {
-				@unlink( $fileinfo['filepath'] );
+				wp_delete_file( $fileinfo['filepath'] );
 				// translators: object ID.
 				echo wp_kses_post( $prefix_ko . $fileinfo['basename_original'] . ': ' . sprintf( esc_html__( 'Seems like it is duplicate of file with ID #%d', 'grand-media' ), $duplicate_id ) . $eol );
 				continue;
@@ -2634,10 +2668,10 @@ class GmediaCore {
 						echo wp_kses_post( $prefix_ko . sprintf( esc_html__( 'Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media' ), $fileinfo['dirpath_thumb'] ) . $eol );
 						continue;
 					}
-					if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
-						@chmod( $fileinfo['dirpath_thumb'], 0755 );
-						if ( ! is_writable( $fileinfo['dirpath_thumb'] ) ) {
-							@unlink( $fileinfo['filepath'] );
+					if ( ! wp_is_writable( $fileinfo['dirpath_thumb'] ) ) {
+						$this->file_chmod( $fileinfo['dirpath_thumb'], 0755 );
+						if ( ! wp_is_writable( $fileinfo['dirpath_thumb'] ) ) {
+							wp_delete_file( $fileinfo['filepath'] );
 							// translators: dirname.
 							echo wp_kses_post( $prefix_ko . sprintf( esc_html__( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_thumb'] ) . $eol );
 							continue;
@@ -2648,10 +2682,10 @@ class GmediaCore {
 						echo wp_kses_post( $prefix_ko . sprintf( esc_html__( 'Unable to create directory `%s`. Is its parent directory writable by the server?', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol );
 						continue;
 					}
-					if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
-						@chmod( $fileinfo['dirpath_original'], 0755 );
-						if ( ! is_writable( $fileinfo['dirpath_original'] ) ) {
-							@unlink( $fileinfo['filepath'] );
+					if ( ! wp_is_writable( $fileinfo['dirpath_original'] ) ) {
+						$this->file_chmod( $fileinfo['dirpath_original'], 0755 );
+						if ( ! wp_is_writable( $fileinfo['dirpath_original'] ) ) {
+							wp_delete_file( $fileinfo['filepath'] );
 							// translators: dirname.
 							echo wp_kses_post( $prefix_ko . sprintf( esc_html__( 'Directory `%s` is not writable by the server.', 'grand-media' ), $fileinfo['dirpath_original'] ) . $eol );
 							continue;
@@ -2665,6 +2699,7 @@ class GmediaCore {
 					$webimg['resize'] = ( ( $webimg['width'] < $size[0] ) || ( $webimg['height'] < $size[1] ) );
 
 					if ( $webimg['resize'] ) {
+						// phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- Atomic local rename must preserve an existing destination on failure; WP_Filesystem::move deletes it first.
 						rename( $fileinfo['filepath'], $fileinfo['filepath_original'] );
 					} else {
 						copy( $fileinfo['filepath'], $fileinfo['filepath_original'] );
@@ -2695,8 +2730,8 @@ class GmediaCore {
 					if ( $webimg['resize'] || $thumbimg['resize'] || $angle ) {
 						$editor = wp_get_image_editor( $fileinfo['filepath_original'] );
 						if ( is_wp_error( $editor ) ) {
-							@unlink( $fileinfo['filepath'] );
-							@unlink( $fileinfo['filepath_original'] );
+							wp_delete_file( $fileinfo['filepath'] );
+							wp_delete_file( $fileinfo['filepath_original'] );
 							echo wp_kses_post( $prefix_ko . $fileinfo['basename'] . ' (wp_get_image_editor): ' . $editor->get_error_message() . $eol );
 							continue;
 						}
@@ -2711,8 +2746,8 @@ class GmediaCore {
 							if ( $webimg['resize'] ) {
 								$resized = $editor->resize( $webimg['width'], $webimg['height'], $webimg['crop'] );
 								if ( is_wp_error( $resized ) ) {
-									@unlink( $fileinfo['filepath'] );
-									@unlink( $fileinfo['filepath_original'] );
+									wp_delete_file( $fileinfo['filepath'] );
+									wp_delete_file( $fileinfo['filepath_original'] );
 									echo wp_kses_post( $prefix_ko . $fileinfo['basename'] . ' (' . $resized->get_error_code() . " | editor->resize->webimage({$webimg['width']}, {$webimg['height']}, {$webimg['crop']})): " . $resized->get_error_message() . $eol );
 									continue;
 								}
@@ -2720,8 +2755,8 @@ class GmediaCore {
 
 							$saved = $editor->save( $fileinfo['filepath'] );
 							if ( is_wp_error( $saved ) ) {
-								@unlink( $fileinfo['filepath'] );
-								@unlink( $fileinfo['filepath_original'] );
+								wp_delete_file( $fileinfo['filepath'] );
+								wp_delete_file( $fileinfo['filepath_original'] );
 								echo wp_kses_post( $prefix_ko . $fileinfo['basename'] . ' (' . $saved->get_error_code() . ' | editor->save->webimage): ' . $saved->get_error_message() . $eol );
 								continue;
 							}
@@ -2742,8 +2777,8 @@ class GmediaCore {
 								$resized = $editor->resize( 0, $thumbimg['height'], $thumbimg['crop'] );
 							}
 							if ( is_wp_error( $resized ) ) {
-								@unlink( $fileinfo['filepath'] );
-								@unlink( $fileinfo['filepath_original'] );
+								wp_delete_file( $fileinfo['filepath'] );
+								wp_delete_file( $fileinfo['filepath_original'] );
 								echo wp_kses_post( $prefix_ko . $fileinfo['basename'] . ' (' . $resized->get_error_code() . " | editor->resize->thumb({$thumbimg['width']}, {$thumbimg['height']}, {$thumbimg['crop']})): " . $resized->get_error_message() . $eol );
 								continue;
 							}
@@ -2751,8 +2786,8 @@ class GmediaCore {
 
 						$saved = $editor->save( $fileinfo['filepath_thumb'] );
 						if ( is_wp_error( $saved ) ) {
-							@unlink( $fileinfo['filepath'] );
-							@unlink( $fileinfo['filepath_original'] );
+							wp_delete_file( $fileinfo['filepath'] );
+							wp_delete_file( $fileinfo['filepath_original'] );
 							echo wp_kses_post( $prefix_ko . $fileinfo['basename'] . ' (' . $saved->get_error_code() . ' | editor->save->thumb): ' . $saved->get_error_message() . $eol );
 							continue;
 						}
@@ -2761,7 +2796,7 @@ class GmediaCore {
 					}
 					$is_webimage = true;
 				} else {
-					@unlink( $fileinfo['filepath'] );
+					wp_delete_file( $fileinfo['filepath'] );
 					echo wp_kses_post( $prefix_ko . $fileinfo['basename'] . ': ' . esc_html__( 'Could not read image size. Invalid image was deleted.', 'grand-media' ) . $eol );
 					continue;
 				}
@@ -2840,16 +2875,16 @@ class GmediaCore {
 			echo wp_kses_post( $prefix . $fileinfo['basename'] . ': <span class="ok">' . sprintf( esc_html__( 'success (ID #%d)', 'grand-media' ), $id ) . '</span>' . $eol );
 
 			if ( (int) $gmGallery->options['delete_originals'] ) {
-				@unlink( $fileinfo['filepath_original'] );
+				wp_delete_file( $fileinfo['filepath_original'] );
 			}
 			if ( $move ) {
-				@unlink( $file );
+				wp_delete_file( $file );
 			}
 		}
 
-		echo '<p><b>' . esc_html__( 'Category' ) . ':</b> ' . ( ! empty( $_terms['gmedia_category'] ) ? esc_html( implode( ', ', $_terms['gmedia_category'] ) ) : '-' ) . PHP_EOL;
-		echo '<br /><b>' . esc_html__( 'Album' ) . ':</b> ' . ( ! empty( $_terms['gmedia_album'] ) ? ( isset( $album_name ) ? esc_html( $album_name ) : esc_html( $_terms['gmedia_album'] ) ) : '-' ) . PHP_EOL;
-		echo '<br /><b>' . esc_html__( 'Tags' ) . ':</b> ' . ( ! empty( $all_tags ) ? esc_html( implode( ', ', array_unique( $all_tags ) ) ) : '-' ) . '</p>' . PHP_EOL;
+		echo '<p><b>' . esc_html__( 'Category' , 'grand-media') . ':</b> ' . ( ! empty( $_terms['gmedia_category'] ) ? esc_html( implode( ', ', $_terms['gmedia_category'] ) ) : '-' ) . PHP_EOL;
+		echo '<br /><b>' . esc_html__( 'Album' , 'grand-media') . ':</b> ' . ( ! empty( $_terms['gmedia_album'] ) ? ( isset( $album_name ) ? esc_html( $album_name ) : esc_html( $_terms['gmedia_album'] ) ) : '-' ) . PHP_EOL;
+		echo '<br /><b>' . esc_html__( 'Tags' , 'grand-media') . ':</b> ' . ( ! empty( $all_tags ) ? esc_html( implode( ', ', array_unique( $all_tags ) ) ) : '-' ) . '</p>' . PHP_EOL;
 
 		wp_ob_end_flush_all();
 		flush();
@@ -3148,7 +3183,9 @@ class GmediaCore {
 	public function app_service( $service ) {
 		global $gmGallery, $gmDB, $wp_version;
 
-		if ( empty( $_SERVER['HTTP_X_REAL_IP'] ) && ( '127.0.0.1' === $_SERVER['REMOTE_ADDR'] || '::1' === $_SERVER['REMOTE_ADDR'] ) ) {
+		$remote_addr = isset( $_SERVER['REMOTE_ADDR'] ) && is_string( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
+		$real_ip     = isset( $_SERVER['HTTP_X_REAL_IP'] ) && is_string( $_SERVER['HTTP_X_REAL_IP'] ) ? sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REAL_IP'] ) ) : '';
+		if ( '' === $real_ip && ( '127.0.0.1' === $remote_addr || '::1' === $remote_addr ) ) {
 			return false;
 		}
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -3389,7 +3426,7 @@ class GmediaCore {
 			<a href="#newCustomFieldModal" data-bs-toggle="modal" data-gmid="<?php echo absint( $gmedia_id ); ?>"
 			   class="badge badge-info btn btn-outline-secondary label label-primary newcustomfield-modal"><?php esc_html_e( 'Add New Custom Field', 'grand-media' ); ?></a>
 		</fieldset>
-		<p><?php esc_html_e( 'Custom fields can be used to add extra metadata to a gmedia item that developer can use in their templates.' ); ?></p>
+		<p><?php esc_html_e( 'Custom fields can be used to add extra metadata to a gmedia item that developer can use in their templates.' , 'grand-media'); ?></p>
 		<?php
 	} // add_meta.
 
@@ -3773,6 +3810,7 @@ class GmediaCore {
 	 * @return mixed
 	 */
 	public function _post( $var, $def = false ) {
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Shared input accessor; state-changing request handlers enforce their own authorization and nonce checks.
 		if ( ! isset( $_POST[ $var ] ) ) {
 			return $def;
 		}

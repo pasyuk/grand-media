@@ -41,7 +41,7 @@ $referer = remove_query_arg( array( 'edit_term', 'gallery_module' ), $refurl );
 			</div>
 		<?php } ?>
 		<?php if ( $term_id ) { ?>
-			<div class="term-shortcode float-start"><input type="text" title="<?php esc_attr_e( 'Shortcode' ); ?>" class="form-control h-100 float-start" value="<?php echo esc_attr( '[gmedia id=' . absint( $term_id ) . ']' ); ?>" readonly/>
+			<div class="term-shortcode float-start"><input type="text" title="<?php esc_attr_e( 'Shortcode' , 'grand-media'); ?>" class="form-control h-100 float-start" value="<?php echo esc_attr( '[gmedia id=' . absint( $term_id ) . ']' ); ?>" readonly/>
 				<div class="input-buffer"></div>
 			</div>
 			<?php

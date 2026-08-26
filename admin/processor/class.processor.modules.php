@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * GmediaProcessor_Modules
@@ -100,7 +103,7 @@ class GmediaProcessor_Modules extends GmediaProcessor {
 					include $module_path['path'] . '/settings.php';
 				} else {
 					// translators: module name.
-					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' , 'grand-media'), esc_html( $term['module'] ) );
 					break;
 				}
 				$term['description'] = $gmCore->array_replace_recursive( $default_options, $module_settings );
@@ -151,10 +154,10 @@ class GmediaProcessor_Modules extends GmediaProcessor {
 
 					return;
 				}
-				if ( ! is_writable( $to_folder ) ) {
-					@chmod( $to_folder, 0755 );
-					if ( ! is_writable( $to_folder ) ) {
-						//@unlink( $_FILES['modulezip']['tmp_name'] );
+				if ( ! wp_is_writable( $to_folder ) ) {
+					$gmCore->file_chmod( $to_folder, 0755 );
+					if ( ! wp_is_writable( $to_folder ) ) {
+						//wp_delete_file( $_FILES['modulezip']['tmp_name'] );
 						// translators: dirname.
 						$this->error[] = sprintf( esc_html__( 'Directory %s is not writable by the server.', 'grand-media' ), esc_html( $to_folder ) );
 
@@ -166,6 +169,7 @@ class GmediaProcessor_Modules extends GmediaProcessor {
 				$filename           = wp_unique_filename( $to_folder, $modulezip_name );
 
 				// Move the file to the modules dir.
+				// phpcs:ignore Generic.PHP.ForbiddenFunctions.Found -- This authenticated module installer uses its own directory; retain PHP's genuine HTTP-upload validation when moving the package.
 				if ( false === @move_uploaded_file( $modulezip_tmp_name, $to_folder . $filename ) ) {
 					// translators: path.
 					$this->error[] = sprintf( esc_html__( 'The uploaded file could not be moved to %s', 'grand-media' ), esc_html( $to_folder . $filename ) );
@@ -189,7 +193,7 @@ class GmediaProcessor_Modules extends GmediaProcessor {
 						$result = unzip_file( $to_folder . $filename, $to_folder );
 					}
 					// Once extracted, delete the package.
-					unlink( $to_folder . $filename );
+					wp_delete_file( $to_folder . $filename );
 					if ( is_wp_error( $result ) ) {
 						$this->error[] = $result->get_error_message();
 					} else {

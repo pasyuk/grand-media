@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * GmediaProcessor_Galleries
@@ -144,7 +147,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					include $module_path['path'] . '/settings.php';
 				} else {
 					// translators: module name.
-					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' , 'grand-media'), esc_html( $term['module'] ) );
 					break;
 				}
 				foreach ( $module_settings as &$setting ) {
@@ -227,7 +230,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					}
 				} else {
 					// translators: module name.
-					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $gallery_module ) );
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' , 'grand-media'), esc_html( $gallery_module ) );
 					break;
 				}
 
@@ -260,7 +263,7 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 					include $module_path['path'] . '/settings.php';
 				} else {
 					// translators: module name.
-					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' ), esc_html( $term['module'] ) );
+					$this->error[] = sprintf( esc_html__( 'Can\'t load data from `%s` module' , 'grand-media'), esc_html( $term['module'] ) );
 					break;
 				}
 				$module_settings = $gmCore->array_replace_recursive( $default_options, $module_settings );

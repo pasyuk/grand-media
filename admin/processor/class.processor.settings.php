@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * GmediaProcessor_Settings
@@ -120,14 +123,14 @@ class GmediaProcessor_Settings extends GmediaProcessor {
 				//    while (false !== ($file = readdir($handle))) {
 				//        // do something with the file
 				//        // note that '.' and '..' is returned even
-				//        @unlink($file);
+				//        wp_delete_file($file);
 				//    }
 				//    closedir($handle);
 				//}
 				$files = glob( $gmCore->upload['path'] . '/' . $gmGallery->options['folder']['image_original'] . '/*', GLOB_NOSORT );
 				if ( ! empty( $files ) ) {
 					foreach ( $files as $file ) {
-						@unlink( $file );
+						wp_delete_file( $file );
 					}
 				}
 			}

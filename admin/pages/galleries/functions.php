@@ -1,4 +1,7 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 function gmedia_gallery_actions( $item ) {
 	global $gmCore, $gmProcessor;
