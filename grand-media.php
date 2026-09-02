@@ -7,7 +7,7 @@
  * Author: Rattus
  * Author URI: https://codeasily.com/
  * Requires at least: 5.4.0
- * Tested up to: 7.0
+ * Tested up to: 7.1
  * Stable tag: 1.25.1
  * License: GPLv2 or later
  * Text Domain: grand-media
