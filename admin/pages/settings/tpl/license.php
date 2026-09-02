@@ -160,15 +160,6 @@ $has_premium  = gmedia_has_premium_license();
 			<p class="help-block"><?php esc_html_e( 'I\'d be very happy if you leave positive feedback about plugin on the WordPress.org Directory. Thank You!', 'grand-media' ); ?></p>
 		</div>
 		<div class="form-group">
-			<label><?php esc_html_e( 'Show Twitter News in the Sidebar', 'grand-media' ); ?>:</label>
-			<div class="checkbox" style="margin:0;">
-				<input type="hidden" name="set[twitter]" value="0"/>
-				<label><input type="checkbox" name="set[twitter]" value="1" <?php checked( $gmGallery->options['twitter'], '1' ); ?> /> <?php esc_html_e( 'Show Twitter News', 'grand-media' ); ?>
-				</label>
-			</div>
-			<p class="help-block"><?php esc_html_e( 'Follow Gmedia on twitter to not miss info about new modules and plugin updates.', 'grand-media' ); ?></p>
-		</div>
-		<div class="form-group">
 			<label><?php esc_html_e( 'Hide WoowGallery Ad Banner', 'grand-media' ); ?>:</label>
 			<div class="checkbox" style="margin:0;">
 				<input type="hidden" name="set[disable_ads]" value="0"/>

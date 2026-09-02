@@ -368,14 +368,6 @@ class GmediaAdmin {
 								<?php
 							}
 						}
-						if ( (int) $gmGallery->options['twitter'] ) {
-							?>
-							<div class="card p-0 d-none d-xl-block d-sm-none">
-								<a class="twitter-timeline" data-height="600" href="https://twitter.com/CodEasily?ref_src=twsrc%5Etfw">Tweets by CodEasily</a>
-								<script <?php echo 'async src="https://platform.twitter.com/widgets.js" charset="utf-8"'; ?>></script>
-							</div>
-							<?php
-						}
 						?>
 					</div>
 					<div class="col-10">
