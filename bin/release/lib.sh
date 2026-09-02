@@ -999,7 +999,7 @@ remote_tag_exists() {
 }
 
 schedule_svn_changes() {
-	local status line missing
+	local status line missing target
 	svn add --force trunk || { die 'Unable to schedule SVN additions'; return 1; }
 	status=$(svn status trunk) || { die 'Unable to inspect prepared SVN trunk'; return 1; }
 	while IFS= read -r line; do
@@ -1014,7 +1014,11 @@ schedule_svn_changes() {
 						;;
 					*) die 'SVN reported a missing path outside trunk'; return 1 ;;
 				esac
-				svn rm --force "$missing" || { die "Unable to schedule SVN removal: $missing"; return 1; }
+				case $missing in
+					*@*) target="$missing@" ;;
+					*) target=$missing ;;
+				esac
+				svn rm --force "$target" || { die "Unable to schedule SVN removal: $missing"; return 1; }
 				;;
 		esac
 	done <<EOF

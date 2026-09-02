@@ -1795,6 +1795,21 @@ test_svn_prepare_mirrors_verified_root_and_never_commits() {
   ' "$fixture/svn.log"
 }
 
+test_svn_prepare_escapes_peg_characters_in_missing_paths() {
+  local fixture checkout missing output
+  fixture=$(mktemp -d)
+  make_svn_fixture "$fixture" || return 1
+  checkout="$fixture/svn-checkout"
+  missing='trunk/assets/photoswipe/images/icons@2x.png'
+  mkdir -p "$checkout/trunk/assets/photoswipe/images"
+  printf 'obsolete peg-path file\n' > "$checkout/$missing"
+  output=$(FAKE_SVN_MODE=require-peg-escape FAKE_SVN_MISSING_PATH="$missing" run_svn_prepare "$fixture" 2>&1) || {
+    printf '%s\n' "$output" >&2
+    return 1
+  }
+  grep -Fx "rm --force $missing@" "$fixture/svn.log" >/dev/null
+}
+
 test_svn_prepare_binds_fresh_zip_to_verification_evidence() {
   local fixture manifest output rc svn_temp
   fixture=$(mktemp -d)
@@ -2815,6 +2830,7 @@ run_if_selected 'verify' 'verify requires configured and passing Plugin Check' t
 run_if_selected 'verify' 'verify requires configured and passing isolated activation' test_verify_requires_configured_and_passing_isolated_activation
 run_if_selected 'verify' 'verify refuses preexisting extraction target' test_verify_refuses_preexisting_extraction_target
 run_if_selected 'svn-prepare' 'SVN prepare mirrors verified root and never commits' test_svn_prepare_mirrors_verified_root_and_never_commits
+run_if_selected 'svn-prepare' 'SVN prepare escapes peg characters in missing paths' test_svn_prepare_escapes_peg_characters_in_missing_paths
 run_if_selected 'svn-prepare' 'SVN prepare binds fresh ZIP to verification evidence' test_svn_prepare_binds_fresh_zip_to_verification_evidence
 run_if_selected 'svn-prepare' 'SVN prepare rejects outside and nonempty fake mktemp' test_svn_prepare_rejects_outside_and_nonempty_fake_mktemp
 run_if_selected 'svn-prepare' 'SVN prepare rejects root and plugin root fake mktemp' test_svn_prepare_rejects_root_and_plugin_root_fake_mktemp
