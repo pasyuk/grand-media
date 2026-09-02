@@ -49,7 +49,9 @@ function checked( $checked, $current = true, $echo = true ) {
 	return $result;
 }
 function plugins_url( $path = '', $plugin = '' ) {
-	return 'https://example.test/wp-content/plugins/grand-media/admin/' . ltrim( $path, '/' );
+	$directory = ( 'admin' === basename( $plugin ) ) ? '' : 'admin/';
+
+	return 'https://example.test/wp-content/plugins/grand-media/' . $directory . ltrim( $path, '/' );
 }
 
 $gmCore = new class() {
@@ -83,9 +85,9 @@ class Gmedia_Admin_Sidebar_Branding_Test extends GmediaAdmin {
 
 $admin = new Gmedia_Admin_Sidebar_Branding_Test();
 $admin->add_menu();
-$expected_icon = 'https://example.test/wp-content/plugins/grand-media/admin/assets/img/icon-128x128.png';
+$expected_icon = 'https://example.test/wp-content/plugins/grand-media/assets/icons/icon_gmedia_120.png';
 if ( ! isset( $menu_args[5] ) || $expected_icon !== $menu_args[5] ) {
-	$failures[] = 'Admin menu must use the existing high-resolution Gmedia brand icon';
+	$failures[] = 'Admin menu must use the existing neutral high-resolution Gmedia brand icon';
 }
 
 ob_start();
@@ -125,4 +127,4 @@ if ( $failures ) {
 }
 
 $completed = true;
-echo 'Admin sidebar branding passed: high-resolution Gmedia icon without an external X timeline.' . PHP_EOL;
+echo 'Admin sidebar branding passed: neutral high-resolution Gmedia icon without an external X timeline.' . PHP_EOL;

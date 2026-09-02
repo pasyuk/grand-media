@@ -219,7 +219,7 @@ class GmediaAdmin {
 				&$this,
 				'shell',
 			],
-			plugins_url( 'assets/img/icon-128x128.png', __FILE__ ),
+			plugins_url( 'assets/icons/icon_gmedia_120.png', dirname( __FILE__ ) ),
 			11
 		);
 		$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Library', 'grand-media' ), __( 'Gmedia Library', 'grand-media' ), 'gmedia_library', 'GrandMedia', [ &$this, 'shell' ] );
