@@ -65,6 +65,14 @@ class GmediaAdmin {
 		global $gmCore;
 
 		add_filter( 'admin_body_class', [ &$this, 'admin_body_class' ] );
+		?>
+		<style id="gmedia_admin_menu_icon_css">
+			#adminmenu #toplevel_page_GrandMedia .wp-menu-image img {
+				width: 20px;
+				height: 20px;
+			}
+		</style>
+		<?php
 
 		$page = $gmCore->_get( 'page' );
 		if ( $page && ( false !== strpos( $page, 'GrandMedia' ) ) ) {

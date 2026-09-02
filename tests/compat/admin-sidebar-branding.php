@@ -74,6 +74,17 @@ if ( ! isset( $menu_args[5] ) || $expected_icon !== $menu_args[5] ) {
 }
 
 ob_start();
+$admin->admin_head();
+$head_html = ob_get_clean();
+if (
+	false === strpos( $head_html, '#adminmenu #toplevel_page_GrandMedia .wp-menu-image img' ) ||
+	false === strpos( $head_html, 'width: 20px' ) ||
+	false === strpos( $head_html, 'height: 20px' )
+) {
+	$failures[] = 'High-resolution admin menu icon must keep the standard 20x20 layout size';
+}
+
+ob_start();
 $admin->shell();
 $html = ob_get_clean();
 $profile_link = '<a class="twitter-timeline" data-height="600" href="https://twitter.com/CodEasily?ref_src=twsrc%5Etfw">Tweets by CodEasily</a>';
