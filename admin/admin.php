@@ -210,7 +210,7 @@ class GmediaAdmin {
 				&$this,
 				'shell',
 			],
-			'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMjAgMjAiIHhtbDpzcGFjZT0icHJlc2VydmUiPiAgPGltYWdlIGlkPSJpbWFnZTAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgeD0iMCIgeT0iMCIKICAgIHhsaW5rOmhyZWY9ImRhdGE6aW1hZ2UvcG5nO2Jhc2U2NCxpVkJPUncwS0dnb0FBQUFOU1VoRVVnQUFBQlFBQUFBVUNBTUFBQUM2ViswL0FBQUFCR2RCVFVFQUFMR1BDL3hoQlFBQUFDQmpTRkpOCkFBQjZKZ0FBZ0lRQUFQb0FBQUNBNkFBQWRUQUFBT3BnQUFBNm1BQUFGM0NjdWxFOEFBQUJrbEJNVkVVeFpua3haM2d4WjNoQ2RJTnUKbEtBK2NZQnBrSjJRcmJhb3Y4YTV5OUdadEx5UnJyZG1qcHMzYTN4WmhKS0txYktPckxXcndjaW52c1dWc2JxM3l0Q1hzcnRWZ1k5UwpmNDZndWNGN25hZzdibjVFZFlWeGxxS01xclN3eGN1aHVzS2Z1TUMrejlSMm1xWTZibjZ1dzhyNy9QekYxTm0weU03dDh2UHo5dmVGCnBhL2Y1K3BiaHBSSWVJZCtvS3FOcTdTZHQ3OWhpcGN5YUhuSDF0clMzdUZIZDRiSzJOMzUrL3YzK2ZxOXp0UmFoWk5QZll5Qm9xeUMKbzYwOGIzOUdkb1poaTVoT2ZJdnE3L0dwdjhiLy8vLzIrUG45L2YzQjBkWkFjb0tZczd3emFIbSt6OVZxa1oxWGc1SFQzK0xZNHVaNgpuYWh3bGFGRGRJVFAzT0JLZVloTWU0bnc5UFhoNmV2eDlmYkwyZDFUZ0k1em1LTXphWHJUM3VLWXM3dlAyOS9WNE9PY3RyN2c2T3VVCnNMbE5mSXU0eTlEbzd2QkZkb1YzbTZibTdlODViWDNJMXR1RHBLN1EzT0JZaEpHUHJMWEMwdGVsdmNSSmVZamI1ZWpOMnQ1eWw2S1cKc3JyYjVPZUFvYXhqakpuZTUrbDJtcVhFMDlpSHByQnRrNTl5bDZOOG5xazRiSDNXNGVUVTMrUFIzZUdxd01jY1RNSnpBQUFBQW5SUwpUbE51MlhMaTRXRUFBQUFCWWt0SFJFVDV0SmpCQUFBQUNYQklXWE1BQUFzVEFBQUxFd0VBbXB3WUFBQUFCM1JKVFVVSDRBc0NDRGNJCmw0WXhCZ0FBQVIxSlJFRlVHTk5qWUdCa1FnT01ESmhpSUZFNGs1bUZGY2FFQzdLeGMzQnljZlB3SWd2eWNmRUxDQW9KYzRxSThvdEIKQmNVRkpDU2xtS1JsWklYbDVCVVVsVUNDeWlxcWF1b2FtbHJhT3N4TXVucjZCb1pBUVNOakUxTW1Kak56QzBzQkt5WW1hMTBiUHFDZwpyWWFkdllLRG81T3ppNnVidTRlOHA1QVhVTkJiMGNmWHo5OHVJRkNDS1VneE9NUk9DR2hScUdaWU9MTmRSR1JVZ0FFVGsxU0VYMVEwCkUwTk1ySGRjZklKVVlwSzdiRExRMHBUVXRIUW1ob3pNTEgzVGhPd2MzY3pjUExEelRMU1lHUElMbUR3S2k0cExtRXFUSWQ3Z0tHUmkKWUF1elk3SXJpeXV2cUlTSVNWVlZBeTJxQ2ErdERtU3BxMk1KckZkcXlNbjN5MjRFQ25weEp6UWxOUHZGeHBxMDVBWUh4N2Z5SW9VUwpNc0FleU5paUF3Q3FwalN3RnBqcGxnQUFBQ1YwUlZoMFpHRjBaVHBqY21WaGRHVUFNakF4TmkweE1TMHdNbFF3T0RvMU5Ub3dPQzB3Ck56b3dNSWl4dXBvQUFBQWxkRVZZZEdSaGRHVTZiVzlrYVdaNUFESXdNVFl0TVRFdE1ESlVNRGc2TlRVNk1EZ3RNRGM2TURENTdBSW0KQUFBQUFFbEZUa1N1UW1DQyIgLz4KPC9zdmc+Cg==',
+			plugins_url( 'assets/img/icon-128x128.png', __FILE__ ),
 			11
 		);
 		$this->pages[] = add_submenu_page( 'GrandMedia', __( 'Gmedia Library', 'grand-media' ), __( 'Gmedia Library', 'grand-media' ), 'gmedia_library', 'GrandMedia', [ &$this, 'shell' ] );
@@ -362,7 +362,7 @@ class GmediaAdmin {
 						if ( (int) $gmGallery->options['twitter'] ) {
 							?>
 							<div class="card p-0 d-none d-xl-block d-sm-none">
-								<a class="twitter-timeline" data-height="600" href="https://twitter.com/CodEasily/timelines/648240437141086212?ref_src=twsrc%5Etfw">#GmediaGallery - Curated tweets by CodEasily</a>
+								<a class="twitter-timeline" data-height="600" href="https://twitter.com/CodEasily?ref_src=twsrc%5Etfw">Tweets by CodEasily</a>
 								<script <?php echo 'async src="https://platform.twitter.com/widgets.js" charset="utf-8"'; ?>></script>
 							</div>
 							<?php
