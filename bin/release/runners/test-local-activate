@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() {
+	printf 'ERROR: %s\n' "$*" >&2
+	exit 1
+}
+
+test "$#" -eq 1 || die 'Usage: test-local-activate EXTRACTED_PLUGIN_ROOT'
+for command in wp-test rsync diff; do
+	command -v "$command" >/dev/null 2>&1 || die "Required command not found: $command"
+done
+
+root=$1
+test -d "$root" && ! test -L "$root" || die 'Extracted plugin root is missing or unsafe'
+root=$(cd "$root" && pwd -P)
+test -f "$root/grand-media.php" || die 'Extracted plugin root is not Grand Media'
+
+home_url=$(wp-test option get home) || die 'Unable to resolve test.local home URL'
+site_url=$(wp-test option get siteurl) || die 'Unable to resolve test.local site URL'
+test "$home_url" = "$site_url" || die 'wp-test does not target test.local'
+case $home_url in
+	http://test.local|https://test.local) ;;
+	*) die 'wp-test does not target test.local' ;;
+esac
+plugins_dir=$(wp-test eval 'echo WP_PLUGIN_DIR;') || die 'Unable to resolve test.local plugin directory'
+case $plugins_dir in /*) ;; *) die 'test.local plugin directory is not absolute' ;; esac
+test -d "$plugins_dir" && ! test -L "$plugins_dir" || die 'test.local plugin directory is missing or unsafe'
+target="$plugins_dir/grand-media"
+staging="$plugins_dir/.grand-media-release.$$"
+test ! -e "$target" && ! test -L "$target" || die 'Grand Media is already installed on test.local'
+test ! -e "$staging" && ! test -L "$staging" || die 'Grand Media staging path already exists'
+
+mkdir "$staging"
+rsync -a --delete "$root/" "$staging/" || die "Unable to copy artifact; inspect $staging"
+diff -qr "$root" "$staging" >/dev/null || die "Staged Grand Media does not match artifact; inspect $staging"
+mv "$staging" "$target"
+wp-test plugin activate grand-media
+wp-test plugin is-active grand-media
+printf 'installed_plugin=%s\n' "$target"

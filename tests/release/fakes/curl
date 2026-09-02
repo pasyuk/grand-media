@@ -1,0 +1,154 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+config=''
+method=GET
+output=''
+url=''
+form=''
+header=''
+data=''
+location=false
+arguments=("$@")
+
+test "${1:-}" = --disable || { printf 'fake curl: --disable must be first\n' >&2; exit 2; }
+shift
+
+while test "$#" -gt 0; do
+  case $1 in
+    --config)
+      test "${2:-}" = - || { printf 'fake curl: expected stdin config\n' >&2; exit 2; }
+      config=$(cat)
+      shift 2
+      ;;
+    --request)
+      method=${2:?}
+      shift 2
+      ;;
+    --form)
+	  form=${2:?}
+      shift 2
+      ;;
+    --header)
+      header=${2:?}
+      shift 2
+      ;;
+    --data)
+      data=${2:?}
+      shift 2
+      ;;
+    --output|-o)
+      output=${2:?}
+      shift 2
+      ;;
+    --location)
+      location=true
+      shift
+      ;;
+    --*) printf 'fake curl: unknown option\n' >&2; exit 2 ;;
+    *)
+      url=$1
+      shift
+      ;;
+  esac
+done
+
+if test -n "${FAKE_CURL_SENTINEL:-}"; then
+  for argument in "${arguments[@]}"; do
+    case $argument in *"$FAKE_CURL_SENTINEL"*) printf 'fake curl: token found in argv\n' >&2; exit 2 ;; esac
+  done
+fi
+test -n "$config" || { printf 'fake curl: missing config\n' >&2; exit 2; }
+printf '%s\n' "$config" | grep -q '^header = "Authorization: Bearer ' || { printf 'fake curl: missing Authorization config\n' >&2; exit 2; }
+printf '%s\n' "$config" | grep -qx 'fail-with-body' || { printf 'fake curl: missing fail-with-body config\n' >&2; exit 2; }
+test -n "$url" || { printf 'fake curl: missing URL\n' >&2; exit 2; }
+path=${url#https://api.freemius.com}
+test "$path" != "$url" || { printf 'fake curl: unexpected URL\n' >&2; exit 2; }
+if test "$method" = PUT; then
+  printf '%s %s body=%s\nAuthorization: [REDACTED]\n' "$method" "$path" "$data" >> "${FAKE_CURL_LOG:?}"
+else
+  printf '%s %s\nAuthorization: [REDACTED]\n' "$method" "$path" >> "${FAKE_CURL_LOG:?}"
+fi
+
+if test "$method" = POST && test "$path" = '/v1/products/20980/tags.json'; then
+  upload_count=0
+  test -f "${FAKE_CURL_UPLOAD_COUNT:?}" && upload_count=$(cat "$FAKE_CURL_UPLOAD_COUNT")
+  upload_count=$((upload_count + 1))
+  printf '%s' "$upload_count" > "$FAKE_CURL_UPLOAD_COUNT"
+  : > "${FAKE_CURL_UPLOAD_MARKER:?}"
+fi
+
+case ${FAKE_CURL_MODE:-upload-ok} in
+  upload-ok)
+    test "$method" = POST || { printf 'fake curl: expected POST\n' >&2; exit 2; }
+	case $form in file=@?*) ;; *) printf 'fake curl: expected file multipart form\n' >&2; exit 2 ;; esac
+    printf '{"id":"%s","plugin_id":"%s","version":"1.25.1","release_mode":"%s"}\n' "${FAKE_CURL_DEPLOYMENT_ID:-9001}" "${FAKE_CURL_PRODUCT_ID:-20980}" "${FAKE_CURL_RELEASE_MODE:-pending}"
+    ;;
+  upload-numeric-product-id)
+    test "$method" = POST || { printf 'fake curl: expected POST\n' >&2; exit 2; }
+	case $form in file=@?*) ;; *) printf 'fake curl: expected file multipart form\n' >&2; exit 2 ;; esac
+    printf '%s\n' '{"id":"9001","plugin_id":20980,"version":"1.25.1","release_mode":"pending"}'
+    ;;
+  download-free)
+    test "$method" = GET || { printf 'fake curl: expected GET\n' >&2; exit 2; }
+    test "$location" = true || { printf 'fake curl: expected --location\n' >&2; exit 2; }
+    test -n "$output" || { printf 'fake curl: missing output\n' >&2; exit 2; }
+    cp "${FAKE_FREE_ZIP:?}" "$output"
+    ;;
+  http-error)
+    printf 'fake curl: HTTP 500\n' >&2
+    exit 22
+    ;;
+  bad-json)
+    printf '{not json}\n'
+    ;;
+  premium-response)
+    test -n "$output" || { printf 'fake curl: missing output\n' >&2; exit 2; }
+    printf 'premium response' > "$output"
+    ;;
+  release-flow|release-refetch-id|release-refetch-product|release-refetch-version|release-refetch-mode|release-refetch-duplicate|release-put-mismatch|release-put-failure)
+    if test "$method" = GET; then
+      test "$path" = '/v1/products/20980/tags.json?fields=id,plugin_id,version,release_mode&count=50' || { printf 'fake curl: unexpected release list URL\n' >&2; exit 2; }
+      response_id=9001
+      response_product=20980
+      response_version=1.25.1
+      response_mode=pending
+      case ${FAKE_CURL_MODE:-} in
+        release-refetch-id) response_id=9999 ;;
+        release-refetch-product) response_product=9999 ;;
+        release-refetch-version) response_version=9.9.9 ;;
+        release-refetch-mode) response_mode=released ;;
+      esac
+      if test "${FAKE_CURL_MODE:-}" = release-refetch-duplicate; then
+        printf '{"tags":[{"id":"9001","plugin_id":"20980","version":"1.25.1","release_mode":"pending"},{"id":"9001","plugin_id":"20980","version":"1.25.1","release_mode":"pending"}]}\n'
+      else
+        printf '{"tags":[{"id":"%s","plugin_id":"%s","version":"%s","release_mode":"%s"}]}\n' \
+          "$response_id" "$response_product" "$response_version" "$response_mode"
+      fi
+    elif test "$method" = PUT; then
+      test "$path" = '/v1/products/20980/tags/9001.json' || { printf 'fake curl: unexpected release update URL\n' >&2; exit 2; }
+      test "$header" = 'Content-Type: application/json' || { printf 'fake curl: unexpected release content type\n' >&2; exit 2; }
+      test "$data" = '{"release_mode":"released"}' || { printf 'fake curl: unexpected release body\n' >&2; exit 2; }
+      count=0
+      test -f "${FAKE_CURL_MUTATION_COUNT:?}" && count=$(cat "$FAKE_CURL_MUTATION_COUNT")
+      count=$((count + 1))
+      printf '%s' "$count" > "$FAKE_CURL_MUTATION_COUNT"
+      : > "${FAKE_CURL_MUTATION_MARKER:?}"
+      if test -n "${FAKE_CURL_PAUSE_AFTER_MUTATION:-}"; then
+        printf '%s\n' "$PPID" > "$FAKE_CURL_PAUSE_AFTER_MUTATION"
+        sleep 0.2
+      fi
+      test "${FAKE_CURL_MODE:-}" != release-put-failure || { printf 'fake curl: HTTP 500\n' >&2; exit 22; }
+      response_mode=released
+      test "${FAKE_CURL_MODE:-}" != release-put-mismatch || response_mode=pending
+      printf '{"id":"9001","plugin_id":"20980","version":"1.25.1","release_mode":"%s"}\n' "$response_mode"
+    else
+      printf 'fake curl: release flow expected GET or PUT\n' >&2
+      exit 2
+    fi
+    ;;
+  *)
+    printf 'fake curl: unsupported mode\n' >&2
+    exit 2
+    ;;
+esac

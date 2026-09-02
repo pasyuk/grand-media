@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+test "${1:-}" = dist-archive || {
+  printf 'fake wp-dev: unsupported command\n' >&2
+  exit 1
+}
+test "$#" = 4 && test "$4" = --create-target-dir || {
+  printf 'fake wp-dev: unsupported command\n' >&2
+  exit 1
+}
+
+repo=$2
+target=$3
+source_basename=$(basename "$repo")
+if test -n "${FAKE_WP_EXPECT_SOURCE_BASENAME:-}" && test "$source_basename" != "$FAKE_WP_EXPECT_SOURCE_BASENAME"; then
+  printf 'fake wp-dev: source basename must be %s, got %s\n' "$FAKE_WP_EXPECT_SOURCE_BASENAME" "$source_basename" >&2
+  exit 1
+fi
+test -z "${FAKE_WP_SOURCE_BASENAME_LOG:-}" || printf '%s\n' "$source_basename" > "$FAKE_WP_SOURCE_BASENAME_LOG"
+root=${FAKE_WP_DIST_ROOT:-$source_basename}
+stage=$(mktemp -d)
+trap 'rm -rf "$stage"' EXIT
+mkdir -p "$stage/$root"
+cp -R "$repo/." "$stage/$root"
+
+if test "${FAKE_WP_SKIP_DISTIGNORE:-0}" != 1; then
+  while IFS= read -r ignored; do
+    case $ignored in
+      ''|'#'*) continue ;;
+      /*|../*|*'/../'*) printf 'fake wp-dev: invalid .distignore path\n' >&2; exit 1 ;;
+    esac
+    rm -rf "$stage/$root/$ignored"
+  done < "$repo/.distignore"
+fi
+
+mkdir -p "$(dirname "$target")"
+(
+  cd "$stage"
+  /usr/bin/zip -qr "$target" "$root"
+)
+printf 'Success: Created %s\n' "$(basename "$target")"
