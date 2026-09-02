@@ -79,9 +79,10 @@ $head_html = ob_get_clean();
 if (
 	false === strpos( $head_html, '#adminmenu #toplevel_page_GrandMedia .wp-menu-image img' ) ||
 	false === strpos( $head_html, 'width: 20px' ) ||
-	false === strpos( $head_html, 'height: 20px' )
+	false === strpos( $head_html, 'height: 20px' ) ||
+	false === strpos( $head_html, 'box-sizing: content-box' )
 ) {
-	$failures[] = 'High-resolution admin menu icon must keep the standard 20x20 layout size';
+	$failures[] = 'High-resolution admin menu icon must keep a square 20x20 content box';
 }
 
 ob_start();

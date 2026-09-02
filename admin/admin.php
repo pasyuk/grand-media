@@ -70,6 +70,7 @@ class GmediaAdmin {
 			#adminmenu #toplevel_page_GrandMedia .wp-menu-image img {
 				width: 20px;
 				height: 20px;
+				box-sizing: content-box;
 			}
 		</style>
 		<?php
