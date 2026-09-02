@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+die() {
+	printf 'ERROR: %s\n' "$*" >&2
+	exit 1
+}
+
+test "$#" -eq 1 || die 'Usage: test-local-plugin-check EXTRACTED_PLUGIN_ROOT'
+for command in wp-test jq diff mktemp; do
+	command -v "$command" >/dev/null 2>&1 || die "Required command not found: $command"
+done
+
+root=$1
+test -d "$root" && ! test -L "$root" || die 'Extracted plugin root is missing or unsafe'
+root=$(cd "$root" && pwd -P)
+test -f "$root/grand-media.php" || die 'Extracted plugin root is not Grand Media'
+home_url=$(wp-test option get home) || die 'Unable to resolve test.local home URL'
+site_url=$(wp-test option get siteurl) || die 'Unable to resolve test.local site URL'
+test "$home_url" = "$site_url" || die 'wp-test does not target test.local'
+case $home_url in
+	http://test.local|https://test.local) ;;
+	*) die 'wp-test does not target test.local' ;;
+esac
+plugins_dir=$(wp-test eval 'echo WP_PLUGIN_DIR;') || die 'Unable to resolve test.local plugin directory'
+case $plugins_dir in /*) ;; *) die 'test.local plugin directory is not absolute' ;; esac
+target="$plugins_dir/grand-media"
+cli="$plugins_dir/plugin-check/cli.php"
+test -d "$target" && ! test -L "$target" || die 'Grand Media is not installed safely on test.local'
+test -f "$cli" || die 'Plugin Check CLI bootstrap is missing on test.local'
+wp-test plugin is-active plugin-check || die 'Plugin Check is not active on test.local'
+plugin_check_version=$(wp-test plugin get plugin-check --field=version) || die 'Unable to resolve Plugin Check version on test.local'
+test "$plugin_check_version" = '2.1.0' || die 'Plugin Check 2.1.0 is required on test.local'
+diff -qr "$root" "$target" >/dev/null || die 'Installed Grand Media does not match the verified Freemius artifact'
+
+output=$(mktemp "${TMPDIR:-/tmp}/grand-media-plugin-check.XXXXXX") || exit 1
+trap 'rm -f "$output"' EXIT HUP INT TERM
+if wp-test plugin check "$target" \
+	--require="$cli" \
+	--mode=update \
+	--format=strict-json > "$output"; then
+	rc=0
+else
+	rc=$?
+fi
+cat "$output"
+test "$rc" -eq 0 || exit "$rc"
+
+if jq -e 'type == "array"' "$output" >/dev/null 2>&1; then
+	errors=$(jq '[.[] | select(.type == "ERROR")] | length' "$output")
+	warnings=$(jq '[.[] | select(.type == "WARNING")] | length' "$output")
+	printf 'Plugin Check: %s errors, %s warnings\n' "$errors" "$warnings"
+	test "$errors" -eq 0 || exit 1
+elif grep -Fq 'Checks complete. No errors found.' "$output"; then
+	printf 'Plugin Check: 0 errors, 0 warnings\n'
+else
+	die 'Plugin Check returned an unexpected successful response'
+fi

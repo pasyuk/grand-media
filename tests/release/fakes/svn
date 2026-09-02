@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+set -u
+
+log=${FAKE_SVN_LOG:?FAKE_SVN_LOG is required}
+checkout=${FAKE_SVN_CHECKOUT:?FAKE_SVN_CHECKOUT is required}
+state=${FAKE_SVN_STATE:?FAKE_SVN_STATE is required}
+
+normalize() {
+  local value=$1
+  case $value in
+    "$checkout") printf '.\n' ;;
+    "$checkout"/*) printf '%s\n' "${value#"$checkout"/}" ;;
+    *) printf '%s\n' "$value" ;;
+  esac
+}
+
+log_call() {
+  local item normalized='' separator=''
+  for item in "$@"; do
+    item=$(normalize "$item") || exit 90
+    normalized="$normalized$separator$item"
+    separator=' '
+  done
+  printf '%s\n' "$normalized" >> "$log"
+}
+
+test "$#" -gt 0 || { printf 'fake svn: missing command\n' >&2; exit 64; }
+command=$1
+shift
+log_call "$command" "$@" || exit 90
+
+case $command in
+  info)
+    test "$#" -eq 3 || { printf 'fake svn: unsupported info arguments\n' >&2; exit 64; }
+    test "$1" = --show-item || { printf 'fake svn: unsupported info arguments\n' >&2; exit 64; }
+    case $2 in
+      repos-root-url)
+        test "$(normalize "$3")" = . || { printf 'fake svn: info target must be checkout root\n' >&2; exit 64; }
+        printf '%s\n' "${FAKE_SVN_REPOSITORY_ROOT:-https://plugins.svn.wordpress.org}"
+        ;;
+      revision)
+        test "$(normalize "$3")" = . || { printf 'fake svn: info target must be checkout root\n' >&2; exit 64; }
+        if test -f "$state/committed"; then
+          printf '%s\n' "${FAKE_SVN_COMMIT_REVISION:-5001}"
+        elif test -f "$state/updated"; then
+          printf '%s\n' "${FAKE_SVN_REVISION_AFTER_UPDATE:-4322}"
+        else
+          printf '%s\n' "${FAKE_SVN_REVISION:-4321}"
+        fi
+        ;;
+      url)
+        test "$(normalize "$3")" = . || { printf 'fake svn: info target must be checkout root\n' >&2; exit 64; }
+        printf '%s\n' "${FAKE_SVN_URL:-https://plugins.svn.wordpress.org/grand-media}"
+        ;;
+      *) printf 'fake svn: unsupported info item\n' >&2; exit 64 ;;
+    esac
+    ;;
+  status)
+    test "$#" -eq 1 || { printf 'fake svn: unsupported status arguments\n' >&2; exit 64; }
+    target=$(normalize "$1") || exit 90
+    if test "$target" = .; then
+      if test "${FAKE_SVN_MODE:-}" = dirty-before && ! test -f "$state/updated"; then
+        printf 'M       trunk/dirty.php\n'
+      elif test "${FAKE_SVN_MODE:-}" = dirty-after && test -f "$state/updated" && ! test -f "$state/copied"; then
+        printf 'M       trunk/dirty-after-update.php\n'
+      elif test -f "$state/copied"; then
+        printf 'A       tags/%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+        test "${FAKE_SVN_MODE:-}" != publish-status-drift || printf 'M       trunk/unreviewed.php\n'
+      fi
+    elif test "$target" = trunk; then
+      if test -n "${FAKE_SVN_MISSING_PATH:-}"; then
+        printf '!       %s\n' "$FAKE_SVN_MISSING_PATH"
+      fi
+    else
+      printf 'fake svn: status target must be checkout root or trunk\n' >&2
+      exit 64
+    fi
+    ;;
+  update)
+    test "$#" -eq 1 && test "$(normalize "$1")" = . || { printf 'fake svn: unsupported update arguments\n' >&2; exit 64; }
+    test "${FAKE_SVN_MODE:-}" != update-failure || exit 73
+    mkdir -p "$state"
+    : > "$state/updated"
+    if test "${FAKE_SVN_MODE:-}" = swap-trunk-symlink; then
+      test -n "${FAKE_SVN_SWAP_TARGET:-}" && test -d "$FAKE_SVN_SWAP_TARGET" || {
+        printf 'fake svn: FAKE_SVN_SWAP_TARGET must be a directory\n' >&2
+        exit 64
+      }
+      rm -rf "$checkout/trunk"
+      ln -s "$FAKE_SVN_SWAP_TARGET" "$checkout/trunk"
+    fi
+    ;;
+  list)
+    test "$#" -eq 1 || { printf 'fake svn: unsupported list arguments\n' >&2; exit 64; }
+    test "$1" = 'https://plugins.svn.wordpress.org/grand-media/tags' || { printf 'fake svn: unexpected list URL\n' >&2; exit 64; }
+    mkdir -p "$state"
+    list_count=0
+    test -f "$state/list-count" && list_count=$(cat "$state/list-count")
+    list_count=$((list_count + 1))
+    printf '%s' "$list_count" > "$state/list-count"
+    if test "${FAKE_SVN_MODE:-}" = existing-tag \
+      || { test "${FAKE_SVN_MODE:-}" = tag-after-update && test -f "$state/updated"; } \
+      || { test "${FAKE_SVN_MODE:-}" = tag-before-copy && test "$list_count" -ge 2; }; then
+      printf '%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+    elif test "${FAKE_SVN_MODE:-}" = publish-tag-race && test -f "$state/copied"; then
+      printf '%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+    else
+      printf '1.0.0/\n'
+    fi
+    ;;
+  add)
+    test "$#" -eq 2 && test "$1" = --force && test "$(normalize "$2")" = trunk || { printf 'fake svn: unsupported add arguments\n' >&2; exit 64; }
+    ;;
+  rm)
+    test "$#" -eq 2 && test "$1" = --force || { printf 'fake svn: unsupported rm arguments\n' >&2; exit 64; }
+    case $(normalize "$2") in trunk/*) ;; *) printf 'fake svn: rm target must be under trunk\n' >&2; exit 64 ;; esac
+    ;;
+  copy)
+    test "$#" -eq 2 && test "$(normalize "$1")" = trunk || { printf 'fake svn: unsupported copy arguments\n' >&2; exit 64; }
+    target=$(normalize "$2") || exit 90
+    case $target in tags/*) ;; *) printf 'fake svn: copy target must be under tags\n' >&2; exit 64 ;; esac
+    test ! -e "$2" || { printf 'fake svn: copy target exists\n' >&2; exit 65; }
+    cp -R "$1" "$2" || exit 1
+    mkdir -p "$state"
+    : > "$state/copied"
+    if test "${FAKE_SVN_COPY_CORRUPT:-0}" = 1; then
+      printf 'corrupt\n' >> "$2/grand-media.php"
+    fi
+    ;;
+  diff)
+    test "$#" -eq 2 && test "$1" = --summarize && test "$(normalize "$2")" = . || { printf 'fake svn: unsupported diff arguments\n' >&2; exit 64; }
+    if test "${FAKE_SVN_MODE:-}" = tamper-temp-marker-late; then
+      temporary_root=''
+      for candidate in "${TMPDIR:?}"/grand-media-svn-prepare.*; do
+        test -d "$candidate" && ! test -L "$candidate" || continue
+        test -z "$temporary_root" || { printf 'fake svn: multiple preparation temp roots\n' >&2; exit 66; }
+        temporary_root=$candidate
+      done
+      test -n "$temporary_root" || { printf 'fake svn: preparation temp root not found\n' >&2; exit 66; }
+      test -f "$temporary_root/.grand-media-svn-prepare" && ! test -L "$temporary_root/.grand-media-svn-prepare" || { printf 'fake svn: preparation marker not found\n' >&2; exit 66; }
+      printf '\n' >> "$temporary_root/.grand-media-svn-prepare"
+    fi
+    printf 'M       trunk/grand-media.php\n'
+    printf 'A       tags/%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+    test "${FAKE_SVN_MODE:-}" != publish-diff-drift || printf 'M       trunk/unreviewed.php\n'
+    ;;
+  commit)
+    test "$#" -eq 3 && test "$1" = . && test "$2" = -m || { printf 'fake svn: unsupported commit arguments\n' >&2; exit 64; }
+    test "$3" = "Release ${FAKE_SVN_VERSION:-1.25.1}" || { printf 'fake svn: unexpected commit message\n' >&2; exit 64; }
+    test -n "${FAKE_SVN_COMMIT_MARKER:-}" || { printf 'fake svn: FAKE_SVN_COMMIT_MARKER is required\n' >&2; exit 64; }
+    test "${LC_ALL:-}" = C || { printf 'fake svn: commit requires LC_ALL=C\n' >&2; exit 64; }
+    count=0
+    test -f "${FAKE_SVN_COMMIT_COUNT:?}" && count=$(cat "$FAKE_SVN_COMMIT_COUNT")
+    count=$((count + 1))
+    printf '%s' "$count" > "$FAKE_SVN_COMMIT_COUNT"
+    : > "$FAKE_SVN_COMMIT_MARKER"
+    mkdir -p "$state"
+    printf 'C\n' > "$state/commit-locale"
+    : > "$state/committed"
+    if test -n "${FAKE_SVN_PAUSE_AFTER_MUTATION:-}"; then
+      printf '%s\n' "$PPID" > "$FAKE_SVN_PAUSE_AFTER_MUTATION"
+      sleep 0.2
+    fi
+    printf 'Committed revision %s.\n' "${FAKE_SVN_COMMIT_REVISION:-5001}"
+    ;;
+  *) printf 'fake svn: unsupported command: %s\n' "$command" >&2; exit 64 ;;
+esac

@@ -16,6 +16,15 @@ Gmedia Gallery releases should be small, issue-linked, and verified before publi
 
 Do not publish a raw GitHub archive to WordPress.org SVN unless the release process is explicitly changed.
 
+## Automation
+
+Use the staged [release automation operator guide](../release-automation.md)
+for the copyable preflight, build, Freemius, verification, and local SVN
+preparation sequence. The processed Freemius artifact is authoritative for
+WordPress.org SVN; source checks alone are not a release gate. SVN publication
+and Freemius release remain independent protected actions, each requiring its
+own owner approval immediately before execution.
+
 ## Compatibility Baseline
 
 - Target real support baseline: WordPress 6.0+ and PHP 7.4+.
