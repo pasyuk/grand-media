@@ -19,7 +19,7 @@ if test -n "${FAKE_WP_EXPECT_SOURCE_BASENAME:-}" && test "$source_basename" != "
 fi
 test -z "${FAKE_WP_SOURCE_BASENAME_LOG:-}" || printf '%s\n' "$source_basename" > "$FAKE_WP_SOURCE_BASENAME_LOG"
 root=${FAKE_WP_DIST_ROOT:-$source_basename}
-stage=$(mktemp -d)
+stage=$(mktemp -d "${TMPDIR:-/tmp}/release-dist-stage.XXXXXXXXXX")
 trap 'rm -rf "$stage"' EXIT
 mkdir -p "$stage/$root"
 cp -R "$repo/." "$stage/$root"

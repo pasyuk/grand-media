@@ -9,6 +9,31 @@ PASS=0
 FAIL=0
 TEST_FILTER=${1:-}
 
+# Own one directory per suite. On macOS, bare mktemp -d ignores TMPDIR.
+RELEASE_TEST_TMP_PARENT=$(cd "${TMPDIR:-/tmp}" && pwd -P) || exit 1
+RELEASE_TEST_TMP_ROOT=$(mktemp -d "$RELEASE_TEST_TMP_PARENT/grand-media-release-tests.XXXXXXXXXX") || exit 1
+case $RELEASE_TEST_TMP_ROOT in
+  "$RELEASE_TEST_TMP_PARENT"/grand-media-release-tests.??????????) ;;
+  *) printf 'Unsafe release test temporary directory\n' >&2; exit 1 ;;
+esac
+readonly RELEASE_TEST_TMP_PARENT RELEASE_TEST_TMP_ROOT
+
+cleanup_release_test_fixtures() {
+  local status=$?
+  trap - EXIT
+  if test -L "$RELEASE_TEST_TMP_ROOT" || ! /bin/rm -rf -- "$RELEASE_TEST_TMP_ROOT"; then
+    printf 'Unable to clean release test fixtures: %s\n' "$RELEASE_TEST_TMP_ROOT" >&2
+    test "$status" -ne 0 || status=1
+  fi
+  exit "$status"
+}
+
+trap cleanup_release_test_fixtures EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+export TMPDIR="$RELEASE_TEST_TMP_ROOT"
+
 run_test() {
   if test -n "${TEST_PATTERN:-}" && ! printf '%s\n' "$1" | grep -Eiq "$TEST_PATTERN"; then
     return 0
@@ -41,7 +66,11 @@ make_clean_fixture() {
   local fixture=$1
   local repo="$fixture/repo"
   mkdir -p "$repo"
-  ( cd "$ROOT" && tar --exclude=.git -cf - . ) | ( cd "$repo" && tar -xf - ) || return 1
+  (
+    set -o pipefail
+    cd "$ROOT" || exit 1
+    git ls-files -z | tar --null -T - -cf - | tar -xf - -C "$repo"
+  ) || return 1
   rm -rf "$repo/tests/compat" || return 1
   mkdir -p "$repo/tests/compat" || return 1
   printf '%s\n' '<?php' 'exit( 0 );' > "$repo/tests/compat/portable.php" || return 1
@@ -67,7 +96,7 @@ test_metadata_reports_1_25_1() {
 
 test_preflight_rejects_version_mismatch() {
   local fixture output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   cp "$ROOT/grand-media.php" "$ROOT/readme.txt" "$fixture/"
   sed 's/Stable tag: 1.25.1/Stable tag: 9.9.9/' "$fixture/readme.txt" > "$fixture/readme.next"
   mv "$fixture/readme.next" "$fixture/readme.txt"
@@ -77,10 +106,10 @@ test_preflight_rejects_version_mismatch() {
 
 test_bypass_does_not_skip_git_worktree_checks() {
   local fixture fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   cp "$ROOT/grand-media.php" "$ROOT/readme.txt" "$fixture/"
   printf 'gitdir: %s/.git\n' "$ROOT" > "$fixture/.git"
-  fake_bin=$(mktemp -d)
+  fake_bin=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   printf '#!/usr/bin/env bash\ncase "$*" in *" branch --show-current"*) printf "feature/test-bypass\\n"; exit 0;; esac\nexec /usr/bin/git "$@"\n' > "$fake_bin/git"
   chmod +x "$fake_bin/git"
   output=$(PATH="$fake_bin:$PATH" GRAND_MEDIA_TEST_SKIP_GIT=1 \
@@ -92,10 +121,10 @@ test_bypass_does_not_skip_git_worktree_checks() {
 
 test_preflight_rejects_git_status_error() {
   local fixture fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   cp "$ROOT/grand-media.php" "$ROOT/readme.txt" "$fixture/"
   printf 'gitdir: %s/.git\n' "$ROOT" > "$fixture/.git"
-  fake_bin=$(mktemp -d)
+  fake_bin=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   printf '#!/usr/bin/env bash\ncase "$*" in *" branch --show-current"*) printf "master\\n"; exit 0;; *" status --porcelain"*) exit 1;; esac\nexec /usr/bin/git "$@"\n' > "$fake_bin/git"
   chmod +x "$fake_bin/git"
   output=$(PATH="$fake_bin:$PATH" "$CLI" preflight --repo "$fixture" --version 1.25.1 2>&1)
@@ -106,7 +135,7 @@ test_preflight_rejects_git_status_error() {
 
 test_preflight_rejects_configured_upstream_mismatch() {
   local fixture repo upstream_sha output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   upstream_sha=$(git -C "$repo" commit-tree "$(git -C "$repo" write-tree)" -p "$(git -C "$repo" rev-parse HEAD)" -m 'Upstream mismatch') || return 1
@@ -119,7 +148,7 @@ test_preflight_rejects_configured_upstream_mismatch() {
 
 test_build_creates_verified_source_archive_and_manifest() {
   local fixture repo work output archive manifest
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -154,7 +183,7 @@ test_build_creates_verified_source_archive_and_manifest() {
 
 test_build_archives_tracked_modules_without_ignored_local_modules() {
   local fixture repo work archive
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -180,7 +209,7 @@ test_build_archives_tracked_modules_without_ignored_local_modules() {
 
 test_build_passes_grand_media_source_directory_to_dist_archive() {
   local fixture repo work archive source_log
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -210,7 +239,7 @@ run_create_tracked_export_with_fake_mktemp() (
 test_tracked_export_rejects_hostile_mktemp_and_preexisting_markers() {
   local fixture work fake_bin container marker target output rc mode
   for mode in marker-file marker-symlink outside-container; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     work="$fixture/work"
     fake_bin="$fixture/fake-bin"
     mkdir -p "$work" "$fake_bin" || return 1
@@ -246,7 +275,7 @@ test_tracked_export_rejects_hostile_mktemp_and_preexisting_markers() {
 
 test_build_rejects_missing_distignore() {
   local fixture repo work manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -264,7 +293,7 @@ test_build_rejects_missing_distignore() {
 
 test_build_rejects_invalid_source_archive_root() {
   local fixture repo work manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -279,7 +308,7 @@ test_build_rejects_invalid_source_archive_root() {
 
 test_build_rejects_excluded_development_files() {
   local fixture repo work manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -294,7 +323,7 @@ test_build_rejects_excluded_development_files() {
 
 test_build_propagates_source_gate_failure() {
   local fixture repo work manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -312,7 +341,7 @@ test_build_propagates_source_gate_failure() {
 
 test_build_rejects_non_empty_work_dir_without_matching_resume_manifest() {
   local fixture repo work output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -326,7 +355,7 @@ test_build_rejects_non_empty_work_dir_without_matching_resume_manifest() {
 
 test_build_rejects_resume_manifest_with_wrong_source_identity() {
   local fixture repo work manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -341,7 +370,7 @@ test_build_rejects_resume_manifest_with_wrong_source_identity() {
 
 test_build_rejects_resume_manifest_outside_work_dir() {
   local fixture repo work external output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -359,7 +388,7 @@ test_build_rejects_resume_manifest_outside_work_dir() {
 
 test_build_rejects_external_resume_with_empty_explicit_work_dir() {
   local fixture repo work external output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -378,7 +407,7 @@ test_build_rejects_external_resume_with_empty_explicit_work_dir() {
 
 test_build_rejects_resume_without_work_dir() {
   local fixture repo external before output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   external="$fixture/external-release-manifest.json"
@@ -396,7 +425,7 @@ test_build_rejects_resume_without_work_dir() {
 
 test_build_accepts_matching_resume_in_nonempty_work_dir() {
   local fixture repo work manifest git_sha
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -412,7 +441,7 @@ test_build_accepts_matching_resume_in_nonempty_work_dir() {
 
 test_build_rejects_work_dir_inside_source_repo() {
   local fixture repo work output rc fake_bin
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
 
@@ -453,7 +482,7 @@ test_build_rejects_work_dir_inside_source_repo() {
 
 test_build_rejects_resume_after_build_completed() {
   local fixture repo work manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
@@ -519,7 +548,7 @@ run_freemius() {
 
 test_freemius_uploads_pending_and_downloads_explicit_free_zip() {
   local fixture manifest download token
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   download="$fixture/free-download.zip"
@@ -547,7 +576,7 @@ test_freemius_uploads_pending_and_downloads_explicit_free_zip() {
 
 test_freemius_rejects_absent_token() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$( (
@@ -564,7 +593,7 @@ test_freemius_rejects_absent_token() {
 
 test_freemius_rejects_http_failure() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$(FAKE_CURL_MODE=http-error run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" 2>&1)
@@ -575,7 +604,7 @@ test_freemius_rejects_http_failure() {
 
 test_freemius_rejects_malformed_upload_json() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$(FAKE_CURL_MODE=bad-json run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" 2>&1)
@@ -586,7 +615,7 @@ test_freemius_rejects_malformed_upload_json() {
 
 test_freemius_rejects_upload_product_mismatch() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$(FAKE_CURL_PRODUCT_ID=9999 run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" 2>&1)
@@ -597,7 +626,7 @@ test_freemius_rejects_upload_product_mismatch() {
 
 test_freemius_rejects_numeric_upload_product_id_as_ambiguous() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$(FAKE_CURL_MODE=upload-numeric-product-id run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" 2>&1)
@@ -613,7 +642,7 @@ test_freemius_rejects_numeric_upload_product_id_as_ambiguous() {
 
 test_freemius_rejects_upload_version_mismatch() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   jq '.version = "9.9.9"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" || return 1
@@ -625,7 +654,7 @@ test_freemius_rejects_upload_version_mismatch() {
 
 test_freemius_rejects_non_pending_release_mode() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$(FAKE_CURL_RELEASE_MODE=released run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" 2>&1)
@@ -636,7 +665,7 @@ test_freemius_rejects_non_pending_release_mode() {
 
 test_freemius_rejects_download_without_zip_magic() {
   local fixture manifest download output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   download="$fixture/free-download.zip"
@@ -650,7 +679,7 @@ test_freemius_rejects_download_without_zip_magic() {
 
 test_freemius_rejects_malicious_upload_deployment_id() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   output=$(FAKE_CURL_DEPLOYMENT_ID='9001?is_premium=true' run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" 2>&1)
@@ -662,7 +691,7 @@ test_freemius_rejects_malicious_upload_deployment_id() {
 
 test_freemius_rejects_malicious_download_deployment_id() {
   local fixture manifest download output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   download="$fixture/free-download.zip"
@@ -677,7 +706,7 @@ test_freemius_rejects_malicious_download_deployment_id() {
 test_freemius_cleans_partial_on_size_hash_and_move_failure() {
   local fixture manifest download fake_bin output rc command
   for command in wc shasum mv; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_freemius_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     download="$fixture/free-download.zip"
@@ -697,7 +726,7 @@ test_freemius_cleans_partial_on_size_hash_and_move_failure() {
 
 test_freemius_cleans_manifest_temp_on_manifest_move_failure() {
   local fixture manifest fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   fake_bin="$fixture/fail-bin"
@@ -712,7 +741,7 @@ test_freemius_cleans_manifest_temp_on_manifest_move_failure() {
 
 test_freemius_cleans_download_final_when_manifest_move_fails() {
   local fixture manifest download fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   download="$fixture/free-download.zip"
@@ -738,7 +767,7 @@ exec /bin/mv "$@"
 
 test_freemius_refuses_preexisting_final_download_path() {
   local fixture manifest download output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   download="$fixture/free-download.zip"
@@ -754,7 +783,7 @@ test_freemius_refuses_preexisting_final_download_path() {
 
 test_freemius_keeps_response_cleanup_trap_until_removal_succeeds() {
   local fixture manifest fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   fake_bin="$fixture/fail-bin"
@@ -777,7 +806,7 @@ exec /bin/rm "$@"
 
 test_freemius_escapes_token_and_disables_hostile_curlrc() {
   local fixture manifest home trace token
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   home="$fixture/curl-home"
@@ -792,7 +821,7 @@ test_freemius_escapes_token_and_disables_hostile_curlrc() {
 
 test_freemius_rejects_token_with_cr_or_lf() {
   local fixture manifest output rc token
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   token=$'bad-token\r\nheader = "injected"'
@@ -805,7 +834,7 @@ test_freemius_rejects_token_with_cr_or_lf() {
 
 test_freemius_upload_attempt_is_one_shot() {
   local fixture manifest output rc before
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" || return 1
@@ -833,7 +862,7 @@ test_freemius_upload_attempt_is_one_shot() {
 test_freemius_upload_ambiguity_preserves_attempt_and_blocks_retry() {
   local fixture manifest mode output retry_output rc fake_bin
   for mode in http-error bad-json product-mismatch response-cleanup final-manifest; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_freemius_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     jq '.free_zip = {stale: true} | .verification = {stale: true} | .svn = {stale: true} |
@@ -895,7 +924,7 @@ exec /bin/mv "$@"
 
 test_freemius_download_is_one_shot_and_bound_to_upload() {
   local fixture manifest download output rc before
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   download="$fixture/free-download.zip"
@@ -913,7 +942,7 @@ test_freemius_download_is_one_shot_and_bound_to_upload() {
   test "$(grep -Fc 'GET /v1/products/20980/tags/9001.zip?is_premium=false' "$fixture/curl.log")" = 1 || return 1
   test "$before" = "$(shasum -a 256 "$download" | awk '{print $1}')" || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   run_freemius "$fixture" upload_pending "$fixture/source.zip" "$manifest" || return 1
@@ -926,7 +955,7 @@ test_freemius_download_is_one_shot_and_bound_to_upload() {
 
 test_freemius_cli_uploads_and_downloads() {
   local fixture manifest destination output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   destination="$(cd "$fixture" && pwd -P)/grand-media-1.25.1-free.zip"
@@ -1051,7 +1080,7 @@ append_named_zip_entry() {
 
 test_verify_accepts_exact_free_artifact_and_records_evidence() {
   local fixture manifest root summary log activation_log before after output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   root="$fixture/free-extracted/grand-media"
@@ -1093,7 +1122,7 @@ test_verify_accepts_exact_free_artifact_and_records_evidence() {
 
 test_verify_installs_before_plugin_check() {
   local fixture order
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   order="$fixture/runner-order.log"
   printf '%s\n' '#!/usr/bin/env bash' 'printf "activation\\n" >> "$RUNNER_ORDER_LOG"' > "$fixture/activate-check"
@@ -1140,7 +1169,7 @@ run_test_local_runner() {
 
 test_test_local_activation_runner_installs_exact_artifact() {
   local fixture target
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   target="$fixture/wp-content/plugins/grand-media"
   run_test_local_runner "$fixture" "$TEST_LOCAL_ACTIVATION_RUNNER" >/dev/null || return 1
@@ -1153,7 +1182,7 @@ test_test_local_activation_runner_installs_exact_artifact() {
 test_test_local_runners_accept_http_test_local() {
   local fixture runner
   for runner in "$TEST_LOCAL_ACTIVATION_RUNNER" "$TEST_LOCAL_PLUGIN_CHECK_RUNNER"; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_test_local_runner_fixture "$fixture" || return 1
     if test "$runner" = "$TEST_LOCAL_PLUGIN_CHECK_RUNNER"; then
       cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
@@ -1167,7 +1196,7 @@ test_test_local_runners_reject_wrong_site_without_mutation() {
   local fixture output rc runner url_field
   for runner in "$TEST_LOCAL_ACTIVATION_RUNNER" "$TEST_LOCAL_PLUGIN_CHECK_RUNNER"; do
     for url_field in home siteurl; do
-      fixture=$(mktemp -d)
+      fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
       make_test_local_runner_fixture "$fixture" || return 1
       if test "$runner" = "$TEST_LOCAL_PLUGIN_CHECK_RUNNER"; then
         cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
@@ -1195,7 +1224,7 @@ test_test_local_runners_reject_wrong_site_without_mutation() {
 
 test_test_local_activation_runner_refuses_overwrite() {
   local fixture output rc sentinel
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   mkdir "$fixture/wp-content/plugins/grand-media"
   sentinel="$fixture/wp-content/plugins/grand-media/preserve.txt"
@@ -1210,7 +1239,7 @@ test_test_local_activation_runner_refuses_overwrite() {
 
 test_test_local_plugin_check_runner_allows_warnings() {
   local fixture output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
   output=$(FAKE_PLUGIN_CHECK_OUTPUT='[{"type":"WARNING","code":"example_warning"}]' \
@@ -1223,7 +1252,7 @@ test_test_local_plugin_check_runner_allows_warnings() {
 
 test_test_local_plugin_check_runner_allows_text_success() {
   local fixture output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
   output=$(FAKE_PLUGIN_CHECK_OUTPUT='Checks complete. No errors found.' \
@@ -1233,7 +1262,7 @@ test_test_local_plugin_check_runner_allows_text_success() {
 
 test_test_local_plugin_check_runner_rejects_errors() {
   local fixture output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
   output=$(FAKE_PLUGIN_CHECK_OUTPUT='[{"type":"ERROR","code":"example_error"}]' \
@@ -1245,7 +1274,7 @@ test_test_local_plugin_check_runner_rejects_errors() {
 
 test_test_local_plugin_check_runner_rejects_wrong_version() {
   local fixture output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
   output=$(FAKE_PLUGIN_CHECK_VERSION='2.0.0' \
@@ -1258,7 +1287,7 @@ test_test_local_plugin_check_runner_rejects_wrong_version() {
 
 test_test_local_plugin_check_runner_rejects_installed_mismatch() {
   local fixture output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_test_local_runner_fixture "$fixture" || return 1
   cp -R "$fixture/artifact" "$fixture/wp-content/plugins/grand-media"
   printf 'different\n' > "$fixture/wp-content/plugins/grand-media/grand-media.php"
@@ -1272,7 +1301,7 @@ test_test_local_plugin_check_runner_rejects_installed_mismatch() {
 test_verify_rejects_broken_provenance_and_invalidates_dependents() {
   local fixture manifest mode output rc
   for mode in upload-source free-deployment free-source; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     jq '.stages.verify = "passed" | .stages.svn_prepare = "passed" |
@@ -1301,7 +1330,7 @@ test_earlier_stages_preserve_recorded_svn_publication() {
   local fixture manifest command evidence before after output rc
   for command in verify svn-prepare; do
     for evidence in passed-stage publication-receipt; do
-      fixture=$(mktemp -d)
+      fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
       if test "$command" = verify; then
         make_artifact_fixture "$fixture" || return 1
       else
@@ -1335,7 +1364,7 @@ test_earlier_stages_preserve_recorded_svn_publication() {
 test_verify_requires_complete_freemius_identity_before_runners() {
   local fixture manifest mode expected output rc
   for mode in missing-upload-endpoint tampered-upload-endpoint missing-upload-release-mode wrong-upload-release-mode missing-release-mode wrong-release-mode missing-download-endpoint tampered-download-endpoint; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
@@ -1385,7 +1414,7 @@ test_verify_requires_complete_freemius_identity_before_runners() {
 
 test_verify_rejects_gatekeeper_string() {
   local fixture
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   printf '%s\n' '$wp_org_gatekeeper = true;' >> "$fixture/free/grand-media/grand-media.php"
   rebuild_artifact_zips "$fixture" || return 1
@@ -1396,7 +1425,7 @@ test_verify_rejects_every_literal_distribution_exclusion() {
   local fixture path
   while IFS= read -r path; do
     case $path in ''|'#'*) continue ;; esac
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     mkdir -p "$(dirname "$fixture/free/grand-media/$path")"
     case $path in
@@ -1415,7 +1444,7 @@ test_verify_rejects_every_literal_distribution_exclusion() {
 
 test_verify_distribution_exclusions_use_root_relative_paths() {
   local fixture
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   mkdir -p "$fixture/free/grand-media/content" "$fixture/free/grand-media/assets/nested"
   printf 'runtime data\n' > "$fixture/free/grand-media/content/.env.local"
@@ -1426,7 +1455,7 @@ test_verify_distribution_exclusions_use_root_relative_paths() {
 
 test_verify_invalidates_stale_passed_evidence_before_failure() {
   local fixture manifest output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   run_artifact_verify "$fixture" >/dev/null || return 1
@@ -1446,7 +1475,7 @@ test_verify_invalidates_stale_passed_evidence_before_failure() {
 test_verify_binds_source_zip_size_and_hash_to_manifest() {
   local fixture manifest mode output rc
   for mode in size-mismatch hash-mismatch size-invalid hash-invalid; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
@@ -1473,7 +1502,7 @@ test_verify_binds_source_zip_size_and_hash_to_manifest() {
 
 test_verify_fails_closed_when_zip_type_inspection_fails() {
   local fixture fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   fake_bin="$fixture/fail-bin"
   mkdir -p "$fake_bin"
@@ -1494,7 +1523,7 @@ exec /usr/bin/unzip "$@"
 test_verify_rejects_traversal_and_absolute_entries() {
   local fixture name
   for name in '../outside.php' '/absolute.php' 'C:\\absolute.php' '\\server\share\file.php' 'grand-media/nested/../escape.php'; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     make_zip_with_named_entry "$fixture/grand-media-1.25.1-free.zip" "$name" || return 1
     refresh_artifact_manifest "$fixture" || return 1
@@ -1505,7 +1534,7 @@ test_verify_rejects_traversal_and_absolute_entries() {
 
 test_verify_rejects_symbolic_link_entry_before_extraction() {
   local fixture
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   ln -s ../../outside.php "$fixture/free/grand-media/link.php" || return 1
   rm -f "$fixture/grand-media-1.25.1-free.zip"
@@ -1517,7 +1546,7 @@ test_verify_rejects_symbolic_link_entry_before_extraction() {
 
 test_verify_rejects_multiple_roots_and_malformed_zip() {
   local fixture
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   append_named_zip_entry "$fixture/grand-media-1.25.1-free.zip" 'another-plugin/file.php' || return 1
   unzip -Z1 "$fixture/grand-media-1.25.1-free.zip" | grep -q '^grand-media/' || return 1
@@ -1525,7 +1554,7 @@ test_verify_rejects_multiple_roots_and_malformed_zip() {
   refresh_artifact_manifest "$fixture" || return 1
   assert_verify_failed_without_passed_stage "$fixture" 'Free ZIP entries must be under grand-media/' || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   printf 'not a ZIP\n' > "$fixture/grand-media-1.25.1-free.zip"
   refresh_artifact_manifest "$fixture" || return 1
@@ -1535,7 +1564,7 @@ test_verify_rejects_multiple_roots_and_malformed_zip() {
 test_verify_rejects_each_version_mismatch() {
   local fixture field
   for field in header constant stable; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     case $field in
       header) sed 's/Version: 1.25.1/Version: 9.9.9/' "$fixture/free/grand-media/grand-media.php" > "$fixture/next" ;;
@@ -1558,7 +1587,7 @@ test_verify_rejects_each_version_mismatch() {
 
 test_verify_rejects_php_lint_failure_before_plugin_check() {
   local fixture
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   printf '%s\n' '<?php syntax error' > "$fixture/free/grand-media/broken.php"
   rebuild_artifact_zips "$fixture" || return 1
@@ -1568,7 +1597,7 @@ test_verify_rejects_php_lint_failure_before_plugin_check() {
 
 test_verify_requires_configured_and_passing_plugin_check() {
   local fixture output rc log
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   output=$(env -u GRAND_MEDIA_ARTIFACT_PLUGIN_CHECK_CMD "$CLI" verify --resume "$fixture/release-manifest.json" 2>&1)
   rc=$?
@@ -1576,7 +1605,7 @@ test_verify_requires_configured_and_passing_plugin_check() {
   assert_contains "$output" 'artifact Plugin Check runner is not configured' || return 1
   ! jq -e '.stages.verify == "passed"' "$fixture/release-manifest.json" >/dev/null || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   jq '.stages.verify = "passed" |
       .verification = { php_lint: "passed", plugin_check: { exit_code: 0, log: "/stale/log" } } |
@@ -1602,7 +1631,7 @@ test_verify_requires_configured_and_passing_plugin_check() {
 
 test_verify_requires_configured_and_passing_isolated_activation() {
   local fixture output rc log
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   output=$(GRAND_MEDIA_ARTIFACT_PLUGIN_CHECK_CMD="$fixture/plugin-check" \
     env -u GRAND_MEDIA_ARTIFACT_ACTIVATION_CMD \
@@ -1612,7 +1641,7 @@ test_verify_requires_configured_and_passing_isolated_activation() {
   assert_contains "$output" 'artifact isolated activation runner is not configured' || return 1
   ! jq -e '.stages.verify == "passed"' "$fixture/release-manifest.json" >/dev/null || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   printf '%s\n' '#!/usr/bin/env bash' 'printf "isolated activation failed safely\\n"' 'exit 8' > "$fixture/activate-check"
   chmod +x "$fixture/activate-check"
@@ -1631,7 +1660,7 @@ test_verify_requires_configured_and_passing_isolated_activation() {
 
 test_verify_refuses_preexisting_extraction_target() {
   local fixture marker
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   mkdir -p "$fixture/free-extracted"
   marker="$fixture/free-extracted/do-not-overwrite"
@@ -1741,7 +1770,7 @@ assert_svn_prepare_failed() {
 
 test_svn_prepare_mirrors_verified_root_and_never_commits() {
   local fixture manifest checkout free_root output svn_temp
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   checkout="$fixture/svn-checkout"
@@ -1797,7 +1826,7 @@ test_svn_prepare_mirrors_verified_root_and_never_commits() {
 
 test_svn_prepare_escapes_peg_characters_in_missing_paths() {
   local fixture checkout missing output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   checkout="$fixture/svn-checkout"
   missing='trunk/assets/photoswipe/images/icons@2x.png'
@@ -1812,7 +1841,7 @@ test_svn_prepare_escapes_peg_characters_in_missing_paths() {
 
 test_svn_prepare_binds_fresh_zip_to_verification_evidence() {
   local fixture manifest output rc svn_temp
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   svn_temp="$fixture/svn-temp"
@@ -1828,7 +1857,7 @@ test_svn_prepare_binds_fresh_zip_to_verification_evidence() {
   ! find "$svn_temp" -maxdepth 1 -type d -name 'grand-media-svn-prepare.*' -print -quit | grep -q . || return 1
   ! jq -e '.stages.svn_prepare == "passed"' "$manifest" >/dev/null || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   jq '.verification.free_zip_sha256 = "0000000000000000000000000000000000000000000000000000000000000000"' \
@@ -1840,7 +1869,7 @@ test_svn_prepare_binds_fresh_zip_to_verification_evidence() {
   ! test -e "$fixture/svn.log" || return 1
   ! jq -e '.stages.svn_prepare == "passed"' "$manifest" >/dev/null || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   printf 'tamper\n' >> "$fixture/grand-media-1.25.1-free.zip"
@@ -1883,7 +1912,7 @@ assert_faulty_mktemp_rejected() {
 
 test_svn_prepare_rejects_outside_and_nonempty_fake_mktemp() {
   local fixture temp_parent returned_path
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   temp_parent="$fixture/selected-temp"
   returned_path="$fixture/outside-temp/grand-media-svn-prepare.abc123"
@@ -1892,7 +1921,7 @@ test_svn_prepare_rejects_outside_and_nonempty_fake_mktemp() {
   assert_faulty_mktemp_rejected "$fixture" "$temp_parent" "$returned_path" || return 1
   test "$(cat "$returned_path/do-not-remove")" = 'outside sentinel' || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   temp_parent="$fixture/selected-temp"
   returned_path="$temp_parent/grand-media-svn-prepare.def456"
@@ -1902,7 +1931,7 @@ test_svn_prepare_rejects_outside_and_nonempty_fake_mktemp() {
     'Unsafe SVN preparation temporary directory is not empty' || return 1
   test "$(cat "$returned_path/do-not-remove")" = 'nonempty sentinel' || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   temp_parent="$fixture/selected-temp"
   returned_path="$temp_parent/grand-media-svn-prepare.seven77"
@@ -1913,14 +1942,14 @@ test_svn_prepare_rejects_outside_and_nonempty_fake_mktemp() {
 
 test_svn_prepare_rejects_root_and_plugin_root_fake_mktemp() {
   local fixture temp_parent repo_sha
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   temp_parent="$fixture/selected-temp"
   mkdir -p "$temp_parent"
   assert_faulty_mktemp_rejected "$fixture" "$temp_parent" / || return 1
   test -f "$ROOT/grand-media.php" || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   temp_parent="$fixture/selected-temp"
   mkdir -p "$temp_parent"
@@ -1933,7 +1962,7 @@ test_svn_prepare_rejects_root_and_plugin_root_fake_mktemp() {
 
 test_svn_prepare_temp_cleanup_on_term() {
   local fixture temp_parent ready pid temporary_root rc attempt
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   temp_parent="$fixture/selected-temp"
   ready="$fixture/ready"
   mkdir -p "$temp_parent"
@@ -1967,7 +1996,7 @@ test_svn_prepare_temp_cleanup_on_term() {
 
 test_svn_prepare_cleanup_rejects_tampered_marker() {
   local fixture temp_parent temporary_root
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   temp_parent="$fixture/selected-temp"
   mkdir -p "$temp_parent"
   temp_parent=$(cd "$temp_parent" && pwd -P) || return 1
@@ -1988,7 +2017,7 @@ test_svn_prepare_cleanup_rejects_tampered_marker() {
 
 test_svn_prepare_cleanup_rejects_appended_marker_newline() {
   local fixture temp_parent temporary_root
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   temp_parent="$fixture/selected-temp"
   mkdir -p "$temp_parent"
   temp_parent=$(cd "$temp_parent" && pwd -P) || return 1
@@ -2009,7 +2038,7 @@ test_svn_prepare_cleanup_rejects_appended_marker_newline() {
 
 test_svn_prepare_exit_trap_reports_late_marker_tamper() {
   local fixture svn_temp output rc temporary_root
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   svn_temp="$fixture/svn-temp"
   mkdir -p "$svn_temp"
@@ -2024,7 +2053,7 @@ test_svn_prepare_exit_trap_reports_late_marker_tamper() {
 
 test_svn_prepare_requires_svn_command() {
   local fixture fake_bin command_path output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   fake_bin="$fixture/no-svn-bin"
   mkdir -p "$fake_bin"
@@ -2043,7 +2072,7 @@ test_svn_prepare_requires_svn_command() {
 test_svn_prepare_rejects_unsafe_checkout_layouts() {
   local fixture checkout output rc mode
   for mode in filesystem-root plugin-root missing-svn missing-trunk missing-tags missing-assets symlink-trunk; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_svn_fixture "$fixture" || return 1
     checkout="$fixture/svn-checkout"
     case $mode in
@@ -2069,7 +2098,7 @@ test_svn_prepare_rejects_unsafe_checkout_layouts() {
 
 test_svn_prepare_rejects_checkout_containing_plugin_git_root() {
   local fixture checkout sentinel repo_file_sha output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   checkout=$(cd "$ROOT/.." && pwd -P) || return 1
   sentinel="$fixture/external-sentinel"
@@ -2087,7 +2116,7 @@ test_svn_prepare_rejects_checkout_containing_plugin_git_root() {
 
 test_svn_prepare_rechecks_layout_after_update() {
   local fixture sentinel output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   sentinel="$fixture/external-sentinel"
   mkdir -p "$sentinel"
@@ -2106,7 +2135,7 @@ test_svn_prepare_rechecks_layout_after_update() {
 test_svn_prepare_rejects_wrong_repo_dirty_update_and_existing_tag() {
   local fixture mode expected output rc
   for mode in wrong-repo wrong-url dirty-before update-failure dirty-after existing-tag tag-after-update tag-before-copy; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_svn_fixture "$fixture" || return 1
     case $mode in
       wrong-repo)
@@ -2135,7 +2164,7 @@ test_svn_prepare_rejects_wrong_repo_dirty_update_and_existing_tag() {
 test_svn_prepare_rejects_unsafe_mismatched_or_unverified_manifest() {
   local fixture manifest output rc mode
   for mode in unsafe-version mismatched-version unverified missing-root verification-deployment verification-source; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_svn_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
@@ -2163,7 +2192,7 @@ test_svn_prepare_rejects_unsafe_mismatched_or_unverified_manifest() {
 
 test_svn_prepare_rejects_prepared_content_mismatch() {
   local fixture fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   output=$(FAKE_SVN_COPY_CORRUPT=1 run_svn_prepare "$fixture" 2>&1)
   rc=$?
@@ -2171,7 +2200,7 @@ test_svn_prepare_rejects_prepared_content_mismatch() {
   assert_contains "$output" 'Prepared SVN tag does not match verified free root' || return 1
   ! jq -e '.stages.svn_prepare == "passed"' "$fixture/release-manifest.json" >/dev/null || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   fake_bin="$fixture/corrupt-rsync-bin"
   mkdir -p "$fake_bin"
@@ -2190,7 +2219,7 @@ printf "corrupt\\n" >> "$destination/grand-media.php"
 
 test_svn_prepare_manifest_is_atomic_and_retry_invalidates_stale_evidence() {
   local fixture manifest fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   fake_bin="$fixture/fail-final-manifest-bin"
@@ -2211,7 +2240,7 @@ exec /bin/mv "$@"
   ! find "$fixture" -name 'release-manifest.json.tmp.*' -print -quit | grep -q . || return 1
   ! test -e "$fixture/svn-commit.marker" || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   run_svn_prepare "$fixture" >/dev/null || return 1
@@ -2226,7 +2255,7 @@ exec /bin/mv "$@"
 
 test_safe_pipeline_stops_without_svn_commit() {
   local fixture
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   run_svn_prepare "$fixture" >/dev/null || return 1
   ! grep -F 'commit' "$fixture/svn.log" >/dev/null || return 1
@@ -2236,7 +2265,7 @@ test_safe_pipeline_stops_without_svn_commit() {
 
 test_public_safe_sequence_stops_before_both_publications() {
   local fixture manifest fake_free checkout token source_zip source_size source_sha output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   fake_free="$fixture/fake-freemius-free.zip"
@@ -2351,7 +2380,7 @@ prepare_publish_fixture() {
 
 test_public_safe_stage_cli_uses_manifest_contracts() {
   local fixture manifest expected_free
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   expected_free="$(cd "$fixture" && pwd -P)/grand-media-1.25.1-free.zip"
@@ -2374,7 +2403,7 @@ test_public_safe_stage_cli_uses_manifest_contracts() {
   ' "$manifest" >/dev/null || return 1
   ! grep -F 'PUT ' "$fixture/curl.log" >/dev/null || return 1
 
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   GRAND_MEDIA_ARTIFACT_PLUGIN_CHECK_CMD="$fixture/plugin-check" \
     GRAND_MEDIA_ARTIFACT_ACTIVATION_CMD="$fixture/activate-check" \
@@ -2406,7 +2435,7 @@ test_protected_commands_require_exact_confirmation_without_mutation() {
       "$wrong_version_confirmation" \
       "$wrong_sha_confirmation" \
       "$cross_confirmation"; do
-      fixture=$(mktemp -d)
+      fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
       if test "$command" = svn-publish; then
         prepare_publish_fixture "$fixture" || return 1
       else
@@ -2432,7 +2461,7 @@ test_protected_commands_require_exact_confirmation_without_mutation() {
 
 test_svn_publish_revalidates_and_commits_once() {
   local fixture manifest confirmation message output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   prepare_publish_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   confirmation='publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567'
@@ -2452,7 +2481,7 @@ test_svn_publish_revalidates_and_commits_once() {
 test_svn_publish_rejects_invalid_or_stale_evidence_before_commit() {
   local fixture manifest mode output rc
   for mode in unsafe-version unsafe-sha missing-stage missing-upload-stage checkout-drift trunk-drift tag-drift root-drift zip-drift status-drift diff-drift tag-race wrong-repo wrong-url revision-drift svn-provenance; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     prepare_publish_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
@@ -2484,7 +2513,7 @@ test_svn_publish_rejects_invalid_or_stale_evidence_before_commit() {
 test_svn_publish_warns_after_commit_if_result_or_manifest_fails() {
   local fixture fake_bin output rc mode
   for mode in bad-revision manifest-failure; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     prepare_publish_fixture "$fixture" || return 1
     if test "$mode" = bad-revision; then
       output=$(FAKE_SVN_COMMIT_REVISION=bad run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
@@ -2506,7 +2535,7 @@ test_svn_publish_warns_after_commit_if_result_or_manifest_fails() {
 test_protected_publications_are_independent_in_both_orders() {
   local fixture order output
   for order in svn-first freemius-first; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     prepare_publish_fixture "$fixture" || return 1
     case $order in
       svn-first)
@@ -2527,7 +2556,7 @@ test_protected_publications_are_independent_in_both_orders() {
 
 test_svn_publish_warns_after_commit_when_cleanup_fails() {
   local fixture output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   prepare_publish_fixture "$fixture" || return 1
   output=$(FAKE_SVN_MODE=tamper-temp-marker-late run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
   rc=$?
@@ -2540,7 +2569,7 @@ test_svn_publish_warns_after_commit_when_cleanup_fails() {
 test_protected_publications_warn_after_final_output_failure() {
   local fixture command bash_env output rc
   for command in svn-publish freemius-release; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     if test "$command" = svn-publish; then
       prepare_publish_fixture "$fixture" || return 1
     else
@@ -2619,7 +2648,7 @@ run_freemius_release() (
 
 test_freemius_release_refetches_pending_and_puts_once() {
   local fixture manifest confirmation token output
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_release_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   confirmation='release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567'
@@ -2644,7 +2673,7 @@ test_freemius_release_refetches_pending_and_puts_once() {
 test_freemius_release_rejects_pre_mutation_invalid_evidence_with_zero_put() {
   local fixture manifest mode output rc
   for mode in unsafe-version unsafe-sha unsafe-id wrong-product missing-stage stale-mode verification-source refetch-id refetch-product refetch-version refetch-mode refetch-duplicate; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_release_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
@@ -2671,7 +2700,7 @@ test_freemius_release_rejects_pre_mutation_invalid_evidence_with_zero_put() {
 test_freemius_release_post_mutation_failures_have_exactly_one_put() {
   local fixture mode output rc
   for mode in put-mismatch put-failure; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_release_fixture "$fixture" || return 1
     output=$(FAKE_CURL_MODE="release-$mode" run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
     rc=$?
@@ -2685,7 +2714,7 @@ test_freemius_release_post_mutation_failures_have_exactly_one_put() {
 
 test_freemius_release_warns_when_manifest_fails_after_put() {
   local fixture fake_bin output rc
-  fixture=$(mktemp -d)
+  fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_release_fixture "$fixture" || return 1
   fake_bin="$fixture/fail-bin"
   mkdir -p "$fake_bin"
@@ -2702,7 +2731,7 @@ test_freemius_release_warns_when_manifest_fails_after_put() {
 test_publication_interruptions_warn_and_never_retry_mutations() {
   local fixture command output_file ready pid operation_pid output rc count_file attempt
   for command in svn-publish freemius-release; do
-    fixture=$(mktemp -d)
+    fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     output_file="$fixture/interruption-output"
     ready="$fixture/mutation-paused"
     if test "$command" = svn-publish; then
