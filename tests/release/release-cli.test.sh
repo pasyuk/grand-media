@@ -86,22 +86,22 @@ make_clean_fixture() {
   git -C "$repo" update-ref refs/remotes/grand-media/master HEAD
 }
 
-test_metadata_reports_1_25_1() {
+test_metadata_reports_1_25_2() {
   local output
   output=$("$CLI" metadata --repo "$ROOT") || return 1
-  assert_contains "$output" 'version=1.25.1' || return 1
-  assert_contains "$output" 'runtime_version=1.25.1' || return 1
-  assert_contains "$output" 'stable_tag=1.25.1'
+  assert_contains "$output" 'version=1.25.2' || return 1
+  assert_contains "$output" 'runtime_version=1.25.2' || return 1
+  assert_contains "$output" 'stable_tag=1.25.2'
 }
 
 test_preflight_rejects_version_mismatch() {
   local fixture output
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   cp "$ROOT/grand-media.php" "$ROOT/readme.txt" "$fixture/"
-  sed 's/Stable tag: 1.25.1/Stable tag: 9.9.9/' "$fixture/readme.txt" > "$fixture/readme.next"
+  sed 's/Stable tag: 1.25.2/Stable tag: 9.9.9/' "$fixture/readme.txt" > "$fixture/readme.next"
   mv "$fixture/readme.next" "$fixture/readme.txt"
-  output=$(GRAND_MEDIA_TEST_SKIP_GIT=1 "$CLI" preflight --repo "$fixture" --version 1.25.1 2>&1) && return 1
-  assert_contains "$output" 'Stable tag 9.9.9 does not match 1.25.1'
+  output=$(GRAND_MEDIA_TEST_SKIP_GIT=1 "$CLI" preflight --repo "$fixture" --version 1.25.2 2>&1) && return 1
+  assert_contains "$output" 'Stable tag 9.9.9 does not match 1.25.2'
 }
 
 test_bypass_does_not_skip_git_worktree_checks() {
@@ -113,7 +113,7 @@ test_bypass_does_not_skip_git_worktree_checks() {
   printf '#!/usr/bin/env bash\ncase "$*" in *" branch --show-current"*) printf "feature/test-bypass\\n"; exit 0;; esac\nexec /usr/bin/git "$@"\n' > "$fake_bin/git"
   chmod +x "$fake_bin/git"
   output=$(PATH="$fake_bin:$PATH" GRAND_MEDIA_TEST_SKIP_GIT=1 \
-    "$CLI" preflight --repo "$fixture" --version 1.25.1 2>&1)
+    "$CLI" preflight --repo "$fixture" --version 1.25.2 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Current branch feature/test-bypass is not master'
@@ -127,7 +127,7 @@ test_preflight_rejects_git_status_error() {
   fake_bin=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   printf '#!/usr/bin/env bash\ncase "$*" in *" branch --show-current"*) printf "master\\n"; exit 0;; *" status --porcelain"*) exit 1;; esac\nexec /usr/bin/git "$@"\n' > "$fake_bin/git"
   chmod +x "$fake_bin/git"
-  output=$(PATH="$fake_bin:$PATH" "$CLI" preflight --repo "$fixture" --version 1.25.1 2>&1)
+  output=$(PATH="$fake_bin:$PATH" "$CLI" preflight --repo "$fixture" --version 1.25.2 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Unable to determine working-tree status'
@@ -140,7 +140,7 @@ test_preflight_rejects_configured_upstream_mismatch() {
   repo="$fixture/repo"
   upstream_sha=$(git -C "$repo" commit-tree "$(git -C "$repo" write-tree)" -p "$(git -C "$repo" rev-parse HEAD)" -m 'Upstream mismatch') || return 1
   git -C "$repo" update-ref refs/remotes/grand-media/master "$upstream_sha" || return 1
-  output=$("$CLI" preflight --repo "$repo" --version 1.25.1 2>&1)
+  output=$("$CLI" preflight --repo "$repo" --version 1.25.2 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'HEAD does not match configured upstream'
@@ -152,16 +152,16 @@ test_build_creates_verified_source_archive_and_manifest() {
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
-  archive="$work/grand-media-1.25.1-source.zip"
+  archive="$work/grand-media-1.25.2-source.zip"
   manifest="$work/release-manifest.json"
-  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work") || return 1
+  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work") || return 1
   work=$(cd "$work" && pwd -P) || return 1
-  archive="$work/grand-media-1.25.1-source.zip"
+  archive="$work/grand-media-1.25.2-source.zip"
   manifest="$work/release-manifest.json"
   test -f "$archive" || return 1
   test -f "$manifest" || return 1
   jq -e --arg archive "$archive" '
-    .version == "1.25.1"
+    .version == "1.25.2"
     and (.git_sha | test("^[0-9a-f]{40}$"))
     and (.timestamp | test("^[0-9]{4}-[0-9]{2}-[0-9]{2}T"))
     and .source_zip == $archive
@@ -187,7 +187,7 @@ test_build_archives_tracked_modules_without_ignored_local_modules() {
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
-  archive="$work/grand-media-1.25.1-source.zip"
+  archive="$work/grand-media-1.25.2-source.zip"
   mkdir -p "$repo/module/release-fixture-runtime" "$repo/module/albums-stripes" || return 1
   printf 'tracked runtime module\n' > "$repo/module/release-fixture-runtime/runtime.txt" || return 1
   git -C "$repo" add module/release-fixture-runtime/runtime.txt || return 1
@@ -200,7 +200,7 @@ test_build_archives_tracked_modules_without_ignored_local_modules() {
   test -z "$(git -C "$repo" status --porcelain)" || return 1
 
   PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" >/dev/null || return 1
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" >/dev/null || return 1
 
   unzip -Z1 "$archive" | grep -qx 'grand-media/module/release-fixture-runtime/runtime.txt' || return 1
   ! unzip -Z1 "$archive" | grep -q '^grand-media/module/albums-stripes/' || return 1
@@ -213,13 +213,13 @@ test_build_passes_grand_media_source_directory_to_dist_archive() {
   make_clean_fixture "$fixture" || return 1
   repo="$fixture/repo"
   work="$fixture/work"
-  archive="$work/grand-media-1.25.1-source.zip"
+  archive="$work/grand-media-1.25.2-source.zip"
   source_log="$fixture/dist-archive-source-basename.log"
 
   FAKE_WP_EXPECT_SOURCE_BASENAME=grand-media \
     FAKE_WP_SOURCE_BASENAME_LOG="$source_log" \
     PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" >/dev/null || return 1
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" >/dev/null || return 1
 
   grep -Fx 'grand-media' "$source_log" >/dev/null || return 1
   unzip -Z1 "$archive" | grep -qx 'grand-media/' || return 1
@@ -284,7 +284,7 @@ test_build_rejects_missing_distignore() {
   git -C "$repo" add -u || return 1
   git -C "$repo" commit -qm 'Remove distribution exclusions' || return 1
   git -C "$repo" update-ref refs/remotes/grand-media/master HEAD || return 1
-  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" 2>&1)
+  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Source .distignore does not exist' || return 1
@@ -299,7 +299,7 @@ test_build_rejects_invalid_source_archive_root() {
   work="$fixture/work"
   manifest="$work/release-manifest.json"
   output=$(FAKE_WP_DIST_ROOT=wrong-root PATH="$ROOT/tests/release/fakes:$PATH" \
-    GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" 2>&1)
+    GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Source archive must contain exactly one grand-media/ top-level directory' || return 1
@@ -314,7 +314,7 @@ test_build_rejects_excluded_development_files() {
   work="$fixture/work"
   manifest="$work/release-manifest.json"
   output=$(FAKE_WP_SKIP_DISTIGNORE=1 PATH="$ROOT/tests/release/fakes:$PATH" \
-    GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" 2>&1)
+    GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Source archive contains excluded development files' || return 1
@@ -332,7 +332,7 @@ test_build_propagates_source_gate_failure() {
   git -C "$repo" add tests/compat/portable.php || return 1
   git -C "$repo" commit -qm 'Fail portable source gate' || return 1
   git -C "$repo" update-ref refs/remotes/grand-media/master HEAD || return 1
-  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" 2>&1)
+  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'fixture compat failure' || return 1
@@ -347,7 +347,7 @@ test_build_rejects_non_empty_work_dir_without_matching_resume_manifest() {
   work="$fixture/work"
   mkdir -p "$work"
   touch "$work/unrelated-file"
-  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" 2>&1)
+  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Work directory is not empty; use --resume'
@@ -362,7 +362,7 @@ test_build_rejects_resume_manifest_with_wrong_source_identity() {
   mkdir -p "$work"
   manifest="$work/release-manifest.json"
   jq -n '{ version: "9.9.9", git_sha: "wrong" }' > "$manifest"
-  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" --resume "$manifest" 2>&1)
+  output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" --resume "$manifest" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Resume manifest does not match current source'
@@ -378,9 +378,9 @@ test_build_rejects_resume_manifest_outside_work_dir() {
   mkdir -p "$work"
   printf 'occupied\n' > "$work/keep"
   jq -n --arg git_sha "$(git -C "$repo" rev-parse HEAD)" \
-    '{version: "1.25.1", git_sha: $git_sha}' > "$external"
+    '{version: "1.25.2", git_sha: $git_sha}' > "$external"
   output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" --resume "$external" 2>&1)
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" --resume "$external" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Resume manifest must be <work-dir>/release-manifest.json'
@@ -395,14 +395,14 @@ test_build_rejects_external_resume_with_empty_explicit_work_dir() {
   external="$fixture/external-release-manifest.json"
   mkdir -p "$work"
   jq -n --arg git_sha "$(git -C "$repo" rev-parse HEAD)" \
-    '{version: "1.25.1", git_sha: $git_sha}' > "$external"
+    '{version: "1.25.2", git_sha: $git_sha}' > "$external"
   output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" --resume "$external" 2>&1)
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" --resume "$external" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Resume manifest must be <work-dir>/release-manifest.json' || return 1
   ! test -e "$work/release-manifest.json" || return 1
-  ! test -e "$work/grand-media-1.25.1-source.zip"
+  ! test -e "$work/grand-media-1.25.2-source.zip"
 }
 
 test_build_rejects_resume_without_work_dir() {
@@ -412,15 +412,15 @@ test_build_rejects_resume_without_work_dir() {
   repo="$fixture/repo"
   external="$fixture/external-release-manifest.json"
   jq -n --arg git_sha "$(git -C "$repo" rev-parse HEAD)" \
-    '{version: "1.25.1", git_sha: $git_sha}' > "$external"
+    '{version: "1.25.2", git_sha: $git_sha}' > "$external"
   before=$(shasum -a 256 "$external" | awk '{print $1}') || return 1
   output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --resume "$external" 2>&1)
+    "$CLI" build --repo "$repo" --version 1.25.2 --resume "$external" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" '--resume requires matching --work-dir' || return 1
   test "$before" = "$(shasum -a 256 "$external" | awk '{print $1}')" || return 1
-  ! find "$fixture" -name 'grand-media-1.25.1-source.zip' -print -quit | grep -q .
+  ! find "$fixture" -name 'grand-media-1.25.2-source.zip' -print -quit | grep -q .
 }
 
 test_build_accepts_matching_resume_in_nonempty_work_dir() {
@@ -432,10 +432,10 @@ test_build_accepts_matching_resume_in_nonempty_work_dir() {
   manifest="$work/release-manifest.json"
   mkdir -p "$work"
   git_sha=$(git -C "$repo" rev-parse HEAD) || return 1
-  jq -n --arg git_sha "$git_sha" '{version: "1.25.1", git_sha: $git_sha, stages: {}}' > "$manifest"
+  jq -n --arg git_sha "$git_sha" '{version: "1.25.2", git_sha: $git_sha, stages: {}}' > "$manifest"
   PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" --resume "$manifest" >/dev/null || return 1
-  test -f "$work/grand-media-1.25.1-source.zip" || return 1
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" --resume "$manifest" >/dev/null || return 1
+  test -f "$work/grand-media-1.25.2-source.zip" || return 1
   jq -e '.stages.build == "passed"' "$manifest" >/dev/null
 }
 
@@ -451,7 +451,7 @@ test_build_rejects_work_dir_inside_source_repo() {
       ln -s "$repo/.git/real-release-work" "$work"
     fi
     output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-      "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" 2>&1)
+      "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" 2>&1)
     rc=$?
     test "$rc" -ne 0 || return 1
     assert_contains "$output" 'Work directory must be outside the source repository' || return 1
@@ -459,7 +459,7 @@ test_build_rejects_work_dir_inside_source_repo() {
 
   mkdir -p "$repo/.git/hostile-tmp"
   output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev TMPDIR="$repo/.git/hostile-tmp" \
-    "$CLI" build --repo "$repo" --version 1.25.1 2>&1)
+    "$CLI" build --repo "$repo" --version 1.25.2 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Work directory must be outside the source repository' || return 1
@@ -471,13 +471,13 @@ test_build_rejects_work_dir_inside_source_repo() {
   chmod +x "$fake_bin/mktemp" "$fake_bin/wp-dev"
   output=$(PATH="$fake_bin:$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
     FAKE_MKTEMP_WORK="$repo/release-work" \
-    "$CLI" build --repo "$repo" --version 1.25.1 2>&1)
+    "$CLI" build --repo "$repo" --version 1.25.2 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Work directory must be outside the source repository' || return 1
   ! assert_contains "$output" 'wp-dev must not run' || return 1
 
-  ! find "$repo" -name 'grand-media-1.25.1-source.zip' -print -quit | grep -q .
+  ! find "$repo" -name 'grand-media-1.25.2-source.zip' -print -quit | grep -q .
 }
 
 test_build_rejects_resume_after_build_completed() {
@@ -488,9 +488,9 @@ test_build_rejects_resume_after_build_completed() {
   work="$fixture/work"
   manifest="$work/release-manifest.json"
   PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" >/dev/null || return 1
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" >/dev/null || return 1
   output=$(PATH="$ROOT/tests/release/fakes:$PATH" GRAND_MEDIA_WP_CLI=wp-dev \
-    "$CLI" build --repo "$repo" --version 1.25.1 --work-dir "$work" --resume "$manifest" 2>&1)
+    "$CLI" build --repo "$repo" --version 1.25.2 --work-dir "$work" --resume "$manifest" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Resume manifest already contains completed build evidence'
@@ -507,7 +507,7 @@ make_freemius_fixture() {
   source_sha=$(shasum -a 256 "$fixture/source.zip" | awk '{ print $1 }') || return 1
   jq -n --arg source_zip "$fixture/source.zip" --arg source_sha "$source_sha" --argjson source_size "$source_size" \
     '{
-      version: "1.25.1",
+      version: "1.25.2",
       git_sha: "0123456789abcdef0123456789abcdef01234567",
       source_zip: $source_zip,
       source_zip_bytes: $source_size,
@@ -958,7 +958,7 @@ test_freemius_cli_uploads_and_downloads() {
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
-  destination="$(cd "$fixture" && pwd -P)/grand-media-1.25.1-free.zip"
+  destination="$(cd "$fixture" && pwd -P)/grand-media-1.25.2-free.zip"
   if ! output=$(run_freemius "$fixture" "$CLI" freemius-upload --manifest "$manifest" 2>&1); then
     printf '%s\n' "$output" >&2
     return 1
@@ -975,7 +975,7 @@ test_freemius_cli_uploads_and_downloads() {
 
 write_artifact_metadata() {
   local root=$1
-  local version=${2:-1.25.1}
+  local version=${2:-1.25.2}
   mkdir -p "$root"
   printf '%s\n' '<?php' '/**' " * Version: $version" ' */' 'class Gmedia {' "	public \$version = '$version';" '}' > "$root/grand-media.php"
   printf 'Stable tag: %s\n' "$version" > "$root/readme.txt"
@@ -984,8 +984,8 @@ write_artifact_metadata() {
 refresh_artifact_manifest() {
   local fixture=$1
   local manifest="$fixture/release-manifest.json"
-  local source_zip="$fixture/grand-media-1.25.1-source.zip"
-  local free_zip="$fixture/grand-media-1.25.1-free.zip"
+  local source_zip="$fixture/grand-media-1.25.2-source.zip"
+  local free_zip="$fixture/grand-media-1.25.2-free.zip"
   local source_size free_size source_sha free_sha
   source_size=$(wc -c < "$source_zip" | tr -d '[:space:]') || return 1
   free_size=$(wc -c < "$free_zip" | tr -d '[:space:]') || return 1
@@ -999,7 +999,7 @@ refresh_artifact_manifest() {
     --argjson source_size "$source_size" \
     --argjson free_size "$free_size" \
     '{
-      version: "1.25.1",
+      version: "1.25.2",
       git_sha: "0123456789abcdef0123456789abcdef01234567",
       source_zip: $source_zip,
       source_zip_bytes: $source_size,
@@ -1027,9 +1027,9 @@ refresh_artifact_manifest() {
 
 rebuild_artifact_zips() {
   local fixture=$1
-  rm -f "$fixture/grand-media-1.25.1-source.zip" "$fixture/grand-media-1.25.1-free.zip"
-  ( cd "$fixture/source" && /usr/bin/zip -qr "$fixture/grand-media-1.25.1-source.zip" grand-media ) || return 1
-  ( cd "$fixture/free" && /usr/bin/zip -qr "$fixture/grand-media-1.25.1-free.zip" grand-media ) || return 1
+  rm -f "$fixture/grand-media-1.25.2-source.zip" "$fixture/grand-media-1.25.2-free.zip"
+  ( cd "$fixture/source" && /usr/bin/zip -qr "$fixture/grand-media-1.25.2-source.zip" grand-media ) || return 1
+  ( cd "$fixture/free" && /usr/bin/zip -qr "$fixture/grand-media-1.25.2-free.zip" grand-media ) || return 1
   refresh_artifact_manifest "$fixture"
 }
 
@@ -1525,7 +1525,7 @@ test_verify_rejects_traversal_and_absolute_entries() {
   for name in '../outside.php' '/absolute.php' 'C:\\absolute.php' '\\server\share\file.php' 'grand-media/nested/../escape.php'; do
     fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
-    make_zip_with_named_entry "$fixture/grand-media-1.25.1-free.zip" "$name" || return 1
+    make_zip_with_named_entry "$fixture/grand-media-1.25.2-free.zip" "$name" || return 1
     refresh_artifact_manifest "$fixture" || return 1
     assert_verify_failed_without_passed_stage "$fixture" "Unsafe ZIP entry: $name" || return 1
     ! test -e "$fixture/outside.php" || return 1
@@ -1537,8 +1537,8 @@ test_verify_rejects_symbolic_link_entry_before_extraction() {
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
   ln -s ../../outside.php "$fixture/free/grand-media/link.php" || return 1
-  rm -f "$fixture/grand-media-1.25.1-free.zip"
-  ( cd "$fixture/free" && /usr/bin/zip -qry "$fixture/grand-media-1.25.1-free.zip" grand-media ) || return 1
+  rm -f "$fixture/grand-media-1.25.2-free.zip"
+  ( cd "$fixture/free" && /usr/bin/zip -qry "$fixture/grand-media-1.25.2-free.zip" grand-media ) || return 1
   refresh_artifact_manifest "$fixture" || return 1
   assert_verify_failed_without_passed_stage "$fixture" 'Free ZIP contains a symbolic link' || return 1
   ! test -e "$fixture/outside.php"
@@ -1548,15 +1548,15 @@ test_verify_rejects_multiple_roots_and_malformed_zip() {
   local fixture
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
-  append_named_zip_entry "$fixture/grand-media-1.25.1-free.zip" 'another-plugin/file.php' || return 1
-  unzip -Z1 "$fixture/grand-media-1.25.1-free.zip" | grep -q '^grand-media/' || return 1
-  unzip -Z1 "$fixture/grand-media-1.25.1-free.zip" | grep -q '^another-plugin/' || return 1
+  append_named_zip_entry "$fixture/grand-media-1.25.2-free.zip" 'another-plugin/file.php' || return 1
+  unzip -Z1 "$fixture/grand-media-1.25.2-free.zip" | grep -q '^grand-media/' || return 1
+  unzip -Z1 "$fixture/grand-media-1.25.2-free.zip" | grep -q '^another-plugin/' || return 1
   refresh_artifact_manifest "$fixture" || return 1
   assert_verify_failed_without_passed_stage "$fixture" 'Free ZIP entries must be under grand-media/' || return 1
 
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_artifact_fixture "$fixture" || return 1
-  printf 'not a ZIP\n' > "$fixture/grand-media-1.25.1-free.zip"
+  printf 'not a ZIP\n' > "$fixture/grand-media-1.25.2-free.zip"
   refresh_artifact_manifest "$fixture" || return 1
   assert_verify_failed_without_passed_stage "$fixture" 'Free ZIP is invalid'
 }
@@ -1567,9 +1567,9 @@ test_verify_rejects_each_version_mismatch() {
     fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_artifact_fixture "$fixture" || return 1
     case $field in
-      header) sed 's/Version: 1.25.1/Version: 9.9.9/' "$fixture/free/grand-media/grand-media.php" > "$fixture/next" ;;
-      constant) sed "s/\\\$version = '1.25.1'/\\\$version = '9.9.9'/" "$fixture/free/grand-media/grand-media.php" > "$fixture/next" ;;
-      stable) sed 's/Stable tag: 1.25.1/Stable tag: 9.9.9/' "$fixture/free/grand-media/readme.txt" > "$fixture/next" ;;
+      header) sed 's/Version: 1.25.2/Version: 9.9.9/' "$fixture/free/grand-media/grand-media.php" > "$fixture/next" ;;
+      constant) sed "s/\\\$version = '1.25.2'/\\\$version = '9.9.9'/" "$fixture/free/grand-media/grand-media.php" > "$fixture/next" ;;
+      stable) sed 's/Stable tag: 1.25.2/Stable tag: 9.9.9/' "$fixture/free/grand-media/readme.txt" > "$fixture/next" ;;
     esac
     if test "$field" = stable; then
       mv "$fixture/next" "$fixture/free/grand-media/readme.txt"
@@ -1578,9 +1578,9 @@ test_verify_rejects_each_version_mismatch() {
     fi
     rebuild_artifact_zips "$fixture" || return 1
     case $field in
-      header) assert_verify_failed_without_passed_stage "$fixture" 'Plugin header version 9.9.9 does not match 1.25.1' || return 1 ;;
-      constant) assert_verify_failed_without_passed_stage "$fixture" 'Gmedia::$version 9.9.9 does not match 1.25.1' || return 1 ;;
-      stable) assert_verify_failed_without_passed_stage "$fixture" 'Stable tag 9.9.9 does not match 1.25.1' || return 1 ;;
+      header) assert_verify_failed_without_passed_stage "$fixture" 'Plugin header version 9.9.9 does not match 1.25.2' || return 1 ;;
+      constant) assert_verify_failed_without_passed_stage "$fixture" 'Gmedia::$version 9.9.9 does not match 1.25.2' || return 1 ;;
+      stable) assert_verify_failed_without_passed_stage "$fixture" 'Stable tag 9.9.9 does not match 1.25.2' || return 1 ;;
     esac
   done
 }
@@ -1673,8 +1673,8 @@ make_svn_fixture() {
   local fixture=$1
   local free_root="$fixture/free-extracted/grand-media"
   local checkout="$fixture/svn-checkout"
-  local free_zip="$fixture/grand-media-1.25.1-free.zip"
-  local source_zip="$fixture/grand-media-1.25.1-source.zip"
+  local free_zip="$fixture/grand-media-1.25.2-free.zip"
+  local source_zip="$fixture/grand-media-1.25.2-source.zip"
   local free_size free_sha source_size source_sha
   mkdir -p "$free_root" "$checkout/.svn" "$checkout/trunk" "$checkout/tags" "$checkout/assets"
   write_artifact_metadata "$free_root" || return 1
@@ -1696,7 +1696,7 @@ make_svn_fixture() {
     --argjson free_size "$free_size" \
     --argjson source_size "$source_size" \
     '{
-      version: "1.25.1",
+      version: "1.25.2",
       git_sha: "0123456789abcdef0123456789abcdef01234567",
       source_zip: $source_zip,
       source_zip_bytes: $source_size,
@@ -1748,7 +1748,7 @@ run_svn_prepare() (
   export FAKE_SVN_REVISION="${FAKE_SVN_REVISION:-4321}"
   export FAKE_SVN_REVISION_AFTER_UPDATE="${FAKE_SVN_REVISION_AFTER_UPDATE:-4322}"
   export FAKE_SVN_URL="${FAKE_SVN_URL:-https://plugins.svn.wordpress.org/grand-media}"
-  export FAKE_SVN_VERSION="${FAKE_SVN_VERSION:-1.25.1}"
+  export FAKE_SVN_VERSION="${FAKE_SVN_VERSION:-1.25.2}"
   export FAKE_SVN_MISSING_PATH="${FAKE_SVN_MISSING_PATH:-trunk/obsolete file.txt}"
   export FAKE_SVN_COPY_CORRUPT="${FAKE_SVN_COPY_CORRUPT:-0}"
   "$CLI" svn-prepare \
@@ -1782,13 +1782,13 @@ test_svn_prepare_mirrors_verified_root_and_never_commits() {
   free_root=$(cd "$free_root" && pwd -P) || return 1
   output=$(TMPDIR="$svn_temp" run_svn_prepare "$fixture") || return 1
   diff -qr --exclude=.svn "$free_root" "$checkout/trunk" || return 1
-  diff -qr --exclude=.svn "$free_root" "$checkout/tags/1.25.1" || return 1
+  diff -qr --exclude=.svn "$free_root" "$checkout/tags/1.25.2" || return 1
   test "$(cat "$checkout/assets/banner-1544x500.png")" = 'preserve asset' || return 1
   test ! -e "$checkout/trunk/obsolete file.txt" || return 1
   grep -Fx 'update .' "$fixture/svn.log" >/dev/null || return 1
   grep -Fx 'add --force trunk' "$fixture/svn.log" >/dev/null || return 1
   grep -Fx 'rm --force trunk/obsolete file.txt' "$fixture/svn.log" >/dev/null || return 1
-  grep -Fx 'copy trunk tags/1.25.1' "$fixture/svn.log" >/dev/null || return 1
+  grep -Fx 'copy trunk tags/1.25.2' "$fixture/svn.log" >/dev/null || return 1
   grep -Fx 'diff --summarize .' "$fixture/svn.log" >/dev/null || return 1
   ! grep -F 'commit' "$fixture/svn.log" >/dev/null || return 1
   ! test -e "$fixture/svn-commit.marker" || return 1
@@ -1805,21 +1805,21 @@ test_svn_prepare_mirrors_verified_root_and_never_commits() {
       .svn.url == "https://plugins.svn.wordpress.org/grand-media" and
       .svn.verified_root == $free_root and
       .svn.trunk == ($checkout + "/trunk") and
-      .svn.tag == ($checkout + "/tags/1.25.1") and
+      .svn.tag == ($checkout + "/tags/1.25.2") and
       .svn.deployment_id == .freemius.deployment_id and
       .svn.source_zip_sha256 == .source_zip_sha256 and
       .svn.free_zip_sha256 == .free_zip.sha256 and
-      (.svn.status | contains("tags/1.25.1")) and
+      (.svn.status | contains("tags/1.25.2")) and
       (.svn.diff_summary | contains("trunk/grand-media.php"))
     ' "$manifest" >/dev/null || return 1
-  assert_contains "$output" 'A       tags/1.25.1/' || return 1
+  assert_contains "$output" 'A       tags/1.25.2/' || return 1
   assert_contains "$output" 'M       trunk/grand-media.php' || return 1
   test "$(grep -Fc 'list https://plugins.svn.wordpress.org/grand-media/tags' "$fixture/svn.log")" -eq 2 || return 1
   awk '
     $0 == "update ." { update_line = NR }
     $0 == "info --show-item revision ." { revision_line = NR }
     $0 == "list https://plugins.svn.wordpress.org/grand-media/tags" { last_list = NR }
-    $0 == "copy trunk tags/1.25.1" { copy_line = NR }
+    $0 == "copy trunk tags/1.25.2" { copy_line = NR }
     END { exit !(update_line < revision_line && last_list + 1 == copy_line) }
   ' "$fixture/svn.log"
 }
@@ -1872,7 +1872,7 @@ test_svn_prepare_binds_fresh_zip_to_verification_evidence() {
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_svn_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
-  printf 'tamper\n' >> "$fixture/grand-media-1.25.1-free.zip"
+  printf 'tamper\n' >> "$fixture/grand-media-1.25.2-free.zip"
   output=$(run_svn_prepare "$fixture" 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
@@ -2149,9 +2149,9 @@ test_svn_prepare_rejects_wrong_repo_dirty_update_and_existing_tag() {
       dirty-before) expected='SVN checkout is not clean'; output=$(FAKE_SVN_MODE=dirty-before run_svn_prepare "$fixture" 2>&1) ;;
       update-failure) expected='SVN update failed'; output=$(FAKE_SVN_MODE=update-failure run_svn_prepare "$fixture" 2>&1) ;;
       dirty-after) expected='SVN checkout is not clean'; output=$(FAKE_SVN_MODE=dirty-after run_svn_prepare "$fixture" 2>&1) ;;
-      existing-tag) expected='SVN tag 1.25.1 already exists remotely'; output=$(FAKE_SVN_MODE=existing-tag run_svn_prepare "$fixture" 2>&1) ;;
-      tag-after-update) expected='SVN tag 1.25.1 already exists remotely'; output=$(FAKE_SVN_MODE=tag-after-update run_svn_prepare "$fixture" 2>&1) ;;
-      tag-before-copy) expected='SVN tag 1.25.1 already exists remotely'; output=$(FAKE_SVN_MODE=tag-before-copy run_svn_prepare "$fixture" 2>&1) ;;
+      existing-tag) expected='SVN tag 1.25.2 already exists remotely'; output=$(FAKE_SVN_MODE=existing-tag run_svn_prepare "$fixture" 2>&1) ;;
+      tag-after-update) expected='SVN tag 1.25.2 already exists remotely'; output=$(FAKE_SVN_MODE=tag-after-update run_svn_prepare "$fixture" 2>&1) ;;
+      tag-before-copy) expected='SVN tag 1.25.2 already exists remotely'; output=$(FAKE_SVN_MODE=tag-before-copy run_svn_prepare "$fixture" 2>&1) ;;
     esac
     rc=$?
     test "$rc" -ne 0 || return 1
@@ -2168,7 +2168,7 @@ test_svn_prepare_rejects_unsafe_mismatched_or_unverified_manifest() {
     make_svn_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
-      unsafe-version) jq '.version = "../1.25.1"' "$manifest" > "$manifest.next" ;;
+      unsafe-version) jq '.version = "../1.25.2"' "$manifest" > "$manifest.next" ;;
       mismatched-version) jq '.version = "1.2.6"' "$manifest" > "$manifest.next" ;;
       unverified) jq 'del(.stages.verify)' "$manifest" > "$manifest.next" ;;
       missing-root) jq '.free_extracted_root = "/definitely/missing/grand-media"' "$manifest" > "$manifest.next" ;;
@@ -2181,7 +2181,7 @@ test_svn_prepare_rejects_unsafe_mismatched_or_unverified_manifest() {
     test "$rc" -ne 0 || return 1
     case $mode in
       unsafe-version) assert_contains "$output" 'Release manifest version is unsafe' || return 1 ;;
-      mismatched-version) assert_contains "$output" 'Plugin header version 1.25.1 does not match 1.2.6' || return 1 ;;
+      mismatched-version) assert_contains "$output" 'Plugin header version 1.25.2 does not match 1.2.6' || return 1 ;;
       unverified) assert_contains "$output" 'Release manifest is not ready for SVN preparation' || return 1 ;;
       missing-root) assert_contains "$output" 'Verified free root does not exist' || return 1 ;;
       verification-deployment|verification-source) assert_contains "$output" 'provenance' || return 1 ;;
@@ -2269,7 +2269,7 @@ test_public_safe_sequence_stops_before_both_publications() {
   make_artifact_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
   fake_free="$fixture/fake-freemius-free.zip"
-  mv "$fixture/grand-media-1.25.1-free.zip" "$fake_free" || return 1
+  mv "$fixture/grand-media-1.25.2-free.zip" "$fake_free" || return 1
   jq 'del(
       .freemius_upload_attempt,
       .freemius,
@@ -2310,7 +2310,7 @@ test_public_safe_sequence_stops_before_both_publications() {
     FAKE_SVN_STATE="$fixture/svn-state" FAKE_SVN_COMMIT_MARKER="$fixture/svn-commit.marker" \
     FAKE_SVN_MODE='' FAKE_SVN_REPOSITORY_ROOT='https://plugins.svn.wordpress.org' \
     FAKE_SVN_REVISION=4321 FAKE_SVN_REVISION_AFTER_UPDATE=4322 \
-    FAKE_SVN_URL='https://plugins.svn.wordpress.org/grand-media' FAKE_SVN_VERSION=1.25.1 \
+    FAKE_SVN_URL='https://plugins.svn.wordpress.org/grand-media' FAKE_SVN_VERSION=1.25.2 \
     FAKE_SVN_MISSING_PATH='trunk/obsolete file.txt' FAKE_SVN_COPY_CORRUPT=0 \
     "$CLI" svn-prepare --manifest "$manifest" --checkout "$checkout" >/dev/null || return 1
 
@@ -2343,7 +2343,7 @@ test_public_safe_sequence_stops_before_both_publications() {
   rc=$?
   test "$rc" -ne 0 || return 1
   test "$(cat "$fixture/freemius-upload.count")" = 1 || return 1
-  output=$(FAKE_CURL_MODE=release-flow run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+  output=$(FAKE_CURL_MODE=release-flow run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   ! test -e "$fixture/freemius-release.count" || return 1
@@ -2367,7 +2367,7 @@ run_svn_publish() (
   export FAKE_SVN_REVISION_AFTER_UPDATE="${FAKE_SVN_REVISION_AFTER_UPDATE:-4322}"
   export FAKE_SVN_COMMIT_REVISION="${FAKE_SVN_COMMIT_REVISION:-5001}"
   export FAKE_SVN_URL="${FAKE_SVN_URL:-https://plugins.svn.wordpress.org/grand-media}"
-  export FAKE_SVN_VERSION="${FAKE_SVN_VERSION:-1.25.1}"
+  export FAKE_SVN_VERSION="${FAKE_SVN_VERSION:-1.25.2}"
   export FAKE_SVN_PAUSE_AFTER_MUTATION="${FAKE_SVN_PAUSE_AFTER_MUTATION:-}"
   exec "$CLI" svn-publish --manifest "$fixture/release-manifest.json" --confirm "$confirmation"
 )
@@ -2383,7 +2383,7 @@ test_public_safe_stage_cli_uses_manifest_contracts() {
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_freemius_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
-  expected_free="$(cd "$fixture" && pwd -P)/grand-media-1.25.1-free.zip"
+  expected_free="$(cd "$fixture" && pwd -P)/grand-media-1.25.2-free.zip"
   PATH="$ROOT/tests/release/fakes:$PATH" \
     FAKE_CURL_LOG="$fixture/curl.log" FAKE_FREE_ZIP="$fixture/free.zip" \
     FAKE_CURL_UPLOAD_MARKER="$fixture/freemius-upload.marker" FAKE_CURL_UPLOAD_COUNT="$fixture/freemius-upload.count" \
@@ -2416,16 +2416,16 @@ test_protected_commands_require_exact_confirmation_without_mutation() {
   for command in svn-publish freemius-release; do
     case $command in
       svn-publish)
-        cross_confirmation='release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567'
-        short_confirmation='publish svn 1.25.1 0123456789abcdef0123456789abcdef0123456'
+        cross_confirmation='release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567'
+        short_confirmation='publish svn 1.25.2 0123456789abcdef0123456789abcdef0123456'
         wrong_version_confirmation='publish svn 9.9.9 0123456789abcdef0123456789abcdef01234567'
-        wrong_sha_confirmation='publish svn 1.25.1 ffffffffffffffffffffffffffffffffffffffff'
+        wrong_sha_confirmation='publish svn 1.25.2 ffffffffffffffffffffffffffffffffffffffff'
         ;;
       freemius-release)
-        cross_confirmation='publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567'
-        short_confirmation='release freemius 1.25.1 0123456789abcdef0123456789abcdef0123456'
+        cross_confirmation='publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567'
+        short_confirmation='release freemius 1.25.2 0123456789abcdef0123456789abcdef0123456'
         wrong_version_confirmation='release freemius 9.9.9 0123456789abcdef0123456789abcdef01234567'
-        wrong_sha_confirmation='release freemius 1.25.1 ffffffffffffffffffffffffffffffffffffffff'
+        wrong_sha_confirmation='release freemius 1.25.2 ffffffffffffffffffffffffffffffffffffffff'
         ;;
     esac
     for confirmation in \
@@ -2464,8 +2464,8 @@ test_svn_publish_revalidates_and_commits_once() {
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   prepare_publish_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
-  confirmation='publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567'
-  message='Release 1.25.1'
+  confirmation='publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567'
+  message='Release 1.25.2'
   output=$(run_svn_publish "$fixture" "$confirmation") || return 1
   test "$(cat "$fixture/svn-commit.count")" = 1 || return 1
   test "$(cat "$fixture/svn-state/commit-locale")" = C || return 1
@@ -2485,7 +2485,7 @@ test_svn_publish_rejects_invalid_or_stale_evidence_before_commit() {
     prepare_publish_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
-      unsafe-version) jq '.version = "../1.25.1"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
+      unsafe-version) jq '.version = "../1.25.2"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       unsafe-sha) jq '.git_sha = "ABCDEF0123456789abcdef0123456789abcdef01"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       missing-stage) jq 'del(.stages.verify)' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       missing-upload-stage) jq 'del(.stages.upload_pending)' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
@@ -2493,14 +2493,14 @@ test_svn_publish_rejects_invalid_or_stale_evidence_before_commit() {
       trunk-drift) jq '.svn.trunk = (.svn.checkout + "/wrong-trunk")' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       tag-drift) jq '.svn.tag = (.svn.checkout + "/tags/9.9.9")' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       root-drift) printf 'drift\n' >> "$fixture/free-extracted/grand-media/runtime.txt" ;;
-      zip-drift) printf 'drift\n' >> "$fixture/grand-media-1.25.1-free.zip" ;;
+      zip-drift) printf 'drift\n' >> "$fixture/grand-media-1.25.2-free.zip" ;;
       status-drift|diff-drift|tag-race) export FAKE_SVN_MODE="publish-$mode" ;;
       wrong-repo) export FAKE_SVN_REPOSITORY_ROOT='https://plugins.svn.wordpress.org/not-grand-media' ;;
       wrong-url) export FAKE_SVN_URL='https://plugins.svn.wordpress.org/grand-media/trunk' ;;
       revision-drift) export FAKE_SVN_REVISION_AFTER_UPDATE=9999 ;;
       svn-provenance) jq '.svn.deployment_id = "9999"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
     esac
-    output=$(run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+    output=$(run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     rc=$?
     unset FAKE_SVN_MODE FAKE_SVN_REPOSITORY_ROOT FAKE_SVN_URL FAKE_SVN_REVISION_AFTER_UPDATE
     test "$rc" -ne 0 || return 1
@@ -2516,13 +2516,13 @@ test_svn_publish_warns_after_commit_if_result_or_manifest_fails() {
     fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     prepare_publish_fixture "$fixture" || return 1
     if test "$mode" = bad-revision; then
-      output=$(FAKE_SVN_COMMIT_REVISION=bad run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+      output=$(FAKE_SVN_COMMIT_REVISION=bad run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     else
       fake_bin="$fixture/fail-bin"
       mkdir -p "$fake_bin"
       printf '#!/usr/bin/env bash\nexit 1\n' > "$fake_bin/mv"
       chmod +x "$fake_bin/mv"
-      output=$(PATH="$fake_bin:$PATH" run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+      output=$(PATH="$fake_bin:$PATH" run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     fi
     rc=$?
     test "$rc" -ne 0 || return 1
@@ -2539,12 +2539,12 @@ test_protected_publications_are_independent_in_both_orders() {
     prepare_publish_fixture "$fixture" || return 1
     case $order in
       svn-first)
-        run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' >/dev/null || return 1
-        output=$(run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567') || return 1
+        run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' >/dev/null || return 1
+        output=$(run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567') || return 1
         ;;
       freemius-first)
-        run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' >/dev/null || return 1
-        output=$(run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567') || return 1
+        run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' >/dev/null || return 1
+        output=$(run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567') || return 1
         ;;
     esac
     test "$(cat "$fixture/svn-commit.count")" = 1 || return 1
@@ -2558,7 +2558,7 @@ test_svn_publish_warns_after_commit_when_cleanup_fails() {
   local fixture output rc
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   prepare_publish_fixture "$fixture" || return 1
-  output=$(FAKE_SVN_MODE=tamper-temp-marker-late run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+  output=$(FAKE_SVN_MODE=tamper-temp-marker-late run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'SVN commit may already have succeeded; inspect before retrying' || return 1
@@ -2579,9 +2579,9 @@ test_protected_publications_warn_after_final_output_failure() {
     printf '%s\n' 'printf() {' '  case $1 in' "    'svn_revision=%s\\n'|'freemius_deployment=%s\\nrelease_mode=released\\n') return 1 ;;" '    *) builtin printf "$@" ;;' '  esac' '}' > "$bash_env"
     export BASH_ENV="$bash_env"
     if test "$command" = svn-publish; then
-      output=$(run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+      output=$(run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     else
-      output=$(run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+      output=$(run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     fi
     rc=$?
     unset BASH_ENV
@@ -2651,7 +2651,7 @@ test_freemius_release_refetches_pending_and_puts_once() {
   fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
   make_release_fixture "$fixture" || return 1
   manifest="$fixture/release-manifest.json"
-  confirmation='release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567'
+  confirmation='release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567'
   token=$(freemius_test_token "$fixture")
   output=$(run_freemius_release "$fixture" "$confirmation") || return 1
   grep -Fx 'GET /v1/products/20980/tags.json?fields=id,plugin_id,version,release_mode&count=50' "$fixture/curl.log" >/dev/null || return 1
@@ -2677,7 +2677,7 @@ test_freemius_release_rejects_pre_mutation_invalid_evidence_with_zero_put() {
     make_release_fixture "$fixture" || return 1
     manifest="$fixture/release-manifest.json"
     case $mode in
-      unsafe-version) jq '.version = "../1.25.1"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
+      unsafe-version) jq '.version = "../1.25.2"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       unsafe-sha) jq '.git_sha = "short"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       unsafe-id) jq '.freemius.deployment_id = "9001?bad"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       wrong-product) jq '.freemius.product_id = 9999' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
@@ -2686,7 +2686,7 @@ test_freemius_release_rejects_pre_mutation_invalid_evidence_with_zero_put() {
       verification-source) jq '.verification.source_zip_sha256 = "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"' "$manifest" > "$manifest.next" && mv "$manifest.next" "$manifest" ;;
       refetch-id|refetch-product|refetch-version|refetch-mode|refetch-duplicate) export FAKE_CURL_MODE="release-$mode" ;;
     esac
-    output=$(run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+    output=$(run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     rc=$?
     unset FAKE_CURL_MODE
     test "$rc" -ne 0 || return 1
@@ -2702,7 +2702,7 @@ test_freemius_release_post_mutation_failures_have_exactly_one_put() {
   for mode in put-mismatch put-failure; do
     fixture=$(mktemp -d "$RELEASE_TEST_TMP_ROOT/tmp.XXXXXXXXXX")
     make_release_fixture "$fixture" || return 1
-    output=$(FAKE_CURL_MODE="release-$mode" run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+    output=$(FAKE_CURL_MODE="release-$mode" run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
     rc=$?
     test "$rc" -ne 0 || return 1
     assert_contains "$output" 'may already have succeeded; inspect before retrying' || return 1
@@ -2720,7 +2720,7 @@ test_freemius_release_warns_when_manifest_fails_after_put() {
   mkdir -p "$fake_bin"
   printf '#!/usr/bin/env bash\nexit 1\n' > "$fake_bin/mv"
   chmod +x "$fake_bin/mv"
-  output=$(PATH="$fake_bin:$PATH" run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' 2>&1)
+  output=$(PATH="$fake_bin:$PATH" run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' 2>&1)
   rc=$?
   test "$rc" -ne 0 || return 1
   assert_contains "$output" 'Freemius release may already have succeeded; inspect before retrying' || return 1
@@ -2737,13 +2737,13 @@ test_publication_interruptions_warn_and_never_retry_mutations() {
     if test "$command" = svn-publish; then
       prepare_publish_fixture "$fixture" || return 1
       FAKE_SVN_PAUSE_AFTER_MUTATION="$ready" \
-        run_svn_publish "$fixture" 'publish svn 1.25.1 0123456789abcdef0123456789abcdef01234567' \
+        run_svn_publish "$fixture" 'publish svn 1.25.2 0123456789abcdef0123456789abcdef01234567' \
         >"$output_file" 2>&1 &
       count_file="$fixture/svn-commit.count"
     else
       make_release_fixture "$fixture" || return 1
       FAKE_CURL_PAUSE_AFTER_MUTATION="$ready" \
-        run_freemius_release "$fixture" 'release freemius 1.25.1 0123456789abcdef0123456789abcdef01234567' \
+        run_freemius_release "$fixture" 'release freemius 1.25.2 0123456789abcdef0123456789abcdef01234567' \
         >"$output_file" 2>&1 &
       count_file="$fixture/freemius-release.count"
     fi
@@ -2787,7 +2787,7 @@ test_operator_guide_documents_safe_and_protected_workflow() {
   ! grep -Eq 'Bearer[[:space:]]+[A-Za-z0-9._-]{12,}|api\.freemius\.com/.+token=' "$guide"
 }
 
-run_if_selected 'metadata' 'metadata reports 1.25.1' test_metadata_reports_1_25_1
+run_if_selected 'metadata' 'metadata reports 1.25.2' test_metadata_reports_1_25_2
 run_if_selected 'preflight' 'preflight rejects version mismatch' test_preflight_rejects_version_mismatch
 run_if_selected 'preflight' 'test bypass does not skip Git worktree checks' test_bypass_does_not_skip_git_worktree_checks
 run_if_selected 'preflight' 'preflight rejects git status error' test_preflight_rejects_git_status_error

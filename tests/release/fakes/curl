@@ -82,12 +82,12 @@ case ${FAKE_CURL_MODE:-upload-ok} in
   upload-ok)
     test "$method" = POST || { printf 'fake curl: expected POST\n' >&2; exit 2; }
 	case $form in file=@?*) ;; *) printf 'fake curl: expected file multipart form\n' >&2; exit 2 ;; esac
-    printf '{"id":"%s","plugin_id":"%s","version":"1.25.1","release_mode":"%s"}\n' "${FAKE_CURL_DEPLOYMENT_ID:-9001}" "${FAKE_CURL_PRODUCT_ID:-20980}" "${FAKE_CURL_RELEASE_MODE:-pending}"
+    printf '{"id":"%s","plugin_id":"%s","version":"1.25.2","release_mode":"%s"}\n' "${FAKE_CURL_DEPLOYMENT_ID:-9001}" "${FAKE_CURL_PRODUCT_ID:-20980}" "${FAKE_CURL_RELEASE_MODE:-pending}"
     ;;
   upload-numeric-product-id)
     test "$method" = POST || { printf 'fake curl: expected POST\n' >&2; exit 2; }
 	case $form in file=@?*) ;; *) printf 'fake curl: expected file multipart form\n' >&2; exit 2 ;; esac
-    printf '%s\n' '{"id":"9001","plugin_id":20980,"version":"1.25.1","release_mode":"pending"}'
+    printf '%s\n' '{"id":"9001","plugin_id":20980,"version":"1.25.2","release_mode":"pending"}'
     ;;
   download-free)
     test "$method" = GET || { printf 'fake curl: expected GET\n' >&2; exit 2; }
@@ -111,7 +111,7 @@ case ${FAKE_CURL_MODE:-upload-ok} in
       test "$path" = '/v1/products/20980/tags.json?fields=id,plugin_id,version,release_mode&count=50' || { printf 'fake curl: unexpected release list URL\n' >&2; exit 2; }
       response_id=9001
       response_product=20980
-      response_version=1.25.1
+      response_version=1.25.2
       response_mode=pending
       case ${FAKE_CURL_MODE:-} in
         release-refetch-id) response_id=9999 ;;
@@ -120,7 +120,7 @@ case ${FAKE_CURL_MODE:-upload-ok} in
         release-refetch-mode) response_mode=released ;;
       esac
       if test "${FAKE_CURL_MODE:-}" = release-refetch-duplicate; then
-        printf '{"tags":[{"id":"9001","plugin_id":"20980","version":"1.25.1","release_mode":"pending"},{"id":"9001","plugin_id":"20980","version":"1.25.1","release_mode":"pending"}]}\n'
+        printf '{"tags":[{"id":"9001","plugin_id":"20980","version":"1.25.2","release_mode":"pending"},{"id":"9001","plugin_id":"20980","version":"1.25.2","release_mode":"pending"}]}\n'
       else
         printf '{"tags":[{"id":"%s","plugin_id":"%s","version":"%s","release_mode":"%s"}]}\n' \
           "$response_id" "$response_product" "$response_version" "$response_mode"
@@ -141,7 +141,7 @@ case ${FAKE_CURL_MODE:-upload-ok} in
       test "${FAKE_CURL_MODE:-}" != release-put-failure || { printf 'fake curl: HTTP 500\n' >&2; exit 22; }
       response_mode=released
       test "${FAKE_CURL_MODE:-}" != release-put-mismatch || response_mode=pending
-      printf '{"id":"9001","plugin_id":"20980","version":"1.25.1","release_mode":"%s"}\n' "$response_mode"
+      printf '{"id":"9001","plugin_id":"20980","version":"1.25.2","release_mode":"%s"}\n' "$response_mode"
     else
       printf 'fake curl: release flow expected GET or PUT\n' >&2
       exit 2
