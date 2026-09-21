@@ -188,6 +188,8 @@ class GmediaProcessor_Galleries extends GmediaProcessor {
 		}
 
 		if ( isset( $_POST['module_preset_restore_original'] ) ) {
+			check_admin_referer( 'GmediaGallery' );
+
 			$preset_id = intval( $gmCore->_post( 'preset_default', 0 ) );
 			$gmDB->delete_term( $preset_id );
 			$this->msg[] = esc_html__( 'Original module settings restored. Click "Reset to default" button to save original module settings for gallery', 'grand-media' );
