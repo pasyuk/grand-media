@@ -64,7 +64,7 @@ case $command in
       elif test "${FAKE_SVN_MODE:-}" = dirty-after && test -f "$state/updated" && ! test -f "$state/copied"; then
         printf 'M       trunk/dirty-after-update.php\n'
       elif test -f "$state/copied"; then
-        printf 'A       tags/%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+        printf 'A       tags/%s/\n' "${FAKE_SVN_VERSION:-1.25.2}"
         test "${FAKE_SVN_MODE:-}" != publish-status-drift || printf 'M       trunk/unreviewed.php\n'
       fi
     elif test "$target" = trunk; then
@@ -101,9 +101,9 @@ case $command in
     if test "${FAKE_SVN_MODE:-}" = existing-tag \
       || { test "${FAKE_SVN_MODE:-}" = tag-after-update && test -f "$state/updated"; } \
       || { test "${FAKE_SVN_MODE:-}" = tag-before-copy && test "$list_count" -ge 2; }; then
-      printf '%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+      printf '%s/\n' "${FAKE_SVN_VERSION:-1.25.2}"
     elif test "${FAKE_SVN_MODE:-}" = publish-tag-race && test -f "$state/copied"; then
-      printf '%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+      printf '%s/\n' "${FAKE_SVN_VERSION:-1.25.2}"
     else
       printf '1.0.0/\n'
     fi
@@ -147,12 +147,12 @@ case $command in
       printf '\n' >> "$temporary_root/.grand-media-svn-prepare"
     fi
     printf 'M       trunk/grand-media.php\n'
-    printf 'A       tags/%s/\n' "${FAKE_SVN_VERSION:-1.25.1}"
+    printf 'A       tags/%s/\n' "${FAKE_SVN_VERSION:-1.25.2}"
     test "${FAKE_SVN_MODE:-}" != publish-diff-drift || printf 'M       trunk/unreviewed.php\n'
     ;;
   commit)
     test "$#" -eq 3 && test "$1" = . && test "$2" = -m || { printf 'fake svn: unsupported commit arguments\n' >&2; exit 64; }
-    test "$3" = "Release ${FAKE_SVN_VERSION:-1.25.1}" || { printf 'fake svn: unexpected commit message\n' >&2; exit 64; }
+    test "$3" = "Release ${FAKE_SVN_VERSION:-1.25.2}" || { printf 'fake svn: unexpected commit message\n' >&2; exit 64; }
     test -n "${FAKE_SVN_COMMIT_MARKER:-}" || { printf 'fake svn: FAKE_SVN_COMMIT_MARKER is required\n' >&2; exit 64; }
     test "${LC_ALL:-}" = C || { printf 'fake svn: commit requires LC_ALL=C\n' >&2; exit 64; }
     count=0
