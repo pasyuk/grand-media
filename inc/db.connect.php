@@ -3420,6 +3420,52 @@ class GmediaDB {
 		return $term_ids;
 	}
 
+	private function album_save_error( $term_id ) {
+		$this->clean_term_cache( $term_id );
+
+		return new WP_Error(
+			'gm_album_save_error',
+			esc_html__( 'The album could not be fully saved. Some changes may already have been saved. Reload the album and check its settings before trying again.', 'grand-media' ),
+			array( 'term_id' => $term_id )
+		);
+	}
+
+	private function update_album_metadata( $term_id, $key, $value ) {
+		$result = $this->update_metadata( 'gmedia_term', $term_id, $key, $value );
+		if ( false !== $result ) {
+			return true;
+		}
+
+		// Metadata updates also return false when the value has not changed.
+		$stored = $this->get_metadata( 'gmedia_term', $term_id, $key );
+		$value  = sanitize_meta( $key, stripslashes_deep( $value ), 'gmedia_term' );
+
+		return is_array( $stored ) && 1 === count( $stored ) && (string) maybe_serialize( $stored[0] ) === (string) maybe_serialize( $value );
+	}
+
+	private function save_album_post( $term_id, $post_data ) {
+		$post_id = $this->get_metadata( 'gmedia_term', $term_id, '_post_ID', true );
+		if ( $post_id ) {
+			$post_data['ID'] = $post_id;
+			$result         = wp_update_post( $post_data, true );
+		} else {
+			$result = wp_insert_post( $post_data, true );
+		}
+		if ( ! $result || is_wp_error( $result ) ) {
+			return $this->album_save_error( $term_id );
+		}
+		if ( ! $post_id ) {
+			if ( ! add_metadata( 'post', $result, '_gmedia_term_ID', $term_id )
+				|| ! $this->update_album_metadata( $term_id, '_post_ID', $result ) ) {
+				// The new post is not linked to the album; avoid duplicates on retry.
+				wp_delete_post( $result, true );
+				return $this->album_save_error( $term_id );
+			}
+		}
+
+		return $result;
+	}
+
 	/**
 	 * Adds a new term to the database. Optionally marks it as an alias of an existing term.
 	 * Error handling is assigned for the nonexistence of the $taxonomy and $term
@@ -3527,12 +3573,18 @@ class GmediaDB {
 			foreach ( $meta as $key => $value ) {
 				if ( in_array( $key, array( '_cover', '_orderby', '_order', '_module_preset' ), true ) ) {
 					$value = ltrim( $value, '#' );
-					$this->add_metadata( $meta_type, $term_id, $key, $value );
+					$saved = $this->add_metadata( $meta_type, $term_id, $key, $value );
+					if ( 'gmedia_album' === $taxonomy && ! $saved ) {
+						return $this->album_save_error( $term_id );
+					}
 					continue;
 				}
 				$key = trim( $key );
 				if ( ! empty( $key ) && ! $gmCore->is_digit( $key ) && ! empty( $value ) && ! $gmCore->is_protected_meta( $key, $meta_type ) ) {
-					$this->add_metadata( $meta_type, $term_id, $key, $value );
+					$saved = $this->add_metadata( $meta_type, $term_id, $key, $value );
+					if ( 'gmedia_album' === $taxonomy && ! $saved ) {
+						return $this->album_save_error( $term_id );
+					}
 				}
 			}
 		}
@@ -3553,10 +3605,17 @@ class GmediaDB {
 			} else {
 				$post_data['comment_status'] = $gmGallery->options['default_gmedia_comment_status'];
 			}
-			$_post_ID = wp_insert_post( $post_data );
-			if ( $_post_ID ) {
-				add_metadata( 'post', $_post_ID, '_gmedia_term_ID', $term_id );
-				$this->add_metadata( 'gmedia_term', $term_id, '_post_ID', $_post_ID );
+			if ( 'gmedia_album' === $taxonomy ) {
+				$result = $this->save_album_post( $term_id, $post_data );
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+			} else {
+				$_post_ID = wp_insert_post( $post_data );
+				if ( $_post_ID ) {
+					add_metadata( 'post', $_post_ID, '_gmedia_term_ID', $term_id );
+					$this->add_metadata( 'gmedia_term', $term_id, '_post_ID', $_post_ID );
+				}
 			}
 		}
 
@@ -4045,7 +4104,10 @@ class GmediaDB {
 
 		$term_id = $wpdb->get_var( $wpdb->prepare( "SELECT t.term_id FROM {$wpdb->prefix}gmedia_term AS t WHERE t.taxonomy = %s AND t.term_id = %d", $taxonomy, $term_id ) );
 		do_action( 'edit_gmedia_term', $term_id, $taxonomy );
-		$wpdb->update( $wpdb->prefix . 'gmedia_term', compact( 'term_id', 'name', 'taxonomy', 'description', 'global', 'status' ), array( 'term_id' => $term_id ) );
+		$saved = $wpdb->update( $wpdb->prefix . 'gmedia_term', compact( 'term_id', 'name', 'taxonomy', 'description', 'global', 'status' ), array( 'term_id' => $term_id ) );
+		if ( 'gmedia_album' === $taxonomy && false === $saved ) {
+			return $this->album_save_error( $term_id );
+		}
 
 		if ( ( 'gmedia_album' === $taxonomy ) ) {
 			$default_meta = array(
@@ -4070,11 +4132,13 @@ class GmediaDB {
 						$status = esc_sql( $status );
 						// phpcs:ignore
 						if ( false === $wpdb->query( "UPDATE {$wpdb->prefix}gmedia SET status = '{$status}' WHERE ID IN (" . join( ',', $values['gm'] ) . ')' ) ) {
-							return new WP_Error( 'db_insert_error', __( 'Could not update statuses for gmedia items in the database' , 'grand-media'), $wpdb->last_error );
+							return $this->album_save_error( $term_id );
 						}
 						if ( ! empty( $values['wp'] ) ) {
 							// phpcs:ignore
-							$wpdb->query( "UPDATE $wpdb->posts SET post_status = '{$status}' WHERE ID IN (" . join( ',', $values['wp'] ) . ')' );
+							if ( false === $wpdb->query( "UPDATE $wpdb->posts SET post_status = '{$status}' WHERE ID IN (" . join( ',', $values['wp'] ) . ')' ) ) {
+								return $this->album_save_error( $term_id );
+							}
 						}
 					}
 				}
@@ -4086,20 +4150,39 @@ class GmediaDB {
 			foreach ( $meta as $key => $value ) {
 				if ( in_array( $key, array( '_cover', '_orderby', '_order', '_module_preset' ), true ) ) {
 					$value = ltrim( $value, '#' );
-					$this->update_metadata( $meta_type, $term_id, $key, $value );
+					if ( 'gmedia_album' === $taxonomy ) {
+						if ( ! $this->update_album_metadata( $term_id, $key, $value ) ) {
+							return $this->album_save_error( $term_id );
+						}
+					} else {
+						$this->update_metadata( $meta_type, $term_id, $key, $value );
+					}
 				} elseif ( $gmCore->is_digit( $key ) ) {
 					$mid = (int) $key;
 					//$value = wp_unslash( $value );
 					$meta = $this->get_metadata_by_mid( 'gmedia_term', $mid );
 					if ( ! $meta ) {
+						if ( 'gmedia_album' === $taxonomy ) {
+							return $this->album_save_error( $term_id );
+						}
 						continue;
 					}
 					if ( '' === trim( $value ) ) {
-						$this->delete_metadata_by_mid( $meta_type, $key );
+						$saved = $this->delete_metadata_by_mid( $meta_type, $key );
+						if ( 'gmedia_album' === $taxonomy && ! $saved ) {
+							return $this->album_save_error( $term_id );
+						}
 						continue;
 					}
 					if ( $meta->meta_value !== $value ) {
-						$this->update_metadata_by_mid( $meta_type, $mid, $value );
+						$saved = $this->update_metadata_by_mid( $meta_type, $mid, $value );
+						if ( 'gmedia_album' === $taxonomy && ! $saved ) {
+							$stored = $this->get_metadata_by_mid( $meta_type, $mid );
+							$value  = sanitize_meta( $meta->meta_key, $value, $meta_type );
+							if ( ! $stored || (string) maybe_serialize( $stored->meta_value ) !== (string) maybe_serialize( $value ) ) {
+								return $this->album_save_error( $term_id );
+							}
+						}
 					}
 				}
 			}
@@ -4121,28 +4204,39 @@ class GmediaDB {
 			} else {
 				$post_data['comment_status'] = $gmGallery->options['default_gmedia_comment_status'];
 			}
-			$_post_ID = $this->get_metadata( 'gmedia_term', $term_id, '_post_ID', true );
-			if ( $_post_ID ) {
-				$post_data['ID'] = $_post_ID;
-
+			if ( 'gmedia_album' === $taxonomy ) {
 				if ( ! empty( $post_date ) ) {
 					$post_data['post_date']     = $post_date;
 					$post_data['post_date_gmt'] = get_gmt_from_date( $post_date );
 				}
+				$result = $this->save_album_post( $term_id, $post_data );
+				if ( is_wp_error( $result ) ) {
+					return $result;
+				}
+			} else {
+				$_post_ID = $this->get_metadata( 'gmedia_term', $term_id, '_post_ID', true );
+				if ( $_post_ID ) {
+					$post_data['ID'] = $_post_ID;
 
-				if ( ! wp_update_post( $post_data ) ) {
-					unset( $post_data['ID'] );
+					if ( ! empty( $post_date ) ) {
+						$post_data['post_date']     = $post_date;
+						$post_data['post_date_gmt'] = get_gmt_from_date( $post_date );
+					}
+
+					if ( ! wp_update_post( $post_data ) ) {
+						unset( $post_data['ID'] );
+						$_post_ID = wp_insert_post( $post_data );
+						if ( $_post_ID ) {
+							add_metadata( 'post', $_post_ID, '_gmedia_term_ID', $term_id );
+							$this->update_metadata( 'gmedia_term', $term_id, '_post_ID', $_post_ID );
+						}
+					}
+				} else {
 					$_post_ID = wp_insert_post( $post_data );
 					if ( $_post_ID ) {
 						add_metadata( 'post', $_post_ID, '_gmedia_term_ID', $term_id );
 						$this->update_metadata( 'gmedia_term', $term_id, '_post_ID', $_post_ID );
 					}
-				}
-			} else {
-				$_post_ID = wp_insert_post( $post_data );
-				if ( $_post_ID ) {
-					add_metadata( 'post', $_post_ID, '_gmedia_term_ID', $term_id );
-					$this->update_metadata( 'gmedia_term', $term_id, '_post_ID', $_post_ID );
 				}
 			}
 		}
@@ -4236,7 +4330,9 @@ class GmediaDB {
 
 		do_action( "{$meta_type}_update_meta", $meta_id, $object_id, $meta_key, $_meta_value );
 
-		$wpdb->update( $table, $data, $where );
+		if ( false === $wpdb->update( $table, $data, $where ) ) {
+			return false;
+		}
 
 		wp_cache_delete( $object_id, $meta_type . '_meta' );
 		if ( 'gmedia' === $meta_type ) {

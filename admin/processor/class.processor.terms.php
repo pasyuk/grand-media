@@ -111,6 +111,10 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 				}
 				if ( $edit_term ) {
 					$_term = $gmDB->get_term( $edit_term );
+					if ( is_wp_error( $_term ) || empty( $_term ) ) {
+						$this->error[] = esc_html__( 'The album could not be loaded. Reload the page and try again.', 'grand-media' );
+						break;
+					}
 					if ( ( (int) $_term->global !== (int) $user_ID ) && ! current_user_can( 'gmedia_edit_others_media' ) ) {
 						$this->error[] = esc_html__( 'You are not allowed to edit others media', 'grand-media' );
 						break;
@@ -123,8 +127,16 @@ class GmediaProcessor_Terms extends GmediaProcessor {
 					$this->error[] = $term_id->get_error_message();
 					break;
 				}
+				if ( ! $term_id ) {
+					$this->error[] = esc_html__( 'The album could not be saved. Reload the page and try again.', 'grand-media' );
+					break;
+				}
 				if ( isset( $term['reset_custom_order'] ) ) {
-					$gmDB->update_term_sortorder( $term_id );
+					$result = $gmDB->update_term_sortorder( $term_id );
+					if ( is_wp_error( $result ) ) {
+						$this->error[] = $result->get_error_message();
+						break;
+					}
 				}
 
 				// translators: album name.
