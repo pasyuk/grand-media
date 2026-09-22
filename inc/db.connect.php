@@ -3449,7 +3449,12 @@ class GmediaDB {
 		if ( $post_id ) {
 			$post_data['ID'] = $post_id;
 			$result         = wp_update_post( $post_data, true );
-		} else {
+			if ( is_wp_error( $result ) && 'invalid_post' === $result->get_error_code() ) {
+				$post_id = 0;
+				unset( $post_data['ID'] );
+			}
+		}
+		if ( ! $post_id ) {
 			$result = wp_insert_post( $post_data, true );
 		}
 		if ( ! $result || is_wp_error( $result ) ) {

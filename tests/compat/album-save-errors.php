@@ -14,6 +14,7 @@ class WP_Error {
 	public $code, $message, $data;
 	public function __construct( $code, $message = '', $data = null ) { $this->code = $code; $this->message = $message; $this->data = $data; }
 	public function get_error_message() { return $this->message; }
+	public function get_error_code() { return $this->code; }
 }
 function is_wp_error( $value ) { return $value instanceof WP_Error; }
 function __( $text, $domain = '' ) { return $text; }
@@ -46,6 +47,7 @@ function wp_insert_post( $data, $wp_error = false ) {
 	return 90;
 }
 function wp_update_post( $data, $wp_error = false ) {
+	if ( 91 === (int) $data['ID'] ) { return $wp_error ? new WP_Error( 'invalid_post', 'Invalid post ID.' ) : 0; }
 	if ( 'post_update' === $GLOBALS['wpdb']->failure ) { return $wp_error ? new WP_Error( 'db_update_error', 'Injected failure' ) : 0; }
 	$GLOBALS['post_data'] = $data;
 	return $data['ID'];
@@ -232,6 +234,22 @@ foreach ( array( 'post_link', 'meta_insert:_post_ID' ) as $failure ) {
 	$wpdb->failure = ''; $_GET['edit_term'] = '77';
 	$processor = new Album_Test_Processor(); $processor->run();
 	album_assert( ! $processor->error && 1 === $post_inserts - $post_deletes, 'Retry leaves one linked post: ' . $failure );
+}
+// A deleted related post is recoverable; real write failures still reach the UI.
+foreach ( array( '', 'post_insert', 'post_link', 'meta_update:_post_ID' ) as $failure ) {
+	album_fixture( true, $failure );
+	$wpdb->meta['_post_ID'] = '91'; // WordPress reports this deleted ID as invalid_post.
+	$processor = new Album_Test_Processor(); $processor->run();
+	album_assert( 1 === $post_inserts, 'Deleted related post must attempt replacement: ' . $failure );
+	if ( '' === $failure ) {
+		album_assert( ! $processor->error && $processor->msg && '90' === $wpdb->meta['_post_ID'], 'Deleted related post must be replaced and linked' );
+		album_assert( ! isset( $post_data['ID'] ), 'Replacement must not reuse the deleted post ID' );
+	} else {
+		album_assert( $processor->error && ! $processor->msg, 'Replacement failure must reach the UI: ' . $failure );
+		if ( 'post_insert' !== $failure ) {
+			album_assert( 1 === $post_deletes, 'Unlinked replacement must be cleaned up: ' . $failure );
+		}
+	}
 }
 $completed = true;
 if ( $failures ) { fwrite( STDERR, implode( "\n", $failures ) . "\n" ); exit( 1 ); }
