@@ -3422,6 +3422,7 @@ class GmediaDB {
 
 	private function album_save_error( $term_id ) {
 		$this->clean_term_cache( $term_id );
+		do_action( 'clean_gmedia_cache' );
 
 		return new WP_Error(
 			'gm_album_save_error',

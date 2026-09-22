@@ -189,6 +189,8 @@ foreach ( array( false, true ) as $editing ) {
 			album_assert( 'album' === $post_data['post_name'] && '90' === $wpdb->meta['_post_ID'], $label . ' must persist the related post' );
 		} elseif ( 'term_insert' !== $failure && 'sort_reset' !== $failure && 'term_read' !== $failure && 'term_read_update' !== $failure ) {
 			album_assert( $gmDB->cleaned, $label . ' must invalidate partial album state' );
+			album_assert( in_array( 'clean_gmedia_cache', $actions, true ), $label . ' must invalidate rendered frontend caches' );
+			album_assert( ! in_array( 'created_gmedia_term', $actions, true ) && ! in_array( 'edited_gmedia_term', $actions, true ), $label . ' must not fire successful-save actions' );
 		}
 		if ( 'post_update' === $failure ) { album_assert( 0 === $post_inserts, 'Failed update must not create a replacement post' ); }
 	}
