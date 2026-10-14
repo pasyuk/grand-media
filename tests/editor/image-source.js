@@ -3,12 +3,13 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const path = require('node:path');
 const filters = {};
-let selected = 'core/image', open = false, received, listener;
+let selected = 'core/image', owner = 'core/image', open = false, received, listener;
 const frame = { contentWindow: {} };
 const el = (type, props, ...children) => ({type, props: {...props, ...(children.length ? {children} : {})}});
 const wp = {
   hooks: {addFilter: (name, key, fn) => { filters[name] = fn; }},
   element: {createElement: el, Fragment: 'Fragment', useState: () => [open, v => { open = v; }], useRef: () => ({current: frame}), useEffect: fn => { fn(); }},
+  blockEditor: {useBlockEditContext: () => ({name: owner})},
   data: {useSelect: fn => fn(() => ({getSelectedBlock: () => ({name: selected})}))},
   components: {Modal: 'Modal', Button: 'Button', MenuItem: 'MenuItem'},
   i18n: {__: s => s}
@@ -21,9 +22,9 @@ for (const name of ['editor.MediaReplaceFlow', 'editor.MediaPlaceholder']) {
   assert.equal(typeof filters[name], 'function');
   const Wrapped = filters[name]('Original');
   const props = {allowedTypes:['image'], onSelect: media => { received = media; }, children:'existing'};
-  selected = 'core/video';
+  owner = 'core/cover';
   assert.equal(Wrapped(props).type, 'Original');
-  selected = 'core/image';
+  owner = 'core/image';
   const tree = Wrapped(props);
   assert.equal(tree.type, 'Fragment');
 }
@@ -45,4 +46,15 @@ listener({origin:window.location.origin, source:frame.contentWindow, data:messag
 assert.equal(received.url, 'https://example.test/image.jpg');
 assert.equal(received.id, undefined, 'Gmedia ID must not become a WordPress attachment ID');
 assert.equal(open, false);
+open = true;
+tree = Wrapped({onSelect: media => { received = media; }});
+const closeMessage = {type: 'gmedia-picker-close'};
+listener({origin:'https://untrusted.test', source:frame.contentWindow, data:closeMessage});
+assert.equal(open, true);
+listener({origin:window.location.origin, source:{}, data:closeMessage});
+assert.equal(open, true);
+listener({origin:window.location.origin, source:frame.contentWindow, data:{type:'unrelated'}});
+assert.equal(open, true);
+listener({origin:window.location.origin, source:frame.contentWindow, data:closeMessage});
+assert.equal(open, false, 'Escape message from the picker must close the modal');
 console.log('Image source menu, selection and message boundaries passed.');

@@ -934,6 +934,14 @@ function gmedia_add_media_library() {
 		<!--suppress JSUnresolvedVariable -->
 		<script type="text/javascript">
 					jQuery( function( $ ) {
+						<?php if ( $block_editor ) { ?>
+						$( document ).on( 'keydown', function( event ) {
+							if ( 'Escape' === event.key ) {
+								event.stopPropagation();
+								window.parent.postMessage( {type: 'gmedia-picker-close'}, window.location.origin );
+							}
+						} );
+						<?php } ?>
 						function divFrame() {
 							$( '.card-body' ).css( {top: $( '.card-header' ).outerHeight()} );
 						}

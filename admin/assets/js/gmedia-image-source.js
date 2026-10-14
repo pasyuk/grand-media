@@ -7,10 +7,7 @@
       var state = wp.element.useState(false);
       var isOpen = state[0], setOpen = state[1];
       var frame = wp.element.useRef(null);
-      var isImage = wp.data.useSelect(function(select) {
-        var block = select('core/block-editor').getSelectedBlock();
-        return block && block.name === 'core/image';
-      }, []);
+      var isImage = wp.blockEditor.useBlockEditContext().name === 'core/image';
 
       wp.element.useEffect(function() {
         if (!isOpen) {
@@ -18,7 +15,14 @@
         }
         function receive(event) {
           if (event.origin !== window.location.origin || !frame.current || event.source !== frame.current.contentWindow ||
-              !event.data || event.data.type !== 'gmedia-image-selected') {
+              !event.data) {
+            return;
+          }
+          if (event.data.type === 'gmedia-picker-close') {
+            setOpen(false);
+            return;
+          }
+          if (event.data.type !== 'gmedia-image-selected') {
             return;
           }
           var media = event.data.media;
