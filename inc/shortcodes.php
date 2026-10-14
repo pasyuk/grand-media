@@ -430,7 +430,7 @@ function gmedia_shortcode( $atts, $shortcode_post_content = '' ) {
 
 	do_action( 'gmedia_shortcode' );
 
-	if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) {
+	if ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && is_string( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) ) {
 		do_action( 'gmedia_enqueue_scripts' );
 	}
 

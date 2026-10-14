@@ -36,7 +36,9 @@ function is_multisite() { return false; }
 function is_main_site() { return true; }
 function plugins_url() { return 'https://example.test/grand-media'; }
 function set_url_scheme( $url ) { return $url; }
-function apply_filters( $hook, $value ) { return $value; }
+function apply_filters( $hook, $value ) { return 'wp_read_image_metadata_types' === $hook ? array() : $value; }
+function wp_kses_post( $value ) { return strip_tags( $value ); }
+function _deprecated_function() { throw new RuntimeException( 'Deprecated function used while reading image metadata.' ); }
 function wp_mkdir_p() { return true; }
 function add_action() {}
 function add_filter() {}
@@ -72,6 +74,22 @@ if ( ! method_exists( $gmCore, 'iso_8859_1_to_utf8' ) ) {
 	if ( $expected !== $gmCore->iso_8859_1_to_utf8( $latin1 ) ) {
 		$failures[] = 'Latin-1 conversion did not preserve all 256 byte values.';
 	}
+}
+
+// Exercise the actual IPTC metadata reader, including Latin-1 and UTF-8 keywords.
+$file = tempnam( sys_get_temp_dir(), 'gmedia-iptc-' );
+try {
+	$iptc = '';
+	foreach ( array( array( 105, "Caf\xe9" ), array( 25, 'Київ' ), array( 25, "Caf\xe9" ) ) as $tag ) {
+		$iptc .= chr( 28 ) . chr( 2 ) . chr( $tag[0] ) . pack( 'n', strlen( $tag[1] ) ) . $tag[1];
+	}
+	file_put_contents( $file, iptcembed( $iptc, $root . '/admin/assets/img/slide1.jpg' ) );
+	$metadata = $gmCore->wp_read_image_metadata( $file );
+	if ( 'Café' !== $metadata['title'] || array( 'Київ', 'Café' ) !== $metadata['keywords'] ) {
+		$failures[] = 'IPTC metadata encoding was not preserved.';
+	}
+} finally {
+	unlink( $file );
 }
 
 if ( $failures ) {

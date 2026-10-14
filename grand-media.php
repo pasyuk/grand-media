@@ -11,7 +11,6 @@
  * Stable tag: 1.25.2
  * License: GPLv2 or later
  * Text Domain: grand-media
- * Domain Path: /lang
  */
 
 /*
@@ -179,9 +178,6 @@ if ( ! class_exists( 'Gmedia' ) ) {
 		public function start_plugin() {
 
 			$this->load_dependencies();
-
-			// Load the language file.
-			$this->load_textdomain();
 
 			require_once dirname( __FILE__ ) . '/inc/functions.php';
 
@@ -409,12 +405,6 @@ if ( ! class_exists( 'Gmedia' ) ) {
 			$gm_allowed_tags          = wp_kses_allowed_html( $allowed_tags );
 		}
 
-		public function load_textdomain() {
-
-			load_plugin_textdomain( 'grand-media', false, GMEDIA_FOLDER . '/lang/' );
-
-		}
-
 		public function register_scripts_backend() {
 			global $gmCore;
 
@@ -563,7 +553,7 @@ if ( ! class_exists( 'Gmedia' ) ) {
 		public function load_module_scripts() {
 			global $wp_styles;
 			$deps           = array();
-			$xmlhttprequest = ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( $_SERVER['HTTP_X_REQUESTED_WITH'] ) );
+			$xmlhttprequest = ( isset( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && is_string( $_SERVER['HTTP_X_REQUESTED_WITH'] ) && 'xmlhttprequest' === strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_X_REQUESTED_WITH'] ) ) ) );
 			foreach ( $this->do_module as $m => $module ) {
 				$deps = array_merge( $deps, explode( ',', $module['info']['dependencies'] ) );
 				$deps = apply_filters( 'gmedia_module_js_dependencies', $deps, $m );
