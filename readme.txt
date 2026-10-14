@@ -140,6 +140,7 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
 = v1.25.2 =
+* Improve library query handling.
 * Improve gallery preset request validation.
 
 = v1.25.1 =
