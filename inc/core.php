@@ -1936,13 +1936,13 @@ class GmediaCore {
 		}
 
 		foreach ( array( 'title', 'caption', 'credit', 'copyright', 'model', 'iso', 'software' ) as $key ) {
-			if ( ! empty( $meta[ $key ] ) && ! seems_utf8( $meta[ $key ] ) ) {
+			if ( ! empty( $meta[ $key ] ) && 1 !== preg_match( '//u', $meta[ $key ] ) ) {
 				$meta[ $key ] = $this->iso_8859_1_to_utf8( $meta[ $key ] );
 			}
 		}
 		if ( ! empty( $meta['keywords'] ) ) {
 			foreach ( $meta['keywords'] as $i => $key ) {
-				if ( ! seems_utf8( $key ) ) {
+				if ( 1 !== preg_match( '//u', $key ) ) {
 					$meta['keywords'][ $i ] = $this->iso_8859_1_to_utf8( $key );
 				}
 			}
