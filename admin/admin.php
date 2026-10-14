@@ -728,6 +728,13 @@ class GmediaAdmin {
 	public function gutenberg_assets() {
 		global $gmGallery, $gmDB, $gmCore;
 
+		if ( current_user_can( 'gmedia_library' ) ) {
+			wp_enqueue_script( 'gmedia-image-source', $gmCore->gmedia_url . '/admin/assets/js/gmedia-image-source.js', [ 'wp-hooks', 'wp-element', 'wp-components', 'wp-data', 'wp-i18n', 'wp-block-editor' ], $gmGallery->version, true );
+			wp_localize_script( 'gmedia-image-source', 'gmedia_image_source', [
+				'url' => add_query_arg( [ 'tab' => 'gmedia_library', 'chromeless' => true, 'gmedia_block' => 1 ], admin_url( 'media-upload.php' ) ),
+			] );
+		}
+
 		wp_enqueue_style( 'gmedia-block-editor', $gmCore->gmedia_url . '/admin/assets/css/gmedia-block.css', [], $gmGallery->version );
 		wp_register_script(
 			'gmedia-block-editor',

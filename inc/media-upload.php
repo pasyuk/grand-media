@@ -61,6 +61,29 @@ function media_upload_gmedia() {
 		$id = $gmCore->_post( 'ID', 0 );
 
 		$gmedia = $gmDB->get_gmedia( $id );
+		if ( $gmCore->_get( 'gmedia_block' ) ) {
+			if ( ! current_user_can( 'gmedia_library' ) || ! $gmedia || 0 !== strpos( $gmedia->mime_type, 'image/' ) || ( (int) $gmedia->author !== get_current_user_id() && ! current_user_can( 'gmedia_show_others_media' ) ) ) {
+				wp_die( esc_html__( 'You are not allowed to access this media.', 'grand-media' ) );
+			}
+			$size = sanitize_key( $gmCore->_post( 'size', 'web' ) );
+			if ( ! in_array( $size, array( 'web', 'original', 'thumb' ), true ) ) {
+				$size = 'web';
+			}
+			$selection = array(
+				'type'  => 'gmedia-image-selected',
+				'media' => array(
+					'url'     => esc_url_raw( $gmCore->gm_get_media_image( $gmedia, $size ) ),
+					'alt'     => sanitize_text_field( $gmCore->_post( 'title', '' ) ),
+					'caption' => wp_kses_post( $gmCore->_post( 'description', '' ) ),
+				),
+			);
+			?>
+			<script>
+				window.parent.postMessage( <?php echo wp_json_encode( $selection, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT ); ?>, window.location.origin );
+			</script>
+			<?php
+			return;
+		}
 		if ( $gmedia ) {
 
 			$meta = $gmDB->get_metadata( 'gmedia', $gmedia->ID, '_metadata', true );
@@ -782,6 +805,7 @@ function gmedia_add_media_library() {
 	wp_enqueue_script( 'grand-media' );
 
 	$post_id = intval( $gmCore->_get( 'post_id' ) );
+	$block_editor = (bool) $gmCore->_get( 'gmedia_block' );
 
 	if ( current_user_can( 'gmedia_show_others_media' ) ) {
 		$author = 0;
@@ -801,7 +825,7 @@ function gmedia_add_media_library() {
 
 	?>
 
-	<div class="card m-0 mw-100 min-vh-100 p-0" id="gmedia-container">
+	<div class="card m-0 mw-100 min-vh-100 p-0<?php echo $block_editor ? ' gmedia-block-picker' : ''; ?>" id="gmedia-container">
 		<div class="card-header bg-light clearfix">
 			<?php include GMEDIA_ABSPATH . 'admin/tpl/search-form.php'; ?>
 			<div class="float-end">
@@ -816,7 +840,7 @@ function gmedia_add_media_library() {
 						foreach ( $gmediaQuery as $item ) {
 							gmedia_item_more_data( $item );
 							?>
-							<form class="img-thumbnail" id="list-item-<?php echo absint( $item->ID ); ?>" data-id="<?php echo absint( $item->ID ); ?>" data-type="<?php echo esc_attr( $item->type ); ?>">
+							<form role="button" tabindex="0" aria-label="<?php echo esc_attr( $item->title ? $item->title : $item->gmuid ); ?>" class="img-thumbnail" id="list-item-<?php echo absint( $item->ID ); ?>" data-id="<?php echo absint( $item->ID ); ?>" data-type="<?php echo esc_attr( $item->type ); ?>">
 								<img src="<?php echo esc_url( $gmCore->gm_get_media_image( $item, 'thumb' ) ); ?>" style="height:100px;width:auto;" alt=""/>
 								<span class="fa-solid fa-check text-success"></span>
 
@@ -827,6 +851,7 @@ function gmedia_add_media_library() {
 										<label><?php esc_html_e( 'Title', 'grand-media' ); ?></label>
 										<input name="title" type="text" class="form-control input-sm" placeholder="<?php esc_attr_e( 'Title', 'grand-media' ); ?>" value="<?php echo esc_attr( $item->title ); ?>">
 									</div>
+									<?php if ( ! $block_editor ) { ?>
 									<div class="form-group">
 										<label><?php esc_html_e( 'Link To', 'grand-media' ); ?></label>
 										<select id="gmedia_url" class="form-control input-sm" style="display:block;margin-bottom:5px;">
@@ -842,6 +867,7 @@ function gmedia_add_media_library() {
 											<input name="link" type="text" style="display:none;font-size:80%;" readonly="readonly" disabled="disabled" class="originalurl form-control input-sm" value="<?php echo esc_attr( $item->url_original ); ?>"/>
 										<?php } ?>
 									</div>
+									<?php } ?>
 									<div class="form-group">
 										<label><?php esc_html_e( 'Description', 'grand-media' ); ?></label>
 										<textarea name="description" class="form-control input-sm" rows="4" cols="10"><?php echo esc_textarea( $item->description ); ?></textarea>
@@ -861,6 +887,7 @@ function gmedia_add_media_library() {
 											</select>
 										</div>
 									<?php } ?>
+									<?php if ( ! $block_editor ) { ?>
 									<div class="form-group">
 										<label><?php esc_html_e( 'Alignment', 'grand-media' ); ?></label>
 										<select name="align" class="form-control input-sm">
@@ -870,6 +897,7 @@ function gmedia_add_media_library() {
 											<option value="right"><?php esc_html_e( 'Right', 'grand-media' ); ?></option>
 										</select>
 									</div>
+									<?php } ?>
 								</div>
 							</form>
 							<?php
@@ -913,6 +941,12 @@ function gmedia_add_media_library() {
 						divFrame();
 						$( window ).on( 'resize', function() {
 							divFrame();
+						} );
+						$( '.img-thumbnail' ).on( 'keydown', function( event ) {
+							if ( event.target === this && ( 'Enter' === event.key || ' ' === event.key ) ) {
+								event.preventDefault();
+								$( this ).trigger( 'click' );
+							}
 						} );
 						$( '.img-thumbnail' ).on( 'click', function() {
 							var form = $( '#media-upload-form-container' );

@@ -44,3 +44,44 @@ img.gmedia-module-screenshot {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.gmedia-image-source-modal iframe {
+  width: 100%;
+  height: 60vh;
+  max-height: calc(100vh - 232px);
+  display: block;
+  border: 0;
+}
+
+@media (max-height: 600px) {
+  .components-modal__frame.gmedia-image-source-modal {
+    width: calc(100% - 32px);
+    height: calc(100% - 32px);
+    max-width: none;
+    max-height: none;
+    margin: 16px;
+  }
+
+  .gmedia-image-source-modal .components-modal__header {
+    height: 48px;
+    padding: 0 16px;
+  }
+
+  .gmedia-image-source-modal .components-modal__content {
+    margin-top: 48px;
+    padding: 0 16px 16px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .gmedia-image-source-modal .components-modal__children-container {
+    flex: 1;
+    min-height: 0;
+  }
+
+  .gmedia-image-source-modal iframe {
+    height: 100%;
+    max-height: none;
+  }
+}

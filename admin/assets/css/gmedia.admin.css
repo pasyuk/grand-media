@@ -1559,6 +1559,16 @@ body#media-upload {
 	background: #ffffff;
 }
 
+body#media-upload div#gmedia-container {
+	min-width: 0;
+}
+
+@media (max-width: 575px) {
+	body#media-upload .gmedia-block-picker .card-body > .row > div {
+		height: 50%;
+	}
+}
+
 body#media-upload .panel {
 	position: relative;
 	height: 100%;
@@ -2244,6 +2254,7 @@ input[type="month"].input-sm,
 /* Mirror the .btn-xs box above so fixed-panel search fields are exactly as tall
    as their toolbar buttons. The WP Media Library panel has no #gmedia-panel ID,
    so its direct card header needs the structural selector below. */
+body#media-upload .card-header .gmedia-search-form input.form-control,
 #gmedia-panel .card-header .gmedia-search-form input.form-control,
 .panel-fixed-header > .card-header .gmedia-search-form input.form-control {
 	min-height: 0;
