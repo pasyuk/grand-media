@@ -1536,6 +1536,8 @@ class GmediaDB {
 			$is_robots = true;
 		}
 
+		$q['gmedia__in'] = array_filter( array_map( 'absint', is_string( $q['gmedia__in'] ) ? explode( ',', $q['gmedia__in'] ) : (array) $q['gmedia__in'] ) );
+
 		$q['gmedia_id'] = absint( $q['gmedia_id'] );
 		$q['wppost_id'] = absint( $q['wppost_id'] );
 		$q['year']      = absint( $q['year'] );
@@ -1676,10 +1678,7 @@ class GmediaDB {
 
 			$where .= " AND {$wpdb->prefix}gmedia.ID = " . $q['gmedia_id'];
 		} elseif ( $q['gmedia__in'] ) {
-			if ( ! is_array( $q['gmedia__in'] ) ) {
-				$q['gmedia__in'] = explode( ',', $q['gmedia__in'] );
-			}
-			$gmedia__in                 = array_filter( array_map( 'absint', $q['gmedia__in'] ) );
+			$gmedia__in                 = $q['gmedia__in'];
 			$this->filter['gmedia__in'] = $gmedia__in;
 			$gmedia__in                 = implode( ',', $gmedia__in );
 			if ( $gmedia__in ) {

@@ -140,6 +140,9 @@ Use [Gmedia Support Forum](https://codeasily.com/community/forum/gmedia-gallery-
 * Go to Gmedia Modules page and update installed premium modules to latest versions
 
 = v1.25.2 =
+* Select existing Gmedia images from the Image block source menu.
+* Improve library query handling.
+* Updated Freemius SDK to the latest version.
 * Improve gallery preset request validation.
 
 = v1.25.1 =
