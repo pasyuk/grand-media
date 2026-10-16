@@ -1,3 +1,5 @@
+= v1.25.3 =
+* Fix a fatal error when switching between Gmedia Gallery and Gmedia Premium, allowing automatic deactivation of the other edition.
 
 = v1.8.99 =
 * Added: New free module - Cubik Lite (3D Cube Gallery)
