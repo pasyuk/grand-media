@@ -74,26 +74,29 @@ if ( ! function_exists( 'gmg_fs' ) ) {
 	gmg_fs()->add_action( 'after_uninstall', 'gmg_fs_uninstall_cleanup' );
 }
 
-/**
- * Freemius uninstall cleanup
- */
-function gmg_fs_uninstall_cleanup() {
-	if ( ! function_exists( 'gmedia_uninstall' ) ) {
-		require_once dirname( __FILE__ ) . '/inc/functions.php';
-	}
-
-	if ( function_exists( 'is_multisite' ) && is_multisite() ) {
-		global $wpdb;
-		$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
-		if ( $blogs ) {
-			foreach ( $blogs as $blog ) {
-				switch_to_blog( $blog['blog_id'] );
-				gmedia_uninstall();
-				restore_current_blog();
-			}
+// Both editions can be loaded during activation; Freemius then deactivates the other.
+if ( ! function_exists( 'gmg_fs_uninstall_cleanup' ) ) {
+	/**
+	 * Freemius uninstall cleanup
+	 */
+	function gmg_fs_uninstall_cleanup() {
+		if ( ! function_exists( 'gmedia_uninstall' ) ) {
+			require_once dirname( __FILE__ ) . '/inc/functions.php';
 		}
-	} else {
-		gmedia_uninstall();
+
+		if ( function_exists( 'is_multisite' ) && is_multisite() ) {
+			global $wpdb;
+			$blogs = $wpdb->get_results( "SELECT blog_id FROM {$wpdb->blogs}", ARRAY_A );
+			if ( $blogs ) {
+				foreach ( $blogs as $blog ) {
+					switch_to_blog( $blog['blog_id'] );
+					gmedia_uninstall();
+					restore_current_blog();
+				}
+			}
+		} else {
+			gmedia_uninstall();
+		}
 	}
 }
 
